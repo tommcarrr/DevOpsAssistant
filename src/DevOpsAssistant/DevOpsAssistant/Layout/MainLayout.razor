@@ -1,3 +1,23 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using MudBlazor
+@inject IDialogService DialogService
 
-@Body
+<MudThemeProvider />
+<MudDialogProvider />
+
+<MudAppBar Color="Color.Primary" Elevation="1">
+    <MudText Typo="Typo.h6">DevOpsAssistant</MudText>
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" />
+</MudAppBar>
+
+<div class="p-4">
+    @Body
+</div>
+
+@code {
+    private async Task OpenSettings()
+    {
+        await DialogService.ShowAsync<DevOpsAssistant.Components.SettingsDialog>("Settings");
+    }
+}
