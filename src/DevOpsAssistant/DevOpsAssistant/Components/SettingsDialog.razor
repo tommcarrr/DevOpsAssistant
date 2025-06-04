@@ -1,0 +1,39 @@
+@using MudBlazor
+@using DevOpsAssistant.Services
+@inject DevOpsConfigService ConfigService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_model.Organization" Label="Organization" />
+        <MudTextField @bind-Value="_model.Project" Label="Project" />
+        <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private DevOpsConfig _model = new();
+
+    protected override void OnInitialized()
+    {
+        _model = new DevOpsConfig
+        {
+            Organization = ConfigService.Config.Organization,
+            Project = ConfigService.Config.Project,
+            PatToken = ConfigService.Config.PatToken
+        };
+    }
+
+    private async Task Save()
+    {
+        await ConfigService.SaveAsync(_model);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

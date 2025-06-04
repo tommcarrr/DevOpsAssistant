@@ -1,11 +1,20 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using DevOpsAssistant;
+using MudBlazor.Services;
+using Blazored.LocalStorage;
+using DevOpsAssistant.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddMudServices();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<DevOpsConfigService>();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+var configService = host.Services.GetRequiredService<DevOpsConfigService>();
+await configService.LoadAsync();
+await host.RunAsync();
