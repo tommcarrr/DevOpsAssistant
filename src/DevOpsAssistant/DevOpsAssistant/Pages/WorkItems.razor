@@ -3,7 +3,7 @@
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 
-<PageTitle>Work Items</PageTitle>
+<PageTitle>Epics and Features</PageTitle>
 
 <MudPaper Class="p-4 mb-4">
     <MudGrid>
@@ -33,7 +33,7 @@ else if (_roots != null)
         {
             <li>
                 <MudLink Href="@epic.Info.Url" Target="_blank"><b>@epic.Info.Title</b></MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
-                @StatusIcon(epic)
+                @StatusIcon(epic) @SuggestedState(epic)
                 @if (epic.Children.Any())
                 {
                     <ul>
@@ -41,13 +41,15 @@ else if (_roots != null)
                         {
                             <li>
                                 <MudLink Href="@feature.Info.Url" Target="_blank"><b>@feature.Info.Title</b></MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
-                                @StatusIcon(feature)
+                                @StatusIcon(feature) @SuggestedState(feature)
                                 @if (feature.Children.Any())
                                 {
                                     <ul>
                                         @foreach (var item in feature.Children)
                                         {
-                                            <li><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)</li>
+                                            <li><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                                @SuggestedState(item)
+                                            </li>
                                         }
                                     </ul>
                                 }
@@ -97,6 +99,17 @@ else if (_roots != null)
             builder.AddAttribute(1, "Color", Color.Warning);
             builder.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
             builder.CloseComponent();
+        }
+    };
+
+    private RenderFragment SuggestedState(WorkItemNode node) => builder =>
+    {
+        if (!node.StatusValid)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "ms-1 text-secondary");
+            builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
+            builder.CloseElement();
         }
     };
 }
