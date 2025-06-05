@@ -89,7 +89,10 @@ public class DevOpsApiService
         }
 
         var childIds = new HashSet<int>(nodes.Values.SelectMany(n => n.Children.Select(c => c.Info.Id)));
-        var roots = nodes.Values.Where(n => !childIds.Contains(n.Info.Id)).ToList();
+        var roots = nodes.Values.Where(n =>
+            !childIds.Contains(n.Info.Id) &&
+            n.Info.WorkItemType.Equals("Epic", StringComparison.OrdinalIgnoreCase))
+            .ToList();
         roots = FilterClosedEpics(roots);
         foreach (var root in roots)
             ComputeStatus(root);
