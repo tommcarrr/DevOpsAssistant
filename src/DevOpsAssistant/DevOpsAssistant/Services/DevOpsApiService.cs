@@ -291,6 +291,140 @@ public class DevOpsApiService
         response.EnsureSuccessStatusCode();
     }
 
+    public async Task<List<WorkItemInfo>> SearchUserStoriesAsync(string term)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        var wiql = BuildStorySearchWiql(term);
+        var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        wiqlResponse.EnsureSuccessStatusCode();
+        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
+            return new List<WorkItemInfo>();
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20);
+        var idList = string.Join(',', ids);
+        var itemsResult = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
+        var list = new List<WorkItemInfo>();
+        if (itemsResult?.Value != null)
+        {
+            foreach (var w in itemsResult.Value)
+            {
+                list.Add(new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = w.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{w.Id}"
+                });
+            }
+        }
+        return list;
+    }
+
+    public async Task<List<StoryHierarchyDetails>> GetStoryHierarchyDetailsAsync(IEnumerable<int> storyIds)
+    {
+        var idsToFetch = new HashSet<int>(storyIds);
+        var fetched = new HashSet<int>();
+        var items = new Dictionary<int, WorkItem>();
+
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        while (idsToFetch.Except(fetched).Any())
+        {
+            var batch = idsToFetch.Except(fetched).Take(200).ToArray();
+            fetched.UnionWith(batch);
+            var idList = string.Join(',', batch);
+            var result = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+            if (result?.Value != null)
+            {
+                foreach (var w in result.Value)
+                {
+                    if (!items.ContainsKey(w.Id))
+                    {
+                        items[w.Id] = w;
+                        if (w.Relations != null)
+                        {
+                            foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse"))
+                            {
+                                if (int.TryParse(rel.Url.Split('/').Last(), out var parentId) && !idsToFetch.Contains(parentId))
+                                    idsToFetch.Add(parentId);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        var list = new List<StoryHierarchyDetails>();
+        foreach (var id in storyIds)
+        {
+            if (!items.TryGetValue(id, out var story))
+                continue;
+
+            var storyInfo = new WorkItemInfo
+            {
+                Id = story.Id,
+                Title = story.Fields["System.Title"].GetString() ?? string.Empty,
+                State = story.Fields["System.State"].GetString() ?? string.Empty,
+                WorkItemType = story.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                Url = $"{itemUrlBase}{story.Id}"
+            };
+            var desc = story.Fields.TryGetValue("System.Description", out var d) ? d.GetString() ?? string.Empty : string.Empty;
+
+            WorkItemInfo? featureInfo = null;
+            WorkItemInfo? epicInfo = null;
+            var featureId = story.Relations?.FirstOrDefault(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse")?.Url.Split('/').Last();
+            if (featureId != null && int.TryParse(featureId, out var fid) && items.TryGetValue(fid, out var feature))
+            {
+                featureInfo = new WorkItemInfo
+                {
+                    Id = feature.Id,
+                    Title = feature.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = feature.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = feature.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{feature.Id}"
+                };
+                var epicId = feature.Relations?.FirstOrDefault(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse")?.Url.Split('/').Last();
+                if (epicId != null && int.TryParse(epicId, out var eid) && items.TryGetValue(eid, out var epic))
+                {
+                    epicInfo = new WorkItemInfo
+                    {
+                        Id = epic.Id,
+                        Title = epic.Fields["System.Title"].GetString() ?? string.Empty,
+                        State = epic.Fields["System.State"].GetString() ?? string.Empty,
+                        WorkItemType = epic.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                        Url = $"{itemUrlBase}{epic.Id}"
+                    };
+                }
+            }
+
+            list.Add(new StoryHierarchyDetails
+            {
+                Story = storyInfo,
+                Description = desc,
+                Feature = featureInfo,
+                Epic = epicInfo
+            });
+        }
+
+        return list;
+    }
+
+    private static string BuildStorySearchWiql(string term)
+    {
+        term = term.Replace("'", "''");
+        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'User Story' AND [System.Title] CONTAINS '{term}' ORDER BY [System.Id]";
+    }
+
     private class WiqlResult
     {
         public WorkItemRef[] WorkItems { get; set; } = Array.Empty<WorkItemRef>();
