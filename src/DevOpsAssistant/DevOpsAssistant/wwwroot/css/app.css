@@ -75,3 +75,21 @@
 code {
     color: #c02d76;
 }
+
+/* Styling for work item hierarchy */
+.work-item-tree {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.work-item-tree li {
+    margin: 0.25rem 0;
+}
+
+.work-item-tree ul {
+    list-style-type: none;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--mud-palette-lines, #e0e0e0);
+}

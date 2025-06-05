@@ -43,11 +43,11 @@
 }
 else if (_roots != null)
 {
-    <ul>
+    <ul class="work-item-tree">
         @foreach (var epic in _roots)
         {
             <li>
-                <b>@epic.Info.Title</b> - @epic.Info.WorkItemType (@epic.Info.State)
+                <MudLink Href="@epic.Info.Url" Target="_blank"><b>@epic.Info.Title</b></MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
                 @StatusIcon(epic)
                 @if (epic.Children.Any())
                 {
@@ -55,14 +55,14 @@ else if (_roots != null)
                         @foreach (var feature in epic.Children)
                         {
                             <li>
-                                <b>@feature.Info.Title</b> - @feature.Info.WorkItemType (@feature.Info.State)
+                                <MudLink Href="@feature.Info.Url" Target="_blank"><b>@feature.Info.Title</b></MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
                                 @StatusIcon(feature)
                                 @if (feature.Children.Any())
                                 {
                                     <ul>
                                         @foreach (var item in feature.Children)
                                         {
-                                            <li>@item.Info.Title - @item.Info.WorkItemType (@item.Info.State)</li>
+                                            <li><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)</li>
                                         }
                                     </ul>
                                 }
