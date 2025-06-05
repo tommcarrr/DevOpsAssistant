@@ -180,12 +180,22 @@ public class DevOpsApiService
 
         if (!node.Children.Any())
         {
+            node.ExpectedState = node.Info.State;
             node.StatusValid = true;
             return;
         }
 
-        var allDone = node.Children.All(c => c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
-        node.StatusValid = node.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase) ? allDone : !allDone;
+        bool allClosed = node.Children.All(c =>
+            c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
+            c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
+            c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
+
+        bool anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
+
+        var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
+
+        node.ExpectedState = expected;
+        node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
     }
 
     private class WiqlResult
@@ -231,5 +241,6 @@ public class WorkItemNode
 {
     public WorkItemInfo Info { get; set; } = new();
     public List<WorkItemNode> Children { get; } = new();
+    public string ExpectedState { get; set; } = string.Empty;
     public bool StatusValid { get; set; }
 }
