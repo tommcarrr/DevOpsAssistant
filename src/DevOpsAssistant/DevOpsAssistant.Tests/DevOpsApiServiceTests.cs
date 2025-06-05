@@ -46,6 +46,12 @@ public class DevOpsApiServiceTests
         method.Invoke(null, new object?[] { el, list });
     }
 
+    private static string InvokeBuildStorySearchWiql(string term)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("BuildStorySearchWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, new object?[] { term })!;
+    }
+
     [Fact]
     public void BuildWiql_Filters_Closed_Epics()
     {
@@ -237,5 +243,23 @@ public class DevOpsApiServiceTests
         Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0", captured.RequestUri.ToString());
         var body = await captured.Content!.ReadAsStringAsync();
         Assert.Contains("\"Active\"", body);
+    }
+
+    [Fact]
+    public void BuildStorySearchWiql_Contains_Conditions()
+    {
+        var query = InvokeBuildStorySearchWiql("test");
+
+        Assert.Contains("User Story", query);
+        Assert.Contains("CONTAINS 'test'", query);
+    }
+
+    [Fact]
+    public async Task GetStoryHierarchyDetailsAsync_Throws_When_Config_Incomplete()
+    {
+        var configService = new DevOpsConfigService(new FakeLocalStorageService());
+        var service = new DevOpsApiService(new HttpClient(), configService);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStoryHierarchyDetailsAsync(new[] { 1 }));
     }
 }
