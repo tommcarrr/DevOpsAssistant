@@ -8,12 +8,11 @@
 
 <MudLayout>
     <MudAppBar Color="Color.Primary" Elevation="1">
-        <MudText Typo="Typo.h6">DevOpsAssistant</MudText>
+        <MudText Typo="Typo.h6" Class="me-4">
+            <MudNavLink Href="" Match="NavLinkMatch.All" Style="color:inherit;text-decoration:none">DevOpsAssistant</MudNavLink>
+        </MudText>
         <MudSpacer />
-        <MudNavMenu Dense="true" Class="d-flex">
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-            <MudNavLink Href="work-items" Icon="@Icons.Material.Filled.List">Epics &amp; Features</MudNavLink>
-        </MudNavMenu>
+        <MudNavLink Href="work-items" Icon="@Icons.Material.Filled.List" Class="me-2">Epics &amp; Features</MudNavLink>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" />
     </MudAppBar>
 

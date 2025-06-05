@@ -100,3 +100,34 @@ code {
     padding-left: 1.25rem;
     border-left: 1px solid var(--mud-palette-lines, #e0e0e0);
 }
+
+/* Colour coding similar to Azure DevOps */
+.work-item-epic {
+    border-left: 3px solid #F7630C;
+    padding-left: 4px;
+    color: #F7630C;
+}
+
+.work-item-feature {
+    border-left: 3px solid #773B93;
+    padding-left: 4px;
+    color: #773B93;
+}
+
+.work-item-story {
+    border-left: 3px solid #207752;
+    padding-left: 4px;
+    color: #207752;
+}
+
+.work-item-task {
+    border-left: 3px solid #0078D4;
+    padding-left: 4px;
+    color: #0078D4;
+}
+
+.work-item-bug {
+    border-left: 3px solid #D13438;
+    padding-left: 4px;
+    color: #D13438;
+}
