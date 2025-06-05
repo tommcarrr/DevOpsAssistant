@@ -6,5 +6,6 @@ namespace DevOpsAssistant.Services
         public string Project { get; set; } = string.Empty;
         public string PatToken { get; set; } = string.Empty;
         public bool DarkMode { get; set; }
+        public ValidationRules Rules { get; set; } = new();
     }
 }

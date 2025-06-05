@@ -16,5 +16,6 @@ public class HomePageTests : TestContext
         var cut = RenderComponent<Home>();
 
         Assert.Contains("href=\"epics-features\"", cut.Markup);
+        Assert.Contains("href=\"validation\"", cut.Markup);
     }
 }

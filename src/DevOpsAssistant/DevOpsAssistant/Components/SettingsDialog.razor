@@ -4,12 +4,28 @@
 
 <MudDialog>
     <MudDialogContent Class="pa-4">
-        <MudStack Spacing="2">
-            <MudTextField @bind-Value="_model.Organization" Label="Organization" />
-            <MudTextField @bind-Value="_model.Project" Label="Project" />
-            <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
-            <MudSwitch T="bool" @bind-Checked="_model.DarkMode" Color="Color.Primary" Label="Dark Mode" />
-        </MudStack>
+        <MudTabs>
+            <MudTabPanel Text="General">
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.Organization" Label="Organization" />
+                    <MudTextField @bind-Value="_model.Project" Label="Project" />
+                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
+                    <MudSwitch T="bool" @bind-Checked="_model.DarkMode" Color="Color.Primary" Label="Dark Mode" />
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text="Validation Rules">
+                <MudStack Spacing="1">
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.EpicHasDescription" Label="Epic has description" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.FeatureHasDescription" Label="Feature has description" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.FeatureHasParent" Label="Feature has parent" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.StoryHasDescription" Label="Story has description" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.StoryHasParent" Label="Story has parent" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.StoryHasStoryPoints" Label="Story has story points" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.StoryHasAcceptanceCriteria" Label="Story has acceptance criteria" />
+                    <MudSwitch T="bool" @bind-Checked="_model.Rules.StoryHasAssignee" Label="Story has assignee" />
+                </MudStack>
+            </MudTabPanel>
+        </MudTabs>
     </MudDialogContent>
     <MudDialogActions Class="pa-4">
         <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
@@ -29,7 +45,8 @@
             Organization = ConfigService.Config.Organization,
             Project = ConfigService.Config.Project,
             PatToken = ConfigService.Config.PatToken,
-            DarkMode = ConfigService.Config.DarkMode
+            DarkMode = ConfigService.Config.DarkMode,
+            Rules = ConfigService.Config.Rules
         };
     }
 

@@ -1,0 +1,114 @@
+@page "/validation"
+@using DevOpsAssistant.Services
+@inject DevOpsApiService ApiService
+@inject DevOpsConfigService ConfigService
+
+<PageTitle>Validation</PageTitle>
+
+<MudPaper Class="p-4 mb-4">
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                @foreach (var b in _backlogs)
+                {
+                    <MudSelectItem Value="@b">@b</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Color="Color.Primary" OnClick="Load">Check</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_results != null)
+{
+    if (_results.Count == 0)
+    {
+        <MudAlert Severity="Severity.Success">All items conform to rules.</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-2">
+            <MudList T="ResultItem" Dense="true">
+                @foreach (var r in _results)
+                {
+                    <MudListItem T="ResultItem">
+                        <MudLink Href="@r.Info.Url" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
+                        <br />
+                        <span class="text-secondary">@string.Join(", ", r.Violations)</span>
+                    </MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+    }
+}
+
+@code {
+    private string _path = string.Empty;
+    private string[] _backlogs = Array.Empty<string>();
+    private bool _loading;
+    private List<ResultItem>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _backlogs = await ApiService.GetBacklogsAsync();
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+    }
+
+    private async Task Load()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var items = await ApiService.GetValidationItemsAsync(_path);
+            _results = Validate(items);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private List<ResultItem> Validate(List<WorkItemDetails> items)
+    {
+        var rules = ConfigService.Config.Rules;
+        var list = new List<ResultItem>();
+        foreach (var item in items)
+        {
+            var v = new List<string>();
+            if (item.Info.WorkItemType.Equals("Epic", StringComparison.OrdinalIgnoreCase))
+            {
+                if (rules.EpicHasDescription && !item.HasDescription) v.Add("Missing description");
+            }
+            else if (item.Info.WorkItemType.Equals("Feature", StringComparison.OrdinalIgnoreCase))
+            {
+                if (rules.FeatureHasDescription && !item.HasDescription) v.Add("Missing description");
+                if (rules.FeatureHasParent && !item.HasParent) v.Add("Missing parent");
+            }
+            else if (item.Info.WorkItemType.Equals("User Story", StringComparison.OrdinalIgnoreCase))
+            {
+                if (rules.StoryHasDescription && !item.HasDescription) v.Add("Missing description");
+                if (rules.StoryHasParent && !item.HasParent) v.Add("Missing parent");
+                if (rules.StoryHasStoryPoints && !item.HasStoryPoints) v.Add("Missing story points");
+                if (rules.StoryHasAcceptanceCriteria && !item.HasAcceptanceCriteria) v.Add("Missing acceptance criteria");
+                if (rules.StoryHasAssignee && !item.HasAssignee) v.Add("Unassigned");
+            }
+            if (v.Count > 0)
+                list.Add(new ResultItem { Info = item.Info, Violations = v });
+        }
+        return list;
+    }
+
+    private class ResultItem
+    {
+        public WorkItemInfo Info { get; set; } = new();
+        public List<string> Violations { get; set; } = new();
+    }
+}
