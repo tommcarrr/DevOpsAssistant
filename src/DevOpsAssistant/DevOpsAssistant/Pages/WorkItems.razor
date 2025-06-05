@@ -1,13 +1,24 @@
 @page "/work-items"
 @using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
+@inject DevOpsConfigService ConfigService
 
 <PageTitle>Work Items</PageTitle>
 
 <MudPaper Class="p-4">
     <MudTextField @bind-Value="_path" Label="Area Path" />
-    <MudTextField @bind-Value="_state" Label="State Filter" Placeholder="e.g., Active, Resolved" />
-    <MudTextField @bind-Value="_tags" Label="Tags Filter" Placeholder="Comma separated tags" />
+    <MudSelect T="string" Label="States" SelectedValues="_selectedStates" SelectedValuesChanged="OnStatesChanged" MultiSelection="true">
+        @foreach (var s in _stateOptions)
+        {
+            <MudSelectItem Value="@s">@s</MudSelectItem>
+        }
+    </MudSelect>
+    <MudSelect T="string" Label="Tags" SelectedValues="_selectedTags" SelectedValuesChanged="OnTagsChanged" MultiSelection="true">
+        @foreach (var t in _tagOptions)
+        {
+            <MudSelectItem Value="@t">@t</MudSelectItem>
+        }
+    </MudSelect>
     <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
 </MudPaper>
 
@@ -51,10 +62,18 @@ else if (_roots != null)
 
 @code {
     private string _path = string.Empty;
-    private string? _state;
-    private string? _tags;
+    private string[] _stateOptions = Array.Empty<string>();
+    private string[] _tagOptions = Array.Empty<string>();
+    private IEnumerable<string> _selectedStates = Array.Empty<string>();
+    private IEnumerable<string> _selectedTags = Array.Empty<string>();
     private bool _loading;
     private List<WorkItemNode>? _roots;
+
+    protected override void OnInitialized()
+    {
+        _stateOptions = ConfigService.Config.States.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        _tagOptions = ConfigService.Config.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
 
     private async Task Load()
     {
@@ -62,13 +81,18 @@ else if (_roots != null)
         StateHasChanged();
         try
         {
-            _roots = await ApiService.GetWorkItemHierarchyAsync(_path, _state, _tags);
+            var state = _selectedStates.Any() ? string.Join(',', _selectedStates) : null;
+            var tags = _selectedTags.Any() ? string.Join(',', _selectedTags) : null;
+            _roots = await ApiService.GetWorkItemHierarchyAsync(_path, state, tags);
         }
         finally
         {
             _loading = false;
         }
     }
+
+    private void OnStatesChanged(IEnumerable<string> values) => _selectedStates = values;
+    private void OnTagsChanged(IEnumerable<string> values) => _selectedTags = values;
 
     private RenderFragment StatusIcon(WorkItemNode node) => builder =>
     {
