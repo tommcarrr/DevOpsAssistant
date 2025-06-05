@@ -15,7 +15,9 @@ public class DevOpsConfigServiceTests
         {
             Organization = "Org",
             Project = "Proj",
-            PatToken = "Token"
+            PatToken = "Token",
+            States = "New,Active",
+            Tags = "tag1,tag2"
         };
 
         await service.SaveAsync(config);
@@ -25,13 +27,15 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Org", stored.Organization);
         Assert.Equal("Proj", stored.Project);
         Assert.Equal("Token", stored.PatToken);
+        Assert.Equal("New,Active", stored.States);
+        Assert.Equal("tag1,tag2", stored.Tags);
     }
 
     [Fact]
     public async Task LoadAsync_Loads_Config_When_Present()
     {
         var storage = new FakeLocalStorageService();
-        var stored = new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "Token" };
+        var stored = new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "Token", States = "New", Tags = "tag1" };
         await storage.SetItemAsync("devops-config", stored);
         var service = new DevOpsConfigService(storage);
 
@@ -40,6 +44,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Org", service.Config.Organization);
         Assert.Equal("Proj", service.Config.Project);
         Assert.Equal("Token", service.Config.PatToken);
+        Assert.Equal("New", service.Config.States);
+        Assert.Equal("tag1", service.Config.Tags);
     }
 
     [Fact]
@@ -53,5 +59,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.Organization);
         Assert.Equal(string.Empty, service.Config.Project);
         Assert.Equal(string.Empty, service.Config.PatToken);
+        Assert.Equal(string.Empty, service.Config.States);
+        Assert.Equal(string.Empty, service.Config.Tags);
     }
 }
