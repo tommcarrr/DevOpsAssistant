@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Net.Http.Json;
+using System.Linq;
 using DevOpsAssistant.Services;
 
 namespace DevOpsAssistant.Services;
@@ -43,12 +44,18 @@ public class DevOpsApiService
             .Select(id => id!.Value)
             .Distinct();
 
-        var idList = string.Join(',', ids);
-        var itemsResult = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version=7.0");
-        if (itemsResult == null)
+        var workItems = new List<WorkItem>();
+        foreach (var chunk in ids.Chunk(200))
+        {
+            var idList = string.Join(',', chunk);
+            var itemsResult = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version=7.0");
+            if (itemsResult?.Value != null)
+                workItems.AddRange(itemsResult.Value);
+        }
+        if (!workItems.Any())
             return new List<WorkItemNode>();
 
-        var dict = itemsResult.Value.ToDictionary(i => i.Id);
+        var dict = workItems.ToDictionary(i => i.Id);
         var nodes = dict.Values.Select(w => new WorkItemNode
         {
             Info = new WorkItemInfo
@@ -61,7 +68,7 @@ public class DevOpsApiService
             }
         }).ToDictionary(n => n.Info.Id);
 
-        foreach (var item in itemsResult.Value)
+        foreach (var item in workItems)
         {
             if (item.Relations == null) continue;
             foreach (var rel in item.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Forward"))
