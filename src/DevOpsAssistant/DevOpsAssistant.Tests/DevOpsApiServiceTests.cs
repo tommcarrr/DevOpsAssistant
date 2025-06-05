@@ -28,11 +28,13 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
-    public void BuildWiql_Ignores_State_And_Tags()
+    public void BuildWiql_Filters_Closed_Epics()
     {
         var query = InvokeBuildWiql("Area");
 
-        Assert.DoesNotContain("System.State", query);
+        Assert.Contains("[System.State] <> 'Closed'", query);
+        Assert.Contains("[System.State] <> 'Removed'", query);
+        Assert.Contains("[System.WorkItemType] <> 'Epic'", query);
         Assert.DoesNotContain("System.Tags", query);
         Assert.Contains("[System.AreaPath] UNDER 'Area'", query);
     }

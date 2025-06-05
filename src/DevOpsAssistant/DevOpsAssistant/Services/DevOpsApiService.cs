@@ -165,7 +165,8 @@ public class DevOpsApiService
         {
             "[System.TeamProject] = @project",
             $"[System.AreaPath] UNDER '{areaPath}'",
-            "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
+            "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')",
+            "([System.WorkItemType] <> 'Epic' OR ([System.State] <> 'Closed' AND [System.State] <> 'Removed'))"
         };
 
         var where = string.Join(" AND ", conditions);
