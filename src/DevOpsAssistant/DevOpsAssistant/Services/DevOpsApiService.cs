@@ -31,7 +31,7 @@ public class DevOpsApiService
         var pat = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($":{config.PatToken}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", pat);
 
-        var wiql = BuildWiql(areaPath, state, tags);
+        var wiql = BuildWiql(areaPath);
         var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version=7.0", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
@@ -135,8 +135,9 @@ public class DevOpsApiService
                                    r.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase)))).ToList();
     }
 
-    private static string BuildWiql(string areaPath, string? state, string? tags)
+    private static string BuildWiql(string areaPath)
     {
+        areaPath = areaPath.TrimStart('\\', '/');
         var conditions = new List<string>
         {
             "[Source].[System.TeamProject] = @project",
@@ -144,21 +145,6 @@ public class DevOpsApiService
             "[Source].[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')",
             "[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'"
         };
-        if (!string.IsNullOrWhiteSpace(state))
-        {
-            var states = state.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (states.Length == 1)
-                conditions.Add($"[Source].[System.State] = '{states[0]}'");
-            else
-                conditions.Add($"[Source].[System.State] in ({string.Join(',', states.Select(s => $"'{s}'"))})");
-        }
-
-        if (!string.IsNullOrWhiteSpace(tags))
-        {
-            var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            foreach (var tag in tagList)
-                conditions.Add($"[Source].[System.Tags] CONTAINS '{tag}'");
-        }
 
         var where = string.Join(" AND ", conditions);
         return $@"SELECT [System.Id] FROM WorkItemLinks WHERE {where} ORDER BY [System.Id] MODE (Recursive, ReturnMatchingChildren)";

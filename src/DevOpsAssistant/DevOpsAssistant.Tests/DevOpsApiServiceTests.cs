@@ -9,10 +9,10 @@ namespace DevOpsAssistant.Tests;
 
 public class DevOpsApiServiceTests
 {
-    private static string InvokeBuildWiql(string area, string? state, string? tags)
+    private static string InvokeBuildWiql(string area)
     {
         var method = typeof(DevOpsApiService).GetMethod("BuildWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object?[] { area, state, tags })!;
+        return (string)method.Invoke(null, new object?[] { area })!;
     }
 
     private static void InvokeComputeStatus(WorkItemNode node)
@@ -28,28 +28,27 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
-    public void BuildWiql_Includes_State_And_Tags()
+    public void BuildWiql_Ignores_State_And_Tags()
     {
-        var query = InvokeBuildWiql("Area", "Active", "tag1, tag2");
+        var query = InvokeBuildWiql("Area");
 
-        Assert.Contains("[System.State] = 'Active'", query);
+        Assert.DoesNotContain("System.State", query);
+        Assert.DoesNotContain("System.Tags", query);
         Assert.Contains("[System.AreaPath] UNDER 'Area'", query);
-        Assert.Contains("[System.Tags] CONTAINS 'tag1'", query);
-        Assert.Contains("[System.Tags] CONTAINS 'tag2'", query);
     }
 
     [Fact]
-    public void BuildWiql_Multiple_States()
+    public void BuildWiql_Trims_Leading_Backslash()
     {
-        var query = InvokeBuildWiql("Area", "New, Done", null);
+        var query = InvokeBuildWiql("\\Area");
 
-        Assert.Contains("[System.State] in ('New','Done')", query);
+        Assert.Contains("[System.AreaPath] UNDER 'Area'", query);
     }
 
     [Fact]
     public void BuildWiql_Includes_LinkType()
     {
-        var query = InvokeBuildWiql("Area", null, null);
+        var query = InvokeBuildWiql("Area");
 
         Assert.Contains("[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'", query);
     }
