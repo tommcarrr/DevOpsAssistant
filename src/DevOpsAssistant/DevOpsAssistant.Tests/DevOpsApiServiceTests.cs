@@ -54,11 +54,13 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
-    public void BuildWiql_Includes_LinkType()
+    public void BuildWiql_Selects_WorkItems()
     {
         var query = InvokeBuildWiql("Area");
 
-        Assert.Contains("[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'", query);
+        Assert.DoesNotContain("WorkItemLinks", query);
+        Assert.DoesNotContain("System.Links.LinkType", query);
+        Assert.Contains("FROM WorkItems", query);
     }
 
     [Fact]

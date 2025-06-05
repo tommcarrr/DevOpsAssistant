@@ -35,13 +35,11 @@ public class DevOpsApiService
         var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version=7.0", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
-        if (wiqlResult == null || wiqlResult.WorkItemRelations == null || wiqlResult.WorkItemRelations.Length == 0)
+        if (wiqlResult == null || wiqlResult.WorkItems == null || wiqlResult.WorkItems.Length == 0)
             return new List<WorkItemNode>();
 
-        var ids = wiqlResult.WorkItemRelations
-            .SelectMany(r => new[] { r.Source?.Id, r.Target?.Id })
-            .Where(id => id.HasValue)
-            .Select(id => id!.Value)
+        var ids = wiqlResult.WorkItems
+            .Select(w => w.Id)
             .Distinct();
 
         var workItems = new List<WorkItem>();
@@ -153,14 +151,13 @@ public class DevOpsApiService
         areaPath = NormalizeAreaPath(areaPath);
         var conditions = new List<string>
         {
-            "[Source].[System.TeamProject] = @project",
-            $"[Source].[System.AreaPath] UNDER '{areaPath}'",
-            "[Source].[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')",
-            "[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'"
+            "[System.TeamProject] = @project",
+            $"[System.AreaPath] UNDER '{areaPath}'",
+            "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
         };
 
         var where = string.Join(" AND ", conditions);
-        return $@"SELECT [System.Id] FROM WorkItemLinks WHERE {where} ORDER BY [System.Id] MODE (Recursive, ReturnMatchingChildren)";
+        return $"SELECT [System.Id] FROM WorkItems WHERE {where} ORDER BY [System.Id]";
     }
 
     private static void ComputeStatus(WorkItemNode node)
@@ -180,13 +177,7 @@ public class DevOpsApiService
 
     private class WiqlResult
     {
-        public WorkItemRelation[] WorkItemRelations { get; set; } = Array.Empty<WorkItemRelation>();
-    }
-
-    private class WorkItemRelation
-    {
-        public WorkItemRef? Source { get; set; }
-        public WorkItemRef? Target { get; set; }
+        public WorkItemRef[] WorkItems { get; set; } = Array.Empty<WorkItemRef>();
     }
 
     private class WorkItemRef
