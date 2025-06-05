@@ -20,14 +20,21 @@
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" Class="mud-width-220" ClipMode="DrawerClipMode.Always">
         <MudNavMenu>
             <MudNavLink Href="" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List">Epics &amp; Features</MudNavLink>
-            <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule">Validation</MudNavLink>
+            <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List" Disabled="@IsConfigMissing">Epics &amp; Features</MudNavLink>
+            <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule" Disabled="@IsConfigMissing">Validation</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large" Class="pa-4 mt-4">
-            @Body
+            @if (IsConfigMissing)
+            {
+                <DevOpsAssistant.Components.SplashScreen OnSettingsSaved="StateHasChanged" />
+            }
+            else
+            {
+                @Body
+            }
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -50,4 +57,9 @@
             StateHasChanged();
         }
     }
+
+    private bool IsConfigMissing =>
+        string.IsNullOrWhiteSpace(ConfigService.Config.Organization) ||
+        string.IsNullOrWhiteSpace(ConfigService.Config.Project) ||
+        string.IsNullOrWhiteSpace(ConfigService.Config.PatToken);
 }

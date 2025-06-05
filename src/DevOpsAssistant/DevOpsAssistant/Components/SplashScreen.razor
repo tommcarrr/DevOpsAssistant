@@ -1,0 +1,30 @@
+@using MudBlazor
+@using DevOpsAssistant.Services
+@using Microsoft.AspNetCore.Components
+@inject IDialogService DialogService
+
+<MudPaper Class="pa-4" Style="max-width:500px;margin:auto;">
+    <MudText Typo="Typo.h4" Class="mb-2">Configuration Required</MudText>
+    <MudText>
+        To use DevOpsAssistant you need to configure your Azure DevOps organization,
+        project and a Personal Access Token. You can create a token in Azure DevOps
+        under <b>User settings &gt; Personal access tokens</b>.
+    </MudText>
+    <MudButton StartIcon="@Icons.Material.Filled.Settings" Color="Color.Primary" Class="mt-4" OnClick="OpenSettings">
+        Open Settings
+    </MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public EventCallback OnSettingsSaved { get; set; }
+
+    private async Task OpenSettings()
+    {
+        var dialog = await DialogService.ShowAsync<SettingsDialog>("Settings");
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await OnSettingsSaved.InvokeAsync();
+        }
+    }
+}
