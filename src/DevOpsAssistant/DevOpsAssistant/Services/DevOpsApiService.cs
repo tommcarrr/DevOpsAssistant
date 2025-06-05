@@ -83,9 +83,56 @@ public class DevOpsApiService
 
         var childIds = new HashSet<int>(nodes.Values.SelectMany(n => n.Children.Select(c => c.Info.Id)));
         var roots = nodes.Values.Where(n => !childIds.Contains(n.Info.Id)).ToList();
+        roots = FilterClosedEpics(roots);
         foreach (var root in roots)
             ComputeStatus(root);
         return roots;
+    }
+
+    public async Task<string[]> GetBacklogsAsync()
+    {
+        var config = _configService.Config;
+        if (string.IsNullOrWhiteSpace(config.Organization) ||
+            string.IsNullOrWhiteSpace(config.Project) ||
+            string.IsNullOrWhiteSpace(config.PatToken))
+        {
+            throw new InvalidOperationException("DevOps configuration is incomplete.");
+        }
+
+        var baseUri = $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wit";
+        var pat = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($":{config.PatToken}"));
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", pat);
+
+        var result = await _httpClient.GetFromJsonAsync<JsonElement>($"{baseUri}/classificationnodes/areas?$depth=2&api-version=7.0");
+        var list = new List<string>();
+        if (result.TryGetProperty("children", out var children))
+        {
+            foreach (var child in children.EnumerateArray())
+                ExtractPaths(child, list);
+        }
+        return list.ToArray();
+    }
+
+    private static void ExtractPaths(JsonElement el, List<string> list)
+    {
+        if (el.TryGetProperty("path", out var path))
+        {
+            var p = path.GetString();
+            if (!string.IsNullOrEmpty(p))
+                list.Add(p);
+        }
+        if (el.TryGetProperty("children", out var children))
+        {
+            foreach (var child in children.EnumerateArray())
+                ExtractPaths(child, list);
+        }
+    }
+
+    private static List<WorkItemNode> FilterClosedEpics(IEnumerable<WorkItemNode> roots)
+    {
+        return roots.Where(r => !(r.Info.WorkItemType.Equals("Epic", StringComparison.OrdinalIgnoreCase) &&
+                                  (r.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
+                                   r.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase)))).ToList();
     }
 
     private static string BuildWiql(string areaPath, string? state, string? tags)
