@@ -8,6 +8,7 @@
             <MudTextField @bind-Value="_model.Organization" Label="Organization" />
             <MudTextField @bind-Value="_model.Project" Label="Project" />
             <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
+            <MudSwitch T="bool" @bind-Checked="_model.DarkMode" Color="Color.Primary" Label="Dark Mode" />
         </MudStack>
     </MudDialogContent>
     <MudDialogActions Class="pa-4">
@@ -27,7 +28,8 @@
         {
             Organization = ConfigService.Config.Organization,
             Project = ConfigService.Config.Project,
-            PatToken = ConfigService.Config.PatToken
+            PatToken = ConfigService.Config.PatToken,
+            DarkMode = ConfigService.Config.DarkMode
         };
     }
 
