@@ -16,6 +16,12 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, new object?[] { area })!;
     }
 
+    private static string InvokeBuildValidationWiql(string area)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("BuildValidationWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, new object?[] { area })!;
+    }
+
     private static void InvokeComputeStatus(WorkItemNode node)
     {
         var method = typeof(DevOpsApiService).GetMethod("ComputeStatus", BindingFlags.NonPublic | BindingFlags.Static)!;
@@ -79,6 +85,17 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildValidationWiql_Selects_Epic_Feature_Story()
+    {
+        var query = InvokeBuildValidationWiql("Area");
+
+        Assert.Contains("'Epic'", query);
+        Assert.Contains("'Feature'", query);
+        Assert.Contains("'User Story'", query);
+        Assert.DoesNotContain("Task", query);
+    }
+
+    [Fact]
     public void ComputeStatus_Leaf_Node_ExpectedState_Equals_Current()
     {
         var node = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
@@ -135,6 +152,15 @@ public class DevOpsApiServiceTests
         var service = new DevOpsApiService(new HttpClient(), configService);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetWorkItemHierarchyAsync("Area"));
+    }
+
+    [Fact]
+    public async Task GetValidationItemsAsync_Throws_When_Config_Incomplete()
+    {
+        var configService = new DevOpsConfigService(new FakeLocalStorageService());
+        var service = new DevOpsApiService(new HttpClient(), configService);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area"));
     }
 
     [Theory]

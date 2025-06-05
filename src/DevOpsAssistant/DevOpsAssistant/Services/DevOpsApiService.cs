@@ -135,6 +135,63 @@ public class DevOpsApiService
         return normalized;
     }
 
+    public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        var wiql = BuildValidationWiql(areaPath);
+        var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        wiqlResponse.EnsureSuccessStatusCode();
+        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        if (wiqlResult == null || wiqlResult.WorkItems == null || wiqlResult.WorkItems.Length == 0)
+            return new List<WorkItemDetails>();
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
+        var workItems = new List<WorkItem>();
+        var fetchTasks = ids.Chunk(200).Select(chunk =>
+        {
+            var idList = string.Join(',', chunk);
+            return _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+        }).ToArray();
+
+        var results = await Task.WhenAll(fetchTasks);
+        foreach (var itemsResult in results)
+        {
+            if (itemsResult?.Value != null)
+                workItems.AddRange(itemsResult.Value);
+        }
+        if (!workItems.Any())
+            return new List<WorkItemDetails>();
+
+        var list = new List<WorkItemDetails>();
+        foreach (var w in workItems)
+        {
+            var details = new WorkItemDetails
+            {
+                Info = new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = w.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{w.Id}"
+                },
+                HasDescription = w.Fields.TryGetValue("System.Description", out var desc) && !string.IsNullOrWhiteSpace(desc.GetString()),
+                HasStoryPoints = w.Fields.TryGetValue("Microsoft.VSTS.Scheduling.StoryPoints", out var sp) && (sp.ValueKind == JsonValueKind.Number || !string.IsNullOrWhiteSpace(sp.ToString())),
+                HasAcceptanceCriteria = w.Fields.TryGetValue("Microsoft.VSTS.Common.AcceptanceCriteria", out var ac) && !string.IsNullOrWhiteSpace(ac.GetString()),
+                HasAssignee = w.Fields.TryGetValue("System.AssignedTo", out var at) && !string.IsNullOrWhiteSpace(at.GetString()),
+                HasParent = w.Relations?.Any(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse") == true
+            };
+            list.Add(details);
+        }
+
+        return list;
+    }
+
     private static void ExtractPaths(JsonElement el, List<string> list)
     {
         if (el.TryGetProperty("path", out var path))
@@ -181,6 +238,12 @@ public class DevOpsApiService
 
         var where = string.Join(" AND ", conditions);
         return $"SELECT [System.Id] FROM WorkItems WHERE {where} ORDER BY [System.Id]";
+    }
+
+    private static string BuildValidationWiql(string areaPath)
+    {
+        areaPath = NormalizeAreaPath(areaPath);
+        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
     }
 
     private static void ComputeStatus(WorkItemNode node)
