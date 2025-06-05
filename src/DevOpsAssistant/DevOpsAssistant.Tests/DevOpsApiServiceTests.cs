@@ -46,6 +46,14 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildWiql_Removes_Area_Prefix()
+    {
+        var query = InvokeBuildWiql("Project\\Area\\Development");
+
+        Assert.Contains("[System.AreaPath] UNDER 'Project\\Development'", query);
+    }
+
+    [Fact]
     public void BuildWiql_Includes_LinkType()
     {
         var query = InvokeBuildWiql("Area");
