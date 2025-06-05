@@ -1,0 +1,83 @@
+@page "/work-items"
+@using DevOpsAssistant.Services
+@inject DevOpsApiService ApiService
+
+<PageTitle>Work Items</PageTitle>
+
+<MudPaper Class="p-4">
+    <MudTextField @bind-Value="_path" Label="Area Path" />
+    <MudTextField @bind-Value="_state" Label="State Filter" />
+    <MudTextField @bind-Value="_tags" Label="Tags Filter" />
+    <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
+</MudPaper>
+
+@if (_loading)
+{
+    <p>Loading...</p>
+}
+else if (_roots != null)
+{
+    <ul>
+        @foreach (var epic in _roots)
+        {
+            <li>
+                <b>@epic.Info.Title</b> (@epic.Info.State)
+                @StatusIcon(epic)
+                @if (epic.Children.Any())
+                {
+                    <ul>
+                        @foreach (var feature in epic.Children)
+                        {
+                            <li>
+                                <b>@feature.Info.Title</b> (@feature.Info.State)
+                                @StatusIcon(feature)
+                                @if (feature.Children.Any())
+                                {
+                                    <ul>
+                                        @foreach (var item in feature.Children)
+                                        {
+                                            <li>@item.Info.Title (@item.Info.State)</li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private string _path = string.Empty;
+    private string? _state;
+    private string? _tags;
+    private bool _loading;
+    private List<WorkItemNode>? _roots;
+
+    private async Task Load()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _roots = await ApiService.GetWorkItemHierarchyAsync(_path, _state, _tags);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private RenderFragment StatusIcon(WorkItemNode node) => builder =>
+    {
+        if (!node.StatusValid)
+        {
+            builder.OpenComponent<MudIcon>(0);
+            builder.AddAttribute(1, "Color", Color.Warning);
+            builder.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
+            builder.CloseComponent();
+        }
+    };
+}

@@ -13,6 +13,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<DevOpsConfigService>();
+builder.Services.AddScoped<DevOpsApiService>();
 
 var host = builder.Build();
 var configService = host.Services.GetRequiredService<DevOpsConfigService>();
