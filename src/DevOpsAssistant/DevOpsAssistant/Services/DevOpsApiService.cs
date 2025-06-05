@@ -92,24 +92,24 @@ public class DevOpsApiService
     {
         var conditions = new List<string>
         {
-            "[System.TeamProject] = @project",
-            $"[System.AreaPath] UNDER '{areaPath}'",
-            "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
+            "[Source].[System.TeamProject] = @project",
+            $"[Source].[System.AreaPath] UNDER '{areaPath}'",
+            "[Source].[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
         };
         if (!string.IsNullOrWhiteSpace(state))
         {
             var states = state.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (states.Length == 1)
-                conditions.Add($"[System.State] = '{states[0]}'");
+                conditions.Add($"[Source].[System.State] = '{states[0]}'");
             else
-                conditions.Add($"[System.State] in ({string.Join(',', states.Select(s => $"'{s}'"))})");
+                conditions.Add($"[Source].[System.State] in ({string.Join(',', states.Select(s => $"'{s}'"))})");
         }
 
         if (!string.IsNullOrWhiteSpace(tags))
         {
             var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             foreach (var tag in tagList)
-                conditions.Add($"[System.Tags] CONTAINS '{tag}'");
+                conditions.Add($"[Source].[System.Tags] CONTAINS '{tag}'");
         }
 
         var where = string.Join(" AND ", conditions);
