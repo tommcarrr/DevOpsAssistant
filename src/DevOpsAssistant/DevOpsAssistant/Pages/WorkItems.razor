@@ -1,4 +1,4 @@
-@page "/work-items"
+@page "/epics-features"
 @using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
@@ -110,8 +110,23 @@ else if (_roots != null)
             builder.AddAttribute(1, "class", "ms-1 text-secondary");
             builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
             builder.CloseElement();
+            builder.AddMarkupContent(3, "&nbsp;");
+            builder.OpenComponent<MudButton>(4);
+            builder.AddAttribute(5, "Variant", Variant.Text);
+            builder.AddAttribute(6, "Size", Size.Small);
+            builder.AddAttribute(7, "OnClick", EventCallback.Factory.Create(this, () => UpdateState(node)));
+            builder.AddContent(8, "Apply");
+            builder.CloseComponent();
         }
     };
+
+    private async Task UpdateState(WorkItemNode node)
+    {
+        await ApiService.UpdateWorkItemStateAsync(node.Info.Id, node.ExpectedState);
+        node.Info.State = node.ExpectedState;
+        node.StatusValid = true;
+        StateHasChanged();
+    }
 
     private static string GetItemClass(string type) => type.ToLowerInvariant() switch
     {
