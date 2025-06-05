@@ -2,12 +2,13 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Net.Http.Json;
 using System.Linq;
-using DevOpsAssistant.Services;
 
 namespace DevOpsAssistant.Services;
 
 public class DevOpsApiService
 {
+    private const string ApiVersion = "7.0";
+
     private readonly HttpClient _httpClient;
     private readonly DevOpsConfigService _configService;
 
@@ -17,7 +18,7 @@ public class DevOpsApiService
         _configService = configService;
     }
 
-    public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath)
+    private DevOpsConfig GetValidatedConfig()
     {
         var config = _configService.Config;
         if (string.IsNullOrWhiteSpace(config.Organization) ||
@@ -26,14 +27,31 @@ public class DevOpsApiService
         {
             throw new InvalidOperationException("DevOps configuration is incomplete.");
         }
+        return config;
+    }
 
-        var baseUri = $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wit";
-        var itemUrlBase = $"https://dev.azure.com/{config.Organization}/{config.Project}/_workitems/edit/";
+    private void ApplyAuthentication(DevOpsConfig config)
+    {
         var pat = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($":{config.PatToken}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", pat);
+    }
+
+    private static string BuildBaseUri(DevOpsConfig config) =>
+        $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wit";
+
+    private static string BuildItemUrlBase(DevOpsConfig config) =>
+        $"https://dev.azure.com/{config.Organization}/{config.Project}/_workitems/edit/";
+
+    public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildWiql(areaPath);
-        var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version=7.0", new { query = wiql });
+        var wiqlResponse = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
         if (wiqlResult == null || wiqlResult.WorkItems == null || wiqlResult.WorkItems.Length == 0)
@@ -48,7 +66,7 @@ public class DevOpsApiService
             .Select(chunk =>
             {
                 var idList = string.Join(',', chunk);
-                return _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version=7.0");
+                return _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
             })
             .ToArray();
 
@@ -100,19 +118,12 @@ public class DevOpsApiService
 
     public async Task<string[]> GetBacklogsAsync()
     {
-        var config = _configService.Config;
-        if (string.IsNullOrWhiteSpace(config.Organization) ||
-            string.IsNullOrWhiteSpace(config.Project) ||
-            string.IsNullOrWhiteSpace(config.PatToken))
-        {
-            throw new InvalidOperationException("DevOps configuration is incomplete.");
-        }
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
 
-        var baseUri = $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wit";
-        var pat = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($":{config.PatToken}"));
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", pat);
+        var baseUri = BuildBaseUri(config);
 
-        var result = await _httpClient.GetFromJsonAsync<JsonElement>($"{baseUri}/classificationnodes/areas?$depth=2&api-version=7.0");
+        var result = await _httpClient.GetFromJsonAsync<JsonElement>($"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
         var list = new List<string>();
         if (result.TryGetProperty("children", out var children))
         {
@@ -226,19 +237,3 @@ public class DevOpsApiService
     }
 }
 
-public class WorkItemInfo
-{
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string State { get; set; } = string.Empty;
-    public string WorkItemType { get; set; } = string.Empty;
-    public string Url { get; set; } = string.Empty;
-}
-
-public class WorkItemNode
-{
-    public WorkItemInfo Info { get; set; } = new();
-    public List<WorkItemNode> Children { get; } = new();
-    public string ExpectedState { get; set; } = string.Empty;
-    public bool StatusValid { get; set; }
-}
