@@ -43,10 +43,17 @@ public class DevOpsApiService
             .Distinct();
 
         var workItems = new List<WorkItem>();
-        foreach (var chunk in ids.Chunk(200))
+        var fetchTasks = ids.Chunk(200)
+            .Select(chunk =>
+            {
+                var idList = string.Join(',', chunk);
+                return _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version=7.0");
+            })
+            .ToArray();
+
+        var results = await Task.WhenAll(fetchTasks);
+        foreach (var itemsResult in results)
         {
-            var idList = string.Join(',', chunk);
-            var itemsResult = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version=7.0");
             if (itemsResult?.Value != null)
                 workItems.AddRange(itemsResult.Value);
         }

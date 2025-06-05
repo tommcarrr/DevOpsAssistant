@@ -39,7 +39,7 @@
 
 @if (_loading)
 {
-    <p>Loading...</p>
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
 else if (_roots != null)
 {
@@ -47,7 +47,7 @@ else if (_roots != null)
         @foreach (var epic in _roots)
         {
             <li>
-                <b>@epic.Info.Title</b> (@epic.Info.State)
+                <b>@epic.Info.Title</b> - @epic.Info.WorkItemType (@epic.Info.State)
                 @StatusIcon(epic)
                 @if (epic.Children.Any())
                 {
@@ -55,14 +55,14 @@ else if (_roots != null)
                         @foreach (var feature in epic.Children)
                         {
                             <li>
-                                <b>@feature.Info.Title</b> (@feature.Info.State)
+                                <b>@feature.Info.Title</b> - @feature.Info.WorkItemType (@feature.Info.State)
                                 @StatusIcon(feature)
                                 @if (feature.Children.Any())
                                 {
                                     <ul>
                                         @foreach (var item in feature.Children)
                                         {
-                                            <li>@item.Info.Title (@item.Info.State)</li>
+                                            <li>@item.Info.Title - @item.Info.WorkItemType (@item.Info.State)</li>
                                         }
                                     </ul>
                                 }
