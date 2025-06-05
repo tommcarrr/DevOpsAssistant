@@ -38,8 +38,9 @@
 
     private DevOpsConfig _model = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await ConfigService.LoadAsync();
         _model = new DevOpsConfig
         {
             Organization = ConfigService.Config.Organization,
