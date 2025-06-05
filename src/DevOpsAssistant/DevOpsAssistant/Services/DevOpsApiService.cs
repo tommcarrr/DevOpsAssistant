@@ -110,7 +110,9 @@ public class DevOpsApiService
             foreach (var child in children.EnumerateArray())
                 ExtractPaths(child, list);
         }
-        return list.ToArray();
+
+        var normalized = list.Select(NormalizeAreaPath).ToArray();
+        return normalized;
     }
 
     private static void ExtractPaths(JsonElement el, List<string> list)
@@ -135,9 +137,20 @@ public class DevOpsApiService
                                    r.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase)))).ToList();
     }
 
-    private static string BuildWiql(string areaPath)
+    private static string NormalizeAreaPath(string areaPath)
     {
         areaPath = areaPath.TrimStart('\\', '/');
+        var segments = areaPath.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length >= 2 && segments[1].Equals("Area", StringComparison.OrdinalIgnoreCase))
+        {
+            areaPath = string.Join('\\', new[] { segments[0] }.Concat(segments.Skip(2)));
+        }
+        return areaPath;
+    }
+
+    private static string BuildWiql(string areaPath)
+    {
+        areaPath = NormalizeAreaPath(areaPath);
         var conditions = new List<string>
         {
             "[Source].[System.TeamProject] = @project",
