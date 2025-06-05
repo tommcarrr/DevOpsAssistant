@@ -21,6 +21,12 @@ public class DevOpsApiServiceTests
         method.Invoke(null, new object?[] { node });
     }
 
+    private static List<WorkItemNode> InvokeFilterClosedEpics(List<WorkItemNode> nodes)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("FilterClosedEpics", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (List<WorkItemNode>)method.Invoke(null, new object?[] { nodes })!;
+    }
+
     [Fact]
     public void BuildWiql_Includes_State_And_Tags()
     {
@@ -80,6 +86,19 @@ public class DevOpsApiServiceTests
         InvokeComputeStatus(root);
 
         Assert.True(root.StatusValid);
+    }
+
+    [Fact]
+    public void FilterClosedEpics_Removes_Closed_Epics()
+    {
+        var closed = new WorkItemNode { Info = new WorkItemInfo { WorkItemType = "Epic", State = "Closed" } };
+        var open = new WorkItemNode { Info = new WorkItemInfo { WorkItemType = "Epic", State = "New" } };
+        var list = new List<WorkItemNode> { closed, open };
+
+        var result = InvokeFilterClosedEpics(list);
+
+        Assert.DoesNotContain(closed, result);
+        Assert.Contains(open, result);
     }
 
     [Fact]

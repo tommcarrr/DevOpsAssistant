@@ -8,7 +8,12 @@
 <MudPaper Class="p-4 mb-4">
     <MudGrid>
         <MudItem xs="12" md="4">
-            <MudTextField @bind-Value="_path" Label="Area Path" />
+            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                @foreach (var b in _backlogs)
+                {
+                    <MudSelectItem Value="@b">@b</MudSelectItem>
+                }
+            </MudSelect>
         </MudItem>
         <MudItem xs="12" md="4">
             <MudSelect T="string" Label="States" SelectedValues="_selectedStates" SelectedValuesChanged="OnStatesChanged" MultiSelection="true">
@@ -72,6 +77,7 @@ else if (_roots != null)
 
 @code {
     private string _path = string.Empty;
+    private string[] _backlogs = Array.Empty<string>();
     private string[] _stateOptions = Array.Empty<string>();
     private string[] _tagOptions = Array.Empty<string>();
     private IEnumerable<string> _selectedStates = Array.Empty<string>();
@@ -79,10 +85,13 @@ else if (_roots != null)
     private bool _loading;
     private List<WorkItemNode>? _roots;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         _stateOptions = ConfigService.Config.States.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         _tagOptions = ConfigService.Config.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        _backlogs = await ApiService.GetBacklogsAsync();
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
     }
 
     private async Task Load()
