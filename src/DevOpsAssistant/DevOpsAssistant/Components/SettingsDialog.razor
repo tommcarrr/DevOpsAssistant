@@ -7,8 +7,6 @@
         <MudTextField @bind-Value="_model.Organization" Label="Organization" />
         <MudTextField @bind-Value="_model.Project" Label="Project" />
         <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
-        <MudTextField @bind-Value="_model.States" Label="States" Placeholder="Comma separated states" />
-        <MudTextField @bind-Value="_model.Tags" Label="Tags" Placeholder="Comma separated tags" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
@@ -27,9 +25,7 @@
         {
             Organization = ConfigService.Config.Organization,
             Project = ConfigService.Config.Project,
-            PatToken = ConfigService.Config.PatToken,
-            States = ConfigService.Config.States,
-            Tags = ConfigService.Config.Tags
+            PatToken = ConfigService.Config.PatToken
         };
     }
 

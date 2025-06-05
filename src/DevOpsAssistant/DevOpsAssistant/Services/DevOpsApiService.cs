@@ -17,7 +17,7 @@ public class DevOpsApiService
         _configService = configService;
     }
 
-    public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath, string? state = null, string? tags = null)
+    public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath)
     {
         var config = _configService.Config;
         if (string.IsNullOrWhiteSpace(config.Organization) ||
@@ -70,7 +70,6 @@ public class DevOpsApiService
                 Title = w.Fields["System.Title"].GetString() ?? string.Empty,
                 State = w.Fields["System.State"].GetString() ?? string.Empty,
                 WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
-                Tags = w.Fields.TryGetValue("System.Tags", out var tagEl) ? tagEl.GetString() ?? string.Empty : string.Empty,
                 Url = $"{itemUrlBase}{w.Id}"
             }
         }).ToDictionary(n => n.Info.Id);
@@ -233,7 +232,6 @@ public class WorkItemInfo
     public string Title { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public string WorkItemType { get; set; } = string.Empty;
-    public string Tags { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
 }
 
