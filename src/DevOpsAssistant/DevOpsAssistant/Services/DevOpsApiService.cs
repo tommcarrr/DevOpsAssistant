@@ -90,9 +90,20 @@ public class DevOpsApiService
             "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
         };
         if (!string.IsNullOrWhiteSpace(state))
-            conditions.Add($"[System.State] = '{state}'");
+        {
+            var states = state.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (states.Length == 1)
+                conditions.Add($"[System.State] = '{states[0]}'");
+            else
+                conditions.Add($"[System.State] in ({string.Join(',', states.Select(s => $"'{s}'"))})");
+        }
+
         if (!string.IsNullOrWhiteSpace(tags))
-            conditions.Add($"[System.Tags] CONTAINS '{tags}'");
+        {
+            var tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var tag in tagList)
+                conditions.Add($"[System.Tags] CONTAINS '{tag}'");
+        }
 
         var where = string.Join(" AND ", conditions);
         return $@"SELECT [System.Id] FROM WorkItemLinks WHERE {where} ORDER BY [System.Id] MODE (Recursive, ReturnMatchingChildren)";
