@@ -7,17 +7,13 @@
 <MudPopoverProvider />
 
 <MudLayout>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Never" Variant="DrawerVariant.Responsive" Elevation="1">
-        <MudNavMenu Dense="true">
-            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-            <MudNavLink Href="work-items" Icon="@Icons.Material.Filled.List">Work Items</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
-
     <MudAppBar Color="Color.Primary" Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
         <MudText Typo="Typo.h6">DevOpsAssistant</MudText>
         <MudSpacer />
+        <MudNavMenu Dense="true" Class="d-flex">
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="work-items" Icon="@Icons.Material.Filled.List">Epics &amp; Features</MudNavLink>
+        </MudNavMenu>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" />
     </MudAppBar>
 
@@ -29,9 +25,6 @@
 </MudLayout>
 
 @code {
-    private bool _drawerOpen = true;
-
-    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
 
     private async Task OpenSettings()
     {
