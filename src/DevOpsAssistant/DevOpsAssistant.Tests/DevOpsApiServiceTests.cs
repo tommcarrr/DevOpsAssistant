@@ -185,4 +185,31 @@ public class DevOpsApiServiceTests
 
         Assert.Equal(new[] { "Project", "Project\\Sub" }, result);
     }
+
+    [Fact]
+    public async Task UpdateWorkItemStateAsync_Sends_Patch_Request()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent("{}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        await service.UpdateWorkItemStateAsync(42, "Active");
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Patch, captured!.Method);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0", captured.RequestUri.ToString());
+        var body = await captured.Content!.ReadAsStringAsync();
+        Assert.Contains("\"Active\"", body);
+    }
 }

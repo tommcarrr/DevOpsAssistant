@@ -208,6 +208,26 @@ public class DevOpsApiService
         node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
     }
 
+    public async Task UpdateWorkItemStateAsync(int id, string state)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var patch = new[]
+        {
+            new { op = "add", path = "/fields/System.State", value = state }
+        };
+        var content = new StringContent(JsonSerializer.Serialize(patch));
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json-patch+json");
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"{baseUri}/workitems/{id}?api-version={ApiVersion}")
+        {
+            Content = content
+        };
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+    }
+
     private class WiqlResult
     {
         public WorkItemRef[] WorkItems { get; set; } = Array.Empty<WorkItemRef>();
