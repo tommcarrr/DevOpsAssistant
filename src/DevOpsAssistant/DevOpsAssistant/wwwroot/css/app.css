@@ -83,6 +83,13 @@ code {
     padding-left: 0;
 }
 
+.work-item-container {
+    padding: 1rem;
+    border: 1px solid var(--mud-palette-lines, #e0e0e0);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
 .work-item-tree li {
     margin: 0.25rem 0;
 }
@@ -90,6 +97,6 @@ code {
 .work-item-tree ul {
     list-style-type: none;
     margin-left: 1rem;
-    padding-left: 1rem;
+    padding-left: 1.25rem;
     border-left: 1px solid var(--mud-palette-lines, #e0e0e0);
 }

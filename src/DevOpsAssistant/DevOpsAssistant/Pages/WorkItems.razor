@@ -43,7 +43,8 @@
 }
 else if (_roots != null)
 {
-    <ul class="work-item-tree">
+    <MudPaper Class="work-item-container">
+        <ul class="work-item-tree">
         @foreach (var epic in _roots)
         {
             <li>
@@ -72,7 +73,8 @@ else if (_roots != null)
                 }
             </li>
         }
-    </ul>
+        </ul>
+    </MudPaper>
 }
 
 @code {
