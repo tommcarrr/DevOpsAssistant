@@ -41,6 +41,14 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildWiql_Includes_LinkType()
+    {
+        var query = InvokeBuildWiql("Area", null, null);
+
+        Assert.Contains("[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'", query);
+    }
+
+    [Fact]
     public void ComputeStatus_Leaf_Node_Always_Valid()
     {
         var node = new WorkItemNode { Info = new WorkItemInfo { State = "Done" } };
