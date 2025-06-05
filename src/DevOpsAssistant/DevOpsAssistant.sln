@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant", "DevOpsAssistant\DevOpsAssistant.csproj", "{79F74E4D-A04C-4F4D-B250-E7FB13D299F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.Tests", "DevOpsAssistant.Tests\DevOpsAssistant.Tests.csproj", "{7196AEE1-1A10-4DCC-83EC-E75F008668D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{79F74E4D-A04C-4F4D-B250-E7FB13D299F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79F74E4D-A04C-4F4D-B250-E7FB13D299F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79F74E4D-A04C-4F4D-B250-E7FB13D299F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7196AEE1-1A10-4DCC-83EC-E75F008668D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7196AEE1-1A10-4DCC-83EC-E75F008668D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7196AEE1-1A10-4DCC-83EC-E75F008668D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7196AEE1-1A10-4DCC-83EC-E75F008668D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
