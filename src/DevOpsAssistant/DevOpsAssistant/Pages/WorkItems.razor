@@ -15,22 +15,6 @@
                 }
             </MudSelect>
         </MudItem>
-        <MudItem xs="12" md="4">
-            <MudSelect T="string" Label="States" SelectedValues="_selectedStates" SelectedValuesChanged="OnStatesChanged" MultiSelection="true">
-                @foreach (var s in _stateOptions)
-                {
-                    <MudSelectItem Value="@s">@s</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="4">
-            <MudSelect T="string" Label="Tags" SelectedValues="_selectedTags" SelectedValuesChanged="OnTagsChanged" MultiSelection="true">
-                @foreach (var t in _tagOptions)
-                {
-                    <MudSelectItem Value="@t">@t</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
         <MudItem xs="12">
             <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
         </MudItem>
@@ -80,17 +64,11 @@ else if (_roots != null)
 @code {
     private string _path = string.Empty;
     private string[] _backlogs = Array.Empty<string>();
-    private string[] _stateOptions = Array.Empty<string>();
-    private string[] _tagOptions = Array.Empty<string>();
-    private IEnumerable<string> _selectedStates = Array.Empty<string>();
-    private IEnumerable<string> _selectedTags = Array.Empty<string>();
     private bool _loading;
     private List<WorkItemNode>? _roots;
 
     protected override async Task OnInitializedAsync()
     {
-        _stateOptions = ConfigService.Config.States.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        _tagOptions = ConfigService.Config.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         _backlogs = await ApiService.GetBacklogsAsync();
         if (_backlogs.Length > 0)
             _path = _backlogs[0];
@@ -102,9 +80,7 @@ else if (_roots != null)
         StateHasChanged();
         try
         {
-            var state = _selectedStates.Any() ? string.Join(',', _selectedStates) : null;
-            var tags = _selectedTags.Any() ? string.Join(',', _selectedTags) : null;
-            _roots = await ApiService.GetWorkItemHierarchyAsync(_path, state, tags);
+            _roots = await ApiService.GetWorkItemHierarchyAsync(_path);
         }
         finally
         {
@@ -112,8 +88,6 @@ else if (_roots != null)
         }
     }
 
-    private void OnStatesChanged(IEnumerable<string> values) => _selectedStates = values;
-    private void OnTagsChanged(IEnumerable<string> values) => _selectedTags = values;
 
     private RenderFragment StatusIcon(WorkItemNode node) => builder =>
     {
