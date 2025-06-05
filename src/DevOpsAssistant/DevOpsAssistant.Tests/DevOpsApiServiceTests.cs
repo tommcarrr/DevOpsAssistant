@@ -66,37 +66,40 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
-    public void ComputeStatus_Leaf_Node_Always_Valid()
+    public void ComputeStatus_Leaf_Node_ExpectedState_Equals_Current()
     {
-        var node = new WorkItemNode { Info = new WorkItemInfo { State = "Done" } };
+        var node = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
 
         InvokeComputeStatus(node);
 
         Assert.True(node.StatusValid);
+        Assert.Equal("New", node.ExpectedState);
     }
 
     [Fact]
-    public void ComputeStatus_Done_Node_With_Incomplete_Children_Invalid()
+    public void ComputeStatus_Invalid_When_Child_Not_New()
     {
-        var root = new WorkItemNode { Info = new WorkItemInfo { State = "Done" } };
-        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Done" } });
+        var root = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
+        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "New" } });
         root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Active" } });
 
         InvokeComputeStatus(root);
 
         Assert.False(root.StatusValid);
+        Assert.Equal("Active", root.ExpectedState);
     }
 
     [Fact]
-    public void ComputeStatus_NotDone_Node_With_Mixed_Children_Valid()
+    public void ComputeStatus_Valid_When_All_Children_Closed()
     {
-        var root = new WorkItemNode { Info = new WorkItemInfo { State = "Active" } };
-        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Done" } });
-        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Active" } });
+        var root = new WorkItemNode { Info = new WorkItemInfo { State = "Closed" } };
+        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Closed" } });
+        root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Removed" } });
 
         InvokeComputeStatus(root);
 
         Assert.True(root.StatusValid);
+        Assert.Equal("Closed", root.ExpectedState);
     }
 
     [Fact]
