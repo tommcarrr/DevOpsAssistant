@@ -3,15 +3,17 @@
 @inject DevOpsConfigService ConfigService
 
 <MudDialog>
-    <DialogContent>
-        <MudTextField @bind-Value="_model.Organization" Label="Organization" />
-        <MudTextField @bind-Value="_model.Project" Label="Project" />
-        <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
-    </DialogContent>
-    <DialogActions>
+    <MudDialogContent Class="pa-4">
+        <MudStack Spacing="2">
+            <MudTextField @bind-Value="_model.Organization" Label="Organization" />
+            <MudTextField @bind-Value="_model.Project" Label="Project" />
+            <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" />
+        </MudStack>
+    </MudDialogContent>
+    <MudDialogActions Class="pa-4">
         <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
         <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
-    </DialogActions>
+    </MudDialogActions>
 </MudDialog>
 
 @code {
