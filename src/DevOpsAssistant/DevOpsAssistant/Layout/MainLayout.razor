@@ -5,15 +5,20 @@
 <MudThemeProvider />
 <MudDialogProvider />
 
-<MudAppBar Color="Color.Primary" Elevation="1">
-    <MudText Typo="Typo.h6">DevOpsAssistant</MudText>
-    <MudSpacer />
-    <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" />
-</MudAppBar>
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Fixed="true" Elevation="1">
+        <MudText Typo="Typo.h6">DevOpsAssistant</MudText>
+        <MudSpacer />
+        <MudNavLink Href="work-items" Icon="@Icons.Material.Filled.List" Class="mx-2">Work Items</MudNavLink>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" />
+    </MudAppBar>
 
-<div class="p-4">
-    @Body
-</div>
+    <MudMainContent>
+        <div class="p-4">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
 
 @code {
     private async Task OpenSettings()
