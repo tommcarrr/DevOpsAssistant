@@ -94,7 +94,8 @@ public class DevOpsApiService
         {
             "[Source].[System.TeamProject] = @project",
             $"[Source].[System.AreaPath] UNDER '{areaPath}'",
-            "[Source].[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')"
+            "[Source].[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')",
+            "[System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward'"
         };
         if (!string.IsNullOrWhiteSpace(state))
         {
