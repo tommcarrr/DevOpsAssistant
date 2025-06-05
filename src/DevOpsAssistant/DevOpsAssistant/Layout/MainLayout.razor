@@ -1,8 +1,9 @@
 @inherits LayoutComponentBase
 @using MudBlazor
 @inject IDialogService DialogService
+@inject DevOpsConfigService ConfigService
 
-<MudThemeProvider />
+<MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode" />
 <MudDialogProvider />
 <MudPopoverProvider />
 
@@ -41,6 +42,11 @@
 
     private async Task OpenSettings()
     {
-        await DialogService.ShowAsync<DevOpsAssistant.Components.SettingsDialog>("Settings");
+        var dialog = await DialogService.ShowAsync<DevOpsAssistant.Components.SettingsDialog>("Settings");
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            StateHasChanged();
+        }
     }
 }

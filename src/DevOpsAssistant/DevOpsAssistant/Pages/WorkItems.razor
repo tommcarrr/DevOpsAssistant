@@ -28,38 +28,39 @@
 else if (_roots != null)
 {
     <MudPaper Class="work-item-container">
-        <ul class="work-item-tree">
+        <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
         @foreach (var epic in _roots)
         {
-            <li class="@GetItemClass(epic.Info.WorkItemType)">
+            <MudListItem T="WorkItemNode" Class="@GetItemClass(epic.Info.WorkItemType)">
                 <MudLink Href="@epic.Info.Url" Target="_blank"><b>@epic.Info.Title</b></MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
                 @StatusIcon(epic) @SuggestedState(epic)
                 @if (epic.Children.Any())
                 {
-                    <ul>
+                    <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                         @foreach (var feature in epic.Children)
                         {
-                            <li class="@GetItemClass(feature.Info.WorkItemType)">
+                            <MudListItem T="WorkItemNode" Class="@GetItemClass(feature.Info.WorkItemType)">
                                 <MudLink Href="@feature.Info.Url" Target="_blank"><b>@feature.Info.Title</b></MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
                                 @StatusIcon(feature) @SuggestedState(feature)
                                 @if (feature.Children.Any())
                                 {
-                                    <ul>
+                                    <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                                         @foreach (var item in feature.Children)
                                         {
-                                            <li class="@GetItemClass(item.Info.WorkItemType)"><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                            <MudListItem T="WorkItemNode" Class="@GetItemClass(item.Info.WorkItemType)">
+                                                <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
                                                 @SuggestedState(item)
-                                            </li>
+                                            </MudListItem>
                                         }
-                                    </ul>
+                                    </MudList>
                                 }
-                            </li>
+                            </MudListItem>
                         }
-                    </ul>
+                    </MudList>
                 }
-            </li>
+            </MudListItem>
         }
-        </ul>
+        </MudList>
     </MudPaper>
 }
 
