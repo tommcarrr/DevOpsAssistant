@@ -6,8 +6,8 @@
 
 <MudPaper Class="p-4">
     <MudTextField @bind-Value="_path" Label="Area Path" />
-    <MudTextField @bind-Value="_state" Label="State Filter" />
-    <MudTextField @bind-Value="_tags" Label="Tags Filter" />
+    <MudTextField @bind-Value="_state" Label="State Filter" Placeholder="e.g., Active, Resolved" />
+    <MudTextField @bind-Value="_tags" Label="Tags Filter" Placeholder="Comma separated tags" />
     <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
 </MudPaper>
 
