@@ -41,13 +41,24 @@
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
-            Organization = ConfigService.Config.Organization,
-            Project = ConfigService.Config.Project,
-            PatToken = ConfigService.Config.PatToken,
-            DarkMode = ConfigService.Config.DarkMode,
-            Rules = ConfigService.Config.Rules
+            Organization = cfg.Organization,
+            Project = cfg.Project,
+            PatToken = cfg.PatToken,
+            DarkMode = cfg.DarkMode,
+            Rules = new ValidationRules
+            {
+                EpicHasDescription = cfg.Rules.EpicHasDescription,
+                FeatureHasDescription = cfg.Rules.FeatureHasDescription,
+                FeatureHasParent = cfg.Rules.FeatureHasParent,
+                StoryHasDescription = cfg.Rules.StoryHasDescription,
+                StoryHasParent = cfg.Rules.StoryHasParent,
+                StoryHasStoryPoints = cfg.Rules.StoryHasStoryPoints,
+                StoryHasAcceptanceCriteria = cfg.Rules.StoryHasAcceptanceCriteria,
+                StoryHasAssignee = cfg.Rules.StoryHasAssignee
+            }
         };
         StateHasChanged();
     }
