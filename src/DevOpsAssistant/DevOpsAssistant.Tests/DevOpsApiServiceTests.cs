@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DevOpsAssistant.Services;
 using Xunit;
@@ -25,6 +26,18 @@ public class DevOpsApiServiceTests
     {
         var method = typeof(DevOpsApiService).GetMethod("FilterClosedEpics", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (List<WorkItemNode>)method.Invoke(null, new object?[] { nodes })!;
+    }
+
+    private static string InvokeNormalizeAreaPath(string path)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("NormalizeAreaPath", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, new object?[] { path })!;
+    }
+
+    private static void InvokeExtractPaths(JsonElement el, List<string> list)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("ExtractPaths", BindingFlags.NonPublic | BindingFlags.Static)!;
+        method.Invoke(null, new object?[] { el, list });
     }
 
     [Fact]
@@ -122,5 +135,54 @@ public class DevOpsApiServiceTests
         var service = new DevOpsApiService(new HttpClient(), configService);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetWorkItemHierarchyAsync("Area"));
+    }
+
+    [Theory]
+    [InlineData("\\Project\\Area\\Dev", "Project\\Dev")]
+    [InlineData("Project\\Dev", "Project\\Dev")]
+    public void NormalizeAreaPath_Returns_Expected(string input, string expected)
+    {
+        var normalized = InvokeNormalizeAreaPath(input);
+
+        Assert.Equal(expected, normalized);
+    }
+
+    [Fact]
+    public void ExtractPaths_Collects_All_Paths()
+    {
+        var json = "{\"path\":\"A\",\"children\":[{\"path\":\"A\\\\B\"},{\"path\":\"A\\\\C\",\"children\":[{\"path\":\"A\\\\C\\\\D\"}]}]}";
+        var doc = JsonDocument.Parse(json);
+        var list = new List<string>();
+
+        InvokeExtractPaths(doc.RootElement, list);
+
+        Assert.Equal(4, list.Count);
+        Assert.Contains("A", list);
+        Assert.Contains("A\\B", list);
+        Assert.Contains("A\\C", list);
+        Assert.Contains("A\\C\\D", list);
+    }
+
+    [Fact]
+    public async Task GetBacklogsAsync_Returns_Normalized_Paths()
+    {
+        var classificationJson = "{\"children\":[{\"path\":\"Project\\\\Area\"},{\"path\":\"Project\\\\Area\\\\Sub\"}]}";
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent(classificationJson)
+            };
+            return response;
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Project", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        var result = await service.GetBacklogsAsync();
+
+        Assert.Equal(new[] { "Project", "Project\\Sub" }, result);
     }
 }
