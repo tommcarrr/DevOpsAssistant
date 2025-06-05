@@ -31,7 +31,7 @@ else if (_roots != null)
         <ul class="work-item-tree">
         @foreach (var epic in _roots)
         {
-            <li>
+            <li class="@GetItemClass(epic.Info.WorkItemType)">
                 <MudLink Href="@epic.Info.Url" Target="_blank"><b>@epic.Info.Title</b></MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
                 @StatusIcon(epic) @SuggestedState(epic)
                 @if (epic.Children.Any())
@@ -39,7 +39,7 @@ else if (_roots != null)
                     <ul>
                         @foreach (var feature in epic.Children)
                         {
-                            <li>
+                            <li class="@GetItemClass(feature.Info.WorkItemType)">
                                 <MudLink Href="@feature.Info.Url" Target="_blank"><b>@feature.Info.Title</b></MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
                                 @StatusIcon(feature) @SuggestedState(feature)
                                 @if (feature.Children.Any())
@@ -47,7 +47,7 @@ else if (_roots != null)
                                     <ul>
                                         @foreach (var item in feature.Children)
                                         {
-                                            <li><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                            <li class="@GetItemClass(item.Info.WorkItemType)"><MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
                                                 @SuggestedState(item)
                                             </li>
                                         }
@@ -111,5 +111,15 @@ else if (_roots != null)
             builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
             builder.CloseElement();
         }
+    };
+
+    private static string GetItemClass(string type) => type.ToLowerInvariant() switch
+    {
+        "epic" => "work-item-epic",
+        "feature" => "work-item-feature",
+        "user story" => "work-item-story",
+        "task" => "work-item-task",
+        "bug" => "work-item-bug",
+        _ => string.Empty
     };
 }
