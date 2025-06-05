@@ -1,10 +1,36 @@
 # DevOpsAssistant
 
-This project is a Blazor WebAssembly application. A Dockerfile and compose file are provided to run the app using Nginx. The HTTP service listens on port **5678**.
+DevOpsAssistant is a Blazor WebAssembly application used for viewing and updating Azure DevOps work items. Docker assets are included so the site can be run either directly with the .NET SDK or inside a container.
+
+## Running the site
+
+### Docker Compose (recommended)
+
+The repository contains a `Dockerfile` and `docker-compose.yml` for running the application behind Nginx. Build and start the container with:
 
 ```bash
-# Build and run with Docker Compose
 docker compose up --build
 ```
 
-The site will be available at [http://localhost:5678](http://localhost:5678).
+Once the container is running, browse to <http://localhost:5678>.
+
+### Using the `dotnet` CLI
+
+If you prefer to run the site without Docker you can use the .NET SDK. A helper script `dotnet-install.sh` is provided for installing the SDK on Linux. After installing, execute:
+
+```bash
+dotnet run --project src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj
+```
+
+The development server listens on <http://localhost:5000>.
+
+## Obtaining a PAT token
+
+The application communicates with Azure DevOps using a Personal Access Token (PAT). To create one:
+
+1. Sign in to <https://dev.azure.com/>.
+2. Open your user menu and choose **Personal access tokens**.
+3. Select **New Token**, provide a name and expiration and grant at least **Work Items (Read & write)** scope.
+4. Create the token and copy the value.
+
+Run the site and click the settings icon in the top right corner. Enter your organization, project and PAT token, then save. These values are stored in your browser's local storage.
