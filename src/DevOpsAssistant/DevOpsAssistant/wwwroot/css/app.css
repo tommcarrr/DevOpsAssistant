@@ -101,6 +101,12 @@ code {
     border-left: 1px solid var(--mud-palette-lines, #e0e0e0);
 }
 
+/* Styling for backlog selection area */
+.backlog-selector {
+    background-color: var(--mud-palette-background-grey, #f5f5f5);
+    padding: 1.5rem;
+}
+
 /* Colour coding similar to Azure DevOps */
 .work-item-epic {
     border-left: 3px solid #F7630C;
@@ -115,9 +121,9 @@ code {
 }
 
 .work-item-story {
-    border-left: 3px solid #207752;
+    border-left: 3px solid #0D6EFD;
     padding-left: 4px;
-    color: #207752;
+    color: #0D6EFD;
 }
 
 .work-item-task {
