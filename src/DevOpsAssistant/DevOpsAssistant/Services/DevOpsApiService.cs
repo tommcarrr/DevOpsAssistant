@@ -471,7 +471,7 @@ public class DevOpsApiService
             {
                 var idList = string.Join(',', chunk);
                 return _httpClient.GetFromJsonAsync<WorkItemsResult>(
-                    $"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate&api-version={ApiVersion}");
+                    $"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate,Microsoft.VSTS.Scheduling.StoryPoints,Microsoft.VSTS.Scheduling.OriginalEstimate&api-version={ApiVersion}");
             })
             .ToArray();
 
@@ -494,12 +494,21 @@ public class DevOpsApiService
                 ? ad.GetDateTime()
                 : created;
 
+            var storyPoints = w.Fields.TryGetValue("Microsoft.VSTS.Scheduling.StoryPoints", out var sp) && sp.ValueKind == JsonValueKind.Number
+                ? sp.GetDouble()
+                : 0;
+            var originalEstimate = w.Fields.TryGetValue("Microsoft.VSTS.Scheduling.OriginalEstimate", out var oe) && oe.ValueKind == JsonValueKind.Number
+                ? oe.GetDouble()
+                : 0;
+
             list.Add(new StoryMetric
             {
                 Id = w.Id,
                 CreatedDate = created,
                 ActivatedDate = activated,
-                ClosedDate = closed
+                ClosedDate = closed,
+                StoryPoints = storyPoints,
+                OriginalEstimate = originalEstimate
             });
         }
 

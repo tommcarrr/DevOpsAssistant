@@ -1,5 +1,8 @@
 @page "/metrics"
+@using System.Text
+@using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
+@inject IJSRuntime JS
 
 <PageTitle>Metrics</PageTitle>
 
@@ -29,7 +32,16 @@
             <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
         </MudItem>
         <MudItem xs="12" md="3">
-            <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
+            <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
+                <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
+                <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudStack Row="true" Spacing="1">
+                <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
+            </MudStack>
         </MudItem>
     </MudGrid>
 </MudPaper>
@@ -46,12 +58,14 @@ else if (_periods.Any())
             <MudTh>Avg Lead Time (days)</MudTh>
             <MudTh>Avg Cycle Time (days)</MudTh>
             <MudTh>Throughput</MudTh>
+            <MudTh>Velocity</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Period">@context.End.ToString("yyyy-MM-dd")</MudTd>
             <MudTd DataLabel="Lead">@context.AvgLeadTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
+            <MudTd DataLabel="Velocity">@context.Velocity.ToString("0.0")</MudTd>
         </RowTemplate>
     </MudTable>
 
@@ -59,7 +73,7 @@ else if (_periods.Any())
         <MudChart ChartType="ChartType.Line" ChartSeries="_leadCycleSeries" XAxisLabels="_xAxisLabels" Height="300" />
     </MudPaper>
     <MudPaper Class="pa-2 mt-4">
-        <MudChart ChartType="ChartType.Bar" ChartSeries="_throughputSeries" XAxisLabels="_xAxisLabels" Height="300" />
+        <MudChart ChartType="ChartType.Bar" ChartSeries="_barSeries" XAxisLabels="_xAxisLabels" Height="300" />
     </MudPaper>
 }
 
@@ -68,12 +82,13 @@ else if (_periods.Any())
     private string[] _backlogs = [];
     private bool _loading;
     private AggregateMode _mode = AggregateMode.Week;
+    private VelocityMode _velocityMode = VelocityMode.StoryPoints;
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
     private List<PeriodMetrics> _periods = new();
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
-    private List<ChartSeries> _throughputSeries = [];
+    private List<ChartSeries> _barSeries = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,7 +130,8 @@ else if (_periods.Any())
                 End = next.AddDays(-1),
                 Throughput = rangeItems.Count,
                 AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
-                AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0
+                AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
+                Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
             };
             _periods.Add(metrics);
             start = next;
@@ -127,15 +143,33 @@ else if (_periods.Any())
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
+        var velocity = _periods.Select(p => p.Velocity).ToArray();
         _leadCycleSeries =
         [
             new ChartSeries { Name = "Lead Time", Data = lead },
             new ChartSeries { Name = "Cycle Time", Data = cycle }
         ];
-        _throughputSeries =
+        _barSeries =
         [
-            new ChartSeries { Name = "Throughput", Data = throughput }
+            new ChartSeries { Name = "Throughput", Data = throughput },
+            new ChartSeries { Name = "Velocity", Data = velocity }
         ];
+    }
+
+    private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity");
+        foreach (var p in periods)
+            sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
+        return sb.ToString();
+    }
+
+    private async Task ExportCsv()
+    {
+        if (_periods.Count == 0) return;
+        var csv = BuildCsv(_periods);
+        await JS.InvokeVoidAsync("downloadCsv", "metrics.csv", csv);
     }
 
     private static DateTime StartOfWeek(DateTime dt)
@@ -151,5 +185,6 @@ else if (_periods.Any())
         public double AvgLeadTime { get; set; }
         public double AvgCycleTime { get; set; }
         public int Throughput { get; set; }
+        public double Velocity { get; set; }
     }
 }
