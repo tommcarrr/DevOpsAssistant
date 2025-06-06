@@ -134,7 +134,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
         var sb = new StringBuilder();
 
-        sb.AppendLine("You are a highly meticulous assistant. Your task is to generate a structured Word document based on the following instructions. Before producing any output, you must reflect on each requirement and confirm how you will meet it. Do not proceed until you have done so.");
+        sb.AppendLine("You are a highly meticulous Delivery Manager. Your task is to generate a structured Word document based on the following instructions. Before producing any output, you must reflect on each requirement and confirm how you will meet it. Do not proceed until you have done so.");
         sb.AppendLine();
         sb.AppendLine("Document Purpose:");
         sb.AppendLine("- Create a Word document that includes:");
@@ -164,7 +164,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         sb.AppendLine();
         sb.AppendLine("Reflection Step (Mandatory Before Output):");
         sb.AppendLine("- For each checklist item above, explain how you will fulfill it.");
-        sb.AppendLine("- If any item is ambiguous or incomplete, ask for clarification.");
+        sb.AppendLine("- If any item is ambiguous or incomplete or requires further context, ask for clarification.");
         sb.AppendLine("- Only proceed once you have confirmed that all requirements are understood and feasible.");
 
         sb.AppendLine();
