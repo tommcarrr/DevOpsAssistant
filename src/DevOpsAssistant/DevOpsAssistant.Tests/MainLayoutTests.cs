@@ -1,10 +1,8 @@
 using Bunit;
 using DevOpsAssistant.Layout;
-using MudBlazor.Services;
 using DevOpsAssistant.Services;
-using DevOpsAssistant.Tests;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using MudBlazor.Services;
 
 namespace DevOpsAssistant.Tests;
 

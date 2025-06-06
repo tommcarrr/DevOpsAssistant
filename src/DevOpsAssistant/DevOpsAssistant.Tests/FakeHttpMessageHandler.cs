@@ -1,8 +1,3 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace DevOpsAssistant.Tests;
 
 public class FakeHttpMessageHandler : HttpMessageHandler
@@ -14,7 +9,8 @@ public class FakeHttpMessageHandler : HttpMessageHandler
         _handler = handler;
     }
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         return Task.FromResult(_handler(request));
     }

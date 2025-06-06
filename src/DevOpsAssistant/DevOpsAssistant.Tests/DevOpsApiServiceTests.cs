@@ -1,10 +1,7 @@
-using System;
-using System.Net.Http;
+using System.Net;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading.Tasks;
 using DevOpsAssistant.Services;
-using Xunit;
 
 namespace DevOpsAssistant.Tests;
 
@@ -18,7 +15,8 @@ public class DevOpsApiServiceTests
 
     private static string InvokeBuildValidationWiql(string area)
     {
-        var method = typeof(DevOpsApiService).GetMethod("BuildValidationWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method =
+            typeof(DevOpsApiService).GetMethod("BuildValidationWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (string)method.Invoke(null, new object?[] { area })!;
     }
 
@@ -30,13 +28,15 @@ public class DevOpsApiServiceTests
 
     private static List<WorkItemNode> InvokeFilterClosedEpics(List<WorkItemNode> nodes)
     {
-        var method = typeof(DevOpsApiService).GetMethod("FilterClosedEpics", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method =
+            typeof(DevOpsApiService).GetMethod("FilterClosedEpics", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (List<WorkItemNode>)method.Invoke(null, new object?[] { nodes })!;
     }
 
     private static string InvokeNormalizeAreaPath(string path)
     {
-        var method = typeof(DevOpsApiService).GetMethod("NormalizeAreaPath", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method =
+            typeof(DevOpsApiService).GetMethod("NormalizeAreaPath", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (string)method.Invoke(null, new object?[] { path })!;
     }
 
@@ -48,7 +48,8 @@ public class DevOpsApiServiceTests
 
     private static string InvokeBuildStorySearchWiql(string term)
     {
-        var method = typeof(DevOpsApiService).GetMethod("BuildStorySearchWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method =
+            typeof(DevOpsApiService).GetMethod("BuildStorySearchWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (string)method.Invoke(null, new object?[] { term })!;
     }
 
@@ -182,7 +183,8 @@ public class DevOpsApiServiceTests
     [Fact]
     public void ExtractPaths_Collects_All_Paths()
     {
-        var json = "{\"path\":\"A\",\"children\":[{\"path\":\"A\\\\B\"},{\"path\":\"A\\\\C\",\"children\":[{\"path\":\"A\\\\C\\\\D\"}]}]}";
+        var json =
+            "{\"path\":\"A\",\"children\":[{\"path\":\"A\\\\B\"},{\"path\":\"A\\\\C\",\"children\":[{\"path\":\"A\\\\C\\\\D\"}]}]}";
         var doc = JsonDocument.Parse(json);
         var list = new List<string>();
 
@@ -198,10 +200,11 @@ public class DevOpsApiServiceTests
     [Fact]
     public async Task GetBacklogsAsync_Returns_Normalized_Paths()
     {
-        var classificationJson = "{\"children\":[{\"path\":\"Project\\\\Area\"},{\"path\":\"Project\\\\Area\\\\Sub\"}]}";
+        var classificationJson =
+            "{\"children\":[{\"path\":\"Project\\\\Area\"},{\"path\":\"Project\\\\Area\\\\Sub\"}]}";
         var handler = new FakeHttpMessageHandler(_ =>
         {
-            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(classificationJson)
             };
@@ -210,7 +213,8 @@ public class DevOpsApiServiceTests
         var client = new HttpClient(handler);
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
-        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Project", PatToken = "token" });
+        await configService.SaveAsync(
+            new DevOpsConfig { Organization = "Org", Project = "Project", PatToken = "token" });
         var service = new DevOpsApiService(client, configService);
 
         var result = await service.GetBacklogsAsync();
@@ -225,7 +229,7 @@ public class DevOpsApiServiceTests
         var handler = new FakeHttpMessageHandler(req =>
         {
             captured = req;
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("{}")
             };
@@ -240,7 +244,8 @@ public class DevOpsApiServiceTests
 
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Patch, captured!.Method);
-        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0", captured.RequestUri.ToString());
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0",
+            captured.RequestUri.ToString());
         var body = await captured.Content!.ReadAsStringAsync();
         Assert.Contains("\"Active\"", body);
     }

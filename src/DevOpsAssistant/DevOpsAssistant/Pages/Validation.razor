@@ -1,5 +1,4 @@
 @page "/validation"
-@using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 
@@ -23,7 +22,7 @@
 
 @if (_loading)
 {
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 }
 else if (_results != null)
 {
@@ -39,7 +38,7 @@ else if (_results != null)
                 {
                     <MudListItem T="ResultItem">
                         <MudLink Href="@r.Info.Url" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
-                        <br />
+                        <br/>
                         <span class="text-secondary">@string.Join(", ", r.Violations)</span>
                     </MudListItem>
                 }
@@ -100,9 +99,11 @@ else if (_results != null)
                 if (rules.StoryHasAcceptanceCriteria && !item.HasAcceptanceCriteria) v.Add("Missing acceptance criteria");
                 if (rules.StoryHasAssignee && !item.HasAssignee) v.Add("Unassigned");
             }
+
             if (v.Count > 0)
                 list.Add(new ResultItem { Info = item.Info, Violations = v });
         }
+
         return list;
     }
 
@@ -111,4 +112,5 @@ else if (_results != null)
         public WorkItemInfo Info { get; set; } = new();
         public List<string> Violations { get; set; } = new();
     }
+
 }

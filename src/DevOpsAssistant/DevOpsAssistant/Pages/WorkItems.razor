@@ -1,5 +1,4 @@
 @page "/epics-features"
-@using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 
@@ -23,43 +22,47 @@
 
 @if (_loading)
 {
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 }
 else if (_roots != null)
 {
     <MudPaper Class="work-item-container">
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
-        @foreach (var epic in _roots)
-        {
-            <MudListItem T="WorkItemNode" Class="@GetItemClass(epic.Info.WorkItemType)">
-                <MudLink Href="@epic.Info.Url" Target="_blank"><b>@epic.Info.Title</b></MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
-                @StatusIcon(epic) @SuggestedState(epic)
-                @if (epic.Children.Any())
-                {
-                    <MudList T="WorkItemNode" Dense="true" Class="ms-4">
-                        @foreach (var feature in epic.Children)
-                        {
-                            <MudListItem T="WorkItemNode" Class="@GetItemClass(feature.Info.WorkItemType)">
-                                <MudLink Href="@feature.Info.Url" Target="_blank"><b>@feature.Info.Title</b></MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
-                                @StatusIcon(feature) @SuggestedState(feature)
-                                @if (feature.Children.Any())
-                                {
-                                    <MudList T="WorkItemNode" Dense="true" Class="ms-4">
-                                        @foreach (var item in feature.Children)
-                                        {
-                                            <MudListItem T="WorkItemNode" Class="@GetItemClass(item.Info.WorkItemType)">
-                                                <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
-                                                @SuggestedState(item)
-                                            </MudListItem>
-                                        }
-                                    </MudList>
-                                }
-                            </MudListItem>
-                        }
-                    </MudList>
-                }
-            </MudListItem>
-        }
+            @foreach (var epic in _roots)
+            {
+                <MudListItem T="WorkItemNode" Class="@GetItemClass(epic.Info.WorkItemType)">
+                    <MudLink Href="@epic.Info.Url" Target="_blank">
+                        <b>@epic.Info.Title</b>
+                    </MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
+                    @StatusIcon(epic) @SuggestedState(epic)
+                    @if (epic.Children.Any())
+                    {
+                        <MudList T="WorkItemNode" Dense="true" Class="ms-4">
+                            @foreach (var feature in epic.Children)
+                            {
+                                <MudListItem T="WorkItemNode" Class="@GetItemClass(feature.Info.WorkItemType)">
+                                    <MudLink Href="@feature.Info.Url" Target="_blank">
+                                        <b>@feature.Info.Title</b>
+                                    </MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
+                                    @StatusIcon(feature) @SuggestedState(feature)
+                                    @if (feature.Children.Any())
+                                    {
+                                        <MudList T="WorkItemNode" Dense="true" Class="ms-4">
+                                            @foreach (var item in feature.Children)
+                                            {
+                                                <MudListItem T="WorkItemNode" Class="@GetItemClass(item.Info.WorkItemType)">
+                                                    <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                                    @SuggestedState(item)
+                                                </MudListItem>
+                                            }
+                                        </MudList>
+                                    }
+                                </MudListItem>
+                            }
+                        </MudList>
+                    }
+                </MudListItem>
+            }
         </MudList>
     </MudPaper>
 }
@@ -92,34 +95,40 @@ else if (_roots != null)
     }
 
 
-    private RenderFragment StatusIcon(WorkItemNode node) => builder =>
+    private RenderFragment StatusIcon(WorkItemNode node)
     {
-        if (!node.StatusValid)
+        return builder =>
         {
-            builder.OpenComponent<MudIcon>(0);
-            builder.AddAttribute(1, "Color", Color.Warning);
-            builder.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
-            builder.CloseComponent();
-        }
-    };
+            if (!node.StatusValid)
+            {
+                builder.OpenComponent<MudIcon>(0);
+                builder.AddAttribute(1, "Color", Color.Warning);
+                builder.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
+                builder.CloseComponent();
+            }
+        };
+    }
 
-    private RenderFragment SuggestedState(WorkItemNode node) => builder =>
+    private RenderFragment SuggestedState(WorkItemNode node)
     {
-        if (!node.StatusValid)
+        return builder =>
         {
-            builder.OpenElement(0, "span");
-            builder.AddAttribute(1, "class", "ms-1 text-secondary");
-            builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
-            builder.CloseElement();
-            builder.AddMarkupContent(3, "&nbsp;");
-            builder.OpenComponent<MudButton>(4);
-            builder.AddAttribute(5, "Variant", Variant.Text);
-            builder.AddAttribute(6, "Size", Size.Small);
-            builder.AddAttribute(7, "OnClick", EventCallback.Factory.Create<MouseEventArgs>(this, () => UpdateState(node)));
-            builder.AddAttribute(8, "ChildContent", (RenderFragment)(b => b.AddContent(0, "Update")));
-            builder.CloseComponent();
-        }
-    };
+            if (!node.StatusValid)
+            {
+                builder.OpenElement(0, "span");
+                builder.AddAttribute(1, "class", "ms-1 text-secondary");
+                builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
+                builder.CloseElement();
+                builder.AddMarkupContent(3, "&nbsp;");
+                builder.OpenComponent<MudButton>(4);
+                builder.AddAttribute(5, "Variant", Variant.Text);
+                builder.AddAttribute(6, "Size", Size.Small);
+                builder.AddAttribute(7, "OnClick", EventCallback.Factory.Create<MouseEventArgs>(this, () => UpdateState(node)));
+                builder.AddAttribute(8, "ChildContent", (RenderFragment)(b => b.AddContent(0, "Update")));
+                builder.CloseComponent();
+            }
+        };
+    }
 
     private async Task UpdateState(WorkItemNode node)
     {
@@ -144,6 +153,7 @@ else if (_roots != null)
             if (Contains(r, node.Info.Id))
                 return r;
         }
+
         return null;
     }
 
@@ -156,6 +166,7 @@ else if (_roots != null)
             if (Contains(child, id))
                 return true;
         }
+
         return false;
     }
 
@@ -171,12 +182,12 @@ else if (_roots != null)
             return;
         }
 
-        bool allClosed = node.Children.All(c =>
+        var allClosed = node.Children.All(c =>
             c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
             c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
             c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
 
-        bool anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
+        var anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
 
         var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
 
@@ -184,13 +195,17 @@ else if (_roots != null)
         node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string GetItemClass(string type) => type.ToLowerInvariant() switch
+    private static string GetItemClass(string type)
     {
-        "epic" => "work-item-epic",
-        "feature" => "work-item-feature",
-        "user story" => "work-item-story",
-        "task" => "work-item-task",
-        "bug" => "work-item-bug",
-        _ => string.Empty
-    };
+        return type.ToLowerInvariant() switch
+        {
+            "epic" => "work-item-epic",
+            "feature" => "work-item-feature",
+            "user story" => "work-item-story",
+            "task" => "work-item-task",
+            "bug" => "work-item-bug",
+            _ => string.Empty
+        };
+    }
+
 }

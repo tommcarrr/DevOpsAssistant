@@ -1,9 +1,9 @@
+using Blazored.LocalStorage;
+using DevOpsAssistant;
+using DevOpsAssistant.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using DevOpsAssistant;
 using MudBlazor.Services;
-using Blazored.LocalStorage;
-using DevOpsAssistant.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

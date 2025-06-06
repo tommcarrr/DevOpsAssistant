@@ -8,9 +8,18 @@ public class WorkItemInfo : IEquatable<WorkItemInfo>
     public string WorkItemType { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
 
-    public bool Equals(WorkItemInfo? other) => other != null && other.Id == Id;
+    public bool Equals(WorkItemInfo? other)
+    {
+        return other != null && other.Id == Id;
+    }
 
-    public override bool Equals(object? obj) => obj is WorkItemInfo wi && Equals(wi);
+    public override bool Equals(object? obj)
+    {
+        return obj is WorkItemInfo wi && Equals(wi);
+    }
 
-    public override int GetHashCode() => Id.GetHashCode();
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
 }

@@ -1,10 +1,9 @@
+using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Services;
-using MudBlazor.Services;
-using MudBlazor;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using MudBlazor.Services;
 
 namespace DevOpsAssistant.Tests;
 
@@ -21,7 +20,7 @@ public class SettingsDialogTests : TestContext
         Services.AddSingleton(configService);
 
         var cut = RenderComponent<SettingsDialog>();
-        var modelField = cut.Instance.GetType().GetField("_model", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var modelField = cut.Instance.GetType().GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var model = (DevOpsConfig)modelField.GetValue(cut.Instance)!;
 
         Assert.Equal("Org", model.Organization);

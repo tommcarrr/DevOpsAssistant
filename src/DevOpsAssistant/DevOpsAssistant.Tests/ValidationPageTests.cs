@@ -1,20 +1,35 @@
 using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
-using MudBlazor.Services;
-using MudBlazor;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
+using MudBlazor.Services;
 
 namespace DevOpsAssistant.Tests;
 
 public class ValidationPageTests : TestContext
 {
+    [Fact]
+    public void Validation_Renders_With_PopoverProvider()
+    {
+        Services.AddMudServices();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        Services.AddSingleton(new DevOpsConfigService(new FakeLocalStorageService()));
+        Services.AddSingleton<DevOpsApiService>(sp =>
+            new DevOpsApiService(new HttpClient(), sp.GetRequiredService<DevOpsConfigService>()));
+
+        var exception = Record.Exception(() => RenderComponent<Wrapper>());
+        Assert.Null(exception);
+    }
+
     private class TestPage : Validation
     {
-        protected override Task OnInitializedAsync() => Task.CompletedTask;
+        protected override Task OnInitializedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 
     private class Wrapper : ComponentBase
@@ -26,17 +41,5 @@ public class ValidationPageTests : TestContext
             builder.OpenComponent<TestPage>(1);
             builder.CloseComponent();
         }
-    }
-
-    [Fact]
-    public void Validation_Renders_With_PopoverProvider()
-    {
-        Services.AddMudServices();
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        Services.AddSingleton(new DevOpsConfigService(new FakeLocalStorageService()));
-        Services.AddSingleton<DevOpsApiService>(sp => new DevOpsApiService(new HttpClient(), sp.GetRequiredService<DevOpsConfigService>()));
-
-        var exception = Record.Exception(() => RenderComponent<Wrapper>());
-        Assert.Null(exception);
     }
 }

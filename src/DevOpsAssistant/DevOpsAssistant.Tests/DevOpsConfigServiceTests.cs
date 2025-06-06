@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using DevOpsAssistant.Services;
-using Xunit;
 
 namespace DevOpsAssistant.Tests;
 
@@ -35,7 +33,11 @@ public class DevOpsConfigServiceTests
     public async Task LoadAsync_Loads_Config_When_Present()
     {
         var storage = new FakeLocalStorageService();
-        var stored = new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "Token", DarkMode = true, Rules = new ValidationRules { EpicHasDescription = true } };
+        var stored = new DevOpsConfig
+        {
+            Organization = "Org", Project = "Proj", PatToken = "Token", DarkMode = true,
+            Rules = new ValidationRules { EpicHasDescription = true }
+        };
         await storage.SetItemAsync("devops-config", stored);
         var service = new DevOpsConfigService(storage);
 

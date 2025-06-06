@@ -1,6 +1,6 @@
 @page "/release-notes"
-@using DevOpsAssistant.Services
-@using Microsoft.JSInterop
+@using System.Text
+@using System.Text.Json
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 
@@ -12,7 +12,7 @@
                      SearchFunc="SearchStories"
                      ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
                      Value="_searchValue"
-                     ValueChanged="OnStorySelected" />
+                     ValueChanged="OnStorySelected"/>
     <MudButton Class="mt-2" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
 </MudPaper>
 
@@ -31,7 +31,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
                                Size="Size.Small"
-                               OnClick="(() => Remove(context))" />
+                               OnClick="() => Remove(context)"/>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -39,7 +39,7 @@
 
 @if (_loading)
 {
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 }
 else if (!string.IsNullOrWhiteSpace(_prompt))
 {
@@ -48,13 +48,15 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             <MudText Class="white-space-pre-line">@_prompt</MudText>
             <MudButton Variant="Variant.Text"
                        StartIcon="@Icons.Material.Filled.ContentCopy"
-                       OnClick="CopyPrompt">Copy</MudButton>
+                       OnClick="CopyPrompt">
+                Copy
+            </MudButton>
         </MudStack>
     </MudPaper>
 }
 
 @code {
-    private HashSet<WorkItemInfo> _selectedStories = new();
+    private readonly HashSet<WorkItemInfo> _selectedStories = new();
     private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;
@@ -109,19 +111,34 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             Epic = d.Epic == null ? null : new { d.Epic.Id, d.Epic.Title },
             Feature = d.Feature == null ? null : new { d.Feature.Id, d.Feature.Title },
-            Story = new { d.Story.Id, d.Story.Title, Description = d.Description }
+            Story = new { d.Story.Id, d.Story.Title, d.Description }
         });
 
-        var json = System.Text.Json.JsonSerializer.Serialize(
+        var json = JsonSerializer.Serialize(
             hierarchy,
-            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            new JsonSerializerOptions { WriteIndented = true });
 
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("Generate release notes and change control details using the following work item hierarchy.");
-        sb.AppendLine("Group stories under their related features and epics when present and summarize each story.");
+        var sb = new StringBuilder();
+
+        sb.AppendLine("Generate a Word document containing release notes and change control details based on the following work item hierarchy.");
+        sb.AppendLine();
+        sb.AppendLine("For the release notes, include:");
+        sb.AppendLine("- A high-level summary in plain, non-technical language.");
+        sb.AppendLine("- Group stories under their related features and epics.");
+        sb.AppendLine("- For each story, write a short summary in non-technical language that explains the purpose and value of the change in a way that would make sense to a general audience at a software company.");
+        sb.AppendLine("  Do not copy or paraphrase the story description. Use context from the feature and epic to help explain the story’s intent and benefit.");
+        sb.AppendLine();
+        sb.AppendLine("For the change control details, include:");
+        sb.AppendLine("- A high-level summary in plain language.");
+        sb.AppendLine("- A list of all stories with their IDs and titles.");
+        sb.AppendLine("- A section highlighting any potential risks.");
+        sb.AppendLine();
+        sb.AppendLine("Please return the result as a downloadable Word document.");
+
         sb.AppendLine();
         sb.AppendLine("Work items:");
         sb.AppendLine(json);
         return sb.ToString();
     }
+
 }

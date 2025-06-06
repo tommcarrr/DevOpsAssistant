@@ -1,7 +1,6 @@
 using Bunit;
 using DevOpsAssistant.Pages;
 using MudBlazor.Services;
-using Xunit;
 
 namespace DevOpsAssistant.Tests;
 

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Blazored.LocalStorage;
 
 namespace DevOpsAssistant.Tests;
@@ -21,15 +17,18 @@ public class FakeLocalStorageService : ILocalStorageService
     }
 
     public ValueTask<bool> ContainKeyAsync(string key, CancellationToken cancellationToken = default)
-        => new(_store.ContainsKey(key));
+    {
+        return new ValueTask<bool>(_store.ContainsKey(key));
+    }
 
     public ValueTask<T> GetItemAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         if (_store.TryGetValue(key, out var json))
         {
-            var value = System.Text.Json.JsonSerializer.Deserialize<T>(json!);
+            var value = JsonSerializer.Deserialize<T>(json!);
             return new ValueTask<T>(value!);
         }
+
         return new ValueTask<T>(default(T)!);
     }
 
@@ -40,13 +39,19 @@ public class FakeLocalStorageService : ILocalStorageService
     }
 
     public ValueTask<string> KeyAsync(int index, CancellationToken cancellationToken = default)
-        => new(_store.Keys.ElementAt(index));
+    {
+        return new ValueTask<string>(_store.Keys.ElementAt(index));
+    }
 
     public ValueTask<IEnumerable<string>> KeysAsync(CancellationToken cancellationToken = default)
-        => new(_store.Keys.AsEnumerable());
+    {
+        return new ValueTask<IEnumerable<string>>(_store.Keys.AsEnumerable());
+    }
 
     public ValueTask<int> LengthAsync(CancellationToken cancellationToken = default)
-        => new(_store.Count);
+    {
+        return new ValueTask<int>(_store.Count);
+    }
 
     public ValueTask RemoveItemAsync(string key, CancellationToken cancellationToken = default)
     {
@@ -56,16 +61,13 @@ public class FakeLocalStorageService : ILocalStorageService
 
     public ValueTask RemoveItemsAsync(IEnumerable<string> keys, CancellationToken cancellationToken = default)
     {
-        foreach (var key in keys)
-        {
-            _store.Remove(key);
-        }
+        foreach (var key in keys) _store.Remove(key);
         return ValueTask.CompletedTask;
     }
 
     public ValueTask SetItemAsync<T>(string key, T data, CancellationToken cancellationToken = default)
     {
-        _store[key] = System.Text.Json.JsonSerializer.Serialize(data);
+        _store[key] = JsonSerializer.Serialize(data);
         return ValueTask.CompletedTask;
     }
 
