@@ -105,19 +105,23 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
     private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details)
     {
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("Create release notes and change control details for the following stories:");
-        foreach (var item in details)
+        var hierarchy = details.Select(d => new
         {
-            sb.AppendLine();
-            sb.AppendLine($"Story {item.Story.Id}: {item.Story.Title}");
-            if (!string.IsNullOrWhiteSpace(item.Description))
-                sb.AppendLine(item.Description);
-            if (item.Feature != null)
-                sb.AppendLine($"Feature {item.Feature.Id}: {item.Feature.Title}");
-            if (item.Epic != null)
-                sb.AppendLine($"Epic {item.Epic.Id}: {item.Epic.Title}");
-        }
+            Epic = d.Epic == null ? null : new { d.Epic.Id, d.Epic.Title },
+            Feature = d.Feature == null ? null : new { d.Feature.Id, d.Feature.Title },
+            Story = new { d.Story.Id, d.Story.Title, Description = d.Description }
+        });
+
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            hierarchy,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("Generate release notes and change control details using the following work item hierarchy.");
+        sb.AppendLine("Group stories under their related features and epics when present and summarize each story.");
+        sb.AppendLine();
+        sb.AppendLine("Work items:");
+        sb.AppendLine(json);
         return sb.ToString();
     }
 }
