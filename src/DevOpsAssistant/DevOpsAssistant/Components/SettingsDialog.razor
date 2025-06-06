@@ -14,22 +14,22 @@
             <MudTabPanel Text="Validation Rules">
                 <MudStack Spacing="1">
                     <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.EpicHasDescription" Label="Epic has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.EpicHasDescription" Label="Has description"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">Feature</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasDescription" Label="Feature has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasParent" Label="Feature has parent"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasDescription" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasParent" Label="Has parent"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">User Story</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasDescription" Label="Story has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasParent" Label="Story has parent"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasStoryPoints" Label="Story has story points"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAcceptanceCriteria" Label="Story has acceptance criteria"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAssignee" Label="Story has assignee"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasDescription" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasParent" Label="Has parent"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasStoryPoints" Label="Has story points"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAcceptanceCriteria" Label="Has acceptance criteria"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAssignee" Label="Has assignee"/>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
