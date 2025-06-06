@@ -32,8 +32,8 @@ else if (_roots != null)
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
             @foreach (var epic in _roots)
             {
-                <MudListItem T="WorkItemNode" Class="@GetItemClass(epic.Info.WorkItemType)">
-                    <MudLink Href="@epic.Info.Url" Target="_blank">
+                <MudListItem T="WorkItemNode">
+                    <MudLink Href="@epic.Info.Url" Class="@GetItemClass(epic.Info.WorkItemType)" Target="_blank">
                         <b>@epic.Info.Title</b>
                     </MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
                     @StatusIcon(epic) @SuggestedState(epic)
@@ -42,8 +42,8 @@ else if (_roots != null)
                         <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                             @foreach (var feature in epic.Children)
                             {
-                                <MudListItem T="WorkItemNode" Class="@GetItemClass(feature.Info.WorkItemType)">
-                                    <MudLink Href="@feature.Info.Url" Target="_blank">
+                                <MudListItem T="WorkItemNode">
+                                    <MudLink Href="@feature.Info.Url" Class="@GetItemClass(feature.Info.WorkItemType)" Target="_blank">
                                         <b>@feature.Info.Title</b>
                                     </MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
                                     @StatusIcon(feature) @SuggestedState(feature)
@@ -52,8 +52,8 @@ else if (_roots != null)
                                         <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                                             @foreach (var item in feature.Children)
                                             {
-                                                <MudListItem T="WorkItemNode" Class="@GetItemClass(item.Info.WorkItemType)">
-                                                    <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                                <MudListItem T="WorkItemNode">
+                                                    <MudLink Href="@item.Info.Url" Class="@GetItemClass(item.Info.WorkItemType)" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
                                                     @SuggestedState(item)
                                                 </MudListItem>
                                             }
@@ -125,6 +125,7 @@ else if (_roots != null)
                 builder.OpenComponent<MudButton>(4);
                 builder.AddAttribute(5, "Variant", Variant.Text);
                 builder.AddAttribute(6, "Size", Size.Small);
+                builder.AddAttribute(6, "Color", Color.Primary);
                 builder.AddAttribute(7, "OnClick", EventCallback.Factory.Create<MouseEventArgs>(this, () => UpdateState(node)));
                 builder.AddAttribute(8, "ChildContent", (RenderFragment)(b => b.AddContent(0, "Update")));
                 builder.CloseComponent();

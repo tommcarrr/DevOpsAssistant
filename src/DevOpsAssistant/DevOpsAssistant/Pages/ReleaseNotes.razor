@@ -1,7 +1,7 @@
 @page "/release-notes"
+@using System.Net
 @using System.Text
 @using System.Text.Json
-@using System.Net
 @using System.Text.RegularExpressions
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
@@ -59,7 +59,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                           Text="@_prompt"
                           Lines="10"
                           ReadOnly="true"
-                          Class="w-100" />
+                          Class="w-100"/>
             <MudButton Variant="Variant.Text"
                        StartIcon="@Icons.Material.Filled.ContentCopy"
                        OnClick="CopyPrompt">
@@ -134,30 +134,39 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
         var sb = new StringBuilder();
 
+        sb.AppendLine("You are a highly meticulous assistant. Your task is to generate a structured Word document based on the following instructions. Before producing any output, you must reflect on each requirement and confirm how you will meet it. Do not proceed until you have done so.");
+        sb.AppendLine();
+        sb.AppendLine("Document Purpose:");
+        sb.AppendLine("- Create a Word document that includes:");
+        sb.AppendLine("  - Release Notes: Clear, plain-language summaries of software changes.");
+        sb.AppendLine("  - Change Control Details: A high-level summary, list of stories, and potential risks.");
+        sb.AppendLine();
+        sb.AppendLine("Checklist of Requirements:");
+        sb.AppendLine("1. Audience Awareness");
+        sb.AppendLine("   - Write for a general audience, including non-technical stakeholders.");
+        sb.AppendLine();
+        sb.AppendLine("2. Release Notes Section");
+        sb.AppendLine("   - Write a high-level summary of all stories in 1–2 paragraphs.");
+        sb.AppendLine("   - Group stories under their respective Features and Epics.");
+        sb.AppendLine("   - For each story:");
+        sb.AppendLine("     - Write a new summary in plain, non-technical language.");
+        sb.AppendLine("     - Do NOT copy or paraphrase the original description.");
+        sb.AppendLine("     - Use the context of the Feature and Epic to explain the story’s purpose and value.");
+        sb.AppendLine();
+        sb.AppendLine("3. Change Control Section");
+        sb.AppendLine("   - Write a high-level summary of all stories in 1–2 paragraphs.");
+        sb.AppendLine("   - Include a list of all stories with their IDs and titles.");
+        sb.AppendLine("   - Highlight any potential risks associated with the changes.");
+        sb.AppendLine();
+        sb.AppendLine("4. Formatting");
+        sb.AppendLine("   - Use clear headings for each Epic, Feature, and Story.");
+        sb.AppendLine("   - Use bullet points or paragraphs as appropriate for readability.");
+        sb.AppendLine();
+        sb.AppendLine("Reflection Step (Mandatory Before Output):");
+        sb.AppendLine("- For each checklist item above, explain how you will fulfill it.");
+        sb.AppendLine("- If any item is ambiguous or incomplete, ask for clarification.");
+        sb.AppendLine("- Only proceed once you have confirmed that all requirements are understood and feasible.");
 
-
-        sb.AppendLine("**Goal:**");
-        sb.AppendLine("Generate a comprehensive Word document containing release notes and change control details based on the provided work item hierarchy.");
-        sb.AppendLine();
-        sb.AppendLine("**Context:**");
-        sb.AppendLine("The document is intended for a general audience at a software company, including non-technical stakeholders.");
-        sb.AppendLine();
-        sb.AppendLine("**Source:**");
-        sb.AppendLine("Use the provided work item hierarchy to structure the content.");
-        sb.AppendLine();
-        sb.AppendLine("**Expectations:**");
-        sb.AppendLine("- **Release Notes:**");
-        sb.AppendLine("  - Provide a high-level summary in plain, non-technical language.");
-        sb.AppendLine("  - Group stories under their related features and epics.");
-        sb.AppendLine("  - For each story, write a short summary in non-technical language that explains the purpose and value of the change. Avoid copying or paraphrasing the story description. Use context from the feature and epic to explain the story’s intent and benefit.");
-        sb.AppendLine();
-        sb.AppendLine("- **Change Control Details:**");
-        sb.AppendLine("  - Provide a high-level summary in plain language for all stories, aggregated into one or two paragraphs as appropriate.");
-        sb.AppendLine("  - Include a list of all stories with their IDs and titles.");
-        sb.AppendLine("  - Highlight any potential risks associated with the changes.");
-        sb.AppendLine();
-        sb.AppendLine("**Output:**");
-        sb.AppendLine("Return the result as a downloadable Word document.");
         sb.AppendLine();
         sb.AppendLine("Work items:");
 

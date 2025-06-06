@@ -60,8 +60,8 @@ else if (_results != null)
             <MudList T="ResultItem" Dense="true" Class="work-item-tree">
                 @foreach (var r in _results)
                 {
-                    <MudListItem T="ResultItem" Class="@GetItemClass(r.Info.WorkItemType)">
-                        <MudLink Href="@r.Info.Url" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
+                    <MudListItem T="ResultItem">
+                        <MudLink Href="@r.Info.Url" Class="@GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
                         <br/>
                         <span class="text-secondary">@string.Join(", ", r.Violations)</span>
                     </MudListItem>
