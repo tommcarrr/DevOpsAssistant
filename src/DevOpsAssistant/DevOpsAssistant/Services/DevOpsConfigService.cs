@@ -2,7 +2,7 @@ using Blazored.LocalStorage;
 
 namespace DevOpsAssistant.Services;
 
-public class DevOpsConfigService
+public class DevOpsConfigService : IDevOpsConfigService
 {
     private const string StorageKey = "devops-config";
     private readonly ILocalStorageService _localStorage;

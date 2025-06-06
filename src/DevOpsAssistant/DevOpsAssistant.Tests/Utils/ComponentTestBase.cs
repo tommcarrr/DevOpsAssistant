@@ -15,9 +15,9 @@ public abstract class ComponentTestBase : TestContext
         Services.AddMudServices();
         JSInterop.Mode = JSRuntimeMode.Loose;
         var config = new DevOpsConfigService(new FakeLocalStorageService());
-        Services.AddSingleton(config);
+        Services.AddSingleton<IDevOpsConfigService>(config);
         if (includeApi)
-            Services.AddSingleton(sp => new DevOpsApiService(new HttpClient(), config));
+            Services.AddSingleton<IDevOpsApiService>(sp => new DevOpsApiService(new HttpClient(), config));
         return config;
     }
 

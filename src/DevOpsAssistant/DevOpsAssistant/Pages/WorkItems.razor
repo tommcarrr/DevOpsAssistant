@@ -1,6 +1,6 @@
 @page "/epics-features"
-@inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
+@inject IDevOpsApiService ApiService
+@inject IDevOpsConfigService ConfigService
 
 <PageTitle>Epics and Features</PageTitle>
 
@@ -141,7 +141,7 @@ else if (_roots != null)
 
         var root = FindRoot(node);
         if (root != null)
-            RecomputeStatus(root);
+            root.ComputeStatus();
 
         StateHasChanged();
     }
@@ -153,50 +153,14 @@ else if (_roots != null)
 
         foreach (var r in _roots)
         {
-            if (Contains(r, node.Info.Id))
+            if (r.Contains(node.Info.Id))
                 return r;
         }
 
         return null;
     }
 
-    private static bool Contains(WorkItemNode parent, int id)
-    {
-        if (parent.Info.Id == id)
-            return true;
-        foreach (var child in parent.Children)
-        {
-            if (Contains(child, id))
-                return true;
-        }
-
-        return false;
-    }
-
-    private static void RecomputeStatus(WorkItemNode node)
-    {
-        foreach (var child in node.Children)
-            RecomputeStatus(child);
-
-        if (!node.Children.Any())
-        {
-            node.ExpectedState = node.Info.State;
-            node.StatusValid = true;
-            return;
-        }
-
-        var allClosed = node.Children.All(c =>
-            c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
-
-        var anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
-
-        var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
-
-        node.ExpectedState = expected;
-        node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
-    }
+    
 
     private static string GetItemClass(string type)
     {

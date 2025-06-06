@@ -12,8 +12,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<DevOpsConfigService>();
-builder.Services.AddScoped<DevOpsApiService>();
+builder.Services.AddScoped<IDevOpsConfigService, DevOpsConfigService>();
+builder.Services.AddScoped<IDevOpsApiService, DevOpsApiService>();
 
-var host = builder.Build();
-await host.RunAsync();
+await builder.Build().RunAsync();
