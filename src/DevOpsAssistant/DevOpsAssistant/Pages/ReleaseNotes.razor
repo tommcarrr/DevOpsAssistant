@@ -7,13 +7,15 @@
 <PageTitle>Release Notes Prompt</PageTitle>
 
 <MudPaper Class="p-4 mb-4">
-    <MudAutocomplete T="WorkItemInfo"
-                     Label="User Stories"
-                     SearchFunc="SearchStories"
-                     ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                     Value="_searchValue"
-                     ValueChanged="OnStorySelected"/>
-    <MudButton Class="mt-2" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+        <MudAutocomplete T="WorkItemInfo"
+                         Label="User Stories"
+                         SearchFunc="SearchStories"
+                         ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
+                         Value="_searchValue"
+                         ValueChanged="OnStorySelected"/>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
+    </MudStack>
 </MudPaper>
 
 @if (_selectedStories.Any())
