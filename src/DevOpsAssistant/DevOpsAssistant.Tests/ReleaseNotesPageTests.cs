@@ -39,4 +39,21 @@ public class ReleaseNotesPageTests : TestContext
         var exception = Record.Exception(() => RenderComponent<Wrapper>());
         Assert.Null(exception);
     }
+
+    [Fact]
+    public void ReleaseNotes_Shows_Copy_Button_When_Prompt_Set()
+    {
+        Services.AddMudServices();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        Services.AddSingleton(new DevOpsConfigService(new FakeLocalStorageService()));
+        Services.AddSingleton<DevOpsApiService>(sp => new DevOpsApiService(new HttpClient(), sp.GetRequiredService<DevOpsConfigService>()));
+
+        var cut = RenderComponent<Wrapper>();
+        var page = cut.FindComponent<TestPage>();
+        var field = typeof(ReleaseNotes).GetField("_prompt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        field.SetValue(page.Instance, "text");
+        page.Render();
+
+        Assert.Contains("Copy", page.Markup);
+    }
 }
