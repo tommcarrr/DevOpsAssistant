@@ -426,6 +426,69 @@ public class DevOpsApiService
         return list;
     }
 
+    public async Task<List<StoryMetric>> GetStoryMetricsAsync(string areaPath)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+
+        var wiql = BuildMetricsWiql(areaPath);
+        var wiqlResponse =
+            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        wiqlResponse.EnsureSuccessStatusCode();
+        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
+            return [];
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
+        var workItems = new List<WorkItem>();
+        var fetchTasks = ids.Chunk(200)
+            .Select(chunk =>
+            {
+                var idList = string.Join(',', chunk);
+                return _httpClient.GetFromJsonAsync<WorkItemsResult>(
+                    $"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate&api-version={ApiVersion}");
+            })
+            .ToArray();
+
+        var results = await Task.WhenAll(fetchTasks);
+        foreach (var itemsResult in results)
+            if (itemsResult?.Value != null)
+                workItems.AddRange(itemsResult.Value);
+
+        var list = new List<StoryMetric>();
+        foreach (var w in workItems)
+        {
+            if (!w.Fields.TryGetValue("Microsoft.VSTS.Common.ClosedDate", out var cd) || cd.ValueKind != JsonValueKind.String)
+                continue;
+
+            var closed = cd.GetDateTime();
+            var created = w.Fields.TryGetValue("System.CreatedDate", out var cr) && cr.ValueKind == JsonValueKind.String
+                ? cr.GetDateTime()
+                : closed;
+            var activated = w.Fields.TryGetValue("Microsoft.VSTS.Common.ActivatedDate", out var ad) && ad.ValueKind == JsonValueKind.String
+                ? ad.GetDateTime()
+                : created;
+
+            list.Add(new StoryMetric
+            {
+                Id = w.Id,
+                CreatedDate = created,
+                ActivatedDate = activated,
+                ClosedDate = closed
+            });
+        }
+
+        return list;
+    }
+
+    private static string BuildMetricsWiql(string areaPath)
+    {
+        areaPath = NormalizeAreaPath(areaPath);
+        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND [Microsoft.VSTS.Common.ClosedDate] >= @today - 84 ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
+    }
+
     private static string BuildStorySearchWiql(string term)
     {
         term = term.Replace("'", "''");
