@@ -5,14 +5,14 @@ using System.Text.Json;
 
 namespace DevOpsAssistant.Services;
 
-public class DevOpsApiService
+public class DevOpsApiService : IDevOpsApiService
 {
     private const string ApiVersion = "7.0";
-    private readonly DevOpsConfigService _configService;
+    private readonly IDevOpsConfigService _configService;
 
     private readonly HttpClient _httpClient;
 
-    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService)
+    public DevOpsApiService(HttpClient httpClient, IDevOpsConfigService configService)
     {
         _httpClient = httpClient;
         _configService = configService;
@@ -44,6 +44,13 @@ public class DevOpsApiService
         return $"https://dev.azure.com/{config.Organization}/{config.Project}/_workitems/edit/";
     }
 
+    private async Task<WiqlResult?> ExecuteWiqlAsync(string wiql, string baseUri)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<WiqlResult>();
+    }
+
     public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath)
     {
         var config = GetValidatedConfig();
@@ -53,10 +60,7 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildEpicsWiql(areaPath);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await ExecuteWiqlAsync(wiql, baseUri);
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -140,10 +144,7 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildValidationWiql(areaPath);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await ExecuteWiqlAsync(wiql, baseUri);
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -273,27 +274,7 @@ public class DevOpsApiService
 
     private static void ComputeStatus(WorkItemNode node)
     {
-        foreach (var child in node.Children)
-            ComputeStatus(child);
-
-        if (!node.Children.Any())
-        {
-            node.ExpectedState = node.Info.State;
-            node.StatusValid = true;
-            return;
-        }
-
-        var allClosed = node.Children.All(c =>
-            c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
-
-        var anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
-
-        var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
-
-        node.ExpectedState = expected;
-        node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
+        node.ComputeStatus();
     }
 
     public async Task UpdateWorkItemStateAsync(int id, string state)
@@ -325,10 +306,7 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildStorySearchWiql(term);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await ExecuteWiqlAsync(wiql, baseUri);
         if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -457,10 +435,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
 
         var wiql = BuildMetricsWiql(areaPath, startDate ?? DateTime.Today.AddDays(-84));
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await ExecuteWiqlAsync(wiql, baseUri);
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 

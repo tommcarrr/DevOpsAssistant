@@ -1,7 +1,7 @@
 ﻿@using DevOpsAssistant.Components
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
-@inject DevOpsConfigService ConfigService
+@inject IDevOpsConfigService ConfigService
 
 <MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode"/>
 <MudDialogProvider/>
