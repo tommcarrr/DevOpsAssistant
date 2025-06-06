@@ -47,6 +47,7 @@
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        StateHasChanged();
     }
 
     private void ToggleDrawer()
