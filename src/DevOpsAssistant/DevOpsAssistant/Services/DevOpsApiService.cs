@@ -426,14 +426,14 @@ public class DevOpsApiService
         return list;
     }
 
-    public async Task<List<StoryMetric>> GetStoryMetricsAsync(string areaPath)
+    public async Task<List<StoryMetric>> GetStoryMetricsAsync(string areaPath, DateTime? startDate = null)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var baseUri = BuildBaseUri(config);
 
-        var wiql = BuildMetricsWiql(areaPath);
+        var wiql = BuildMetricsWiql(areaPath, startDate ?? DateTime.Today.AddDays(-84));
         var wiqlResponse =
             await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
@@ -483,10 +483,12 @@ public class DevOpsApiService
         return list;
     }
 
-    private static string BuildMetricsWiql(string areaPath)
+    private static string BuildMetricsWiql(string areaPath, DateTime startDate)
     {
         areaPath = NormalizeAreaPath(areaPath);
-        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND [Microsoft.VSTS.Common.ClosedDate] >= @today - 84 ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
+        var start = startDate.ToString("yyyy-MM-dd");
+        return
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND [Microsoft.VSTS.Common.ClosedDate] >= '{start}' ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
     }
 
     private static string BuildStorySearchWiql(string term)

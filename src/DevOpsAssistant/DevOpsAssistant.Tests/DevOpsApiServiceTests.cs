@@ -53,6 +53,13 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [term])!;
     }
 
+    private static string InvokeBuildMetricsWiql(string area, DateTime start)
+    {
+        var method =
+            typeof(DevOpsApiService).GetMethod("BuildMetricsWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, [area, start])!;
+    }
+
     [Fact]
     public void BuildWiql_Filters_Closed_Epics()
     {
@@ -295,5 +302,13 @@ public class DevOpsApiServiceTests
         var service = new DevOpsApiService(new HttpClient(), configService);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStoryHierarchyDetailsAsync([1]));
+    }
+
+    [Fact]
+    public void BuildMetricsWiql_Uses_Start_Date()
+    {
+        var query = InvokeBuildMetricsWiql("Area", new DateTime(2024, 1, 1));
+
+        Assert.Contains("2024-01-01", query);
     }
 }

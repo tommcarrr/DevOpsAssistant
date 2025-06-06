@@ -11,7 +11,7 @@
 
 <MudPaper Class="p-4 mb-4">
     <MudGrid>
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="3">
             <MudSelect T="string" @bind-Value="_path" Label="Backlog">
                 @foreach (var b in _backlogs)
                 {
@@ -19,7 +19,16 @@
                 }
             </MudSelect>
         </MudItem>
-        <MudItem xs="12">
+        <MudItem xs="12" md="3">
+            <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
+                <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
+        </MudItem>
+        <MudItem xs="12" md="3">
             <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
         </MudItem>
     </MudGrid>
@@ -29,17 +38,17 @@
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
-else if (_weeks.Any())
+else if (_periods.Any())
 {
-    <MudTable Items="_weeks" Dense="true" Hover="true">
+    <MudTable Items="_periods" Dense="true" Hover="true">
         <HeaderContent>
-            <MudTh>Week</MudTh>
+            <MudTh>Period Ending</MudTh>
             <MudTh>Avg Lead Time (days)</MudTh>
             <MudTh>Avg Cycle Time (days)</MudTh>
             <MudTh>Throughput</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Week">@context.WeekStart.ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Period">@context.End.ToString("yyyy-MM-dd")</MudTd>
             <MudTd DataLabel="Lead">@context.AvgLeadTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
@@ -58,7 +67,9 @@ else if (_weeks.Any())
     private string _path = string.Empty;
     private string[] _backlogs = [];
     private bool _loading;
-    private List<WeekMetrics> _weeks = new();
+    private AggregateMode _mode = AggregateMode.Week;
+    private DateTime? _startDate = DateTime.Today.AddDays(-84);
+    private List<PeriodMetrics> _periods = new();
 
     private string[] _labels = [];
     private double[][] _leadCycleDatasets = [];
@@ -77,8 +88,8 @@ else if (_weeks.Any())
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetStoryMetricsAsync(_path);
-            ComputeWeeks(items);
+            var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
+            ComputePeriods(items);
         }
         finally
         {
@@ -86,29 +97,36 @@ else if (_weeks.Any())
         }
     }
 
-    private void ComputeWeeks(List<StoryMetric> items)
+    private void ComputePeriods(List<StoryMetric> items)
     {
-        _weeks.Clear();
-        var startOfCurrentWeek = StartOfWeek(DateTime.Today);
-        for (int i = 11; i >= 0; i--)
+        _periods.Clear();
+        var startDate = _startDate ?? DateTime.Today.AddDays(-84);
+        DateTime start = _mode == AggregateMode.Week
+            ? StartOfWeek(startDate)
+            : new DateTime(startDate.Year, startDate.Month, 1);
+        var endBoundary = DateTime.Today;
+        while (start <= endBoundary)
         {
-            var start = startOfCurrentWeek.AddDays(-7 * i);
-            var end = start.AddDays(7);
-            var weekItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < end).ToList();
-            var metrics = new WeekMetrics
+            DateTime next = _mode == AggregateMode.Week ? start.AddDays(7) : start.AddMonths(1);
+            var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next).ToList();
+            var metrics = new PeriodMetrics
             {
-                WeekStart = start,
-                Throughput = weekItems.Count,
-                AvgLeadTime = weekItems.Any() ? weekItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
-                AvgCycleTime = weekItems.Any() ? weekItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0
+                Start = start,
+                End = next.AddDays(-1),
+                Throughput = rangeItems.Count,
+                AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
+                AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0
             };
-            _weeks.Add(metrics);
+            _periods.Add(metrics);
+            start = next;
         }
 
-        _labels = _weeks.Select(w => w.WeekStart.ToString("MM/dd")).ToArray();
-        var lead = _weeks.Select(w => w.AvgLeadTime).ToArray();
-        var cycle = _weeks.Select(w => w.AvgCycleTime).ToArray();
-        var throughput = _weeks.Select(w => (double)w.Throughput).ToArray();
+        _labels = _periods.Select(p => _mode == AggregateMode.Week
+                ? p.End.ToString("MM/dd")
+                : p.End.ToString("yyyy-MM")).ToArray();
+        var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
+        var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
+        var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
         _leadCycleDatasets = new[] { lead, cycle };
         _throughputDataset = new[] { throughput };
     }
@@ -119,9 +137,10 @@ else if (_weeks.Any())
         return dt.Date.AddDays(-diff);
     }
 
-    private class WeekMetrics
+    private class PeriodMetrics
     {
-        public DateTime WeekStart { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public double AvgLeadTime { get; set; }
         public double AvgCycleTime { get; set; }
         public int Throughput { get; set; }
