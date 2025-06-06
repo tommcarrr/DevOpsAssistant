@@ -132,23 +132,33 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
         var sb = new StringBuilder();
 
-        sb.AppendLine("Generate a Word document containing release notes and change control details based on the following work item hierarchy.");
-        sb.AppendLine();
-        sb.AppendLine("For the release notes, include:");
-        sb.AppendLine("- A high-level summary in plain, non-technical language.");
-        sb.AppendLine("- Group stories under their related features and epics.");
-        sb.AppendLine("- For each story, write a short summary in non-technical language that explains the purpose and value of the change in a way that would make sense to a general audience at a software company.");
-        sb.AppendLine("  Do not copy or paraphrase the story description. Use context from the feature and epic to help explain the story’s intent and benefit.");
-        sb.AppendLine();
-        sb.AppendLine("For the change control details, include:");
-        sb.AppendLine("- A high-level summary in plain language for all stories aggregated into one or two paragraphs as appropriate..");
-        sb.AppendLine("- A list of all stories with their IDs and titles.");
-        sb.AppendLine("- A section highlighting any potential risks.");
-        sb.AppendLine();
-        sb.AppendLine("Please return the result as a downloadable Word document.");
 
+
+        sb.AppendLine("**Goal:**");
+        sb.AppendLine("Generate a comprehensive Word document containing release notes and change control details based on the provided work item hierarchy.");
+        sb.AppendLine();
+        sb.AppendLine("**Context:**");
+        sb.AppendLine("The document is intended for a general audience at a software company, including non-technical stakeholders.");
+        sb.AppendLine();
+        sb.AppendLine("**Source:**");
+        sb.AppendLine("Use the provided work item hierarchy to structure the content.");
+        sb.AppendLine();
+        sb.AppendLine("**Expectations:**");
+        sb.AppendLine("- **Release Notes:**");
+        sb.AppendLine("  - Provide a high-level summary in plain, non-technical language.");
+        sb.AppendLine("  - Group stories under their related features and epics.");
+        sb.AppendLine("  - For each story, write a short summary in non-technical language that explains the purpose and value of the change. Avoid copying or paraphrasing the story description. Use context from the feature and epic to explain the story’s intent and benefit.");
+        sb.AppendLine();
+        sb.AppendLine("- **Change Control Details:**");
+        sb.AppendLine("  - Provide a high-level summary in plain language for all stories, aggregated into one or two paragraphs as appropriate.");
+        sb.AppendLine("  - Include a list of all stories with their IDs and titles.");
+        sb.AppendLine("  - Highlight any potential risks associated with the changes.");
+        sb.AppendLine();
+        sb.AppendLine("**Output:**");
+        sb.AppendLine("Return the result as a downloadable Word document.");
         sb.AppendLine();
         sb.AppendLine("Work items:");
+
         sb.AppendLine(json);
         return sb.ToString();
     }
