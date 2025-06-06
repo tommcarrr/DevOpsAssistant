@@ -311,4 +311,59 @@ public class DevOpsApiServiceTests
 
         Assert.Contains("2024-01-01", query);
     }
+
+    [Fact]
+    public async Task SearchUserStoriesAsync_Returns_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
+        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        var result = await service.SearchUserStoriesAsync("test");
+
+        Assert.Single(result);
+        Assert.Equal(1, result[0].Id);
+    }
+
+    [Fact]
+    public async Task GetStoryMetricsAsync_Returns_Metrics()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
+        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.CreatedDate\":\"2024-01-01T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-02T00:00:00Z\",\"Microsoft.VSTS.Common.ClosedDate\":\"2024-01-03T00:00:00Z\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        var result = await service.GetStoryMetricsAsync("Area", new DateTime(2024, 1, 1));
+
+        Assert.Single(result);
+        Assert.Equal(1, result[0].Id);
+        Assert.Equal(new DateTime(2024, 1, 1), result[0].CreatedDate);
+        Assert.Equal(new DateTime(2024, 1, 2), result[0].ActivatedDate);
+        Assert.Equal(new DateTime(2024, 1, 3), result[0].ClosedDate);
+    }
 }
