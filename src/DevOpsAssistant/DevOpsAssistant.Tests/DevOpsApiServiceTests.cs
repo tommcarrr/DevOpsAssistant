@@ -7,9 +7,9 @@ namespace DevOpsAssistant.Tests;
 
 public class DevOpsApiServiceTests
 {
-    private static string InvokeBuildWiql(string area)
+    private static string InvokeBuildEpicsWiql(string area)
     {
-        var method = typeof(DevOpsApiService).GetMethod("BuildWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method = typeof(DevOpsApiService).GetMethod("BuildEpicsWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (string)method.Invoke(null, [area])!;
     }
 
@@ -61,37 +61,37 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
-    public void BuildWiql_Filters_Closed_Epics()
+    public void BuildEpicsWiql_Filters_Closed_Epics()
     {
-        var query = InvokeBuildWiql("Area");
+        var query = InvokeBuildEpicsWiql("Area");
 
         Assert.Contains("[System.State] <> 'Closed'", query);
         Assert.Contains("[System.State] <> 'Removed'", query);
-        Assert.Contains("[System.WorkItemType] <> 'Epic'", query);
+        Assert.Contains("[System.WorkItemType] = 'Epic'", query);
         Assert.DoesNotContain("System.Tags", query);
         Assert.Contains("[System.AreaPath] UNDER 'Area'", query);
     }
 
     [Fact]
-    public void BuildWiql_Trims_Leading_Backslash()
+    public void BuildEpicsWiql_Trims_Leading_Backslash()
     {
-        var query = InvokeBuildWiql("\\Area");
+        var query = InvokeBuildEpicsWiql("\\Area");
 
         Assert.Contains("[System.AreaPath] UNDER 'Area'", query);
     }
 
     [Fact]
-    public void BuildWiql_Removes_Area_Prefix()
+    public void BuildEpicsWiql_Removes_Area_Prefix()
     {
-        var query = InvokeBuildWiql("Project\\Area\\Development");
+        var query = InvokeBuildEpicsWiql("Project\\Area\\Development");
 
         Assert.Contains("[System.AreaPath] UNDER 'Project\\Development'", query);
     }
 
     [Fact]
-    public void BuildWiql_Selects_WorkItems()
+    public void BuildEpicsWiql_Selects_WorkItems()
     {
-        var query = InvokeBuildWiql("Area");
+        var query = InvokeBuildEpicsWiql("Area");
 
         Assert.DoesNotContain("WorkItemLinks", query);
         Assert.DoesNotContain("System.Links.LinkType", query);

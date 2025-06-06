@@ -52,7 +52,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
         var itemUrlBase = BuildItemUrlBase(config);
 
-        var wiql = BuildWiql(areaPath);
+        var wiql = BuildEpicsWiql(areaPath);
         var wiqlResponse =
             await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
@@ -64,37 +64,33 @@ public class DevOpsApiService
             .Select(w => w.Id)
             .Distinct();
 
-        var workItems = new List<WorkItem>();
-        var fetchTasks = ids.Chunk(200)
-            .Select(chunk =>
-            {
-                var idList = string.Join(',', chunk);
-                return _httpClient.GetFromJsonAsync<WorkItemsResult>(
-                    $"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
-            })
-            .ToArray();
-
-        var results = await Task.WhenAll(fetchTasks);
-        foreach (var itemsResult in results)
-            if (itemsResult?.Value != null)
-                workItems.AddRange(itemsResult.Value);
-        if (!workItems.Any())
+        var items = await FetchHierarchyAsync(ids, baseUri);
+        if (items.Count == 0)
             return [];
 
-        var dict = workItems.ToDictionary(i => i.Id);
-        var nodes = dict.Values.Select(w => new WorkItemNode
+        var nodes = new Dictionary<int, WorkItemNode>();
+        foreach (var w in items.Values)
         {
-            Info = new WorkItemInfo
-            {
-                Id = w.Id,
-                Title = w.Fields["System.Title"].GetString() ?? string.Empty,
-                State = w.Fields["System.State"].GetString() ?? string.Empty,
-                WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
-                Url = $"{itemUrlBase}{w.Id}"
-            }
-        }).ToDictionary(n => n.Info.Id);
+            var state = w.Fields["System.State"].GetString() ?? string.Empty;
+            var type = w.Fields["System.WorkItemType"].GetString() ?? string.Empty;
+            if ((type.Equals("Task", StringComparison.OrdinalIgnoreCase) || type.Equals("Bug", StringComparison.OrdinalIgnoreCase)) &&
+                (state.Equals("Closed", StringComparison.OrdinalIgnoreCase) || state.Equals("Removed", StringComparison.OrdinalIgnoreCase)))
+                continue;
 
-        foreach (var item in workItems)
+            nodes[w.Id] = new WorkItemNode
+            {
+                Info = new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = state,
+                    WorkItemType = type,
+                    Url = $"{itemUrlBase}{w.Id}"
+                }
+            };
+        }
+
+        foreach (var item in items.Values)
         {
             if (item.Relations == null) continue;
             foreach (var rel in item.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Forward"))
@@ -226,19 +222,46 @@ public class DevOpsApiService
         return areaPath;
     }
 
-    private static string BuildWiql(string areaPath)
+    private static string BuildEpicsWiql(string areaPath)
     {
         areaPath = NormalizeAreaPath(areaPath);
         var conditions = new List<string>
         {
             "[System.TeamProject] = @project",
             $"[System.AreaPath] UNDER '{areaPath}'",
-            "[System.WorkItemType] in ('Epic','Feature','User Story','Task','Bug')",
-            "([System.WorkItemType] <> 'Epic' OR ([System.State] <> 'Closed' AND [System.State] <> 'Removed'))"
+            "[System.WorkItemType] = 'Epic'",
+            "[System.State] <> 'Closed'",
+            "[System.State] <> 'Removed'"
         };
 
         var where = string.Join(" AND ", conditions);
         return $"SELECT [System.Id] FROM WorkItems WHERE {where} ORDER BY [System.Id]";
+    }
+
+    private async Task<Dictionary<int, WorkItem>> FetchHierarchyAsync(IEnumerable<int> rootIds, string baseUri)
+    {
+        var idsToFetch = new HashSet<int>(rootIds);
+        var fetched = new HashSet<int>();
+        var items = new Dictionary<int, WorkItem>();
+
+        while (idsToFetch.Except(fetched).Any())
+        {
+            var batch = idsToFetch.Except(fetched).Take(200).ToArray();
+            fetched.UnionWith(batch);
+            var idList = string.Join(',', batch);
+            var result = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+            if (result?.Value == null) continue;
+            foreach (var w in result.Value)
+                if (items.TryAdd(w.Id, w))
+                {
+                    if (w.Relations == null) continue;
+                    foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Forward"))
+                        if (int.TryParse(rel.Url.Split('/').Last(), out var childId))
+                            idsToFetch.Add(childId);
+                }
+        }
+
+        return items;
     }
 
     private static string BuildValidationWiql(string areaPath)
