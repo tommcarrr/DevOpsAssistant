@@ -1,6 +1,8 @@
 @page "/release-notes"
 @using System.Text
 @using System.Text.Json
+@using System.Net
+@using System.Text.RegularExpressions
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 
@@ -123,7 +125,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             Epic = d.Epic == null ? null : new { d.Epic.Id, d.Epic.Title },
             Feature = d.Feature == null ? null : new { d.Feature.Id, d.Feature.Title },
-            Story = new { d.Story.Id, d.Story.Title, d.Description }
+            Story = new { d.Story.Id, d.Story.Title, Description = Sanitize(d.Description) }
         });
 
         var json = JsonSerializer.Serialize(
@@ -161,6 +163,17 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
         sb.AppendLine(json);
         return sb.ToString();
+    }
+
+    private static string Sanitize(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        var text = WebUtility.HtmlDecode(input);
+        text = Regex.Replace(text, "<.*?>", string.Empty);
+        text = Regex.Replace(text, "\\s+", " ");
+        return text.Trim();
     }
 
 }
