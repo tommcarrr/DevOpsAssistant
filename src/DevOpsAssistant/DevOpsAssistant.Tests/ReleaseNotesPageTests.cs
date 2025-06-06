@@ -59,7 +59,7 @@ public class ReleaseNotesPageTests : TestContext
             typeof(ReleaseNotes).GetField("_selectedStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         var item = new WorkItemInfo { Id = 1, Title = "Test" };
-        page.InvokeAsync(() => method.Invoke(page.Instance, new object?[] { item }));
+        page.InvokeAsync(() => method.Invoke(page.Instance, [item]));
         page.Render();
 
         var set = (HashSet<WorkItemInfo>)setField.GetValue(page.Instance)!;

@@ -49,7 +49,7 @@ else if (_results != null)
 
 @code {
     private string _path = string.Empty;
-    private string[] _backlogs = Array.Empty<string>();
+    private string[] _backlogs = [];
     private bool _loading;
     private List<ResultItem>? _results;
 
@@ -110,7 +110,7 @@ else if (_results != null)
     private class ResultItem
     {
         public WorkItemInfo Info { get; set; } = new();
-        public List<string> Violations { get; set; } = new();
+        public List<string> Violations { get; set; } = [];
     }
 
 }

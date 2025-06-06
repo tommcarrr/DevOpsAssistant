@@ -56,7 +56,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 }
 
 @code {
-    private readonly HashSet<WorkItemInfo> _selectedStories = new();
+    private readonly HashSet<WorkItemInfo> _selectedStories = [];
     private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;

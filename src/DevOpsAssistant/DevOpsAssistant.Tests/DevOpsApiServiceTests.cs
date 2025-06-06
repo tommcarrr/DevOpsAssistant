@@ -10,47 +10,47 @@ public class DevOpsApiServiceTests
     private static string InvokeBuildWiql(string area)
     {
         var method = typeof(DevOpsApiService).GetMethod("BuildWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object?[] { area })!;
+        return (string)method.Invoke(null, [area])!;
     }
 
     private static string InvokeBuildValidationWiql(string area)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildValidationWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object?[] { area })!;
+        return (string)method.Invoke(null, [area])!;
     }
 
     private static void InvokeComputeStatus(WorkItemNode node)
     {
         var method = typeof(DevOpsApiService).GetMethod("ComputeStatus", BindingFlags.NonPublic | BindingFlags.Static)!;
-        method.Invoke(null, new object?[] { node });
+        method.Invoke(null, [node]);
     }
 
     private static List<WorkItemNode> InvokeFilterClosedEpics(List<WorkItemNode> nodes)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("FilterClosedEpics", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (List<WorkItemNode>)method.Invoke(null, new object?[] { nodes })!;
+        return (List<WorkItemNode>)method.Invoke(null, [nodes])!;
     }
 
     private static string InvokeNormalizeAreaPath(string path)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("NormalizeAreaPath", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object?[] { path })!;
+        return (string)method.Invoke(null, [path])!;
     }
 
     private static void InvokeExtractPaths(JsonElement el, List<string> list)
     {
         var method = typeof(DevOpsApiService).GetMethod("ExtractPaths", BindingFlags.NonPublic | BindingFlags.Static)!;
-        method.Invoke(null, new object?[] { el, list });
+        method.Invoke(null, [el, list]);
     }
 
     private static string InvokeBuildStorySearchWiql(string term)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildStorySearchWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object?[] { term })!;
+        return (string)method.Invoke(null, [term])!;
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class DevOpsApiServiceTests
 
         var result = await service.GetBacklogsAsync();
 
-        Assert.Equal(new[] { "Project", "Project\\Sub" }, result);
+        Assert.Equal(["Project", "Project\\Sub"], result);
     }
 
     [Fact]
@@ -294,6 +294,6 @@ public class DevOpsApiServiceTests
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
         var service = new DevOpsApiService(new HttpClient(), configService);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStoryHierarchyDetailsAsync(new[] { 1 }));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStoryHierarchyDetailsAsync([1]));
     }
 }

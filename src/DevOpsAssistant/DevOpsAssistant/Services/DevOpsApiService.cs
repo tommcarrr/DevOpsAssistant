@@ -57,8 +57,8 @@ public class DevOpsApiService
             await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
-        if (wiqlResult == null || wiqlResult.WorkItems == null || wiqlResult.WorkItems.Length == 0)
-            return new List<WorkItemNode>();
+        if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
+            return [];
 
         var ids = wiqlResult.WorkItems
             .Select(w => w.Id)
@@ -79,7 +79,7 @@ public class DevOpsApiService
             if (itemsResult?.Value != null)
                 workItems.AddRange(itemsResult.Value);
         if (!workItems.Any())
-            return new List<WorkItemNode>();
+            return [];
 
         var dict = workItems.ToDictionary(i => i.Id);
         var nodes = dict.Values.Select(w => new WorkItemNode
@@ -148,8 +148,8 @@ public class DevOpsApiService
             await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
-        if (wiqlResult == null || wiqlResult.WorkItems == null || wiqlResult.WorkItems.Length == 0)
-            return new List<WorkItemDetails>();
+        if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
+            return [];
 
         var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
         var workItems = new List<WorkItem>();
@@ -165,7 +165,7 @@ public class DevOpsApiService
             if (itemsResult?.Value != null)
                 workItems.AddRange(itemsResult.Value);
         if (!workItems.Any())
-            return new List<WorkItemDetails>();
+            return [];
 
         var list = new List<WorkItemDetails>();
         foreach (var w in workItems)
@@ -186,7 +186,7 @@ public class DevOpsApiService
                                  (sp.ValueKind == JsonValueKind.Number || !string.IsNullOrWhiteSpace(sp.ToString())),
                 HasAcceptanceCriteria = w.Fields.TryGetValue("Microsoft.VSTS.Common.AcceptanceCriteria", out var ac) &&
                                         !string.IsNullOrWhiteSpace(ac.GetString()),
-                HasAssignee = w.Fields.TryGetValue("System.AssignedTo", out var at) &&
+                HasAssignee = w.Fields.TryGetValue("System.AssignedTo.displayName", out var at) &&
                               !string.IsNullOrWhiteSpace(at.GetString()),
                 HasParent = w.Relations?.Any(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse") == true
             };
@@ -307,7 +307,7 @@ public class DevOpsApiService
         wiqlResponse.EnsureSuccessStatusCode();
         var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
         if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
-            return new List<WorkItemInfo>();
+            return [];
 
         var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20).ToArray();
         var idList = string.Join(',', ids);
@@ -358,17 +358,15 @@ public class DevOpsApiService
             var result =
                 await _httpClient.GetFromJsonAsync<WorkItemsResult>(
                     $"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
-            if (result?.Value != null)
-                foreach (var w in result.Value)
-                    if (!items.ContainsKey(w.Id))
-                    {
-                        items[w.Id] = w;
-                        if (w.Relations != null)
-                            foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse"))
-                                if (int.TryParse(rel.Url.Split('/').Last(), out var parentId) &&
-                                    !idsToFetch.Contains(parentId))
-                                    idsToFetch.Add(parentId);
-                    }
+            if (result?.Value == null) continue;
+            foreach (var w in result.Value)
+                if (items.TryAdd(w.Id, w))
+                {
+                    if (w.Relations == null) continue;
+                    foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse"))
+                        if (int.TryParse(rel.Url.Split('/').Last(), out var parentId))
+                            idsToFetch.Add(parentId);
+                }
         }
 
         var list = new List<StoryHierarchyDetails>();
@@ -437,7 +435,7 @@ public class DevOpsApiService
 
     private class WiqlResult
     {
-        public WorkItemRef[] WorkItems { get; set; } = Array.Empty<WorkItemRef>();
+        public WorkItemRef[] WorkItems { get; set; } = [];
     }
 
     private class WorkItemRef
@@ -447,7 +445,7 @@ public class DevOpsApiService
 
     private class WorkItemsResult
     {
-        public WorkItem[] Value { get; set; } = Array.Empty<WorkItem>();
+        public WorkItem[] Value { get; set; } = [];
     }
 
     private class WorkItem
