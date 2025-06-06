@@ -126,7 +126,62 @@ else if (_roots != null)
         await ApiService.UpdateWorkItemStateAsync(node.Info.Id, node.ExpectedState);
         node.Info.State = node.ExpectedState;
         node.StatusValid = true;
+
+        var root = FindRoot(node);
+        if (root != null)
+            RecomputeStatus(root);
+
         StateHasChanged();
+    }
+
+    private WorkItemNode? FindRoot(WorkItemNode node)
+    {
+        if (_roots == null)
+            return null;
+
+        foreach (var r in _roots)
+        {
+            if (Contains(r, node.Info.Id))
+                return r;
+        }
+        return null;
+    }
+
+    private static bool Contains(WorkItemNode parent, int id)
+    {
+        if (parent.Info.Id == id)
+            return true;
+        foreach (var child in parent.Children)
+        {
+            if (Contains(child, id))
+                return true;
+        }
+        return false;
+    }
+
+    private static void RecomputeStatus(WorkItemNode node)
+    {
+        foreach (var child in node.Children)
+            RecomputeStatus(child);
+
+        if (!node.Children.Any())
+        {
+            node.ExpectedState = node.Info.State;
+            node.StatusValid = true;
+            return;
+        }
+
+        bool allClosed = node.Children.All(c =>
+            c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
+            c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
+            c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
+
+        bool anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
+
+        var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
+
+        node.ExpectedState = expected;
+        node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetItemClass(string type) => type.ToLowerInvariant() switch
