@@ -2,22 +2,17 @@ using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Services;
-using Microsoft.Extensions.DependencyInjection;
-using MudBlazor.Services;
+using DevOpsAssistant.Tests.Utils;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Components;
 
-public class SettingsDialogTests : TestContext
+public class SettingsDialogTests : ComponentTestBase
 {
     [Fact]
     public async Task SettingsDialog_Shows_Config_Values()
     {
-        Services.AddMudServices();
-        JSInterop.Mode = JSRuntimeMode.Loose;
-        var storage = new FakeLocalStorageService();
-        var configService = new DevOpsConfigService(storage);
-        await configService.SaveAsync(new DevOpsConfig { Organization = "Org" });
-        Services.AddSingleton(configService);
+        var config = SetupServices();
+        await config.SaveAsync(new DevOpsConfig { Organization = "Org" });
 
         var cut = RenderComponent<SettingsDialog>();
         var modelField = cut.Instance.GetType().GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance)!;

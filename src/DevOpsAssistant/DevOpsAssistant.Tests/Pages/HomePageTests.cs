@@ -1,17 +1,15 @@
 using Bunit;
 using DevOpsAssistant.Pages;
-using MudBlazor.Services;
+using DevOpsAssistant.Tests.Utils;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Pages;
 
-public class HomePageTests : TestContext
+public class HomePageTests : ComponentTestBase
 {
     [Fact]
     public void Home_Has_WorkItems_Link()
     {
-        Services.AddMudServices();
-        JSInterop.Mode = JSRuntimeMode.Loose;
-
+        SetupServices();
         var cut = RenderComponent<Home>();
 
         Assert.Contains("href=\"epics-features\"", cut.Markup);
