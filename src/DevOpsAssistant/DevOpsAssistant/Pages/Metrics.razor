@@ -1,0 +1,123 @@
+@page "/metrics"
+@inject DevOpsApiService ApiService
+
+<PageTitle>Metrics</PageTitle>
+
+<MudPaper Class="p-4 mb-4">
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                @foreach (var b in _backlogs)
+                {
+                    <MudSelectItem Value="@b">@b</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_weeks.Any())
+{
+    <MudTable Items="_weeks" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Week</MudTh>
+            <MudTh>Avg Lead Time (days)</MudTh>
+            <MudTh>Avg Cycle Time (days)</MudTh>
+            <MudTh>Throughput</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Week">@context.WeekStart.ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Lead">@context.AvgLeadTime.ToString("0.0")</MudTd>
+            <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
+            <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudPaper Class="pa-2 mt-4">
+        <MudChart ChartType="ChartType.Line" Labels="_labels" Datasets="_leadCycleDatasets" Height="300" />
+    </MudPaper>
+    <MudPaper Class="pa-2 mt-4">
+        <MudChart ChartType="ChartType.Bar" Labels="_labels" Datasets="_throughputDataset" Height="300" />
+    </MudPaper>
+}
+
+@code {
+    private string _path = string.Empty;
+    private string[] _backlogs = [];
+    private bool _loading;
+    private List<WeekMetrics> _weeks = new();
+
+    private string[] _labels = [];
+    private double[][] _leadCycleDatasets = [];
+    private double[][] _throughputDataset = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _backlogs = await ApiService.GetBacklogsAsync();
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+    }
+
+    private async Task Load()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var items = await ApiService.GetStoryMetricsAsync(_path);
+            ComputeWeeks(items);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ComputeWeeks(List<StoryMetric> items)
+    {
+        _weeks.Clear();
+        var startOfCurrentWeek = StartOfWeek(DateTime.Today);
+        for (int i = 11; i >= 0; i--)
+        {
+            var start = startOfCurrentWeek.AddDays(-7 * i);
+            var end = start.AddDays(7);
+            var weekItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < end).ToList();
+            var metrics = new WeekMetrics
+            {
+                WeekStart = start,
+                Throughput = weekItems.Count,
+                AvgLeadTime = weekItems.Any() ? weekItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
+                AvgCycleTime = weekItems.Any() ? weekItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0
+            };
+            _weeks.Add(metrics);
+        }
+
+        _labels = _weeks.Select(w => w.WeekStart.ToString("MM/dd")).ToArray();
+        var lead = _weeks.Select(w => w.AvgLeadTime).ToArray();
+        var cycle = _weeks.Select(w => w.AvgCycleTime).ToArray();
+        var throughput = _weeks.Select(w => (double)w.Throughput).ToArray();
+        _leadCycleDatasets = new[] { lead, cycle };
+        _throughputDataset = new[] { throughput };
+    }
+
+    private static DateTime StartOfWeek(DateTime dt)
+    {
+        int diff = (7 + (int)dt.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+        return dt.Date.AddDays(-diff);
+    }
+
+    private class WeekMetrics
+    {
+        public DateTime WeekStart { get; set; }
+        public double AvgLeadTime { get; set; }
+        public double AvgCycleTime { get; set; }
+        public int Throughput { get; set; }
+    }
+}
