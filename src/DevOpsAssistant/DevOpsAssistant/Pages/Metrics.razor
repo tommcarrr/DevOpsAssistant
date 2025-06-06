@@ -56,10 +56,10 @@ else if (_periods.Any())
     </MudTable>
 
     <MudPaper Class="pa-2 mt-4">
-        <MudChart ChartType="ChartType.Line" Labels="_labels" Datasets="_leadCycleDatasets" Height="300" />
+        <MudChart ChartType="ChartType.Line" ChartSeries="_leadCycleSeries" XAxisLabels="_xAxisLabels" Height="300" />
     </MudPaper>
     <MudPaper Class="pa-2 mt-4">
-        <MudChart ChartType="ChartType.Bar" Labels="_labels" Datasets="_throughputDataset" Height="300" />
+        <MudChart ChartType="ChartType.Bar" ChartSeries="_throughputSeries" XAxisLabels="_xAxisLabels" Height="300" />
     </MudPaper>
 }
 
@@ -71,9 +71,9 @@ else if (_periods.Any())
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
     private List<PeriodMetrics> _periods = new();
 
-    private string[] _labels = [];
-    private double[][] _leadCycleDatasets = [];
-    private double[][] _throughputDataset = [];
+    private string[] _xAxisLabels = [];
+    private List<ChartSeries> _leadCycleSeries = [];
+    private List<ChartSeries> _throughputSeries = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,14 +121,21 @@ else if (_periods.Any())
             start = next;
         }
 
-        _labels = _periods.Select(p => _mode == AggregateMode.Week
+        _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Week
                 ? p.End.ToString("MM/dd")
                 : p.End.ToString("yyyy-MM")).ToArray();
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
-        _leadCycleDatasets = new[] { lead, cycle };
-        _throughputDataset = new[] { throughput };
+        _leadCycleSeries =
+        [
+            new ChartSeries { Name = "Lead Time", Data = lead },
+            new ChartSeries { Name = "Cycle Time", Data = cycle }
+        ];
+        _throughputSeries =
+        [
+            new ChartSeries { Name = "Throughput", Data = throughput }
+        ];
     }
 
     private static DateTime StartOfWeek(DateTime dt)
