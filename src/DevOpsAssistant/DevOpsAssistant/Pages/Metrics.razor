@@ -11,6 +11,10 @@
     lead time and cycle time statistics. Charts visualize these metrics
     for the last twelve weeks.
 </MudAlert>
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+}
 
 <MudPaper Class="p-4 mb-4">
     <MudGrid>
@@ -89,12 +93,21 @@ else if (_periods.Any())
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
+    private string? _error;
 
     protected override async Task OnInitializedAsync()
     {
-        _backlogs = await ApiService.GetBacklogsAsync();
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
+        try
+        {
+            _backlogs = await ApiService.GetBacklogsAsync();
+            if (_backlogs.Length > 0)
+                _path = _backlogs[0];
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
     }
 
     private async Task Load()
@@ -105,6 +118,11 @@ else if (_periods.Any())
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
             ComputePeriods(items);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
         }
         finally
         {
