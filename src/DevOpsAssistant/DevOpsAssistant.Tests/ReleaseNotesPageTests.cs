@@ -56,4 +56,26 @@ public class ReleaseNotesPageTests : TestContext
 
         Assert.Contains("Copy", page.Markup);
     }
+
+    [Fact]
+    public void OnStorySelected_Adds_To_SelectedStories()
+    {
+        Services.AddMudServices();
+        JSInterop.Mode = JSRuntimeMode.Loose;
+        Services.AddSingleton(new DevOpsConfigService(new FakeLocalStorageService()));
+        Services.AddSingleton<DevOpsApiService>(sp => new DevOpsApiService(new HttpClient(), sp.GetRequiredService<DevOpsConfigService>()));
+
+        var cut = RenderComponent<Wrapper>();
+        var page = cut.FindComponent<TestPage>();
+        var method = typeof(ReleaseNotes).GetMethod("OnStorySelected", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var setField = typeof(ReleaseNotes).GetField("_selectedStories", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+
+        var item = new WorkItemInfo { Id = 1, Title = "Test" };
+        page.InvokeAsync(() => method.Invoke(page.Instance, new object?[] { item }));
+        page.Render();
+
+        var set = (HashSet<WorkItemInfo>)setField.GetValue(page.Instance)!;
+        Assert.Contains(item, set);
+        Assert.Contains("Test", page.Markup);
+    }
 }

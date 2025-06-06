@@ -9,11 +9,10 @@
 <MudPaper Class="p-4 mb-4">
     <MudAutocomplete T="WorkItemInfo"
                      Label="User Stories"
-                     MultiSelection="true"
                      SearchFunc="SearchStories"
                      ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                     SelectedValues="_autocompleteSelected"
-                     SelectedValuesChanged="OnSelectedStoriesChanged" />
+                     Value="_searchValue"
+                     ValueChanged="OnStorySelected" />
     <MudButton Class="mt-2" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
 </MudPaper>
 
@@ -56,7 +55,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
 @code {
     private HashSet<WorkItemInfo> _selectedStories = new();
-    private HashSet<WorkItemInfo> _autocompleteSelected = new();
+    private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;
 
@@ -67,11 +66,11 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         return ApiService.SearchUserStoriesAsync(value).ContinueWith(t => (IEnumerable<WorkItemInfo>)t.Result);
     }
 
-    private void OnSelectedStoriesChanged(IEnumerable<WorkItemInfo> stories)
+    private void OnStorySelected(WorkItemInfo? item)
     {
-        foreach (var s in stories)
-            _selectedStories.Add(s);
-        _autocompleteSelected.Clear();
+        if (item != null)
+            _selectedStories.Add(item);
+        _searchValue = null;
         StateHasChanged();
     }
 
