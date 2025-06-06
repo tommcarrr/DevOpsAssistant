@@ -251,6 +251,34 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task GetValidationItemsAsync_Returns_Work_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
+        var itemsJson =
+            "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        var result = await service.GetValidationItemsAsync("Area");
+
+        Assert.Single(result);
+        Assert.Equal(1, result[0].Info.Id);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_workitems/edit/1", result[0].Info.Url);
+    }
+
+    [Fact]
     public void BuildStorySearchWiql_Contains_Conditions()
     {
         var query = InvokeBuildStorySearchWiql("test");

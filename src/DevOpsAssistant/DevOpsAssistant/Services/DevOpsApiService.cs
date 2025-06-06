@@ -437,29 +437,29 @@ public class DevOpsApiService
 
     private class WiqlResult
     {
-        public WorkItemRef[] WorkItems { get; } = Array.Empty<WorkItemRef>();
+        public WorkItemRef[] WorkItems { get; set; } = Array.Empty<WorkItemRef>();
     }
 
     private class WorkItemRef
     {
-        public int Id { get; }
+        public int Id { get; set; }
     }
 
     private class WorkItemsResult
     {
-        public WorkItem[] Value { get; } = Array.Empty<WorkItem>();
+        public WorkItem[] Value { get; set; } = Array.Empty<WorkItem>();
     }
 
     private class WorkItem
     {
-        public int Id { get; }
-        public Dictionary<string, JsonElement> Fields { get; } = new();
-        public Relation[]? Relations { get; }
+        public int Id { get; set; }
+        public Dictionary<string, JsonElement> Fields { get; set; } = new();
+        public Relation[]? Relations { get; set; }
     }
 
     private class Relation
     {
-        public string Rel { get; } = string.Empty;
-        public string Url { get; } = string.Empty;
+        public string Rel { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 }
