@@ -252,6 +252,7 @@ public class DevOpsApiServiceTests
 
         Assert.Contains("User Story", query);
         Assert.Contains("CONTAINS 'test'", query);
+        Assert.Contains("ORDER BY [System.ChangedDate] DESC", query);
     }
 
     [Fact]

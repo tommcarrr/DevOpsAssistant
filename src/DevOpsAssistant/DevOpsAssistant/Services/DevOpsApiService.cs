@@ -306,14 +306,23 @@ public class DevOpsApiService
         if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
             return new List<WorkItemInfo>();
 
-        var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20);
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20).ToArray();
         var idList = string.Join(',', ids);
         var itemsResult = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
         var list = new List<WorkItemInfo>();
         if (itemsResult?.Value != null)
         {
+            var dict = new Dictionary<int, WorkItem>();
             foreach (var w in itemsResult.Value)
             {
+                dict[w.Id] = w;
+            }
+
+            foreach (var id in ids)
+            {
+                if (!dict.TryGetValue(id, out var w))
+                    continue;
+
                 list.Add(new WorkItemInfo
                 {
                     Id = w.Id,
@@ -422,7 +431,7 @@ public class DevOpsApiService
     private static string BuildStorySearchWiql(string term)
     {
         term = term.Replace("'", "''");
-        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'User Story' AND [System.Title] CONTAINS '{term}' ORDER BY [System.Id]";
+        return $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'User Story' AND [System.Title] CONTAINS '{term}' ORDER BY [System.ChangedDate] DESC";
     }
 
     private class WiqlResult
