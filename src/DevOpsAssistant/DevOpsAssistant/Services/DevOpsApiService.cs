@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
@@ -44,6 +45,62 @@ public class DevOpsApiService
         return $"https://dev.azure.com/{config.Organization}/{config.Project}/_workitems/edit/";
     }
 
+    private async Task<T?> GetJsonAsync<T>(string url)
+    {
+        var response = await _httpClient.GetAsync(url);
+        if (!response.IsSuccessStatusCode)
+            await HandleError(response);
+        return await response.Content.ReadFromJsonAsync<T>();
+    }
+
+    private async Task<T?> PostJsonAsync<T>(string url, object body)
+    {
+        var response = await _httpClient.PostAsJsonAsync(url, body);
+        if (!response.IsSuccessStatusCode)
+            await HandleError(response);
+        return await response.Content.ReadFromJsonAsync<T>();
+    }
+
+    private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
+    {
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+            await HandleError(response);
+        return response;
+    }
+
+    private static async Task HandleError(HttpResponseMessage response)
+    {
+        string message = response.StatusCode switch
+        {
+            HttpStatusCode.Unauthorized => "Authentication failed. Please verify your PAT token.",
+            HttpStatusCode.Forbidden => "Access denied. Please check your PAT permissions.",
+            HttpStatusCode.NotFound => "The requested project was not found.",
+            _ => string.Empty
+        };
+
+        var content = await response.Content.ReadAsStringAsync();
+        try
+        {
+            var doc = JsonDocument.Parse(content);
+            if (doc.RootElement.TryGetProperty("message", out var msg))
+            {
+                var detail = msg.GetString();
+                if (!string.IsNullOrWhiteSpace(detail))
+                    message = string.IsNullOrWhiteSpace(message) ? detail : $"{message} ({detail})";
+            }
+        }
+        catch
+        {
+            // ignore JSON parse errors
+        }
+
+        if (string.IsNullOrWhiteSpace(message))
+            message = $"Request failed with status code {(int)response.StatusCode} ({response.ReasonPhrase})";
+
+        throw new InvalidOperationException(message);
+    }
+
     public async Task<List<WorkItemNode>> GetWorkItemHierarchyAsync(string areaPath)
     {
         var config = GetValidatedConfig();
@@ -53,10 +110,7 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildEpicsWiql(areaPath);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -120,8 +174,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
 
         var result =
-            await _httpClient.GetFromJsonAsync<JsonElement>(
-                $"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
+            await GetJsonAsync<JsonElement>($"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
         var list = new List<string>();
         if (result.TryGetProperty("children", out var children))
             foreach (var child in children.EnumerateArray())
@@ -140,10 +193,7 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildValidationWiql(areaPath);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -152,7 +202,7 @@ public class DevOpsApiService
         var fetchTasks = ids.Chunk(200).Select(chunk =>
         {
             var idList = string.Join(',', chunk);
-            return _httpClient.GetFromJsonAsync<WorkItemsResult>(
+            return GetJsonAsync<WorkItemsResult>(
                 $"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
         }).ToArray();
 
@@ -249,7 +299,7 @@ public class DevOpsApiService
             var batch = idsToFetch.Except(fetched).Take(200).ToArray();
             fetched.UnionWith(batch);
             var idList = string.Join(',', batch);
-            var result = await _httpClient.GetFromJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+            var result = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
             if (result?.Value == null) continue;
             foreach (var w in result.Value)
                 if (items.TryAdd(w.Id, w))
@@ -312,8 +362,7 @@ public class DevOpsApiService
         {
             Content = content
         };
-        var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        await SendAsync(request);
     }
 
     public async Task<List<WorkItemInfo>> SearchUserStoriesAsync(string term)
@@ -325,18 +374,14 @@ public class DevOpsApiService
         var itemUrlBase = BuildItemUrlBase(config);
 
         var wiql = BuildStorySearchWiql(term);
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
         var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20).ToArray();
         var idList = string.Join(',', ids);
         var itemsResult =
-            await _httpClient.GetFromJsonAsync<WorkItemsResult>(
-                $"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
+            await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
         var list = new List<WorkItemInfo>();
         if (itemsResult?.Value != null)
         {
@@ -379,7 +424,7 @@ public class DevOpsApiService
             fetched.UnionWith(batch);
             var idList = string.Join(',', batch);
             var result =
-                await _httpClient.GetFromJsonAsync<WorkItemsResult>(
+                await GetJsonAsync<WorkItemsResult>(
                     $"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
             if (result?.Value == null) continue;
             foreach (var w in result.Value)
@@ -457,10 +502,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
 
         var wiql = BuildMetricsWiql(areaPath, startDate ?? DateTime.Today.AddDays(-84));
-        var wiqlResponse =
-            await _httpClient.PostAsJsonAsync($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
-        wiqlResponse.EnsureSuccessStatusCode();
-        var wiqlResult = await wiqlResponse.Content.ReadFromJsonAsync<WiqlResult>();
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
 
@@ -470,8 +512,7 @@ public class DevOpsApiService
             .Select(chunk =>
             {
                 var idList = string.Join(',', chunk);
-                return _httpClient.GetFromJsonAsync<WorkItemsResult>(
-                    $"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate,Microsoft.VSTS.Scheduling.StoryPoints,Microsoft.VSTS.Scheduling.OriginalEstimate&api-version={ApiVersion}");
+                return GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate,Microsoft.VSTS.Scheduling.StoryPoints,Microsoft.VSTS.Scheduling.OriginalEstimate&api-version={ApiVersion}");
             })
             .ToArray();
 

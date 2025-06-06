@@ -17,6 +17,10 @@
         </MudButton>
     </MudAlert>
 }
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+}
 else
 {
     <MudAlert Severity="Severity.Info" Class="mb-4">
@@ -78,12 +82,21 @@ else if (_results != null)
     private bool _hasRules;
     private string[] _activeRules = [];
     private List<ResultItem>? _results;
+    private string? _error;
 
     protected override async Task OnInitializedAsync()
     {
-        _backlogs = await ApiService.GetBacklogsAsync();
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
+        try
+        {
+            _backlogs = await ApiService.GetBacklogsAsync();
+            if (_backlogs.Length > 0)
+                _path = _backlogs[0];
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
         ComputeRules();
     }
 
@@ -97,6 +110,11 @@ else if (_results != null)
         {
             var items = await ApiService.GetValidationItemsAsync(_path);
             _results = Validate(items);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
         }
         finally
         {
