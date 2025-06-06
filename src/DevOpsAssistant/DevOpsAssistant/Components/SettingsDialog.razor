@@ -15,9 +15,18 @@
             </MudTabPanel>
             <MudTabPanel Text="Validation Rules">
                 <MudStack Spacing="1">
+                    <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.EpicHasDescription" Label="Epic has description" />
+
+                    <MudDivider Class="my-2" />
+
+                    <MudText Typo="Typo.h6" Class="mt-2">Feature</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasDescription" Label="Feature has description" />
                     <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasParent" Label="Feature has parent" />
+
+                    <MudDivider Class="my-2" />
+
+                    <MudText Typo="Typo.h6" Class="mt-2">User Story</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasDescription" Label="Story has description" />
                     <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasParent" Label="Story has parent" />
                     <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasStoryPoints" Label="Story has story points" />
