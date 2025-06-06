@@ -45,7 +45,11 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 {
     <MudPaper Class="pa-2">
         <MudStack Spacing="2">
-            <MudText Class="white-space-pre-line">@_prompt</MudText>
+            <MudTextField T="string"
+                          Text="@_prompt"
+                          Lines="10"
+                          ReadOnly="true"
+                          Class="w-100" />
             <MudButton Variant="Variant.Text"
                        StartIcon="@Icons.Material.Filled.ContentCopy"
                        OnClick="CopyPrompt">
