@@ -245,7 +245,7 @@ public class DevOpsApiService
     {
         areaPath = NormalizeAreaPath(areaPath);
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.State] IN ('New', 'Active') AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
     }
 
     private static void ComputeStatus(WorkItemNode node)
