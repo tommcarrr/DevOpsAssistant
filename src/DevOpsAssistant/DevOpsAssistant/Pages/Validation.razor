@@ -56,11 +56,11 @@ else if (_results != null)
     }
     else
     {
-        <MudPaper Class="pa-2">
-            <MudList T="ResultItem" Dense="true">
+        <MudPaper Class="pa-2 work-item-container">
+            <MudList T="ResultItem" Dense="true" Class="work-item-tree">
                 @foreach (var r in _results)
                 {
-                    <MudListItem T="ResultItem">
+                    <MudListItem T="ResultItem" Class="@GetItemClass(r.Info.WorkItemType)">
                         <MudLink Href="@r.Info.Url" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
                         <br/>
                         <span class="text-secondary">@string.Join(", ", r.Violations)</span>
@@ -167,6 +167,19 @@ else if (_results != null)
     {
         public WorkItemInfo Info { get; set; } = new();
         public List<string> Violations { get; set; } = [];
+    }
+
+    private static string GetItemClass(string type)
+    {
+        return type.ToLowerInvariant() switch
+        {
+            "epic" => "work-item-epic",
+            "feature" => "work-item-feature",
+            "user story" => "work-item-story",
+            "task" => "work-item-task",
+            "bug" => "work-item-bug",
+            _ => string.Empty
+        };
     }
 
 }
