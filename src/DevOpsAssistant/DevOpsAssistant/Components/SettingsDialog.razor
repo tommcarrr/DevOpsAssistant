@@ -2,8 +2,8 @@
 @using DevOpsAssistant.Services
 @inject DevOpsConfigService ConfigService
 
-<MudDialog>
-    <MudDialogContent Class="pa-4">
+<MudDialog ContentClass="pa-4" ActionsClass="pa-4">
+    <DialogContent>
         <MudTabs>
             <MudTabPanel Text="General">
                 <MudStack Spacing="2">
@@ -26,11 +26,11 @@
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
-    </MudDialogContent>
-    <MudDialogActions Class="pa-4">
+    </DialogContent>
+    <DialogActions>
         <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
         <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
-    </MudDialogActions>
+    </DialogActions>
 </MudDialog>
 
 @code {
