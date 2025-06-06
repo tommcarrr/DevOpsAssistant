@@ -1,6 +1,8 @@
 @page "/release-notes"
 @using DevOpsAssistant.Services
+@using Microsoft.JSInterop
 @inject DevOpsApiService ApiService
+@inject IJSRuntime JS
 
 <PageTitle>Release Notes Prompt</PageTitle>
 
@@ -11,7 +13,7 @@
                      SearchFunc="SearchStories"
                      ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
                      @bind-SelectedValues="_selectedStories" />
-    <MudButton Class="mt-2" Color="Color.Primary" OnClick="Generate">Generate Prompt</MudButton>
+    <MudButton Class="mt-2" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
 </MudPaper>
 
 @if (_loading)
@@ -21,12 +23,17 @@
 else if (!string.IsNullOrWhiteSpace(_prompt))
 {
     <MudPaper Class="pa-2">
-        <MudText Class="white-space-pre-line">@_prompt</MudText>
+        <MudStack Spacing="2">
+            <MudText Class="white-space-pre-line">@_prompt</MudText>
+            <MudButton Variant="Variant.Text"
+                       StartIcon="@Icons.Material.Filled.ContentCopy"
+                       OnClick="CopyPrompt">Copy</MudButton>
+        </MudStack>
     </MudPaper>
 }
 
 @code {
-    private List<WorkItemInfo> _selectedStories = new();
+    private HashSet<WorkItemInfo> _selectedStories = new();
     private bool _loading;
     private string? _prompt;
 
@@ -52,6 +59,12 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             _loading = false;
         }
+    }
+
+    private async Task CopyPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(_prompt))
+            await JS.InvokeVoidAsync("copyText", _prompt);
     }
 
     private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details)
