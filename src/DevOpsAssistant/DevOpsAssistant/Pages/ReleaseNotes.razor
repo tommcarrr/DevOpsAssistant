@@ -13,6 +13,10 @@
     prompt summarizing them for release notes. Use the copy button to
     copy the generated text to the clipboard.
 </MudAlert>
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+}
 
 <MudPaper Class="p-4 mb-4">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
@@ -74,12 +78,23 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;
+    private string? _error;
 
-    private Task<IEnumerable<WorkItemInfo>> SearchStories(string value, CancellationToken _)
+    private async Task<IEnumerable<WorkItemInfo>> SearchStories(string value, CancellationToken _)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
-            return Task.FromResult<IEnumerable<WorkItemInfo>>(Array.Empty<WorkItemInfo>());
-        return ApiService.SearchUserStoriesAsync(value).ContinueWith(t => (IEnumerable<WorkItemInfo>)t.Result);
+            return Array.Empty<WorkItemInfo>();
+        try
+        {
+            var result = await ApiService.SearchUserStoriesAsync(value);
+            _error = null;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            return Array.Empty<WorkItemInfo>();
+        }
     }
 
     private void OnStorySelected(WorkItemInfo? item)
@@ -106,6 +121,11 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             var ids = _selectedStories.Select(s => s.Id);
             var details = await ApiService.GetStoryHierarchyDetailsAsync(ids);
             _prompt = BuildPrompt(details);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
         }
         finally
         {
