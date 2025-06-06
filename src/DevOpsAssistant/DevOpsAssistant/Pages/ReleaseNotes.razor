@@ -12,9 +12,31 @@
                      MultiSelection="true"
                      SearchFunc="SearchStories"
                      ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                     @bind-SelectedValues="_selectedStories" />
+                     SelectedValues="_autocompleteSelected"
+                     SelectedValuesChanged="OnSelectedStoriesChanged" />
     <MudButton Class="mt-2" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
 </MudPaper>
+
+@if (_selectedStories.Any())
+{
+    <MudTable Items="_selectedStories" Dense="true" Class="mb-4">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.Id</MudTd>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
+                               Size="Size.Small"
+                               OnClick="(() => Remove(context))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
 
 @if (_loading)
 {
@@ -34,6 +56,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
 
 @code {
     private HashSet<WorkItemInfo> _selectedStories = new();
+    private HashSet<WorkItemInfo> _autocompleteSelected = new();
     private bool _loading;
     private string? _prompt;
 
@@ -42,6 +65,20 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
             return Task.FromResult<IEnumerable<WorkItemInfo>>(Array.Empty<WorkItemInfo>());
         return ApiService.SearchUserStoriesAsync(value).ContinueWith(t => (IEnumerable<WorkItemInfo>)t.Result);
+    }
+
+    private void OnSelectedStoriesChanged(IEnumerable<WorkItemInfo> stories)
+    {
+        foreach (var s in stories)
+            _selectedStories.Add(s);
+        _autocompleteSelected.Clear();
+        StateHasChanged();
+    }
+
+    private void Remove(WorkItemInfo story)
+    {
+        _selectedStories.Remove(story);
+        StateHasChanged();
     }
 
     private async Task Generate()
