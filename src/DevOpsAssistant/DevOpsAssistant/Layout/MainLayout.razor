@@ -44,6 +44,11 @@
 
     private bool _drawerOpen = true;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+    }
+
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;

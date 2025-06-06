@@ -16,6 +16,4 @@ builder.Services.AddScoped<DevOpsConfigService>();
 builder.Services.AddScoped<DevOpsApiService>();
 
 var host = builder.Build();
-var configService = host.Services.GetRequiredService<DevOpsConfigService>();
-await configService.LoadAsync();
 await host.RunAsync();
