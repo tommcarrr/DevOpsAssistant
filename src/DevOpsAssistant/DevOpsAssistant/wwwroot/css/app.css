@@ -105,29 +105,25 @@ code {
 .work-item-epic {
     border-left: 3px solid #F7630C;
     padding-left: 4px;
-    color: #F7630C;
 }
 
 .work-item-feature {
     border-left: 3px solid #773B93;
     padding-left: 4px;
-    color: #773B93;
 }
 
+/* Stories should be highlighted in blue to match Azure DevOps */
 .work-item-story {
-    border-left: 3px solid #207752;
+    border-left: 3px solid #0078D4;
     padding-left: 4px;
-    color: #207752;
 }
 
 .work-item-task {
     border-left: 3px solid #0078D4;
     padding-left: 4px;
-    color: #0078D4;
 }
 
 .work-item-bug {
     border-left: 3px solid #D13438;
     padding-left: 4px;
-    color: #D13438;
 }

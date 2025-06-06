@@ -1,13 +1,36 @@
 @page "/validation"
+@using DevOpsAssistant.Components
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
+@inject IDialogService DialogService
 
 <PageTitle>Validation</PageTitle>
 
-<MudAlert Severity="Severity.Info" Class="mb-4">
-    Select a backlog and click <b>Check</b> to validate work items against
-    your configured rules. Any violations will be listed below.
-</MudAlert>
+@if (!_hasRules)
+{
+    <MudAlert Severity="Severity.Warning" Class="mb-4">
+        No validation rules are configured.
+        <MudButton Variant="Variant.Text"
+                   StartIcon="@Icons.Material.Filled.Settings"
+                   OnClick="OpenSettings" Class="ms-2">
+            Open Settings
+        </MudButton>
+    </MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mb-4">
+        Select a backlog and click <b>Check</b> to validate work items against
+        your configured rules. Any violations will be listed below.
+        <MudText Typo="Typo.subtitle2" Class="mt-2">Rules:</MudText>
+        <MudList T="string" Dense="true" Class="ms-4">
+            @foreach (var r in _activeRules)
+            {
+                <MudListItem T="string">@r</MudListItem>
+            }
+        </MudList>
+    </MudAlert>
+}
 
 <MudPaper Class="p-4 mb-4">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
@@ -17,7 +40,7 @@
                 <MudSelectItem Value="@b">@b</MudSelectItem>
             }
         </MudSelect>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Check</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules">Check</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -52,6 +75,8 @@ else if (_results != null)
     private string _path = string.Empty;
     private string[] _backlogs = [];
     private bool _loading;
+    private bool _hasRules;
+    private string[] _activeRules = [];
     private List<ResultItem>? _results;
 
     protected override async Task OnInitializedAsync()
@@ -59,10 +84,13 @@ else if (_results != null)
         _backlogs = await ApiService.GetBacklogsAsync();
         if (_backlogs.Length > 0)
             _path = _backlogs[0];
+        ComputeRules();
     }
 
     private async Task Load()
     {
+        if (!_hasRules)
+            return;
         _loading = true;
         StateHasChanged();
         try
@@ -106,6 +134,33 @@ else if (_results != null)
         }
 
         return list;
+    }
+
+    private void ComputeRules()
+    {
+        var r = ConfigService.Config.Rules;
+        var list = new List<string>();
+        if (r.EpicHasDescription) list.Add("Epics must have a description");
+        if (r.FeatureHasDescription) list.Add("Features must have a description");
+        if (r.FeatureHasParent) list.Add("Features must have a parent");
+        if (r.StoryHasDescription) list.Add("Stories must have a description");
+        if (r.StoryHasParent) list.Add("Stories must have a parent");
+        if (r.StoryHasStoryPoints) list.Add("Stories must have story points");
+        if (r.StoryHasAcceptanceCriteria) list.Add("Stories must have acceptance criteria");
+        if (r.StoryHasAssignee) list.Add("Stories must have an assignee");
+        _activeRules = list.ToArray();
+        _hasRules = _activeRules.Length > 0;
+    }
+
+    private async Task OpenSettings()
+    {
+        var dialog = await DialogService.ShowAsync<SettingsDialog>("Settings");
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            ComputeRules();
+            StateHasChanged();
+        }
     }
 
     private class ResultItem
