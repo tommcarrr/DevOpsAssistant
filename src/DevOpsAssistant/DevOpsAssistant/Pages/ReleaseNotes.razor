@@ -88,7 +88,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             var result = await ApiService.SearchUserStoriesAsync(value);
             _error = null;
-            return result;
+            return result.Where(r => !_selectedStories.Contains(r));
         }
         catch (Exception ex)
         {
