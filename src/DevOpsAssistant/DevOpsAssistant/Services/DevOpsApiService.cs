@@ -174,8 +174,15 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
 
         var result =
-            await GetJsonAsync<JsonElement>($"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
+            await GetJsonAsync<JsonElement>(
+                $"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
         var list = new List<string>();
+        if (result.TryGetProperty("path", out var rootPath))
+        {
+            var p = rootPath.GetString();
+            if (!string.IsNullOrEmpty(p))
+                list.Add(p);
+        }
         if (result.TryGetProperty("children", out var children))
             foreach (var child in children.EnumerateArray())
                 ExtractPaths(child, list);
