@@ -1,8 +1,12 @@
 using System.Reflection;
+using System.Net;
+using System.Threading;
+using System.Linq;
 using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DevOpsAssistant.Tests.Pages;
 
@@ -47,6 +51,40 @@ public class ReleaseNotesPageTests : ComponentTestBase
         var set = (HashSet<WorkItemInfo>)setField.GetValue(page.Instance)!;
         Assert.Contains(item, set);
         Assert.Contains("Test", page.Markup);
+    }
+
+    [Fact]
+    public async Task SearchStories_Filters_Selected_Items()
+    {
+        var config = SetupServices();
+        await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+
+        var wiqlJson = "{\"workItems\":[{\"id\":1},{\"id\":2}]}";
+        var itemsJson =
+            "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story 1\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}},{\"id\":2,\"fields\":{\"System.Title\":\"Story 2\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        Services.AddSingleton(new DevOpsApiService(client, config));
+
+        var page = RenderWithProvider<TestPage>();
+        var setField = typeof(ReleaseNotes).GetField("_selectedStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var set = (HashSet<WorkItemInfo>)setField.GetValue(page.Instance)!;
+        set.Add(new WorkItemInfo { Id = 1, Title = "Story 1" });
+
+        var method = typeof(ReleaseNotes).GetMethod("SearchStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var task = (Task<IEnumerable<WorkItemInfo>>)method.Invoke(page.Instance, ["Story", CancellationToken.None])!;
+        var result = (await task).ToList();
+
+        Assert.Single(result);
+        Assert.Equal(2, result[0].Id);
     }
 
     private class TestPage : ReleaseNotes
