@@ -301,9 +301,11 @@ public class DevOpsApiService
         var fetched = new HashSet<int>();
         var items = new Dictionary<int, WorkItem>();
 
-        while (idsToFetch.Except(fetched).Any())
+        while (true)
         {
             var batch = idsToFetch.Except(fetched).Take(200).ToArray();
+            if (batch.Length == 0)
+                break;
             fetched.UnionWith(batch);
             var idList = string.Join(',', batch);
             var result = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
@@ -425,9 +427,11 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
         var itemUrlBase = BuildItemUrlBase(config);
 
-        while (idsToFetch.Except(fetched).Any())
+        while (true)
         {
             var batch = idsToFetch.Except(fetched).Take(200).ToArray();
+            if (batch.Length == 0)
+                break;
             fetched.UnionWith(batch);
             var idList = string.Join(',', batch);
             var result =
