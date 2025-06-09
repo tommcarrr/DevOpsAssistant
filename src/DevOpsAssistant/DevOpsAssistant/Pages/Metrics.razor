@@ -17,37 +17,25 @@
 }
 
 <MudPaper Class="p-4 mb-4">
-    <MudGrid>
-        <MudItem xs="12" md="3">
-            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-                @foreach (var b in _backlogs)
-                {
-                    <MudSelectItem Value="@b">@b</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="3">
-            <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
-                <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
-                <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="3">
-            <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
-        </MudItem>
-        <MudItem xs="12" md="3">
-            <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
-                <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
-                <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" md="3">
-            <MudStack Row="true" Spacing="1">
-                <MudButton Color="Color.Primary" OnClick="Load">Load</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
-            </MudStack>
-        </MudItem>
-    </MudGrid>
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+        <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+            @foreach (var b in _backlogs)
+            {
+                <MudSelectItem Value="@b">@b</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
+            <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
+            <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
+        </MudSelect>
+        <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
+        <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
+            <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
+            <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
+        </MudSelect>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
+    </MudStack>
 </MudPaper>
 
 @if (_loading)
