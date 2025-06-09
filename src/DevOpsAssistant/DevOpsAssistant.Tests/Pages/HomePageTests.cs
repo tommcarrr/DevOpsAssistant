@@ -7,12 +7,11 @@ namespace DevOpsAssistant.Tests.Pages;
 public class HomePageTests : ComponentTestBase
 {
     [Fact]
-    public void Home_Has_WorkItems_Link()
+    public void Home_Shows_Description()
     {
         SetupServices();
         var cut = RenderComponent<Home>();
 
-        Assert.Contains("href=\"epics-features\"", cut.Markup);
-        Assert.Contains("href=\"validation\"", cut.Markup);
+        Assert.Contains("DevOpsAssistant provides", cut.Markup);
     }
 }

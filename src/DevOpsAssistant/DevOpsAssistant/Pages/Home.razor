@@ -1,11 +1,6 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Home</PageTitle>
-
-<MudAlert Severity="Severity.Info" Class="mb-4">
-    Use the links below to access each tool. They let you view and manage
-    Azure DevOps work items.
-</MudAlert>
 
 <MudGrid>
     <MudItem xs="12">
@@ -13,13 +8,17 @@
     </MudItem>
     <MudItem xs="12">
         <MudPaper Class="pa-4">
-            <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List">Epics &amp; Features</MudNavLink>
-            <br/>
-            <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule">Validation</MudNavLink>
-            <br/>
-            <MudNavLink Href="release-notes" Icon="@Icons.Material.Filled.Article">Release Notes Prompt</MudNavLink>
-            <br/>
-            <MudNavLink Href="story-review" Icon="@Icons.Material.Filled.Check">Story Quality Prompt</MudNavLink>
+            <MudText Typo="Typo.body1">
+                DevOpsAssistant provides tools for viewing and updating Azure DevOps work items.
+                Use the navigation menu to access the following features:
+            </MudText>
+            <MudList T="string" Dense="true" Class="ms-4 mt-2">
+                <MudListItem T="string">Epics &amp; Features &mdash; visualize hierarchy and maintain parent states</MudListItem>
+                <MudListItem T="string">Story Validation &mdash; check items against configurable rules</MudListItem>
+                <MudListItem T="string">Release Notes &mdash; generate a summary prompt for completed stories</MudListItem>
+                <MudListItem T="string">Story Quality &mdash; review stories for INVEST compliance</MudListItem>
+                <MudListItem T="string">Metrics &mdash; analyze throughput and cycle time</MudListItem>
+            </MudList>
         </MudPaper>
     </MudItem>
 </MudGrid>
