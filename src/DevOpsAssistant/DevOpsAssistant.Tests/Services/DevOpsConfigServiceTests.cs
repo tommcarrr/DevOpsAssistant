@@ -15,6 +15,7 @@ public class DevOpsConfigServiceTests
             Project = "Proj",
             PatToken = "Token",
             DarkMode = true,
+            DefinitionOfReady = "DOR",
             Rules = new ValidationRules { EpicHasDescription = true }
         };
 
@@ -26,6 +27,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Proj", stored.Project);
         Assert.Equal("Token", stored.PatToken);
         Assert.True(stored.DarkMode);
+        Assert.Equal("DOR", stored.DefinitionOfReady);
         Assert.True(stored.Rules.EpicHasDescription);
     }
 
@@ -35,7 +37,11 @@ public class DevOpsConfigServiceTests
         var storage = new FakeLocalStorageService();
         var stored = new DevOpsConfig
         {
-            Organization = "Org", Project = "Proj", PatToken = "Token", DarkMode = true,
+            Organization = "Org",
+            Project = "Proj",
+            PatToken = "Token",
+            DarkMode = true,
+            DefinitionOfReady = "DOR",
             Rules = new ValidationRules { EpicHasDescription = true }
         };
         await storage.SetItemAsync("devops-config", stored);
@@ -47,6 +53,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Proj", service.Config.Project);
         Assert.Equal("Token", service.Config.PatToken);
         Assert.True(service.Config.DarkMode);
+        Assert.Equal("DOR", service.Config.DefinitionOfReady);
         Assert.True(service.Config.Rules.EpicHasDescription);
     }
 

@@ -60,6 +60,13 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [area, start])!;
     }
 
+    private static string InvokeBuildStoriesWiql(string area, string[] states)
+    {
+        var method =
+            typeof(DevOpsApiService).GetMethod("BuildStoriesWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, [area, states])!;
+    }
+
     [Fact]
     public void BuildEpicsWiql_Filters_Closed_Epics()
     {
@@ -310,6 +317,24 @@ public class DevOpsApiServiceTests
         var query = InvokeBuildMetricsWiql("Area", new DateTime(2024, 1, 1));
 
         Assert.Contains("2024-01-01", query);
+    }
+
+    [Fact]
+    public void BuildStoriesWiql_Includes_States_When_Provided()
+    {
+        var query = InvokeBuildStoriesWiql("Area", new[] { "New", "Active" });
+
+        Assert.Contains("'New'", query);
+        Assert.Contains("'Active'", query);
+        Assert.Contains("User Story", query);
+    }
+
+    [Fact]
+    public void BuildStoriesWiql_Omits_State_Filter_When_None()
+    {
+        var query = InvokeBuildStoriesWiql("Area", []);
+
+        Assert.DoesNotContain("System.State", query);
     }
 
     [Fact]

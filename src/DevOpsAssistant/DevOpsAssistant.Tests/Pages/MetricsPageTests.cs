@@ -29,7 +29,7 @@ public class MetricsPageTests : ComponentTestBase
         var periodType = typeof(Metrics).GetNestedType("PeriodMetrics", BindingFlags.NonPublic)!;
         var array = Array.CreateInstance(periodType, 1);
         var period = Activator.CreateInstance(periodType)!;
-        periodType.GetProperty("End")!.SetValue(period, new DateTime(2024,1,1));
+        periodType.GetProperty("End")!.SetValue(period, new DateTime(2024, 1, 1));
         periodType.GetProperty("AvgLeadTime")!.SetValue(period, 1.0);
         periodType.GetProperty("AvgCycleTime")!.SetValue(period, 2.0);
         periodType.GetProperty("Throughput")!.SetValue(period, 3);
