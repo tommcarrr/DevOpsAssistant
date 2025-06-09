@@ -514,6 +514,8 @@ public class DevOpsApiService
 
             WorkItemInfo? featureInfo = null;
             WorkItemInfo? epicInfo = null;
+            string featureDesc = string.Empty;
+            string epicDesc = string.Empty;
             var featureId = story.Relations?.FirstOrDefault(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse")?.Url
                 .Split('/').Last();
             if (featureId != null && int.TryParse(featureId, out var fid) && items.TryGetValue(fid, out var feature))
@@ -526,9 +528,13 @@ public class DevOpsApiService
                     WorkItemType = feature.Fields["System.WorkItemType"].GetString() ?? string.Empty,
                     Url = $"{itemUrlBase}{feature.Id}"
                 };
+                featureDesc = feature.Fields.TryGetValue("System.Description", out var fd)
+                    ? fd.GetString() ?? string.Empty
+                    : string.Empty;
                 var epicId = feature.Relations?.FirstOrDefault(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse")?.Url
                     .Split('/').Last();
                 if (epicId != null && int.TryParse(epicId, out var eid) && items.TryGetValue(eid, out var epic))
+                {
                     epicInfo = new WorkItemInfo
                     {
                         Id = epic.Id,
@@ -537,6 +543,10 @@ public class DevOpsApiService
                         WorkItemType = epic.Fields["System.WorkItemType"].GetString() ?? string.Empty,
                         Url = $"{itemUrlBase}{epic.Id}"
                     };
+                    epicDesc = epic.Fields.TryGetValue("System.Description", out var ed)
+                        ? ed.GetString() ?? string.Empty
+                        : string.Empty;
+                }
             }
 
             list.Add(new StoryHierarchyDetails
@@ -544,7 +554,9 @@ public class DevOpsApiService
                 Story = storyInfo,
                 Description = desc,
                 Feature = featureInfo,
-                Epic = epicInfo
+                Epic = epicInfo,
+                FeatureDescription = featureDesc,
+                EpicDescription = epicDesc
             });
         }
 

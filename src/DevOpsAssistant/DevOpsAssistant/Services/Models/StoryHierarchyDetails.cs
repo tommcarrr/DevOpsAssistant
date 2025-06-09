@@ -6,4 +6,6 @@ public class StoryHierarchyDetails
     public string Description { get; set; } = string.Empty;
     public WorkItemInfo? Feature { get; set; }
     public WorkItemInfo? Epic { get; set; }
+    public string FeatureDescription { get; set; } = string.Empty;
+    public string EpicDescription { get; set; } = string.Empty;
 }

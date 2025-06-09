@@ -114,8 +114,20 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     {
         var items = details.Select(d => new
         {
-            Epic = d.Epic?.Title,
-            Feature = d.Feature?.Title,
+            Epic = d.Epic == null
+                ? null
+                : new
+                {
+                    d.Epic.Title,
+                    Description = Sanitize(d.EpicDescription)
+                },
+            Feature = d.Feature == null
+                ? null
+                : new
+                {
+                    d.Feature.Title,
+                    Description = Sanitize(d.FeatureDescription)
+                },
             Story = new { d.Story.Id, d.Story.Title, Description = Sanitize(d.Description) }
         });
         var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
