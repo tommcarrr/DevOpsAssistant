@@ -35,7 +35,9 @@ The application communicates with Azure DevOps using a Personal Access Token (PA
 
 1. Sign in to <https://dev.azure.com/>.
 2. Open your user menu and choose **Personal access tokens**.
-3. Select **New Token**, provide a name and expiration and grant at least **Work Items (Read & write)** scope.
+3. Select **New Token**, provide a name and a short expiration and grant only the
+   **Work Items (Read & write)** scope.
 4. Create the token and copy the value.
 
 Run the site and click the settings icon in the top right corner. Enter your organization, project and PAT token, then save. These values are stored in your browser's local storage.
+When you're done, click the **Sign Out** button in the top bar to clear the saved settings.

@@ -15,6 +15,7 @@
         </MudText>
         <MudSpacer/>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title="Sign Out"/>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" Class="mud-width-220" ClipMode="DrawerClipMode.Always">
@@ -65,6 +66,12 @@
         {
             StateHasChanged();
         }
+    }
+
+    private async Task SignOut()
+    {
+        await ConfigService.ClearAsync();
+        StateHasChanged();
     }
 
     private bool IsConfigMissing =>
