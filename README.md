@@ -24,6 +24,11 @@ dotnet run --project src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj
 
 The development server listens on <http://localhost:5000>.
 
+## Continuous Integration
+
+Pull requests trigger a GitHub Actions workflow which restores the solution and
+runs all tests. The workflow ensures builds remain healthy before merging.
+
 ## Obtaining a PAT token
 
 The application communicates with Azure DevOps using a Personal Access Token (PAT). To create one:
