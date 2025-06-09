@@ -191,6 +191,27 @@ public class DevOpsApiService
         return normalized;
     }
 
+    public async Task<string[]> GetStatesAsync()
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var result =
+            await GetJsonAsync<JsonElement>(
+                $"{baseUri}/workitemtypes/User%20Story/states?api-version={ApiVersion}");
+        var list = new List<string>();
+        if (result.TryGetProperty("value", out var values))
+            foreach (var s in values.EnumerateArray())
+                if (s.TryGetProperty("name", out var name))
+                {
+                    var n = name.GetString();
+                    if (!string.IsNullOrWhiteSpace(n))
+                        list.Add(n);
+                }
+        return list.ToArray();
+    }
+
     public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath)
     {
         var config = GetValidatedConfig();
@@ -247,6 +268,22 @@ public class DevOpsApiService
         }
 
         return list;
+    }
+
+    public async Task<List<StoryHierarchyDetails>> GetStoriesAsync(string areaPath, IEnumerable<string> states)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+
+        var wiql = BuildStoriesWiql(areaPath, states);
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
+            return [];
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
+        return await GetStoryHierarchyDetailsAsync(ids);
     }
 
     private static void ExtractPaths(JsonElement el, List<string> list)
@@ -328,6 +365,15 @@ public class DevOpsApiService
         areaPath = NormalizeAreaPath(areaPath);
         return
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.State] IN ('New', 'Active') AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
+    }
+
+    private static string BuildStoriesWiql(string areaPath, IEnumerable<string> states)
+    {
+        areaPath = NormalizeAreaPath(areaPath);
+        var stateList = string.Join(", ", states.Select(s => $"'{s.Replace("'", "''")}'"));
+        var stateCondition = string.IsNullOrWhiteSpace(stateList) ? string.Empty : $" AND [System.State] IN ({stateList})";
+        return
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story'{stateCondition} ORDER BY [System.Id]";
     }
 
     private static void ComputeStatus(WorkItemNode node)

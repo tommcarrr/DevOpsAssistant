@@ -11,6 +11,11 @@
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label="Dark Mode"/>
                 </MudStack>
             </MudTabPanel>
+            <MudTabPanel Text="Story Quality">
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.DefinitionOfReady" Label="Definition of Ready" Lines="3"/>
+                </MudStack>
+            </MudTabPanel>
             <MudTabPanel Text="Validation Rules">
                 <MudStack Spacing="1">
                     <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
@@ -55,6 +60,7 @@
             Project = cfg.Project,
             PatToken = cfg.PatToken,
             DarkMode = cfg.DarkMode,
+            DefinitionOfReady = cfg.DefinitionOfReady,
             Rules = new ValidationRules
             {
                 EpicHasDescription = cfg.Rules.EpicHasDescription,
