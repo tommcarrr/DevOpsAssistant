@@ -120,15 +120,13 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         });
         var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
         var sb = new StringBuilder();
-        sb.AppendLine("You are an Agile coach. Review each story for adherence to the INVEST principles.");
+        sb.AppendLine("You are an Agile coach. Review the following user stories for adherence to the INVEST principles (Independent, Negotiable, Valuable, Estimable, Small, Testable). For each story, provide a clear evaluation of which principles are met or not met, and include actionable coaching suggestions to improve any that are lacking. Be precise and constructive.");
         if (!string.IsNullOrWhiteSpace(dor))
         {
             sb.AppendLine();
             sb.AppendLine("Also confirm each story meets this Definition of Ready:");
             sb.AppendLine(dor);
         }
-        sb.AppendLine();
-        sb.AppendLine("Provide feedback for each story.");
         sb.AppendLine();
         sb.AppendLine("Work items:");
         sb.AppendLine(json);
