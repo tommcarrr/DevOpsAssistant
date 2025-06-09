@@ -50,4 +50,16 @@ public class MainLayoutTests : ComponentTestBase
         Assert.DoesNotContain("Configuration Required", cut.Markup);
         Assert.DoesNotContain("mud-nav-link-disabled", cut.Markup);
     }
+
+    [Fact]
+    public async Task SignOut_Clears_Config()
+    {
+        var config = SetupServices();
+        await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+
+        var cut = RenderComponent<MainLayout>();
+        cut.Find("button[title='Sign Out']").Click();
+
+        Assert.Contains("Configuration Required", cut.Markup);
+    }
 }

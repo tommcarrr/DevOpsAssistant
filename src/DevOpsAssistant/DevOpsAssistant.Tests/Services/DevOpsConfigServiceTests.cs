@@ -71,4 +71,17 @@ public class DevOpsConfigServiceTests
         Assert.False(service.Config.DarkMode);
         Assert.NotNull(service.Config.Rules);
     }
+
+    [Fact]
+    public async Task ClearAsync_Removes_Config_And_Resets_Property()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "Token" });
+
+        await service.ClearAsync();
+
+        Assert.Equal(string.Empty, service.Config.Organization);
+        Assert.False(await storage.ContainKeyAsync("devops-config"));
+    }
 }

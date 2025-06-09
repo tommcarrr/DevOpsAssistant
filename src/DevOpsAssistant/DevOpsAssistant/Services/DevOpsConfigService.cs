@@ -25,4 +25,10 @@ public class DevOpsConfigService
         Config = config;
         await _localStorage.SetItemAsync(StorageKey, config);
     }
+
+    public async Task ClearAsync()
+    {
+        Config = new DevOpsConfig();
+        await _localStorage.RemoveItemAsync(StorageKey);
+    }
 }
