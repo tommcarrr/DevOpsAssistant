@@ -14,6 +14,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
       - name: Test
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-restore --verbosity normal
