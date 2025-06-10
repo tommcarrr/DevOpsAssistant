@@ -154,6 +154,21 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void ComputeStatus_Uses_Child_Expected_State()
+    {
+        var root = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
+        var feature = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
+        feature.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Closed" } });
+        root.Children.Add(feature);
+
+        InvokeComputeStatus(root);
+
+        Assert.Equal("Closed", feature.ExpectedState);
+        Assert.Equal("Closed", root.ExpectedState);
+        Assert.False(root.StatusValid);
+    }
+
+    [Fact]
     public void FilterClosedEpics_Removes_Closed_Epics()
     {
         var closed = new WorkItemNode { Info = new WorkItemInfo { WorkItemType = "Epic", State = "Closed" } };
