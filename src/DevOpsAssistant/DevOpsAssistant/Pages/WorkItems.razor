@@ -211,11 +211,11 @@ else if (_roots != null)
         }
 
         var allClosed = node.Children.All(c =>
-            c.Info.State.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
-            c.Info.State.Equals("Done", StringComparison.OrdinalIgnoreCase));
+            c.ExpectedState.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
+            c.ExpectedState.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
+            c.ExpectedState.Equals("Done", StringComparison.OrdinalIgnoreCase));
 
-        var anyNotNew = node.Children.Any(c => !c.Info.State.Equals("New", StringComparison.OrdinalIgnoreCase));
+        var anyNotNew = node.Children.Any(c => !c.ExpectedState.Equals("New", StringComparison.OrdinalIgnoreCase));
 
         var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
 
