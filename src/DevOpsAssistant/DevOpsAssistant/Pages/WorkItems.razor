@@ -32,6 +32,9 @@
 }
 else if (_roots != null)
 {
+    <MudStack Row="true" Spacing="2" Class="mb-2">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateAll" Disabled="@(!HasPendingUpdates)">Update All</MudButton>
+    </MudStack>
     <MudPaper Class="work-item-container">
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
             @foreach (var epic in _roots)
@@ -169,6 +172,49 @@ else if (_roots != null)
             _error = ex.Message;
         }
         StateHasChanged();
+    }
+
+    private async Task UpdateAll()
+    {
+        if (_roots == null)
+            return;
+
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            foreach (var node in EnumerateNodes(_roots).Where(n => !n.StatusValid))
+                await ApiService.UpdateWorkItemStateAsync(node.Info.Id, node.ExpectedState);
+
+            await Load();
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            _loading = false;
+        }
+    }
+
+    private bool HasPendingUpdates => _roots != null && EnumerateNodes(_roots).Any(n => !n.StatusValid);
+
+    private static IEnumerable<WorkItemNode> EnumerateNodes(IEnumerable<WorkItemNode> nodes)
+    {
+        foreach (var node in nodes)
+        {
+            yield return node;
+            foreach (var child in EnumerateNodes(node))
+                yield return child;
+        }
+    }
+
+    private static IEnumerable<WorkItemNode> EnumerateNodes(WorkItemNode node)
+    {
+        yield return node;
+        foreach (var child in node.Children)
+            foreach (var c in EnumerateNodes(child))
+                yield return c;
     }
 
     private WorkItemNode? FindRoot(WorkItemNode node)
