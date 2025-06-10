@@ -212,7 +212,7 @@ public class DevOpsApiService
         return list.ToArray();
     }
 
-    public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath)
+    public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath, IEnumerable<string> states)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
@@ -220,7 +220,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
         var itemUrlBase = BuildItemUrlBase(config);
 
-        var wiql = BuildValidationWiql(areaPath);
+        var wiql = BuildValidationWiql(areaPath, states);
         var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
@@ -360,11 +360,13 @@ public class DevOpsApiService
         return items;
     }
 
-    private static string BuildValidationWiql(string areaPath)
+    private static string BuildValidationWiql(string areaPath, IEnumerable<string> states)
     {
         areaPath = NormalizeAreaPath(areaPath);
+        var stateList = string.Join(", ", states.Select(s => $"'{s.Replace("'", "''")}'"));
+        var stateCondition = string.IsNullOrWhiteSpace(stateList) ? string.Empty : $" AND [System.State] IN ({stateList})";
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.State] IN ('New', 'Active') AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{stateCondition} AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
     }
 
     private static string BuildStoriesWiql(string areaPath, IEnumerable<string> states)
