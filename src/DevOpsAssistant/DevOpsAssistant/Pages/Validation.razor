@@ -24,7 +24,7 @@
 else
 {
     <MudAlert Severity="Severity.Info" Class="mb-4">
-        Select a backlog and click <b>Check</b> to validate work items against
+        Select a backlog and states then click <b>Check</b> to validate work items against
         your configured rules. Any violations will be listed below.
         <MudText Typo="Typo.subtitle2" Class="mt-2">Rules:</MudText>
         <MudList T="string" Dense="true" Class="ms-4">
@@ -42,6 +42,12 @@ else
             @foreach (var b in _backlogs)
             {
                 <MudSelectItem Value="@b">@b</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => OnStatesChanged(vals))" Label="States">
+            @foreach (var s in _states)
+            {
+                <MudSelectItem Value="@s">@s</MudSelectItem>
             }
         </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules">Check</MudButton>
@@ -78,6 +84,8 @@ else if (_results != null)
 @code {
     private string _path = string.Empty;
     private string[] _backlogs = [];
+    private string[] _states = [];
+    private HashSet<string> SelectedStates { get; set; } = new();
     private bool _loading;
     private bool _hasRules;
     private string[] _activeRules = [];
@@ -91,6 +99,8 @@ else if (_results != null)
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+            _states = await ApiService.GetStatesAsync();
+            SelectedStates = _states.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
@@ -108,7 +118,7 @@ else if (_results != null)
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetValidationItemsAsync(_path);
+            var items = await ApiService.GetValidationItemsAsync(_path, SelectedStates);
             _results = Validate(items);
             _error = null;
         }
@@ -152,6 +162,12 @@ else if (_results != null)
         }
 
         return list;
+    }
+
+    private Task OnStatesChanged(IEnumerable<string> values)
+    {
+        SelectedStates = new HashSet<string>(values);
+        return Task.CompletedTask;
     }
 
     private void ComputeRules()

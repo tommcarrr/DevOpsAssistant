@@ -68,8 +68,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
             _states = await ApiService.GetStatesAsync();
-            if (_states.Length > 0)
-                SelectedStates.Add(_states[0]);
+            SelectedStates = _states.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
