@@ -642,6 +642,74 @@ public class DevOpsApiService
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'User Story' AND [System.Title] CONTAINS '{term}' ORDER BY [System.ChangedDate] DESC";
     }
 
+    public async Task<List<WikiSearchResult>> SearchWikiPagesAsync(string term)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var url =
+            $"https://almsearch.dev.azure.com/{config.Organization}/{config.Project}/_apis/search/wikis?api-version=7.1-preview.1";
+        var result = await PostJsonAsync<JsonElement>(url, new { searchText = term });
+        var list = new List<WikiSearchResult>();
+        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("results", out var results))
+        {
+            foreach (var r in results.EnumerateArray())
+            {
+                var path = r.GetProperty("path").GetString() ?? string.Empty;
+                var wikiId = r.GetProperty("wiki").GetProperty("id").GetString() ?? string.Empty;
+                var id = r.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? string.Empty : string.Empty;
+                var urlProp = r.TryGetProperty("url", out var u) ? u.GetString() ?? string.Empty : string.Empty;
+                list.Add(new WikiSearchResult { WikiId = wikiId, Path = path, Id = id, Url = urlProp });
+            }
+        }
+        return list;
+    }
+
+    public async Task<string> GetWikiPageContentAsync(string wikiId, string path)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        path = Uri.EscapeDataString(path);
+        var url =
+            $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?path={path}&includeContent=true&api-version=7.1-preview.1";
+        var result = await GetJsonAsync<JsonElement>(url);
+        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("content", out var content))
+            return content.GetString() ?? string.Empty;
+        return string.Empty;
+    }
+
+    public async Task<int> CreateWorkItemAsync(string type, string title, string description, string areaPath, int? parentId = null)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var patches = new List<object>
+        {
+            new { op = "add", path = "/fields/System.Title", value = title },
+            new { op = "add", path = "/fields/System.Description", value = description },
+            new { op = "add", path = "/fields/System.AreaPath", value = areaPath }
+        };
+        if (parentId.HasValue)
+        {
+            var parentUrl = $"{BuildItemUrlBase(config)}{parentId.Value}";
+            patches.Add(new { op = "add", path = "/relations/-", value = new { rel = "System.LinkTypes.Hierarchy-Reverse", url = parentUrl } });
+        }
+
+        var content = new StringContent(JsonSerializer.Serialize(patches));
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json-patch+json");
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            $"{baseUri}/workitems/${Uri.EscapeDataString(type)}?api-version={ApiVersion}")
+        {
+            Content = content
+        };
+
+        var response = await SendAsync(request);
+        var doc = await response.Content.ReadFromJsonAsync<JsonElement>();
+        return doc.GetProperty("id").GetInt32();
+    }
+
     private class WiqlResult
     {
         public WorkItemRef[] WorkItems { get; set; } = [];
