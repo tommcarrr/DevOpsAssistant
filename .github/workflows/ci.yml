@@ -15,8 +15,17 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
+      - name: Start site
+        run: |
+          dotnet run --project src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj &
+          echo $! > site.pid
+          sleep 10
       - name: Test with coverage
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+        env:
+          STAGING_URL: http://localhost:5000
+      - name: Stop site
+        run: kill $(cat site.pid)
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
       - name: Generate coverage report

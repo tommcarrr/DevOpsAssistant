@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant", "DevOpsAs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.Tests", "DevOpsAssistant.Tests\DevOpsAssistant.Tests.csproj", "{7196AEE1-1A10-4DCC-83EC-E75F008668D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.SmokeTests", "DevOpsAssistant.SmokeTests\DevOpsAssistant.SmokeTests.csproj", "{89984139-0328-4ECF-B41D-3F10F8184076}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.UiTests", "DevOpsAssistant.UiTests\DevOpsAssistant.UiTests.csproj", "{89984139-0328-4ECF-B41D-3F10F8184076}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
