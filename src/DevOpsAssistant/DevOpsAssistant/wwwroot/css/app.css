@@ -127,3 +127,9 @@ code {
     border-left: 3px solid #D13438;
     padding-left: 4px;
 }
+
+/* layout */
+html, body { height: 100%; }
+#app { min-height: 100%; display: flex; flex-direction: column; }
+footer { margin-top: auto; }
+
