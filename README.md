@@ -29,9 +29,10 @@ The development server listens on <http://localhost:5000>.
 Pull requests trigger a GitHub Actions workflow which restores the solution and
 runs all tests. The workflow ensures builds remain healthy before merging.
 
-When changes are merged into the `main` branch, a separate workflow deploys the
-Blazor application to Azure Static Web Apps. Deployments do not run during pull
-requests.
+When changes are merged into the `main` branch, the deployment workflow first
+publishes the site to a staging environment. Smoke tests verify that each page
+loads correctly before the same build is promoted to production. Deployments do
+not run during pull requests.
 
 ## Obtaining a PAT token
 
