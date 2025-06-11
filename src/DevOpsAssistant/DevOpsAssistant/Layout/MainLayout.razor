@@ -63,7 +63,7 @@
     {
         var dialog = await DialogService.ShowAsync<SettingsDialog>("Settings");
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             StateHasChanged();
         }

@@ -273,6 +273,7 @@ public class DevOpsApiServiceTests
 
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Patch, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
         Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0",
             captured.RequestUri.ToString());
         var body = await captured.Content!.ReadAsStringAsync();
@@ -431,6 +432,7 @@ public class DevOpsApiServiceTests
 
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Post, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
         Assert.Equal("https://almsearch.dev.azure.com/Org/Proj/_apis/search/wikisearchresults?api-version=7.1",
             captured.RequestUri.ToString());
         var body = await captured.Content!.ReadAsStringAsync();

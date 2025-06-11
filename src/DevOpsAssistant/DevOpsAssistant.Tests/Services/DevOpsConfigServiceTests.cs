@@ -23,6 +23,7 @@ public class DevOpsConfigServiceTests
 
         Assert.Equal("Org", service.Config.Organization);
         var stored = await storage.GetItemAsync<DevOpsConfig>("devops-config");
+        Assert.NotNull(stored);
         Assert.Equal("Org", stored.Organization);
         Assert.Equal("Proj", stored.Project);
         Assert.Equal("Token", stored.PatToken);
