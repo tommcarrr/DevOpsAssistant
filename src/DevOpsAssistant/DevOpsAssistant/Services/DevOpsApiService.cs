@@ -781,7 +781,20 @@ public class DevOpsApiService
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?recursionLevel=Full&api-version=7.1-preview.1";
         var result = await GetJsonAsync<JsonElement>(url);
         if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("value", out var pages) && pages.GetArrayLength() > 0)
-            return ParseWikiPage(pages[0]);
+        {
+            JsonElement rootPage = default;
+            foreach (var p in pages.EnumerateArray())
+            {
+                if (p.TryGetProperty("path", out var path) && path.GetString() == "/")
+                {
+                    rootPage = p;
+                    break;
+                }
+            }
+            if (rootPage.ValueKind == JsonValueKind.Undefined)
+                rootPage = pages[0];
+            return ParseWikiPage(rootPage);
+        }
         return null;
     }
 
