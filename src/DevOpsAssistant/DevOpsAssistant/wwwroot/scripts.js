@@ -11,3 +11,12 @@ window.downloadCsv = function (filename, text) {
     link.click();
     URL.revokeObjectURL(url);
 };
+
+window.blazorCulture = {
+    get: function () {
+        return localStorage['BlazorCulture'];
+    },
+    set: function (value) {
+        localStorage['BlazorCulture'] = value;
+    }
+};
