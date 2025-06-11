@@ -25,3 +25,10 @@ The following guidelines apply to the entire repository and inform how Codex sho
 
 - Use `docker compose up --build` to run the site locally.
 
+## UI tests
+
+- Playwright tests live in `src/DevOpsAssistant/DevOpsAssistant.UiTests`.
+- Keep these tests current and add new coverage whenever the UI changes.
+- The CD workflow deploys to staging and then runs the Playwright tests against
+  that environment.
+
