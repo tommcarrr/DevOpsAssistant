@@ -1,0 +1,11 @@
+{
+  "value": [
+    {
+      "path": "/",
+      "subPages": [
+        { "path": "/Home", "subPages": [] },
+        { "path": "/Setup", "subPages": [] }
+      ]
+    }
+  ]
+}
