@@ -6,6 +6,7 @@ The following guidelines apply to the entire repository and inform how Codex sho
 
 - After modifying files, run `dotnet format --no-restore` to keep style consistent.
 - Run `dotnet restore` and then `dotnet test src/DevOpsAssistant/DevOpsAssistant.sln` to verify the solution builds and tests succeed.
+- Run `dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror` to ensure there are no Roslyn warnings.
 - If these commands fail because the environment lacks `dotnet`, note this in the PR's testing section.
 
 ## Commit guidelines

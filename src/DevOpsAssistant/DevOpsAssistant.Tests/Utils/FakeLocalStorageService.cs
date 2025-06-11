@@ -7,8 +7,10 @@ public class FakeLocalStorageService : ILocalStorageService
 {
     private readonly Dictionary<string, string?> _store = new();
 
+#pragma warning disable CS0067 // events are not used in tests
     public event EventHandler<ChangingEventArgs>? Changing;
     public event EventHandler<ChangedEventArgs>? Changed;
+#pragma warning restore CS0067
 
     public ValueTask ClearAsync(CancellationToken cancellationToken = default)
     {
@@ -21,26 +23,26 @@ public class FakeLocalStorageService : ILocalStorageService
         return new ValueTask<bool>(_store.ContainsKey(key));
     }
 
-    public ValueTask<T> GetItemAsync<T>(string key, CancellationToken cancellationToken = default)
+    public ValueTask<T?> GetItemAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         if (_store.TryGetValue(key, out var json))
         {
             var value = JsonSerializer.Deserialize<T>(json!);
-            return new ValueTask<T>(value!);
+            return ValueTask.FromResult<T?>(value);
         }
 
-        return new ValueTask<T>(default(T)!);
+        return ValueTask.FromResult<T?>(default);
     }
 
-    public ValueTask<string> GetItemAsStringAsync(string key, CancellationToken cancellationToken = default)
+    public ValueTask<string?> GetItemAsStringAsync(string key, CancellationToken cancellationToken = default)
     {
         _store.TryGetValue(key, out var value);
-        return new ValueTask<string>(value!);
+        return ValueTask.FromResult<string?>(value);
     }
 
-    public ValueTask<string> KeyAsync(int index, CancellationToken cancellationToken = default)
+    public ValueTask<string?> KeyAsync(int index, CancellationToken cancellationToken = default)
     {
-        return new ValueTask<string>(_store.Keys.ElementAt(index));
+        return ValueTask.FromResult<string?>(_store.Keys.ElementAt(index));
     }
 
     public ValueTask<IEnumerable<string>> KeysAsync(CancellationToken cancellationToken = default)
