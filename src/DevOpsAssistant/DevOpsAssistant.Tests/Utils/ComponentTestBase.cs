@@ -1,5 +1,8 @@
 using Bunit;
 using DevOpsAssistant.Services;
+using System.Net;
+using System.Net.Http;
+using DevOpsAssistant.Tests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +21,15 @@ public abstract class ComponentTestBase : TestContext
         Services.AddSingleton(config);
         if (includeApi)
             Services.AddSingleton(sp => new DevOpsApiService(new HttpClient(), config));
+        var client = new HttpClient(new FakeHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("1.0")
+            }))
+        { BaseAddress = new Uri("http://localhost") };
+        var versionSvc = new VersionService(client);
+        versionSvc.LoadAsync().GetAwaiter().GetResult();
+        Services.AddSingleton(versionSvc);
         return config;
     }
 

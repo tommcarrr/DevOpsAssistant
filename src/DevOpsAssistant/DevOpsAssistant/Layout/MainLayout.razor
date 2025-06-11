@@ -2,6 +2,7 @@
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
+@inject VersionService VersionService
 
 <MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode"/>
 <MudDialogProvider/>
@@ -42,6 +43,11 @@
             }
         </MudContainer>
     </MudMainContent>
+    <footer>
+        <MudText Typo="Typo.caption" Align="Align.Center" Class="pa-2">
+            Version @VersionService.Version
+        </MudText>
+    </footer>
 </MudLayout>
 
 @code {
@@ -50,6 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await VersionService.LoadAsync();
         await ConfigService.LoadAsync();
         StateHasChanged();
     }

@@ -62,4 +62,14 @@ public class MainLayoutTests : ComponentTestBase
 
         Assert.Contains("Configuration Required", cut.Markup);
     }
+
+    [Fact]
+    public void Footer_Shows_Version()
+    {
+        SetupServices();
+
+        var cut = RenderComponent<MainLayout>();
+
+        cut.WaitForAssertion(() => Assert.Contains("Version 1.0", cut.Markup));
+    }
 }
