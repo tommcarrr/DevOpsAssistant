@@ -648,7 +648,7 @@ public class DevOpsApiService
         ApplyAuthentication(config);
 
         var url =
-            $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/search/wikis?api-version=7.1-preview.1";
+            $"https://almsearch.dev.azure.com/{config.Organization}/{config.Project}/_apis/search/wikisearchresults?api-version=7.1";
         var result = await PostJsonAsync<JsonElement>(url, new { searchText = term });
         var list = new List<WikiSearchResult>();
         if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("results", out var results))

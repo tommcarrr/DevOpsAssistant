@@ -433,7 +433,7 @@ public class DevOpsApiServiceTests
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Post, captured!.Method);
         Assert.NotNull(captured.RequestUri);
-        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/search/wikis?api-version=7.1-preview.1",
+        Assert.Equal("https://almsearch.dev.azure.com/Org/Proj/_apis/search/wikisearchresults?api-version=7.1",
             captured.RequestUri.ToString());
         var body = await captured.Content!.ReadAsStringAsync();
         Assert.Contains("test", body);
