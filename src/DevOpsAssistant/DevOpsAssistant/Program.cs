@@ -14,6 +14,7 @@ builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<DevOpsConfigService>();
 builder.Services.AddScoped<DevOpsApiService>();
+builder.Services.AddScoped<VersionService>();
 
 var host = builder.Build();
 await host.RunAsync();
