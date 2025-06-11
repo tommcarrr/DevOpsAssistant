@@ -3,6 +3,8 @@
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
 @inject VersionService VersionService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MainLayout> L
 
 <MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode"/>
 <MudDialogProvider/>
@@ -15,19 +17,19 @@
             <MudNavLink Href="" Match="NavLinkMatch.All" Style="color:inherit;text-decoration:none">DevOpsAssistant</MudNavLink>
         </MudText>
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title="Sign Out"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" title='@L["Settings"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" Class="mud-width-220" ClipMode="DrawerClipMode.Always">
         <MudNavMenu>
-            <MudNavLink Href="" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List" Disabled="@IsConfigMissing">Epics &amp; Features</MudNavLink>
-            <MudNavLink Href="release-notes" Icon="@Icons.Material.Filled.Article" Disabled="@IsConfigMissing">Release Notes</MudNavLink>
-            <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule" Disabled="@IsConfigMissing">Story Validation</MudNavLink>
-            <MudNavLink Href="story-review" Icon="@Icons.Material.Filled.Check" Disabled="@IsConfigMissing">Story Quality</MudNavLink>
-            <MudNavLink Href="metrics" Icon="@Icons.Material.Filled.Insights" Disabled="@IsConfigMissing">Metrics</MudNavLink>
-            <MudNavLink Href="requirements-planner" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsConfigMissing">Requirement Planner</MudNavLink>
+            <MudNavLink Href="" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">@L["Home"]</MudNavLink>
+            <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List" Disabled="@IsConfigMissing">@L["Epics"]</MudNavLink>
+            <MudNavLink Href="release-notes" Icon="@Icons.Material.Filled.Article" Disabled="@IsConfigMissing">@L["ReleaseNotes"]</MudNavLink>
+            <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule" Disabled="@IsConfigMissing">@L["Validation"]</MudNavLink>
+            <MudNavLink Href="story-review" Icon="@Icons.Material.Filled.Check" Disabled="@IsConfigMissing">@L["StoryReview"]</MudNavLink>
+            <MudNavLink Href="metrics" Icon="@Icons.Material.Filled.Insights" Disabled="@IsConfigMissing">@L["Metrics"]</MudNavLink>
+            <MudNavLink Href="requirements-planner" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsConfigMissing">@L["RequirementPlanner"]</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 

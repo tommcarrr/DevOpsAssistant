@@ -16,6 +16,7 @@ public abstract class ComponentTestBase : TestContext
     protected DevOpsConfigService SetupServices(bool includeApi = false)
     {
         Services.AddMudServices();
+        Services.AddLocalization();
         JSInterop.Mode = JSRuntimeMode.Loose;
         var config = new DevOpsConfigService(new FakeLocalStorageService());
         Services.AddSingleton(config);

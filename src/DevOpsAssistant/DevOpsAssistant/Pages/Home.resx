@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome to DevOpsAssistant</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>DevOpsAssistant provides tools for viewing and updating Azure DevOps work items. Use the navigation menu to access the following features:</value>
+  </data>
+  <data name="Epics" xml:space="preserve">
+    <value>Epics &amp; Features — visualize hierarchy and maintain parent states</value>
+  </data>
+  <data name="Validation" xml:space="preserve">
+    <value>Story Validation — check items against configurable rules</value>
+  </data>
+  <data name="ReleaseNotes" xml:space="preserve">
+    <value>Release Notes — generate a summary prompt for completed stories</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Story Quality — review stories for INVEST compliance</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Metrics — analyze throughput and cycle time</value>
+  </data>
+</root>
