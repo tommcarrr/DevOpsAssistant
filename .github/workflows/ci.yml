@@ -15,5 +15,15 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
-      - name: Test
-        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-restore --verbosity normal
+      - name: Test with coverage
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+      - name: Generate coverage report
+        run: |
+          reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report
