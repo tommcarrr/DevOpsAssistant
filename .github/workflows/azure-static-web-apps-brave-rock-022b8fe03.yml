@@ -38,7 +38,7 @@ jobs:
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
       - name: Run smoke tests
-        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.SmokeTests/DevOpsAssistant.SmokeTests.csproj --no-build --verbosity normal
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.SmokeTests/DevOpsAssistant.SmokeTests.csproj --no-restore --verbosity normal
         env:
           STAGING_URL: ${{ env.STAGING_URL }}
 
