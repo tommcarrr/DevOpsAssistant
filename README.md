@@ -27,7 +27,9 @@ The development server listens on <http://localhost:5000>.
 ## Continuous Integration
 
 Pull requests trigger a GitHub Actions workflow which restores the solution and
-runs all tests. The workflow ensures builds remain healthy before merging.
+runs all tests. The workflow ensures builds remain healthy before merging. Test
+execution collects code coverage data and publishes an HTML report as a build
+artifact.
 
 When changes are merged into the `main` branch, the deployment workflow first
 publishes the site to a staging environment. Smoke tests verify that each page
