@@ -185,7 +185,7 @@ public class DevOpsApiServiceTests
     public async Task GetWorkItemHierarchyAsync_Throws_When_Config_Incomplete()
     {
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
-        var service = new DevOpsApiService(new HttpClient(), configService);
+        var service = new DevOpsApiService(new HttpClient(), configService, new DeploymentConfigService(new HttpClient()));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetWorkItemHierarchyAsync("Area"));
     }
@@ -194,7 +194,7 @@ public class DevOpsApiServiceTests
     public async Task GetValidationItemsAsync_Throws_When_Config_Incomplete()
     {
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
-        var service = new DevOpsApiService(new HttpClient(), configService);
+        var service = new DevOpsApiService(new HttpClient(), configService, new DeploymentConfigService(new HttpClient()));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area", new[] { "New" }));
     }
@@ -244,7 +244,7 @@ public class DevOpsApiServiceTests
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(
             new DevOpsConfig { Organization = "Org", Project = "Project", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         var result = await service.GetBacklogsAsync();
 
@@ -267,7 +267,7 @@ public class DevOpsApiServiceTests
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         await service.UpdateWorkItemStateAsync(42, "Active");
 
@@ -299,7 +299,7 @@ public class DevOpsApiServiceTests
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         var result = await service.GetValidationItemsAsync("Area", new[] { "New" });
 
@@ -322,7 +322,7 @@ public class DevOpsApiServiceTests
     public async Task GetStoryHierarchyDetailsAsync_Throws_When_Config_Incomplete()
     {
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
-        var service = new DevOpsApiService(new HttpClient(), configService);
+        var service = new DevOpsApiService(new HttpClient(), configService, new DeploymentConfigService(new HttpClient()));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStoryHierarchyDetailsAsync([1]));
     }
@@ -371,7 +371,7 @@ public class DevOpsApiServiceTests
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         var result = await service.SearchUserStoriesAsync("test");
 
@@ -397,7 +397,7 @@ public class DevOpsApiServiceTests
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         var result = await service.GetStoryMetricsAsync("Area", new DateTime(2024, 1, 1));
 
@@ -426,7 +426,7 @@ public class DevOpsApiServiceTests
         var storage = new FakeLocalStorageService();
         var configService = new DevOpsConfigService(storage);
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-        var service = new DevOpsApiService(client, configService);
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
         var results = await service.SearchWikiPagesAsync("test");
 

@@ -11,6 +11,17 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.16"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.16" PrivateAssets="all"/>
         <PackageReference Include="MudBlazor" Version="8.7.0"/>
-    </ItemGroup>
+</ItemGroup>
+
+  <ItemGroup Condition="'$(IncludeMockData)' == 'true'">
+    <Content Include="wwwroot/mock-data/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot/staging-config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>
