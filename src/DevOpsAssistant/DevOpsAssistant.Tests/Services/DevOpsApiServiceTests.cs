@@ -408,4 +408,33 @@ public class DevOpsApiServiceTests
         Assert.Equal(5, result[0].StoryPoints);
         Assert.Equal(8, result[0].OriginalEstimate);
     }
+
+    [Fact]
+    public async Task SearchWikiPagesAsync_Uses_Api_Endpoint()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"results\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService);
+
+        var results = await service.SearchWikiPagesAsync("test");
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Post, captured!.Method);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/search/wikis?api-version=7.1-preview.1",
+            captured.RequestUri.ToString());
+        var body = await captured.Content!.ReadAsStringAsync();
+        Assert.Contains("test", body);
+        Assert.Empty(results);
+    }
 }
