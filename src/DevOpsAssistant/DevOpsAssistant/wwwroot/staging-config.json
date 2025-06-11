@@ -1,0 +1,4 @@
+{
+  "devOpsApiBaseUrl": "http://localhost:5001",
+  "staticApiPath": "mock-data"
+}

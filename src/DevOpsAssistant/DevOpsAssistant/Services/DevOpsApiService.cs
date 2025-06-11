@@ -12,11 +12,34 @@ public class DevOpsApiService
     private readonly DevOpsConfigService _configService;
 
     private readonly HttpClient _httpClient;
+    private readonly DeploymentConfigService _deploymentConfig;
 
-    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService)
+    private string ApiBaseUrl => string.IsNullOrEmpty(_deploymentConfig.Config.DevOpsApiBaseUrl)
+        ? "https://dev.azure.com"
+        : _deploymentConfig.Config.DevOpsApiBaseUrl!.TrimEnd('/');
+
+    private string SearchBaseUrl
+    {
+        get
+        {
+            var url = _deploymentConfig.Config.DevOpsSearchApiBaseUrl;
+            if (!string.IsNullOrEmpty(url))
+                return url.TrimEnd('/');
+
+            var baseUrl = ApiBaseUrl;
+            return baseUrl.Contains("dev.azure.com")
+                ? baseUrl.Replace("dev.azure.com", "almsearch.dev.azure.com")
+                : baseUrl;
+        }
+    }
+
+    private string? StaticApiPath => _deploymentConfig.Config.StaticApiPath;
+
+    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService, DeploymentConfigService deploymentConfig)
     {
         _httpClient = httpClient;
         _configService = configService;
+        _deploymentConfig = deploymentConfig;
     }
 
     private DevOpsConfig GetValidatedConfig()
@@ -35,14 +58,14 @@ public class DevOpsApiService
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", pat);
     }
 
-    private static string BuildBaseUri(DevOpsConfig config)
+    private string BuildBaseUri(DevOpsConfig config)
     {
-        return $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wit";
+        return $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wit";
     }
 
-    private static string BuildItemUrlBase(DevOpsConfig config)
+    private string BuildItemUrlBase(DevOpsConfig config)
     {
-        return $"https://dev.azure.com/{config.Organization}/{config.Project}/_workitems/edit/";
+        return $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_workitems/edit/";
     }
 
     private async Task<T?> GetJsonAsync<T>(string url)
@@ -644,16 +667,35 @@ public class DevOpsApiService
 
     public async Task<List<WikiSearchResult>> SearchWikiPagesAsync(string term)
     {
+        if (StaticApiPath != null)
+        {
+            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-search.json");
+            var staticList = new List<WikiSearchResult>();
+            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("results", out var staticResults))
+            {
+                foreach (var r in staticResults.EnumerateArray())
+                {
+                    var path = r.GetProperty("path").GetString() ?? string.Empty;
+                    var wikiId = r.GetProperty("wiki").GetProperty("id").GetString() ?? string.Empty;
+                    var id = r.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? string.Empty : string.Empty;
+                    var urlProp = r.TryGetProperty("url", out var u) ? u.GetString() ?? string.Empty : string.Empty;
+                    staticList.Add(new WikiSearchResult { WikiId = wikiId, Path = path, Id = id, Url = urlProp });
+                }
+            }
+            return staticList;
+        }
+
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
+        var baseUrl = SearchBaseUrl;
         var url =
-            $"https://almsearch.dev.azure.com/{config.Organization}/{config.Project}/_apis/search/wikisearchresults?api-version=7.1";
-        var result = await PostJsonAsync<JsonElement>(url, new { searchText = term });
+            $"{baseUrl}/{config.Organization}/{config.Project}/_apis/search/wikisearchresults?api-version=7.1";
+        var apiResult = await PostJsonAsync<JsonElement>(url, new { searchText = term });
         var list = new List<WikiSearchResult>();
-        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("results", out var results))
+        if (apiResult.ValueKind != JsonValueKind.Undefined && apiResult.TryGetProperty("results", out var searchResults))
         {
-            foreach (var r in results.EnumerateArray())
+            foreach (var r in searchResults.EnumerateArray())
             {
                 var path = r.GetProperty("path").GetString() ?? string.Empty;
                 var wikiId = r.GetProperty("wiki").GetProperty("id").GetString() ?? string.Empty;
@@ -667,12 +709,20 @@ public class DevOpsApiService
 
     public async Task<string> GetWikiPageContentAsync(string wikiId, string path)
     {
+        if (StaticApiPath != null)
+        {
+            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-page.json");
+            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("content", out var staticContent))
+                return staticContent.GetString() ?? string.Empty;
+            return string.Empty;
+        }
+
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         path = Uri.EscapeDataString(path);
         var url =
-            $"https://dev.azure.com/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?path={path}&includeContent=true&api-version=7.1-preview.1";
+            $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?path={path}&includeContent=true&api-version=7.1-preview.1";
         var result = await GetJsonAsync<JsonElement>(url);
         if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("content", out var content))
             return content.GetString() ?? string.Empty;

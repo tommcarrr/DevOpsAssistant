@@ -72,7 +72,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
             };
         });
         var client = new HttpClient(handler);
-        Services.AddSingleton(new DevOpsApiService(client, config));
+        Services.AddSingleton(new DeploymentConfigService(new HttpClient()));
+        Services.AddSingleton(sp => new DevOpsApiService(client, config, sp.GetRequiredService<DeploymentConfigService>()));
 
         var page = RenderWithProvider<TestPage>();
         var setField = typeof(ReleaseNotes).GetField("_selectedStories", BindingFlags.NonPublic | BindingFlags.Instance)!;

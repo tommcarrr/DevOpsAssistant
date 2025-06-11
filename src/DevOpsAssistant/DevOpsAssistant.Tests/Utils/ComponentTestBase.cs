@@ -20,7 +20,11 @@ public abstract class ComponentTestBase : TestContext
         var config = new DevOpsConfigService(new FakeLocalStorageService());
         Services.AddSingleton(config);
         if (includeApi)
-            Services.AddSingleton(sp => new DevOpsApiService(new HttpClient(), config));
+        {
+            var deployment = new DeploymentConfigService(new HttpClient());
+            Services.AddSingleton(deployment);
+            Services.AddSingleton(sp => new DevOpsApiService(new HttpClient(), config, deployment));
+        }
         var client = new HttpClient(new FakeHttpMessageHandler(_ =>
             new HttpResponseMessage(HttpStatusCode.OK)
             {

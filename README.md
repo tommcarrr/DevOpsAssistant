@@ -52,3 +52,16 @@ The application communicates with Azure DevOps using a Personal Access Token (PA
 
 Run the site and click the settings icon in the top right corner. Enter your organization, project and PAT token, then save. These values are stored in your browser's local storage.
 When you're done, click the **Sign Out** button in the top bar to clear the saved settings.
+
+## Faking the DevOps API for tests
+
+Smoke tests normally require a valid PAT token. When deploying to staging the
+site reads optional overrides from `staging-config.json`. This file can specify
+`devOpsApiBaseUrl` to redirect all API calls to a stub service and
+`staticApiPath` for mock wiki responses. The file is copied only when the
+`IncludeMockData` MSBuild property is set to `true`, so production deployments do
+not include these settings or the mock JSON files.
+
+Smoke tests use Playwright to exercise the UI of the deployed staging site. Set
+`STAGING_URL` to the site's base URL when running the tests locally so they know
+where to connect.
