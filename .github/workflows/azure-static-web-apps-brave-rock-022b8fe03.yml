@@ -14,6 +14,16 @@ jobs:
           submodules: true
           lfs: false
           fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
+      - name: Build
+        run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
+      - name: Test
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
       - name: Deploy to Staging
@@ -64,6 +74,16 @@ jobs:
           submodules: true
           lfs: false
           fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
+      - name: Build
+        run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
+      - name: Test
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
       - name: Deploy to Production
