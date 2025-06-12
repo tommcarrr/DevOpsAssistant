@@ -755,7 +755,14 @@ public class DevOpsApiService
         return node;
     }
 
-    public async Task<int> CreateWorkItemAsync(string type, string title, string description, string areaPath, int? parentId = null)
+    public async Task<int> CreateWorkItemAsync(
+        string type,
+        string title,
+        string description,
+        string areaPath,
+        int? parentId = null,
+        string? acceptanceCriteria = null,
+        string[]? tags = null)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
@@ -767,6 +774,10 @@ public class DevOpsApiService
             new { op = "add", path = "/fields/System.Description", value = description },
             new { op = "add", path = "/fields/System.AreaPath", value = areaPath }
         };
+        if (!string.IsNullOrWhiteSpace(acceptanceCriteria))
+            patches.Add(new { op = "add", path = "/fields/Microsoft.VSTS.Common.AcceptanceCriteria", value = acceptanceCriteria });
+        if (tags != null && tags.Length > 0)
+            patches.Add(new { op = "add", path = "/fields/System.Tags", value = string.Join(';', tags) });
         if (parentId.HasValue)
         {
             var parentUrl = $"{BuildItemUrlBase(config)}{parentId.Value}";
