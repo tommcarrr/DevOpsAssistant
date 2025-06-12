@@ -185,7 +185,7 @@ public class DevOpsApiService
             .ToList();
         roots = FilterClosedEpics(roots);
         foreach (var root in roots)
-            ComputeStatus(root);
+            WorkItemHelpers.ComputeStatus(root);
         return roots;
     }
 
@@ -401,30 +401,6 @@ public class DevOpsApiService
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story'{stateCondition} ORDER BY [System.Id]";
     }
 
-    private static void ComputeStatus(WorkItemNode node)
-    {
-        foreach (var child in node.Children)
-            ComputeStatus(child);
-
-        if (!node.Children.Any())
-        {
-            node.ExpectedState = node.Info.State;
-            node.StatusValid = true;
-            return;
-        }
-
-        var allClosed = node.Children.All(c =>
-            c.ExpectedState.Equals("Closed", StringComparison.OrdinalIgnoreCase) ||
-            c.ExpectedState.Equals("Removed", StringComparison.OrdinalIgnoreCase) ||
-            c.ExpectedState.Equals("Done", StringComparison.OrdinalIgnoreCase));
-
-        var anyNotNew = node.Children.Any(c => !c.ExpectedState.Equals("New", StringComparison.OrdinalIgnoreCase));
-
-        var expected = allClosed ? "Closed" : anyNotNew ? "Active" : "New";
-
-        node.ExpectedState = expected;
-        node.StatusValid = node.Info.State.Equals(expected, StringComparison.OrdinalIgnoreCase);
-    }
 
     public async Task UpdateWorkItemStateAsync(int id, string state)
     {

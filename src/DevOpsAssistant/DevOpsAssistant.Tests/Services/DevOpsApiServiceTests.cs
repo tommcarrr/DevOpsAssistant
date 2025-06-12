@@ -1,6 +1,6 @@
 using System.Net;
-using System.Reflection;
 using System.Text.Json;
+using System.Reflection;
 using DevOpsAssistant.Services;
 
 namespace DevOpsAssistant.Tests;
@@ -20,11 +20,6 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [area, states])!;
     }
 
-    private static void InvokeComputeStatus(WorkItemNode node)
-    {
-        var method = typeof(DevOpsApiService).GetMethod("ComputeStatus", BindingFlags.NonPublic | BindingFlags.Static)!;
-        method.Invoke(null, [node]);
-    }
 
     private static List<WorkItemNode> InvokeFilterClosedEpics(List<WorkItemNode> nodes)
     {
@@ -121,7 +116,7 @@ public class DevOpsApiServiceTests
     {
         var node = new WorkItemNode { Info = new WorkItemInfo { State = "New" } };
 
-        InvokeComputeStatus(node);
+        WorkItemHelpers.ComputeStatus(node);
 
         Assert.True(node.StatusValid);
         Assert.Equal("New", node.ExpectedState);
@@ -134,7 +129,7 @@ public class DevOpsApiServiceTests
         root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "New" } });
         root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Active" } });
 
-        InvokeComputeStatus(root);
+        WorkItemHelpers.ComputeStatus(root);
 
         Assert.False(root.StatusValid);
         Assert.Equal("Active", root.ExpectedState);
@@ -147,7 +142,7 @@ public class DevOpsApiServiceTests
         root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Closed" } });
         root.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Removed" } });
 
-        InvokeComputeStatus(root);
+        WorkItemHelpers.ComputeStatus(root);
 
         Assert.True(root.StatusValid);
         Assert.Equal("Closed", root.ExpectedState);
@@ -161,7 +156,7 @@ public class DevOpsApiServiceTests
         feature.Children.Add(new WorkItemNode { Info = new WorkItemInfo { State = "Closed" } });
         root.Children.Add(feature);
 
-        InvokeComputeStatus(root);
+        WorkItemHelpers.ComputeStatus(root);
 
         Assert.Equal("Closed", feature.ExpectedState);
         Assert.Equal("Closed", root.ExpectedState);
