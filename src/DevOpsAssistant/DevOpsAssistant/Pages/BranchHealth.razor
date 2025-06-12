@@ -1,0 +1,98 @@
+@page "/branch-health"
+@using DevOpsAssistant.Services
+@inject DevOpsApiService ApiService
+
+<PageTitle>DevOpsAssistant - Branch Health</PageTitle>
+
+<MudAlert Severity="Severity.Info" Class="mb-4">
+    Select a repository and click <b>Load</b> to view branch activity.
+    Branches without recent commits are marked with a warning icon.
+</MudAlert>
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+}
+
+<MudPaper Class="p-4 mb-4">
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+        <MudSelect T="RepositoryInfo" @bind-Value="_repo" Label="Repository" ToStringFunc="r => r.Name">
+            @foreach (var r in _repos)
+            {
+                <MudSelectItem Value="@r">@r.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
+    </MudStack>
+</MudPaper>
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_branches != null)
+{
+    <MudTable Items="_branches" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Branch</MudTh>
+            <MudTh>Last Commit</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Branch">@context.Name</MudTd>
+            <MudTd DataLabel="Date">
+                @context.CommitDate.ToString("yyyy-MM-dd")
+                @if (IsStale(context))
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Class="ms-1" />
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    private RepositoryInfo? _repo;
+    private List<RepositoryInfo> _repos = new();
+    private List<BranchInfo>? _branches;
+    private bool _loading;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _repos = await ApiService.GetRepositoriesAsync();
+            if (_repos.Count > 0)
+                _repo = _repos[0];
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task Load()
+    {
+        if (_repo == null) return;
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _branches = await ApiService.GetBranchesAsync(_repo.Id);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static bool IsStale(BranchInfo branch)
+    {
+        return branch.CommitDate < DateTime.UtcNow.AddDays(-30);
+    }
+}

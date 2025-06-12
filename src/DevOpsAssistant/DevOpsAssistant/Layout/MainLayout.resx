@@ -39,4 +39,13 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="WorkItems" xml:space="preserve">
+    <value>Work Items</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="BranchHealth" xml:space="preserve">
+    <value>Branch Health</value>
+  </data>
 </root>
