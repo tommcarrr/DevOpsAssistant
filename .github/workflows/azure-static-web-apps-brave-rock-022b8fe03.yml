@@ -41,6 +41,8 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Run UI tests
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.UiTests/DevOpsAssistant.UiTests.csproj --no-restore --verbosity normal
         env:
