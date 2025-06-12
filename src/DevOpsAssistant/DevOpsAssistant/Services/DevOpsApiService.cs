@@ -737,22 +737,8 @@ public class DevOpsApiService
         if (doc.ValueKind != JsonValueKind.Object)
             return null;
 
-        if (doc.TryGetProperty("value", out var value) && value.ValueKind == JsonValueKind.Array && value.GetArrayLength() > 0)
-        {
-            var pages = value.Deserialize<WikiPage[]>(_jsonOptions);
-            if (pages != null && pages.Length > 0)
-            {
-                var rootPage = pages.FirstOrDefault(p => p.Path == "/") ?? pages[0];
-                return ParseWikiPage(rootPage);
-            }
-        }
-        else if (doc.TryGetProperty("path", out _))
-        {
-            var page = doc.Deserialize<WikiPage>(_jsonOptions);
-            return page != null ? ParseWikiPage(page) : null;
-        }
-
-        return null;
+        var page = doc.Deserialize<WikiPage>(_jsonOptions);
+        return page != null ? ParseWikiPage(page) : null;
     }
 
     private static WikiPageNode ParseWikiPage(WikiPage page)
@@ -862,14 +848,15 @@ public class DevOpsApiService
         public string? Content { get; set; }
     }
 
-    private class WikiPagesResult
-    {
-        public WikiPage[] Value { get; set; } = [];
-    }
-
     private class WikiPage
     {
         public string? Path { get; set; }
+        public int Order { get; set; }
+        public bool IsParentPage { get; set; }
+        public string? GitItemPath { get; set; }
         public WikiPage[]? SubPages { get; set; }
+        public string? Url { get; set; }
+        public string? RemoteUrl { get; set; }
+        public string? Content { get; set; }
     }
 }

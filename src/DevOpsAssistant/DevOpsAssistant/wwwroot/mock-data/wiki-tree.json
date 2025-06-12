@@ -1,11 +1,29 @@
 {
-  "value": [
+  "path": "/",
+  "order": 0,
+  "isParentPage": true,
+  "gitItemPath": "/index.md",
+  "subPages": [
     {
-      "path": "/",
-      "subPages": [
-        { "path": "/Home", "subPages": [] },
-        { "path": "/Setup", "subPages": [] }
-      ]
+      "path": "/Home",
+      "order": 1,
+      "isParentPage": false,
+      "gitItemPath": "/Home.md",
+      "subPages": [],
+      "url": "",
+      "remoteUrl": ""
+    },
+    {
+      "path": "/Setup",
+      "order": 2,
+      "isParentPage": false,
+      "gitItemPath": "/Setup.md",
+      "subPages": [],
+      "url": "",
+      "remoteUrl": ""
     }
-  ]
+  ],
+  "url": "",
+  "remoteUrl": "",
+  "content": "# Root"
 }
