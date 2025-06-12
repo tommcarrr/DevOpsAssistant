@@ -50,45 +50,34 @@
     <MudStep Title="Create Work Items" Disabled="@(_plan == null)">
         @if (_plan != null)
         {
-            <MudList T="string" Dense="true" Class="mb-2">
-                @foreach (var epic in _plan.Epics)
-                {
-                    <MudListItem T="string">
-                        <div class='@WorkItemHelpers.GetItemClass("Epic")'>
-                            <b>Epic:</b> @epic.Title
-                            <MudText Class="d-block ms-4">@epic.Description</MudText>
-                            @if (epic.Features.Count > 0)
+            @foreach (var epic in _plan.Epics)
+            {
+                <MudPaper Class="pa-2 mb-2">
+                    <MudText Typo="Typo.h6" Class="@WorkItemHelpers.GetItemClass("Epic")">Epic</MudText>
+                    <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-2" />
+                    <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-2" />
+
+                    @foreach (var feature in epic.Features)
+                    {
+                        <MudPaper Class="pa-2 mb-2 ms-4">
+                            <MudText Typo="Typo.subtitle1" Class="@WorkItemHelpers.GetItemClass("Feature")">Feature</MudText>
+                            <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-2" />
+                            <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-2" />
+
+                            @foreach (var story in feature.Stories)
                             {
-                                <MudList T="string" Dense="true" Class="ms-4">
-                                    @foreach (var feature in epic.Features)
-                                    {
-                                        <MudListItem T="string">
-                                            <div class='@WorkItemHelpers.GetItemClass("Feature")'>
-                                                <b>Feature:</b> @feature.Title
-                                                <MudText Class="d-block ms-4">@feature.Description</MudText>
-                                                @if (feature.Stories.Count > 0)
-                                                {
-                                                    <MudList T="string" Dense="true" Class="ms-4">
-                                                        @foreach (var story in feature.Stories)
-                                                        {
-                                                            <MudListItem T="string">
-                                                                <div class='@WorkItemHelpers.GetItemClass("User Story")'>
-                                                                    <b>Story:</b> @story.Title
-                                                                    <MudText Class="d-block ms-4">@story.Description</MudText>
-                                                                </div>
-                                                            </MudListItem>
-                                                        }
-                                                    </MudList>
-                                                }
-                                            </div>
-                                        </MudListItem>
-                                    }
-                                </MudList>
+                                <MudPaper Class="pa-2 mb-2 ms-4">
+                                    <MudText Typo="Typo.subtitle2" Class="@WorkItemHelpers.GetItemClass("User Story")">Story</MudText>
+                                    <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
+                                    <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
+                                    <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                                </MudPaper>
                             }
-                        </div>
-                    </MudListItem>
-                }
-            </MudList>
+                        </MudPaper>
+                    }
+                </MudPaper>
+            }
+
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="CreateItems">Create Work Items</MudButton>
         }
     </MudStep>
