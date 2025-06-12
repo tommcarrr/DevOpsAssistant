@@ -202,7 +202,7 @@ public class DevOpsApiService
         var result =
             await GetJsonAsync<JsonElement>(
                 $"{baseUri}/classificationnodes/areas?$depth=2&api-version={ApiVersion}");
-        var list = new List<string>();
+        List<string> list = [];
         if (result.TryGetProperty("path", out var rootPath))
         {
             var p = rootPath.GetString();
@@ -226,7 +226,7 @@ public class DevOpsApiService
         var result =
             await GetJsonAsync<JsonElement>(
                 $"{baseUri}/workitemtypes/User%20Story/states?api-version={ApiVersion}");
-        var list = new List<string>();
+        List<string> list = [];
         if (result.TryGetProperty("value", out var values))
             foreach (var s in values.EnumerateArray())
                 if (s.TryGetProperty("name", out var name))
@@ -252,7 +252,7 @@ public class DevOpsApiService
             return [];
 
         var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
-        var workItems = new List<WorkItem>();
+        List<WorkItem> workItems = [];
         var fetchTasks = ids.Chunk(200).Select(chunk =>
         {
             var idList = string.Join(',', chunk);
@@ -267,7 +267,7 @@ public class DevOpsApiService
         if (!workItems.Any())
             return [];
 
-        var list = new List<WorkItemDetails>();
+        List<WorkItemDetails> list = [];
         foreach (var w in workItems)
         {
             var details = new WorkItemDetails
@@ -345,14 +345,14 @@ public class DevOpsApiService
     private static string BuildEpicsWiql(string areaPath)
     {
         areaPath = NormalizeAreaPath(areaPath);
-        var conditions = new List<string>
-        {
+        List<string> conditions =
+        [
             "[System.TeamProject] = @project",
             $"[System.AreaPath] UNDER '{areaPath}'",
             "[System.WorkItemType] = 'Epic'",
             "[System.State] <> 'Closed'",
             "[System.State] <> 'Removed'"
-        };
+        ];
 
         var where = string.Join(" AND ", conditions);
         return $"SELECT [System.Id] FROM WorkItems WHERE {where} ORDER BY [System.Id]";
@@ -441,7 +441,7 @@ public class DevOpsApiService
         var idList = string.Join(',', ids);
         var itemsResult =
             await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
-        var list = new List<WorkItemInfo>();
+        List<WorkItemInfo> list = [];
         if (itemsResult?.Value != null)
         {
             var dict = new Dictionary<int, WorkItem>();
@@ -498,7 +498,7 @@ public class DevOpsApiService
                 }
         }
 
-        var list = new List<StoryHierarchyDetails>();
+        List<StoryHierarchyDetails> list = [];
         foreach (var id in storyIds)
         {
             if (!items.TryGetValue(id, out var story))
@@ -580,7 +580,7 @@ public class DevOpsApiService
             return [];
 
         var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
-        var workItems = new List<WorkItem>();
+        List<WorkItem> workItems = [];
         var fetchTasks = ids.Chunk(200)
             .Select(chunk =>
             {
@@ -594,7 +594,7 @@ public class DevOpsApiService
             if (itemsResult?.Value != null)
                 workItems.AddRange(itemsResult.Value);
 
-        var list = new List<StoryMetric>();
+        List<StoryMetric> list = [];
         foreach (var w in workItems)
         {
             if (!w.Fields.TryGetValue("Microsoft.VSTS.Common.ClosedDate", out var cd) || cd.ValueKind != JsonValueKind.String)
@@ -655,7 +655,7 @@ public class DevOpsApiService
                 Path = r.Path ?? string.Empty,
                 Id = r.Id ?? string.Empty,
                 Url = r.Url ?? string.Empty
-            }).ToList() ?? new List<WikiSearchResult>();
+            }).ToList() ?? [];
         }
 
         var config = GetValidatedConfig();
@@ -671,7 +671,7 @@ public class DevOpsApiService
             Path = r.Path ?? string.Empty,
             Id = r.Id ?? string.Empty,
             Url = r.Url ?? string.Empty
-        }).ToList() ?? new List<WikiSearchResult>();
+        }).ToList() ?? [];
     }
 
     public async Task<string> GetWikiPageContentAsync(string wikiId, string path)
@@ -701,7 +701,7 @@ public class DevOpsApiService
             {
                 Id = w.Id ?? string.Empty,
                 Name = w.Name ?? string.Empty
-            }).ToList() ?? new List<WikiInfo>();
+            }).ToList() ?? [];
         }
 
         var config = GetValidatedConfig();
@@ -713,7 +713,7 @@ public class DevOpsApiService
         {
             Id = w.Id ?? string.Empty,
             Name = w.Name ?? string.Empty
-        }).ToList() ?? new List<WikiInfo>();
+        }).ToList() ?? [];
     }
 
     public async Task<WikiPageNode?> GetWikiPageTreeAsync(string wikiId)
@@ -768,12 +768,12 @@ public class DevOpsApiService
         ApplyAuthentication(config);
 
         var baseUri = BuildBaseUri(config);
-        var patches = new List<object>
-        {
+        List<object> patches =
+        [
             new { op = "add", path = "/fields/System.Title", value = title },
             new { op = "add", path = "/fields/System.Description", value = description },
             new { op = "add", path = "/fields/System.AreaPath", value = areaPath }
-        };
+        ];
         if (!string.IsNullOrWhiteSpace(acceptanceCriteria))
             patches.Add(new { op = "add", path = "/fields/Microsoft.VSTS.Common.AcceptanceCriteria", value = acceptanceCriteria });
         if (tags != null && tags.Length > 0)

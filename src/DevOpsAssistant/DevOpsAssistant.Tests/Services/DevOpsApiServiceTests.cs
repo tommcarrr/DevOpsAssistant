@@ -168,7 +168,7 @@ public class DevOpsApiServiceTests
     {
         var closed = new WorkItemNode { Info = new WorkItemInfo { WorkItemType = "Epic", State = "Closed" } };
         var open = new WorkItemNode { Info = new WorkItemInfo { WorkItemType = "Epic", State = "New" } };
-        var list = new List<WorkItemNode> { closed, open };
+        List<WorkItemNode> list = [closed, open];
 
         var result = InvokeFilterClosedEpics(list);
 
@@ -210,7 +210,7 @@ public class DevOpsApiServiceTests
         var json =
             "{\"path\":\"A\",\"children\":[{\"path\":\"A\\\\B\"},{\"path\":\"A\\\\C\",\"children\":[{\"path\":\"A\\\\C\\\\D\"}]}]}";
         var doc = JsonDocument.Parse(json);
-        var list = new List<string>();
+        List<string> list = [];
 
         InvokeExtractPaths(doc.RootElement, list);
 

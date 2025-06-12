@@ -135,10 +135,10 @@ else if (_results != null)
     private List<ResultItem> Validate(List<WorkItemDetails> items)
     {
         var rules = ConfigService.Config.Rules;
-        var list = new List<ResultItem>();
+        List<ResultItem> list = [];
         foreach (var item in items)
         {
-            var v = new List<string>();
+            List<string> v = [];
             if (item.Info.WorkItemType.Equals("Epic", StringComparison.OrdinalIgnoreCase))
             {
                 if (rules.EpicHasDescription && !item.HasDescription) v.Add("Missing description");
@@ -173,7 +173,7 @@ else if (_results != null)
     private void ComputeRules()
     {
         var r = ConfigService.Config.Rules;
-        var list = new List<string>();
+        List<string> list = [];
         if (r.EpicHasDescription) list.Add("Epics must have a description");
         if (r.FeatureHasDescription) list.Add("Features must have a description");
         if (r.FeatureHasParent) list.Add("Features must have a parent");
