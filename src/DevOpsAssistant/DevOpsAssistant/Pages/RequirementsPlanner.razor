@@ -134,7 +134,7 @@
         StateHasChanged();
         try
         {
-            var pages = new List<(string Name, string Text)>();
+            List<(string Name, string Text)> pages = [];
             foreach (var p in _selectedPages)
             {
                 var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
