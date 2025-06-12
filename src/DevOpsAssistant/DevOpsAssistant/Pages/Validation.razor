@@ -71,7 +71,7 @@ else if (_results != null)
                 @foreach (var r in _results)
                 {
                     <MudListItem T="ResultItem">
-                        <MudLink Href="@r.Info.Url" Class="@GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
+                        <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
                         <br/>
                         <span class="text-secondary">@string.Join(", ", r.Violations)</span>
                     </MudListItem>
@@ -203,17 +203,5 @@ else if (_results != null)
         public List<string> Violations { get; set; } = [];
     }
 
-    private static string GetItemClass(string type)
-    {
-        return type.ToLowerInvariant() switch
-        {
-            "epic" => "work-item-epic",
-            "feature" => "work-item-feature",
-            "user story" => "work-item-story",
-            "task" => "work-item-task",
-            "bug" => "work-item-bug",
-            _ => string.Empty
-        };
-    }
 
 }
