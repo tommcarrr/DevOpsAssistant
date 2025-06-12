@@ -20,7 +20,11 @@
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap">
         @if (_wikiItems != null)
         {
-            <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Style="max-height:300px; overflow:auto; width:300px;" />
+            <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Style="max-height:300px; overflow:auto; width:300px;">
+                <ItemTemplate>
+                    <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
+                </ItemTemplate>
+            </MudTreeView>
         }
         <MudSelect T="string" @bind-Value="_backlog" Label="Backlog">
             @foreach (var b in _backlogs)
