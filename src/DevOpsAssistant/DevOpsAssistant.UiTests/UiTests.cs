@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Xunit;
@@ -130,6 +131,30 @@ public class UiTests
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
         var page = await browser.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/requirements-planner");
+        var item = await page.WaitForSelectorAsync("text=Home");
+        Assert.NotNull(item);
+    }
+
+    [Fact]
+    public async Task RequirementsPlanner_Shows_Tree_With_Alt_Wiki_Format()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        var altJson = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "wiki-tree-alt.json"));
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.RouteAsync("**/wiki-tree.json", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Body = altJson,
+            ContentType = "application/json"
+        }));
         await page.GotoAsync(_baseUrl);
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
         await page.ReloadAsync();

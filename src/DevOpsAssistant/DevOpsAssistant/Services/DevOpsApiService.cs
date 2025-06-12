@@ -15,6 +15,8 @@ public class DevOpsApiService
     private readonly HttpClient _httpClient;
     private readonly DeploymentConfigService _deploymentConfig;
 
+    private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+
     private string ApiBaseUrl => string.IsNullOrEmpty(_deploymentConfig.Config.DevOpsApiBaseUrl)
         ? "https://dev.azure.com"
         : _deploymentConfig.Config.DevOpsApiBaseUrl!.TrimEnd('/');
@@ -718,20 +720,38 @@ public class DevOpsApiService
     {
         if (StaticApiPath != null)
         {
-            var staticResult = await _httpClient.GetFromJsonAsync<WikiPagesResult>($"{StaticApiPath}/wiki-tree.json");
-            return staticResult?.Value.FirstOrDefault() != null ? ParseWikiPage(staticResult.Value.First()) : null;
+            var staticDoc = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-tree.json");
+            return ParseWikiTreeJson(staticDoc);
         }
 
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?recursionLevel=Full&api-version=7.1-preview.1";
-        var result = await GetJsonAsync<WikiPagesResult>(url);
-        if (result?.Value != null && result.Value.Length > 0)
+        var apiDoc = await GetJsonAsync<JsonElement>(url);
+        return ParseWikiTreeJson(apiDoc);
+    }
+
+    private static WikiPageNode? ParseWikiTreeJson(JsonElement doc)
+    {
+        if (doc.ValueKind != JsonValueKind.Object)
+            return null;
+
+        if (doc.TryGetProperty("value", out var value) && value.ValueKind == JsonValueKind.Array && value.GetArrayLength() > 0)
         {
-            var root = result.Value.FirstOrDefault(p => p.Path == "/") ?? result.Value[0];
-            return ParseWikiPage(root);
+            var pages = value.Deserialize<WikiPage[]>(_jsonOptions);
+            if (pages != null && pages.Length > 0)
+            {
+                var rootPage = pages.FirstOrDefault(p => p.Path == "/") ?? pages[0];
+                return ParseWikiPage(rootPage);
+            }
         }
+        else if (doc.TryGetProperty("path", out _))
+        {
+            var page = doc.Deserialize<WikiPage>(_jsonOptions);
+            return page != null ? ParseWikiPage(page) : null;
+        }
+
         return null;
     }
 
