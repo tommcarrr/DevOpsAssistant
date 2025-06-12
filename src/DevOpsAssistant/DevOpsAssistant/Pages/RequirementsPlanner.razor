@@ -166,7 +166,9 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     {
         try
         {
-            _plan = JsonSerializer.Deserialize<Plan>(_responseText);
+            var json = ExtractJson(_responseText);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            _plan = JsonSerializer.Deserialize<Plan>(json, options);
             _error = null;
         }
         catch (Exception ex)
@@ -174,6 +176,15 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             _plan = null;
             _error = ex.Message;
         }
+    }
+
+    private static string ExtractJson(string text)
+    {
+        var start = text.IndexOf('{');
+        var end = text.LastIndexOf('}');
+        return start >= 0 && end > start
+            ? text[start..(end + 1)]
+            : text;
     }
 
     private async Task CreateItems()

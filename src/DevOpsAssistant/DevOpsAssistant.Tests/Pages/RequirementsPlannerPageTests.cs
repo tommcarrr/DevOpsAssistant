@@ -25,7 +25,27 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
         cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
         var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        Assert.NotNull(planField.GetValue(cut.Instance));
+        var plan = planField.GetValue(cut.Instance);
+        Assert.NotNull(plan);
+        var epics = (System.Collections.ICollection?)plan!.GetType().GetProperty("Epics")!.GetValue(plan);
+        Assert.Equal(1, epics?.Count);
+    }
+
+    [Fact]
+    public void ImportPlan_Parses_Json_With_CodeFence()
+    {
+        SetupServices(includeApi: true);
+        var cut = RenderWithProvider<TestPage>();
+        var responseField = typeof(RequirementsPlanner).GetField("_responseText", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var json = "{\"epics\":[{\"title\":\"E\",\"description\":\"D\",\"features\":[]}]}";
+        responseField.SetValue(cut.Instance, $"```json\n{json}\n```\nExtra");
+        var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
+        var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var plan = planField.GetValue(cut.Instance);
+        Assert.NotNull(plan);
+        var epics = (System.Collections.ICollection?)plan!.GetType().GetProperty("Epics")!.GetValue(plan);
+        Assert.Equal(1, epics?.Count);
     }
 
     private class TestPage : RequirementsPlanner
