@@ -44,21 +44,21 @@
         {
             @foreach (var epic in _plan.Epics)
             {
-                <MudPaper Class="pa-2 mb-2 @WorkItemHelpers.GetItemClass("Epic")">
+                <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("Epic")}")">
                     <MudText Typo="Typo.h6">Epic</MudText>
                     <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-2" />
                     <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-2" />
 
                     @foreach (var feature in epic.Features)
                     {
-                        <MudPaper Class="pa-2 mb-2 ms-4 @WorkItemHelpers.GetItemClass("Feature")">
+                        <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("Feature")}")">
                             <MudText Typo="Typo.subtitle1">Feature</MudText>
                             <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-2" />
                             <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-2" />
 
                             @foreach (var story in feature.Stories)
                             {
-                                <MudPaper Class="pa-2 mb-2 ms-4 @WorkItemHelpers.GetItemClass("User Story")">
+                                <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("User Story")}")">
                                     <MudText Typo="Typo.subtitle2">Story</MudText>
                                     <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
                                     <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
