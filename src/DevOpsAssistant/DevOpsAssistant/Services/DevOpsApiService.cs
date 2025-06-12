@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using System.Linq;
 using System.Text.Json;
 
 namespace DevOpsAssistant.Services;
@@ -645,20 +646,14 @@ public class DevOpsApiService
     {
         if (StaticApiPath != null)
         {
-            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-search.json");
-            var staticList = new List<WikiSearchResult>();
-            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("results", out var staticResults))
+            var staticResult = await _httpClient.GetFromJsonAsync<WikiSearchResults>($"{StaticApiPath}/wiki-search.json");
+            return staticResult?.Results.Select(r => new WikiSearchResult
             {
-                foreach (var r in staticResults.EnumerateArray())
-                {
-                    var path = r.GetProperty("path").GetString() ?? string.Empty;
-                    var wikiId = r.GetProperty("wiki").GetProperty("id").GetString() ?? string.Empty;
-                    var id = r.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? string.Empty : string.Empty;
-                    var urlProp = r.TryGetProperty("url", out var u) ? u.GetString() ?? string.Empty : string.Empty;
-                    staticList.Add(new WikiSearchResult { WikiId = wikiId, Path = path, Id = id, Url = urlProp });
-                }
-            }
-            return staticList;
+                WikiId = r.Wiki.Id,
+                Path = r.Path ?? string.Empty,
+                Id = r.Id ?? string.Empty,
+                Url = r.Url ?? string.Empty
+            }).ToList() ?? new List<WikiSearchResult>();
         }
 
         var config = GetValidatedConfig();
@@ -667,30 +662,22 @@ public class DevOpsApiService
         var baseUrl = SearchBaseUrl;
         var url =
             $"{baseUrl}/{config.Organization}/{config.Project}/_apis/search/wikisearchresults?api-version=7.1";
-        var apiResult = await PostJsonAsync<JsonElement>(url, new { searchText = term });
-        var list = new List<WikiSearchResult>();
-        if (apiResult.ValueKind != JsonValueKind.Undefined && apiResult.TryGetProperty("results", out var searchResults))
+        var apiResult = await PostJsonAsync<WikiSearchResults>(url, new { searchText = term });
+        return apiResult?.Results.Select(r => new WikiSearchResult
         {
-            foreach (var r in searchResults.EnumerateArray())
-            {
-                var path = r.GetProperty("path").GetString() ?? string.Empty;
-                var wikiId = r.GetProperty("wiki").GetProperty("id").GetString() ?? string.Empty;
-                var id = r.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? string.Empty : string.Empty;
-                var urlProp = r.TryGetProperty("url", out var u) ? u.GetString() ?? string.Empty : string.Empty;
-                list.Add(new WikiSearchResult { WikiId = wikiId, Path = path, Id = id, Url = urlProp });
-            }
-        }
-        return list;
+            WikiId = r.Wiki.Id,
+            Path = r.Path ?? string.Empty,
+            Id = r.Id ?? string.Empty,
+            Url = r.Url ?? string.Empty
+        }).ToList() ?? new List<WikiSearchResult>();
     }
 
     public async Task<string> GetWikiPageContentAsync(string wikiId, string path)
     {
         if (StaticApiPath != null)
         {
-            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-page.json");
-            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("content", out var staticContent))
-                return staticContent.GetString() ?? string.Empty;
-            return string.Empty;
+            var staticResult = await _httpClient.GetFromJsonAsync<WikiPageContentResult>($"{StaticApiPath}/wiki-page.json");
+            return staticResult?.Content ?? string.Empty;
         }
 
         var config = GetValidatedConfig();
@@ -699,90 +686,64 @@ public class DevOpsApiService
         path = Uri.EscapeDataString(path);
         var url =
             $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?path={path}&includeContent=true&api-version=7.1-preview.1";
-        var result = await GetJsonAsync<JsonElement>(url);
-        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("content", out var content))
-            return content.GetString() ?? string.Empty;
-        return string.Empty;
+        var result = await GetJsonAsync<WikiPageContentResult>(url);
+        return result?.Content ?? string.Empty;
     }
 
     public async Task<List<WikiInfo>> GetWikisAsync()
     {
         if (StaticApiPath != null)
         {
-            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wikis.json");
-            var staticList = new List<WikiInfo>();
-            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("value", out var staticValues))
+            var staticResult = await _httpClient.GetFromJsonAsync<WikisResult>($"{StaticApiPath}/wikis.json");
+            return staticResult?.Value.Select(w => new WikiInfo
             {
-                foreach (var w in staticValues.EnumerateArray())
-                {
-                    var id = w.GetProperty("id").GetString() ?? string.Empty;
-                    var name = w.TryGetProperty("name", out var n) ? n.GetString() ?? string.Empty : string.Empty;
-                    staticList.Add(new WikiInfo { Id = id, Name = name });
-                }
-            }
-            return staticList;
+                Id = w.Id ?? string.Empty,
+                Name = w.Name ?? string.Empty
+            }).ToList() ?? new List<WikiInfo>();
         }
 
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis?api-version=7.1-preview.1";
-        var result = await GetJsonAsync<JsonElement>(url);
-        var list = new List<WikiInfo>();
-        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("value", out var values))
+        var result = await GetJsonAsync<WikisResult>(url);
+        return result?.Value.Select(w => new WikiInfo
         {
-            foreach (var w in values.EnumerateArray())
-            {
-                var id = w.GetProperty("id").GetString() ?? string.Empty;
-                var name = w.TryGetProperty("name", out var n) ? n.GetString() ?? string.Empty : string.Empty;
-                list.Add(new WikiInfo { Id = id, Name = name });
-            }
-        }
-        return list;
+            Id = w.Id ?? string.Empty,
+            Name = w.Name ?? string.Empty
+        }).ToList() ?? new List<WikiInfo>();
     }
 
     public async Task<WikiPageNode?> GetWikiPageTreeAsync(string wikiId)
     {
         if (StaticApiPath != null)
         {
-            var staticResult = await _httpClient.GetFromJsonAsync<JsonElement>($"{StaticApiPath}/wiki-tree.json");
-            if (staticResult.ValueKind != JsonValueKind.Undefined && staticResult.TryGetProperty("value", out var val) && val.GetArrayLength() > 0)
-                return ParseWikiPage(val[0]);
-            return null;
+            var staticResult = await _httpClient.GetFromJsonAsync<WikiPagesResult>($"{StaticApiPath}/wiki-tree.json");
+            return staticResult?.Value.FirstOrDefault() != null ? ParseWikiPage(staticResult.Value.First()) : null;
         }
 
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wiki/wikis/{wikiId}/pages?recursionLevel=Full&api-version=7.1-preview.1";
-        var result = await GetJsonAsync<JsonElement>(url);
-        if (result.ValueKind != JsonValueKind.Undefined && result.TryGetProperty("value", out var pages) && pages.GetArrayLength() > 0)
+        var result = await GetJsonAsync<WikiPagesResult>(url);
+        if (result?.Value != null && result.Value.Length > 0)
         {
-            JsonElement rootPage = default;
-            foreach (var p in pages.EnumerateArray())
-            {
-                if (p.TryGetProperty("path", out var path) && path.GetString() == "/")
-                {
-                    rootPage = p;
-                    break;
-                }
-            }
-            if (rootPage.ValueKind == JsonValueKind.Undefined)
-                rootPage = pages[0];
-            return ParseWikiPage(rootPage);
+            var root = result.Value.FirstOrDefault(p => p.Path == "/") ?? result.Value[0];
+            return ParseWikiPage(root);
         }
         return null;
     }
 
-    private static WikiPageNode ParseWikiPage(JsonElement el)
+    private static WikiPageNode ParseWikiPage(WikiPage page)
     {
         var node = new WikiPageNode
         {
-            Path = el.GetProperty("path").GetString() ?? string.Empty
+            Path = page.Path ?? string.Empty
         };
-        if (el.TryGetProperty("subPages", out var sub) && sub.ValueKind == JsonValueKind.Array)
+        if (page.SubPages != null)
         {
-            foreach (var child in sub.EnumerateArray())
+            foreach (var child in page.SubPages)
                 node.Children.Add(ParseWikiPage(child));
         }
         return node;
@@ -845,5 +806,50 @@ public class DevOpsApiService
     {
         public string Rel { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
+    }
+
+    private class WikisResult
+    {
+        public Wiki[] Value { get; set; } = [];
+    }
+
+    private class Wiki
+    {
+        public string? Id { get; set; }
+        public string? Name { get; set; }
+    }
+
+    private class WikiSearchResults
+    {
+        public WikiSearchItem[] Results { get; set; } = [];
+    }
+
+    private class WikiSearchItem
+    {
+        public string? Id { get; set; }
+        public string? Path { get; set; }
+        public string? Url { get; set; }
+        public SearchWiki Wiki { get; set; } = new();
+    }
+
+    private class SearchWiki
+    {
+        public string Id { get; set; } = string.Empty;
+    }
+
+    private class WikiPageContentResult
+    {
+        public string? Content { get; set; }
+    }
+
+    private class WikiPagesResult
+    {
+        public WikiPage[] Value { get; set; } = [];
+    }
+
+    private class WikiPage
+    {
+        public string? Path { get; set; }
+        public WikiPage[]? SubPages { get; set; }
     }
 }
