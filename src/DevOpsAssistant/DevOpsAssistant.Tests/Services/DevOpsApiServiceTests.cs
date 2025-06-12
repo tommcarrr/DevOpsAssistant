@@ -493,4 +493,60 @@ public class DevOpsApiServiceTests
         Assert.Single(result.Children);
         Assert.Equal("/Child", result.Children[0].Path);
     }
+
+    [Fact]
+    public async Task GetRepositoriesAsync_Uses_Api_Endpoint()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"value\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        var results = await service.GetRepositoriesAsync();
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Get, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories?api-version=7.1", captured.RequestUri.ToString());
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetBranchesAsync_Uses_Api_Endpoint()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"value\":[{\"name\":\"refs/heads/feature\",\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        var results = await service.GetBranchesAsync("1");
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Get, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories/1/stats/branches?api-version=7.1", captured.RequestUri.ToString());
+        Assert.Single(results);
+        Assert.Equal("feature", results[0].Name);
+        Assert.Equal(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), results[0].CommitDate);
+    }
 }

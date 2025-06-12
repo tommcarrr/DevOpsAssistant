@@ -67,6 +67,7 @@ public class UiTests
     [InlineData("Story Quality", "Story Quality")]
     [InlineData("Metrics", "Metrics")]
     [InlineData("Requirement Planner", "Requirement Planner")]
+    [InlineData("Branch Health", "Branch Health")]
     public async Task Nav_Menu_Navigates_To_Correct_Page(string linkText, string heading)
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -211,5 +212,36 @@ public class UiTests
         await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();
         var table = await page.WaitForSelectorAsync("text=Period Ending");
         Assert.NotNull(table);
+    }
+
+    [Fact]
+    public async Task BranchHealth_Load_Button_Shows_Table()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var context = await browser.NewContextAsync();
+        await context.RouteAsync("**/git/repositories?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"value\":[{\"id\":\"1\",\"name\":\"Repo\"}]}"
+        }));
+        await context.RouteAsync("**/stats/branches?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"value\":[{\"name\":\"refs/heads/feature\",\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}"
+        }));
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/branch-health");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();
+        var row = await page.WaitForSelectorAsync("text=feature");
+        Assert.NotNull(row);
     }
 }

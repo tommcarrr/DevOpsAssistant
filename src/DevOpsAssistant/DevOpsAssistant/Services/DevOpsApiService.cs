@@ -755,6 +755,35 @@ public class DevOpsApiService
         return node;
     }
 
+    public async Task<List<RepositoryInfo>> GetRepositoriesAsync()
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/git/repositories?api-version=7.1";
+        var result = await GetJsonAsync<ReposResult>(url);
+        return result?.Value.Select(r => new RepositoryInfo
+        {
+            Id = r.Id ?? string.Empty,
+            Name = r.Name ?? string.Empty,
+            DefaultBranch = r.DefaultBranch ?? string.Empty
+        }).ToList() ?? [];
+    }
+
+    public async Task<List<BranchInfo>> GetBranchesAsync(string repositoryId)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/git/repositories/{repositoryId}/stats/branches?api-version=7.1";
+        var result = await GetJsonAsync<BranchStatsResult>(url);
+        return result?.Value.Select(b => new BranchInfo
+        {
+            Name = (b.Name ?? string.Empty).Replace("refs/heads/", string.Empty),
+            CommitDate = b.Commit.Committer.Date
+        }).ToList() ?? [];
+    }
+
     public async Task<int> CreateWorkItemAsync(
         string type,
         string title,
@@ -869,5 +898,38 @@ public class DevOpsApiService
         public string? Url { get; set; }
         public string? RemoteUrl { get; set; }
         public string? Content { get; set; }
+    }
+
+    private class ReposResult
+    {
+        public Repo[] Value { get; set; } = [];
+    }
+
+    private class Repo
+    {
+        public string? Id { get; set; }
+        public string? Name { get; set; }
+        public string? DefaultBranch { get; set; }
+    }
+
+    private class BranchStatsResult
+    {
+        public BranchStat[] Value { get; set; } = [];
+    }
+
+    private class BranchStat
+    {
+        public string? Name { get; set; }
+        public CommitInfo Commit { get; set; } = new();
+    }
+
+    private class CommitInfo
+    {
+        public GitUser Committer { get; set; } = new();
+    }
+
+    private class GitUser
+    {
+        public DateTime Date { get; set; }
     }
 }
