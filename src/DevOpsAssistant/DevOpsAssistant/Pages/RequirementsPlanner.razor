@@ -196,12 +196,20 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             foreach (var epic in _plan.Epics)
             {
-                epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog);
+                epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, new[] { "AI Generated" });
                 foreach (var feature in epic.Features)
                 {
-                    feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id);
+                    feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, new[] { "AI Generated" });
                     foreach (var story in feature.Stories)
-                        story.Id = await ApiService.CreateWorkItemAsync("User Story", story.Title, story.Description, _backlog, feature.Id);
+                        story.Id = await ApiService.CreateWorkItemAsync(
+                            "User Story",
+                            story.Title,
+                            story.Description,
+                            _backlog,
+                            feature.Id,
+                            story.AcceptanceCriteria,
+                            new[] { "AI Generated" }
+                        );
                 }
             }
             _error = null;
@@ -228,7 +236,9 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     {
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
-        sb.AppendLine("Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\"}]}]}]}");
+        sb.AppendLine(
+            "Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}"
+        );
         sb.AppendLine();
         sb.AppendLine("Document:");
         foreach (var page in pages)
@@ -266,5 +276,6 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string AcceptanceCriteria { get; set; } = string.Empty;
     }
 }

@@ -21,7 +21,16 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         SetupServices(includeApi: true);
         var cut = RenderWithProvider<TestPage>();
         var responseField = typeof(RequirementsPlanner).GetField("_responseText", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        responseField.SetValue(cut.Instance, "{\"Epics\":[{\"Title\":\"E\",\"Description\":\"D\",\"Features\":[]}]}".Replace("Epics", "epics").Replace("Title", "title").Replace("Description", "description").Replace("Features", "features"));
+        responseField.SetValue(
+            cut.Instance,
+            "{\"Epics\":[{\"Title\":\"E\",\"Description\":\"D\",\"Features\":[{\"Title\":\"F\",\"Description\":\"FD\",\"Stories\":[{\"Title\":\"S\",\"Description\":\"SD\",\"AcceptanceCriteria\":\"AC\"}]}]}]}"
+                .Replace("Epics", "epics")
+                .Replace("Title", "title")
+                .Replace("Description", "description")
+                .Replace("Features", "features")
+                .Replace("Stories", "stories")
+                .Replace("AcceptanceCriteria", "acceptanceCriteria")
+        );
         var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
         cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
         var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -37,7 +46,7 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         SetupServices(includeApi: true);
         var cut = RenderWithProvider<TestPage>();
         var responseField = typeof(RequirementsPlanner).GetField("_responseText", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var json = "{\"epics\":[{\"title\":\"E\",\"description\":\"D\",\"features\":[]}]}";
+        var json = "{\"epics\":[{\"title\":\"E\",\"description\":\"D\",\"features\":[{\"title\":\"F\",\"description\":\"FD\",\"stories\":[{\"title\":\"S\",\"description\":\"SD\",\"acceptanceCriteria\":\"AC\"}]}]}]}";
         responseField.SetValue(cut.Instance, $"```json\n{json}\n```\nExtra");
         var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
         cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
