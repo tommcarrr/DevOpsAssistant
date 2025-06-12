@@ -13,8 +13,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
+      - name: Format
+        run: dotnet format --no-restore
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
+      - name: Build (Release, warn as error)
+        run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
       - name: Test with coverage
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-restore --verbosity normal --collect:"XPlat Code Coverage"
       - name: Install ReportGenerator
