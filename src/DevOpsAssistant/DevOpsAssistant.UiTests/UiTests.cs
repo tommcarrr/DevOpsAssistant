@@ -120,4 +120,21 @@ public class UiTests
         var splash = await page.QuerySelectorAsync("text=Open Settings");
         Assert.NotNull(splash);
     }
+
+    [Fact]
+    public async Task RequirementsPlanner_Shows_WikiTree()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/requirements-planner");
+        var item = await page.WaitForSelectorAsync("text=Home");
+        Assert.NotNull(item);
+    }
 }
