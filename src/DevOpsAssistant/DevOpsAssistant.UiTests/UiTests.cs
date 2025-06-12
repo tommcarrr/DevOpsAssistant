@@ -140,4 +140,76 @@ public class UiTests
         Assert.NotNull(root);
         Assert.NotNull(child);
     }
+
+    [Fact]
+    public async Task ReleaseNotes_Autocomplete_And_Generate()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var context = await browser.NewContextAsync();
+        await context.RouteAsync("**/wiql?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"workItems\":[{\"id\":1}]}"
+        }));
+        await context.RouteAsync("**/workitems?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story 1\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}"
+        }));
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/release-notes");
+        await page.FillAsync("input[aria-label='User Stories']", "Story");
+        await page.WaitForSelectorAsync("div.mud-popover");
+        await page.ClickAsync("text=Story 1");
+        await page.WaitForSelectorAsync("text=Story 1");
+        await page.ClickAsync("text=Generate Prompt");
+        var prompt = await page.WaitForSelectorAsync("textarea");
+        Assert.NotNull(prompt);
+    }
+
+    [Fact]
+    public async Task Metrics_Load_Button_Shows_Table()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var context = await browser.NewContextAsync();
+        await context.RouteAsync("**/classificationnodes/areas?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"children\":[{\"path\":\"Project\\\\Area\"}]}"
+        }));
+        await context.RouteAsync("**/wiql?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"workItems\":[{\"id\":1}]}"
+        }));
+        await context.RouteAsync("**/workitems?*", route => route.FulfillAsync(new RouteFulfillOptions
+        {
+            Status = 200,
+            ContentType = "application/json",
+            Body = "{\"value\":[{\"id\":1,\"fields\":{\"System.CreatedDate\":\"2024-01-01T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-02T00:00:00Z\",\"Microsoft.VSTS.Common.ClosedDate\":\"2024-01-03T00:00:00Z\",\"Microsoft.VSTS.Scheduling.StoryPoints\":5,\"Microsoft.VSTS.Scheduling.OriginalEstimate\":8}}]}"
+        }));
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Project', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/metrics");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();
+        var table = await page.WaitForSelectorAsync("text=Period Ending");
+        Assert.NotNull(table);
+    }
 }
