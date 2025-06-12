@@ -59,7 +59,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     <MudList T="string" Dense="true" Class="mb-2">
         @foreach (var epic in _plan.Epics)
         {
-            <MudListItem T="string">
+            <MudListItem T="string" Class='@WorkItemHelpers.GetItemClass("Epic")'>
                 <b>Epic:</b> @epic.Title
                 <MudText Class="d-block ms-4">@epic.Description</MudText>
                 @if (epic.Features.Count > 0)
@@ -67,7 +67,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                     <MudList T="string" Dense="true" Class="ms-4">
                         @foreach (var feature in epic.Features)
                         {
-                            <MudListItem T="string">
+                            <MudListItem T="string" Class='@WorkItemHelpers.GetItemClass("Feature")'>
                                 <b>Feature:</b> @feature.Title
                                 <MudText Class="d-block ms-4">@feature.Description</MudText>
                                 @if (feature.Stories.Count > 0)
@@ -75,7 +75,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                                     <MudList T="string" Dense="true" Class="ms-4">
                                         @foreach (var story in feature.Stories)
                                         {
-                                            <MudListItem T="string">
+                                            <MudListItem T="string" Class='@WorkItemHelpers.GetItemClass("User Story")'>
                                                 <b>Story:</b> @story.Title
                                                 <MudText Class="d-block ms-4">@story.Description</MudText>
                                             </MudListItem>
