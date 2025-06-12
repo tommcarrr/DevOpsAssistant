@@ -25,4 +25,11 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot/version.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
