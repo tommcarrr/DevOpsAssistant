@@ -472,7 +472,7 @@ public class DevOpsApiServiceTests
             captured = req;
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("{\"value\":[]}")
+                Content = new StringContent("{\"path\":\"/\",\"subPages\":[]}")
             };
         });
         var client = new HttpClient(handler);
@@ -488,6 +488,28 @@ public class DevOpsApiServiceTests
         Assert.NotNull(captured.RequestUri);
         Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wiki/wikis/1/pages?recursionLevel=Full&api-version=7.1-preview.1",
             captured.RequestUri.ToString());
-        Assert.Null(result);
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task GetWikiPageTreeAsync_Parses_Missing_Value_Property()
+    {
+        var handler = new FakeHttpMessageHandler(_ =>
+            new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"path\":\"/\",\"subPages\":[{\"path\":\"/Child\",\"subPages\":[]}]}")
+            });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        var result = await service.GetWikiPageTreeAsync("1");
+
+        Assert.NotNull(result);
+        Assert.Equal("/", result!.Path);
+        Assert.Single(result.Children);
+        Assert.Equal("/Child", result.Children[0].Path);
     }
 }
