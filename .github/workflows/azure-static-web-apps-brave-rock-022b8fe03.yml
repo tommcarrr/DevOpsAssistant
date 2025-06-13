@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
       - name: Test
-        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-build --no-restore --verbosity normal
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln -c Release --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
       - name: Deploy to Staging
@@ -83,7 +83,7 @@ jobs:
       - name: Build
         run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
       - name: Test
-        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln --no-build --no-restore --verbosity normal
+        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln -c Release --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
       - name: Deploy to Production
