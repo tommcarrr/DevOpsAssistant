@@ -530,7 +530,7 @@ public class DevOpsApiServiceTests
             captured = req;
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("{\"value\":[{\"name\":\"refs/heads/feature\",\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}")
+                Content = new StringContent("{\"value\":[{\"name\":\"refs/heads/feature\",\"aheadCount\":1,\"behindCount\":2,\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}")
             };
         });
         var client = new HttpClient(handler);
@@ -539,14 +539,16 @@ public class DevOpsApiServiceTests
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
         var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
-        var results = await service.GetBranchesAsync("1");
+        var results = await service.GetBranchesAsync("1", "main");
 
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Get, captured!.Method);
         Assert.NotNull(captured.RequestUri);
-        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories/1/stats/branches?api-version=7.1", captured.RequestUri.ToString());
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories/1/stats/branches?api-version=7.1&baseVersion=GBmain", captured.RequestUri.ToString());
         Assert.Single(results);
         Assert.Equal("feature", results[0].Name);
         Assert.Equal(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), results[0].CommitDate);
+        Assert.Equal(1, results[0].Ahead);
+        Assert.Equal(2, results[0].Behind);
     }
 }

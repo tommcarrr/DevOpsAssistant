@@ -770,17 +770,21 @@ public class DevOpsApiService
         }).ToList() ?? [];
     }
 
-    public async Task<List<BranchInfo>> GetBranchesAsync(string repositoryId)
+    public async Task<List<BranchInfo>> GetBranchesAsync(string repositoryId, string? baseBranch = null)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/git/repositories/{repositoryId}/stats/branches?api-version=7.1";
+        if (!string.IsNullOrWhiteSpace(baseBranch))
+            url += "&baseVersion=GB" + Uri.EscapeDataString(baseBranch);
         var result = await GetJsonAsync<BranchStatsResult>(url);
         return result?.Value.Select(b => new BranchInfo
         {
             Name = (b.Name ?? string.Empty).Replace("refs/heads/", string.Empty),
-            CommitDate = b.Commit.Committer.Date
+            CommitDate = b.Commit.Committer.Date,
+            Ahead = b.AheadCount,
+            Behind = b.BehindCount
         }).ToList() ?? [];
     }
 
@@ -921,6 +925,8 @@ public class DevOpsApiService
     {
         public string? Name { get; set; }
         public CommitInfo Commit { get; set; } = new();
+        public int AheadCount { get; set; }
+        public int BehindCount { get; set; }
     }
 
     private class CommitInfo
