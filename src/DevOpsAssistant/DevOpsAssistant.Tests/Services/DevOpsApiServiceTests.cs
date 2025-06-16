@@ -582,7 +582,7 @@ public class DevOpsApiServiceTests
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
         var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
-        var results = await service.GetBranchesAsync("1", "main");
+        var results = await service.GetBranchesAsync("1", " main ");
 
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Get, captured!.Method);
