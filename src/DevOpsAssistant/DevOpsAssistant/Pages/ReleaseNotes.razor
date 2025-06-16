@@ -2,8 +2,10 @@
 @using System.Text
 @using System.Text.Json
 @using DevOpsAssistant.Services
+@using MudBlazor
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
+@inject DevOpsConfigService ConfigService
 
 <PageTitle>DevOpsAssistant - Release Notes</PageTitle>
 
@@ -19,15 +21,45 @@
 
 <MudPaper Class="p-4 mb-4">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudAutocomplete T="WorkItemInfo"
-                         Label="Work Items"
-                         SearchFunc="SearchItems"
-                         ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                         Value="_searchValue"
-                         ValueChanged="OnItemSelected"/>
+        @if (ConfigService.Config.ReleaseNotesTreeView)
+        {
+            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                @foreach (var b in _backlogs)
+                {
+                    <MudSelectItem Value="@b">@b</MudSelectItem>
+                }
+            </MudSelect>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Load">Load</MudButton>
+        }
+        else
+        {
+            <MudAutocomplete T="WorkItemInfo"
+                             Label="Work Items"
+                             SearchFunc="SearchItems"
+                             ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
+                             Value="_searchValue"
+                             ValueChanged="OnItemSelected"/>
+        }
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
     </MudStack>
 </MudPaper>
+
+@if (ConfigService.Config.ReleaseNotesTreeView && _treeItems != null)
+{
+    <MudTreeView T="WorkItemNode"
+                 Items="@_treeItems"
+                 SelectionMode="SelectionMode.MultiSelection"
+                 SelectedValues="@_selectedNodes"
+                 SelectedValuesChanged="OnNodesSelected"
+                 Style="max-height:300px; overflow:auto; width:100%;">
+        <ItemTemplate>
+            <MudTreeViewItem Items="@context.Children"
+                             Value="@context.Value"
+                             Text="@($"{context.Value!.Info.Id} - {context.Value!.Info.Title}")"
+                             @bind-Expanded="@context.Expanded" />
+        </ItemTemplate>
+    </MudTreeView>
+}
 
 @if (_selectedItems.Any())
 {
@@ -78,6 +110,57 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     private bool _loading;
     private string? _prompt;
     private string? _error;
+    private string _path = string.Empty;
+    private string[] _backlogs = [];
+    private List<TreeItemData<WorkItemNode>>? _treeItems;
+    private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ConfigService.Config.ReleaseNotesTreeView)
+        {
+            try
+            {
+                _backlogs = await ApiService.GetBacklogsAsync();
+                if (_backlogs.Length > 0)
+                    _path = _backlogs[0];
+                _error = null;
+            }
+            catch (Exception ex)
+            {
+                _error = ex.Message;
+            }
+        }
+    }
+
+    private async Task Load()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var roots = await ApiService.GetWorkItemHierarchyAsync(_path);
+            _treeItems = roots.Select(BuildTreeItem).ToList();
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private Task OnNodesSelected(IReadOnlyCollection<WorkItemNode> nodes)
+    {
+        _selectedNodes = nodes;
+        _selectedItems.Clear();
+        foreach (var n in nodes)
+            _selectedItems.Add(n.Info);
+        return Task.CompletedTask;
+    }
 
     private async Task<IEnumerable<WorkItemInfo>> SearchItems(string value, CancellationToken _)
     {
@@ -130,6 +213,18 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             _loading = false;
         }
+    }
+
+    private static TreeItemData<WorkItemNode> BuildTreeItem(WorkItemNode node)
+    {
+        var item = new TreeItemData<WorkItemNode>
+        {
+            Value = node,
+            Text = $"{node.Info.Id} - {node.Info.Title}"
+        };
+        if (node.Children.Count > 0)
+            item.Children = node.Children.Select(BuildTreeItem).ToList();
+        return item;
     }
 
     private async Task CopyPrompt()

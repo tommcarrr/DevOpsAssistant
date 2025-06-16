@@ -57,7 +57,7 @@ public class ReleaseNotesPageTests : ComponentTestBase
     [Fact]
     public async Task SearchItems_Filters_Selected_Items()
     {
-        var config = SetupServices();
+        var config = SetupServices(includeApi: true);
         await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
 
         var wiqlJson = "{\"workItems\":[{\"id\":1},{\"id\":2}]}";
@@ -131,6 +131,27 @@ public class ReleaseNotesPageTests : ComponentTestBase
         var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>()])!;
 
         Assert.Contains("No branding is required.", result);
+    }
+
+    [Fact]
+    public async Task ReleaseNotes_Uses_TreeView_When_Configured()
+    {
+        var config = SetupServices(includeApi: true);
+        await config.SaveAsync(new DevOpsConfig { ReleaseNotesTreeView = true });
+
+        var cut = RenderWithProvider<TestPage>();
+
+        Assert.Contains("Load", cut.Markup);
+    }
+
+    [Fact]
+    public void ReleaseNotes_Uses_Autocomplete_By_Default()
+    {
+        SetupServices(includeApi: true);
+
+        var cut = RenderWithProvider<TestPage>();
+
+        Assert.Contains("Work Items", cut.Markup);
     }
 
     private class TestPage : ReleaseNotes
