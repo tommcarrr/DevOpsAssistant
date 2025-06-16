@@ -48,6 +48,13 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [term])!;
     }
 
+    private static string InvokeBuildReleaseSearchWiql(string term)
+    {
+        var method =
+            typeof(DevOpsApiService).GetMethod("BuildReleaseSearchWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, [term])!;
+    }
+
     private static string InvokeBuildMetricsWiql(string area, DateTime start)
     {
         var method =
@@ -314,6 +321,16 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildReleaseSearchWiql_Contains_Conditions()
+    {
+        var query = InvokeBuildReleaseSearchWiql("foo");
+
+        Assert.Contains("User Story", query);
+        Assert.Contains("Bug", query);
+        Assert.Contains("CONTAINS 'foo'", query);
+    }
+
+    [Fact]
     public async Task GetStoryHierarchyDetailsAsync_Throws_When_Config_Incomplete()
     {
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
@@ -372,6 +389,32 @@ public class DevOpsApiServiceTests
 
         Assert.Single(result);
         Assert.Equal(1, result[0].Id);
+    }
+
+    [Fact]
+    public async Task SearchReleaseItemsAsync_Returns_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":2}]}";
+        var itemsJson = "{\"value\":[{\"id\":2,\"fields\":{\"System.Title\":\"Bug\",\"System.State\":\"New\",\"System.WorkItemType\":\"Bug\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        var result = await service.SearchReleaseItemsAsync("bug");
+
+        Assert.Single(result);
+        Assert.Equal(2, result[0].Id);
     }
 
     [Fact]

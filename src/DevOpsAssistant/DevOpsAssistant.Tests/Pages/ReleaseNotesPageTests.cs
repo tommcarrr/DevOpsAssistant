@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Net;
 using System.Threading;
 using System.Linq;
+using System.Collections.Generic;
 using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
@@ -35,14 +36,14 @@ public class ReleaseNotesPageTests : ComponentTestBase
     }
 
     [Fact]
-    public void OnStorySelected_Adds_To_SelectedStories()
+    public void OnItemSelected_Adds_To_SelectedItems()
     {
         SetupServices(includeApi: true);
 
         var page = RenderWithProvider<TestPage>();
-        var method = typeof(ReleaseNotes).GetMethod("OnStorySelected", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var method = typeof(ReleaseNotes).GetMethod("OnItemSelected", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var setField =
-            typeof(ReleaseNotes).GetField("_selectedStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            typeof(ReleaseNotes).GetField("_selectedItems", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         var item = new WorkItemInfo { Id = 1, Title = "Test" };
         page.InvokeAsync(() => method.Invoke(page.Instance, [item]));
@@ -54,7 +55,7 @@ public class ReleaseNotesPageTests : ComponentTestBase
     }
 
     [Fact]
-    public async Task SearchStories_Filters_Selected_Items()
+    public async Task SearchItems_Filters_Selected_Items()
     {
         var config = SetupServices();
         await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
@@ -76,16 +77,34 @@ public class ReleaseNotesPageTests : ComponentTestBase
         Services.AddSingleton(sp => new DevOpsApiService(client, config, sp.GetRequiredService<DeploymentConfigService>()));
 
         var page = RenderWithProvider<TestPage>();
-        var setField = typeof(ReleaseNotes).GetField("_selectedStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var setField = typeof(ReleaseNotes).GetField("_selectedItems", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var set = (HashSet<WorkItemInfo>)setField.GetValue(page.Instance)!;
         set.Add(new WorkItemInfo { Id = 1, Title = "Story 1" });
 
-        var method = typeof(ReleaseNotes).GetMethod("SearchStories", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var method = typeof(ReleaseNotes).GetMethod("SearchItems", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var task = (Task<IEnumerable<WorkItemInfo>>)method.Invoke(page.Instance, ["Story", CancellationToken.None])!;
         var result = (await task).ToList();
 
         Assert.Single(result);
         Assert.Equal(2, result[0].Id);
+    }
+
+    [Fact]
+    public void BuildPrompt_Includes_Acceptance_Criteria()
+    {
+        var details = new List<StoryHierarchyDetails>
+        {
+            new()
+            {
+                Story = new WorkItemInfo { Id = 1, Title = "Story", WorkItemType = "User Story" },
+                AcceptanceCriteria = "<b>criteria</b>"
+            }
+        };
+
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (string)method.Invoke(null, [details])!;
+
+        Assert.Contains("\"AcceptanceCriteria\": \"criteria\"", result);
     }
 
     private class TestPage : ReleaseNotes
