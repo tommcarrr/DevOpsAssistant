@@ -53,7 +53,7 @@ else if (_periods.Any())
             <MudTh>Velocity</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Period">@context.End.ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Period">@context.End.ToLocalDateString()</MudTd>
             <MudTd DataLabel="Lead">@context.AvgLeadTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
@@ -144,7 +144,7 @@ else if (_periods.Any())
         }
 
         _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Week
-                ? p.End.ToString("MM/dd")
+                ? p.End.ToLocalDateString()
                 : p.End.ToString("yyyy-MM")).ToArray();
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
