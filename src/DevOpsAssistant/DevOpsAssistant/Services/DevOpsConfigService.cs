@@ -37,6 +37,7 @@ public class DevOpsConfigService
             PatToken = config.PatToken.Trim(),
             MainBranch = config.MainBranch.Trim(),
             DarkMode = config.DarkMode,
+            ReleaseNotesTreeView = config.ReleaseNotesTreeView,
             DefaultStates = config.DefaultStates.Trim(),
             DefinitionOfReady = config.DefinitionOfReady.Trim(),
             Rules = config.Rules
