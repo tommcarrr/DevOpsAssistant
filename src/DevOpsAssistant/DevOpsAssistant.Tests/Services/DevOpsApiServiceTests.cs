@@ -594,4 +594,25 @@ public class DevOpsApiServiceTests
         Assert.Equal(1, results[0].Ahead);
         Assert.Equal(2, results[0].Behind);
     }
+
+    [Theory]
+    [InlineData(HttpStatusCode.BadRequest, "Invalid request")]
+    [InlineData(HttpStatusCode.TooManyRequests, "Rate limit exceeded")]
+    [InlineData(HttpStatusCode.InternalServerError, "Azure DevOps service is unavailable")]
+    public async Task HandleError_Maps_Status_To_Message(HttpStatusCode code, string expected)
+    {
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(code)
+        {
+            Content = new StringContent("{\"message\":\"detail\"}")
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetStatesAsync());
+
+        Assert.Contains(expected, ex.Message);
+    }
 }
