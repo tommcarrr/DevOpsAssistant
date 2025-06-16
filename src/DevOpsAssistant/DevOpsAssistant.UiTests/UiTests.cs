@@ -233,11 +233,11 @@ public class UiTests
         {
             Status = 200,
             ContentType = "application/json",
-            Body = "{\"value\":[{\"name\":\"refs/heads/feature\",\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}"
+            Body = "{\"value\":[{\"name\":\"refs/heads/feature\",\"aheadCount\":1,\"behindCount\":2,\"commit\":{\"committer\":{\"date\":\"2024-01-01T00:00:00Z\"}}}]}"
         }));
         var page = await context.NewPageAsync();
         await page.GotoAsync(_baseUrl);
-        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token', MainBranch: 'main' }))");
         await page.ReloadAsync();
         await page.GotoAsync(_baseUrl.TrimEnd('/') + "/branch-health");
         await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();

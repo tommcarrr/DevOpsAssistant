@@ -8,6 +8,7 @@
                     <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
                     <MudTextField @bind-Value="_model.Project" Label="Project"/>
                     <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password"/>
+                    <MudTextField @bind-Value="_model.MainBranch" Label="Main Branch"/>
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label="Dark Mode"/>
                 </MudStack>
             </MudTabPanel>
@@ -59,6 +60,7 @@
             Organization = cfg.Organization,
             Project = cfg.Project,
             PatToken = cfg.PatToken,
+            MainBranch = cfg.MainBranch,
             DarkMode = cfg.DarkMode,
             DefinitionOfReady = cfg.DefinitionOfReady,
             Rules = new ValidationRules
