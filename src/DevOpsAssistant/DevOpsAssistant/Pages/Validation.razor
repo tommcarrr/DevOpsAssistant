@@ -71,7 +71,7 @@ else if (_results != null)
                 @foreach (var r in _results)
                 {
                     <MudListItem T="ResultItem">
-                        <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType
+                        <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
                         <br/>
                         <span class="text-secondary">@string.Join(", ", r.Violations)</span>
                     </MudListItem>
