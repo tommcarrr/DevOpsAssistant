@@ -1,8 +1,7 @@
 @page "/story-review"
 @using System.Text
 @using System.Text.Json
-@using System.Net
-@using System.Text.RegularExpressions
+@using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
@@ -123,16 +122,16 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                 : new
                 {
                     d.Epic.Title,
-                    Description = Sanitize(d.EpicDescription)
+                    Description = TextHelpers.Sanitize(d.EpicDescription)
                 },
             Feature = d.Feature == null
                 ? null
                 : new
                 {
                     d.Feature.Title,
-                    Description = Sanitize(d.FeatureDescription)
+                    Description = TextHelpers.Sanitize(d.FeatureDescription)
                 },
-            Story = new { d.Story.Id, d.Story.Title, Description = Sanitize(d.Description) }
+            Story = new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description) }
         });
         var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
         var sb = new StringBuilder();
@@ -149,13 +148,4 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         return sb.ToString();
     }
 
-    private static string Sanitize(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return string.Empty;
-        var text = WebUtility.HtmlDecode(input);
-        text = Regex.Replace(text, "<.*?>", string.Empty);
-        text = Regex.Replace(text, "\\s+", " ");
-        return text.Trim();
-    }
 }
