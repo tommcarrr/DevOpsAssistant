@@ -849,7 +849,7 @@ public class DevOpsApiService
         var url = $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/git/repositories/{repositoryId}/stats/branches?api-version=7.1";
         var branch = baseBranch?.Trim();
         if (!string.IsNullOrWhiteSpace(branch))
-            url += "&baseVersion=GB" + Uri.EscapeDataString(branch);
+            url += "&baseVersion=" + Uri.EscapeDataString(branch);
         var result = await GetJsonAsync<BranchStatsResult>(url);
         return result?.Value.Select(b => new BranchInfo
         {
