@@ -99,9 +99,23 @@ public class DevOpsApiService
     {
         string message = response.StatusCode switch
         {
-            HttpStatusCode.Unauthorized => "Authentication failed. Please verify your PAT token.",
-            HttpStatusCode.Forbidden => "Access denied. Please check your PAT permissions.",
-            HttpStatusCode.NotFound => "The requested project was not found.",
+            HttpStatusCode.BadRequest
+                => "Invalid request. Please verify your parameters.",
+            HttpStatusCode.Unauthorized
+                => "Authentication failed. Please verify your PAT token.",
+            HttpStatusCode.Forbidden
+                => "Access denied. Please check your PAT permissions.",
+            HttpStatusCode.NotFound
+                => "The requested project was not found.",
+            HttpStatusCode.Conflict
+                => "The item was updated elsewhere. Refresh and try again.",
+            HttpStatusCode.TooManyRequests
+                => "Rate limit exceeded. Please wait and retry.",
+            HttpStatusCode.InternalServerError or
+                HttpStatusCode.BadGateway or
+                HttpStatusCode.ServiceUnavailable or
+                HttpStatusCode.GatewayTimeout
+                => "Azure DevOps service is unavailable. Please try again later.",
             _ => string.Empty
         };
 
@@ -109,12 +123,15 @@ public class DevOpsApiService
         try
         {
             var doc = JsonDocument.Parse(content);
-            if (doc.RootElement.TryGetProperty("message", out var msg))
+            if (!doc.RootElement.TryGetProperty("message", out var msg) &&
+                !doc.RootElement.TryGetProperty("Message", out msg))
             {
-                var detail = msg.GetString();
-                if (!string.IsNullOrWhiteSpace(detail))
-                    message = string.IsNullOrWhiteSpace(message) ? detail : $"{message} ({detail})";
+                doc.RootElement.TryGetProperty("errorMessage", out msg);
             }
+
+            var detail = msg.GetString();
+            if (!string.IsNullOrWhiteSpace(detail))
+                message = string.IsNullOrWhiteSpace(message) ? detail : $"{message} ({detail})";
         }
         catch
         {
