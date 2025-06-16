@@ -11,12 +11,13 @@ public class DevOpsConfigServiceTests
         var service = new DevOpsConfigService(storage);
         var config = new DevOpsConfig
         {
-            Organization = "Org",
-            Project = "Proj",
-            PatToken = "Token",
+            Organization = " Org ",
+            Project = " Proj ",
+            PatToken = " Token ",
             DarkMode = true,
-            DefinitionOfReady = "DOR",
-            DefaultStates = "Resolved",
+            DefinitionOfReady = " DOR ",
+            DefaultStates = " Resolved ",
+            MainBranch = " main ",
             Rules = new ValidationRules { EpicHasDescription = true }
         };
 
@@ -31,6 +32,7 @@ public class DevOpsConfigServiceTests
         Assert.True(stored.DarkMode);
         Assert.Equal("DOR", stored.DefinitionOfReady);
         Assert.Equal("Resolved", stored.DefaultStates);
+        Assert.Equal("main", stored.MainBranch);
         Assert.True(stored.Rules.EpicHasDescription);
     }
 
@@ -60,6 +62,33 @@ public class DevOpsConfigServiceTests
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
         Assert.Equal("Active", service.Config.DefaultStates);
         Assert.True(service.Config.Rules.EpicHasDescription);
+    }
+
+    [Fact]
+    public async Task LoadAsync_Trims_Whitespace()
+    {
+        var storage = new FakeLocalStorageService();
+        var stored = new DevOpsConfig
+        {
+            Organization = " Org ",
+            Project = " Proj ",
+            PatToken = " Token ",
+            MainBranch = " main ",
+            DefinitionOfReady = " DOR ",
+            DefaultStates = " Active ",
+            Rules = new ValidationRules()
+        };
+        await storage.SetItemAsync("devops-config", stored);
+        var service = new DevOpsConfigService(storage);
+
+        await service.LoadAsync();
+
+        Assert.Equal("Org", service.Config.Organization);
+        Assert.Equal("Proj", service.Config.Project);
+        Assert.Equal("Token", service.Config.PatToken);
+        Assert.Equal("main", service.Config.MainBranch);
+        Assert.Equal("DOR", service.Config.DefinitionOfReady);
+        Assert.Equal("Active", service.Config.DefaultStates);
     }
 
     [Fact]

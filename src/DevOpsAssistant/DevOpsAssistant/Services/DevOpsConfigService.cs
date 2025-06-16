@@ -17,13 +17,30 @@ public class DevOpsConfigService
     public async Task LoadAsync()
     {
         var config = await _localStorage.GetItemAsync<DevOpsConfig>(StorageKey);
-        if (config != null) Config = config;
+        if (config != null) Config = Normalize(config);
     }
 
     public async Task SaveAsync(DevOpsConfig config)
     {
-        Config = config;
-        await _localStorage.SetItemAsync(StorageKey, config);
+        var normalized = Normalize(config);
+
+        Config = normalized;
+        await _localStorage.SetItemAsync(StorageKey, normalized);
+    }
+
+    private static DevOpsConfig Normalize(DevOpsConfig config)
+    {
+        return new DevOpsConfig
+        {
+            Organization = config.Organization.Trim(),
+            Project = config.Project.Trim(),
+            PatToken = config.PatToken.Trim(),
+            MainBranch = config.MainBranch.Trim(),
+            DarkMode = config.DarkMode,
+            DefaultStates = config.DefaultStates.Trim(),
+            DefinitionOfReady = config.DefinitionOfReady.Trim(),
+            Rules = config.Rules
+        };
     }
 
     public async Task ClearAsync()
