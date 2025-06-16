@@ -107,6 +107,32 @@ public class ReleaseNotesPageTests : ComponentTestBase
         Assert.Contains("\"AcceptanceCriteria\": \"criteria\"", result);
     }
 
+    [Fact]
+    public void BuildPrompt_Includes_Bug_Note()
+    {
+        var details = new List<StoryHierarchyDetails>
+        {
+            new()
+            {
+                Story = new WorkItemInfo { Id = 1, Title = "Bug", WorkItemType = "Bug" }
+            }
+        };
+
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (string)method.Invoke(null, [details])!;
+
+        Assert.Contains("Bugs are also in scope", result);
+    }
+
+    [Fact]
+    public void BuildPrompt_Includes_NoBranding_Note()
+    {
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>()])!;
+
+        Assert.Contains("No branding is required.", result);
+    }
+
     private class TestPage : ReleaseNotes
     {
         protected override Task OnInitializedAsync()
