@@ -61,7 +61,7 @@
     </MudTreeView>
 }
 
-@if (_selectedItems.Any())
+@if (_selectedItems.Any() && !ConfigService.Config.ReleaseNotesTreeView)
 {
     <MudTable Items="_selectedItems" Dense="true" Class="mb-4">
         <HeaderContent>
@@ -204,6 +204,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             var details = await ApiService.GetStoryHierarchyDetailsAsync(ids);
             _prompt = BuildPrompt(details);
             _error = null;
+            await CopyPrompt();
         }
         catch (Exception ex)
         {

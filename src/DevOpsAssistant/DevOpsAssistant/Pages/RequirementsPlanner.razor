@@ -142,6 +142,7 @@
             }
             _prompt = BuildPrompt(pages);
             _error = null;
+            await CopyPrompt();
             await (_stepper?.NextStepAsync() ?? Task.CompletedTask);
         }
         catch (Exception ex)
