@@ -587,7 +587,7 @@ public class DevOpsApiServiceTests
         Assert.NotNull(captured);
         Assert.Equal(HttpMethod.Get, captured!.Method);
         Assert.NotNull(captured.RequestUri);
-        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories/1/stats/branches?api-version=7.1&baseVersion=GBmain", captured.RequestUri.ToString());
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/git/repositories/1/stats/branches?api-version=7.1&baseVersion=main", captured.RequestUri.ToString());
         Assert.Single(results);
         Assert.Equal("feature", results[0].Name);
         Assert.Equal(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), results[0].CommitDate);
