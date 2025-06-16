@@ -90,6 +90,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             var items = await ApiService.GetStoriesAsync(_path, SelectedStates);
             _prompt = BuildPrompt(items, ConfigService.Config.DefinitionOfReady);
             _error = null;
+            await CopyPrompt();
         }
         catch (Exception ex)
         {
