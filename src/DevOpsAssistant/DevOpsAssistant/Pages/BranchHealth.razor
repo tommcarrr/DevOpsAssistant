@@ -45,7 +45,7 @@ else if (_branches != null)
         <RowTemplate>
             <MudTd DataLabel="Branch">@context.Name</MudTd>
             <MudTd DataLabel="Date">
-                @context.CommitDate.ToString("yyyy-MM-dd")
+                @context.CommitDate.ToLocalDateString()
                 @if (IsStale(context))
                 {
                     <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Class="ms-1" />
