@@ -100,7 +100,12 @@ else if (_results != null)
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
             _states = await ApiService.GetStatesAsync();
-            SelectedStates = _states.ToHashSet();
+            var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
+            SelectedStates = _states
+                .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
+                            s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
+                            extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
+                .ToHashSet();
             _error = null;
         }
         catch (Exception ex)
