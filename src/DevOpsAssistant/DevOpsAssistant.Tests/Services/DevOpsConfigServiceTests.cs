@@ -15,6 +15,7 @@ public class DevOpsConfigServiceTests
             Project = "Proj",
             PatToken = "Token",
             DarkMode = true,
+            ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
             DefaultStates = "Resolved",
             Rules = new ValidationRules { EpicHasDescription = true }
@@ -29,6 +30,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Proj", stored.Project);
         Assert.Equal("Token", stored.PatToken);
         Assert.True(stored.DarkMode);
+        Assert.True(stored.ReleaseNotesTreeView);
         Assert.Equal("DOR", stored.DefinitionOfReady);
         Assert.Equal("Resolved", stored.DefaultStates);
         Assert.True(stored.Rules.EpicHasDescription);
@@ -44,6 +46,7 @@ public class DevOpsConfigServiceTests
             Project = "Proj",
             PatToken = "Token",
             DarkMode = true,
+            ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
             DefaultStates = "Active",
             Rules = new ValidationRules { EpicHasDescription = true }
@@ -57,6 +60,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Proj", service.Config.Project);
         Assert.Equal("Token", service.Config.PatToken);
         Assert.True(service.Config.DarkMode);
+        Assert.True(service.Config.ReleaseNotesTreeView);
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
         Assert.Equal("Active", service.Config.DefaultStates);
         Assert.True(service.Config.Rules.EpicHasDescription);
@@ -74,6 +78,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.Project);
         Assert.Equal(string.Empty, service.Config.PatToken);
         Assert.False(service.Config.DarkMode);
+        Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.NotNull(service.Config.Rules);
     }
@@ -89,6 +94,7 @@ public class DevOpsConfigServiceTests
 
         Assert.Equal(string.Empty, service.Config.Organization);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
+        Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.False(await storage.ContainKeyAsync("devops-config"));
     }
 }
