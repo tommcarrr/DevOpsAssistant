@@ -8,6 +8,7 @@ using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace DevOpsAssistant.Tests.Pages;
 
@@ -74,7 +75,11 @@ public class ReleaseNotesPageTests : ComponentTestBase
         });
         var client = new HttpClient(handler);
         Services.AddSingleton(new DeploymentConfigService(new HttpClient()));
-        Services.AddSingleton(sp => new DevOpsApiService(client, config, sp.GetRequiredService<DeploymentConfigService>()));
+        Services.AddSingleton(sp => new DevOpsApiService(
+            client,
+            config,
+            sp.GetRequiredService<DeploymentConfigService>(),
+            sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var page = RenderWithProvider<TestPage>();
         var setField = typeof(ReleaseNotes).GetField("_selectedItems", BindingFlags.NonPublic | BindingFlags.Instance)!;
