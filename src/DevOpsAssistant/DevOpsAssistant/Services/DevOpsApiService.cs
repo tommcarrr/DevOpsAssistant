@@ -468,6 +468,22 @@ public class DevOpsApiService
         await SendAsync(request);
     }
 
+    public async Task AddCommentAsync(int id, string comment)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var body = JsonSerializer.Serialize(new { text = comment });
+        var content = new StringContent(body, Encoding.UTF8, "application/json");
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            $"{baseUri}/workitems/{id}/comments?api-version=7.1-preview.3")
+        {
+            Content = content
+        };
+        await SendAsync(request);
+    }
+
     public async Task<List<WorkItemInfo>> SearchUserStoriesAsync(string term)
     {
         var config = GetValidatedConfig();
