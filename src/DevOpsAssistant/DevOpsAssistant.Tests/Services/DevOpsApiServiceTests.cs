@@ -345,7 +345,7 @@ public class DevOpsApiServiceTests
     {
         var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
         var itemsJson =
-            "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}";
+            "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\",\"System.Tags\":\"Needs Attention;UI\"}}]}";
         var call = 0;
         var handler = new FakeHttpMessageHandler(_ =>
         {
@@ -366,6 +366,7 @@ public class DevOpsApiServiceTests
         Assert.Single(result);
         Assert.Equal(1, result[0].Info.Id);
         Assert.Equal("https://dev.azure.com/Org/Proj/_workitems/edit/1", result[0].Info.Url);
+        Assert.True(result[0].NeedsAttention);
     }
 
     [Fact]

@@ -309,7 +309,10 @@ public class DevOpsApiService
                 HasReproSteps = w.Fields.TryGetValue("Microsoft.VSTS.TCM.ReproSteps", out var rs) &&
                                  !string.IsNullOrWhiteSpace(rs.GetString()),
                 HasSystemInfo = w.Fields.TryGetValue("Microsoft.VSTS.TCM.SystemInfo", out var si) &&
-                                 !string.IsNullOrWhiteSpace(si.GetString())
+                                 !string.IsNullOrWhiteSpace(si.GetString()),
+                NeedsAttention = w.Fields.TryGetValue("System.Tags", out var tags) &&
+                                 (tags.GetString()?.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                      .Any(t => t.Equals("Needs Attention", StringComparison.OrdinalIgnoreCase)) ?? false)
             };
             list.Add(details);
         }
