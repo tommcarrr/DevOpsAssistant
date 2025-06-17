@@ -26,13 +26,23 @@ else
     <MudAlert Severity="Severity.Info" Class="mb-4">
         Select a backlog and states then click <b>Check</b> to validate work items against
         your configured rules. Any violations will be listed below.
-        <MudText Typo="Typo.subtitle2" Class="mt-2">Rules:</MudText>
-        <MudList T="string" Dense="true" Class="ms-4">
-            @foreach (var r in _activeRules)
-            {
-                <MudListItem T="string">@r</MudListItem>
-            }
-        </MudList>
+        @if (_hasRules)
+        {
+            <MudButton Class="mt-2 rules-toggle"
+                       Variant="Variant.Text"
+                       OnClick="ToggleRules"
+                       StartIcon="@(_rulesExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)">
+                @(_rulesExpanded ? "Hide Rules" : "Show Rules")
+            </MudButton>
+            <MudCollapse Expanded="_rulesExpanded">
+                <MudList T="string" Dense="true" Class="ms-4 mt-2">
+                    @foreach (var r in _activeRules)
+                    {
+                        <MudListItem T="string">@r</MudListItem>
+                    }
+                </MudList>
+            </MudCollapse>
+        }
     </MudAlert>
 }
 
@@ -97,6 +107,7 @@ else if (_results != null)
     private bool _loading;
     private bool _hasRules;
     private string[] _activeRules = [];
+    private bool _rulesExpanded;
     private List<ResultItem>? _results;
     private string? _error;
 
@@ -197,6 +208,11 @@ else if (_results != null)
         if (r.StoryHasAssignee) list.Add("Stories must have an assignee");
         _activeRules = list.ToArray();
         _hasRules = _activeRules.Length > 0;
+    }
+
+    private void ToggleRules()
+    {
+        _rulesExpanded = !_rulesExpanded;
     }
 
     private async Task OpenSettings()
