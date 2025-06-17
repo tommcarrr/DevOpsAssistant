@@ -102,7 +102,7 @@ public class ReleaseNotesPageTests : ComponentTestBase
         };
 
         var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details])!;
+        var result = (string)method.Invoke(null, [details, new DevOpsConfig()])!;
 
         Assert.Contains("\"AcceptanceCriteria\": \"criteria\"", result);
     }
@@ -119,7 +119,7 @@ public class ReleaseNotesPageTests : ComponentTestBase
         };
 
         var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details])!;
+        var result = (string)method.Invoke(null, [details, new DevOpsConfig()])!;
 
         Assert.Contains("Bugs are also in scope", result);
     }
@@ -128,9 +128,59 @@ public class ReleaseNotesPageTests : ComponentTestBase
     public void BuildPrompt_Includes_NoBranding_Note()
     {
         var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>()])!;
+        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), new DevOpsConfig()])!;
 
         Assert.Contains("No branding is required.", result);
+    }
+
+    [Fact]
+    public void BuildPrompt_Excludes_Repro_When_Disabled()
+    {
+        var details = new List<StoryHierarchyDetails>
+        {
+            new()
+            {
+                Story = new WorkItemInfo { Id = 1, Title = "Bug", WorkItemType = "Bug" },
+                ReproSteps = "steps"
+            }
+        };
+
+        var cfg = new DevOpsConfig
+        {
+            Rules = new ValidationRules
+            {
+                Bug = new BugRules { IncludeReproSteps = false }
+            }
+        };
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (string)method.Invoke(null, [details, cfg])!;
+
+        Assert.DoesNotContain("ReproSteps", result);
+    }
+
+    [Fact]
+    public void BuildPrompt_Excludes_SystemInfo_When_Disabled()
+    {
+        var details = new List<StoryHierarchyDetails>
+        {
+            new()
+            {
+                Story = new WorkItemInfo { Id = 1, Title = "Bug", WorkItemType = "Bug" },
+                SystemInfo = "info"
+            }
+        };
+
+        var cfg = new DevOpsConfig
+        {
+            Rules = new ValidationRules
+            {
+                Bug = new BugRules { IncludeSystemInfo = false }
+            }
+        };
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var result = (string)method.Invoke(null, [details, cfg])!;
+
+        Assert.DoesNotContain("SystemInfo", result);
     }
 
     [Fact]

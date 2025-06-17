@@ -22,22 +22,28 @@
             <MudTabPanel Text="Validation Rules">
                 <MudStack Spacing="1">
                     <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.EpicHasDescription" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Label="Has description"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">Feature</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasDescription" Label="Has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.FeatureHasParent" Label="Has parent"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasDescription" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasParent" Label="Has parent"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">User Story</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasDescription" Label="Has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasParent" Label="Has parent"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasStoryPoints" Label="Has story points"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAcceptanceCriteria" Label="Has acceptance criteria"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.StoryHasAssignee" Label="Has assignee"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasDescription" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasParent" Label="Has parent"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasStoryPoints" Label="Has story points"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAcceptanceCriteria" Label="Has acceptance criteria"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAssignee" Label="Has assignee"/>
+
+                    <MudDivider Class="my-2"/>
+
+                    <MudText Typo="Typo.h6" Class="mt-2">Bug</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeReproSteps" Color="Color.Primary" Label="Include Repro Steps"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeSystemInfo" Color="Color.Primary" Label="Include System Info"/>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
@@ -69,14 +75,25 @@
             DefinitionOfReady = cfg.DefinitionOfReady,
             Rules = new ValidationRules
             {
-                EpicHasDescription = cfg.Rules.EpicHasDescription,
-                FeatureHasDescription = cfg.Rules.FeatureHasDescription,
-                FeatureHasParent = cfg.Rules.FeatureHasParent,
-                StoryHasDescription = cfg.Rules.StoryHasDescription,
-                StoryHasParent = cfg.Rules.StoryHasParent,
-                StoryHasStoryPoints = cfg.Rules.StoryHasStoryPoints,
-                StoryHasAcceptanceCriteria = cfg.Rules.StoryHasAcceptanceCriteria,
-                StoryHasAssignee = cfg.Rules.StoryHasAssignee
+                Epic = new EpicRules { HasDescription = cfg.Rules.Epic.HasDescription },
+                Feature = new FeatureRules
+                {
+                    HasDescription = cfg.Rules.Feature.HasDescription,
+                    HasParent = cfg.Rules.Feature.HasParent
+                },
+                Story = new StoryRules
+                {
+                    HasDescription = cfg.Rules.Story.HasDescription,
+                    HasParent = cfg.Rules.Story.HasParent,
+                    HasStoryPoints = cfg.Rules.Story.HasStoryPoints,
+                    HasAcceptanceCriteria = cfg.Rules.Story.HasAcceptanceCriteria,
+                    HasAssignee = cfg.Rules.Story.HasAssignee
+                },
+                Bug = new BugRules
+                {
+                    IncludeReproSteps = cfg.Rules.Bug.IncludeReproSteps,
+                    IncludeSystemInfo = cfg.Rules.Bug.IncludeSystemInfo
+                }
             }
         };
         StateHasChanged();

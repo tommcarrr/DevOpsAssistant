@@ -255,7 +255,7 @@ public class DevOpsApiService
         return list.ToArray();
     }
 
-    public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath, IEnumerable<string> states)
+    public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath, IEnumerable<string> states, IEnumerable<string> types)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
@@ -263,7 +263,7 @@ public class DevOpsApiService
         var baseUri = BuildBaseUri(config);
         var itemUrlBase = BuildItemUrlBase(config);
 
-        var wiql = BuildValidationWiql(areaPath, states);
+        var wiql = BuildValidationWiql(areaPath, states, types);
         var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
@@ -305,7 +305,11 @@ public class DevOpsApiService
                                         !string.IsNullOrWhiteSpace(ac.GetString()),
                 HasAssignee = w.Fields.TryGetValue("System.AssignedTo.displayName", out var at) &&
                               !string.IsNullOrWhiteSpace(at.GetString()),
-                HasParent = w.Relations?.Any(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse") == true
+                HasParent = w.Relations?.Any(r => r.Rel == "System.LinkTypes.Hierarchy-Reverse") == true,
+                HasReproSteps = w.Fields.TryGetValue("Microsoft.VSTS.TCM.ReproSteps", out var rs) &&
+                                 !string.IsNullOrWhiteSpace(rs.GetString()),
+                HasSystemInfo = w.Fields.TryGetValue("Microsoft.VSTS.TCM.SystemInfo", out var si) &&
+                                 !string.IsNullOrWhiteSpace(si.GetString())
             };
             list.Add(details);
         }
@@ -403,13 +407,17 @@ public class DevOpsApiService
         return items;
     }
 
-    private static string BuildValidationWiql(string areaPath, IEnumerable<string> states)
+    private static string BuildValidationWiql(string areaPath, IEnumerable<string> states, IEnumerable<string> types)
     {
         areaPath = NormalizeAreaPath(areaPath);
         var stateList = string.Join(", ", states.Select(s => $"'{s.Replace("'", "''")}'"));
         var stateCondition = string.IsNullOrWhiteSpace(stateList) ? string.Empty : $" AND [System.State] IN ({stateList})";
+        var typeList = string.Join(", ", types.Select(t => $"'{t.Replace("'", "''")}'"));
+        var typeCondition = string.IsNullOrWhiteSpace(typeList)
+            ? "('Epic','Feature','User Story')"
+            : $"({typeList})";
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{stateCondition} AND [System.WorkItemType] IN ('Epic','Feature','User Story') ORDER BY [System.Id]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{stateCondition} AND [System.WorkItemType] IN {typeCondition} ORDER BY [System.Id]";
     }
 
     private static string BuildStoriesWiql(string areaPath, IEnumerable<string> states)

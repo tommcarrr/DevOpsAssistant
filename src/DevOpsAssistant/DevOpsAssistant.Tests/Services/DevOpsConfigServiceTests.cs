@@ -19,7 +19,15 @@ public class DevOpsConfigServiceTests
             DefinitionOfReady = "DOR",
             DefaultStates = "Resolved",
             MainBranch = " main ",
-            Rules = new ValidationRules { EpicHasDescription = true }
+            Rules = new ValidationRules
+            {
+                Epic = new EpicRules { HasDescription = true },
+                Bug = new BugRules
+                {
+                    IncludeReproSteps = false,
+                    IncludeSystemInfo = false
+                }
+            }
         };
 
         await service.SaveAsync(config);
@@ -32,10 +40,12 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Token", stored.PatToken);
         Assert.True(stored.DarkMode);
         Assert.True(stored.ReleaseNotesTreeView);
+        Assert.False(stored.Rules.Bug.IncludeReproSteps);
+        Assert.False(stored.Rules.Bug.IncludeSystemInfo);
         Assert.Equal("DOR", stored.DefinitionOfReady);
         Assert.Equal("Resolved", stored.DefaultStates);
         Assert.Equal("main", stored.MainBranch);
-        Assert.True(stored.Rules.EpicHasDescription);
+        Assert.True(stored.Rules.Epic.HasDescription);
     }
 
     [Fact]
@@ -51,7 +61,15 @@ public class DevOpsConfigServiceTests
             ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
             DefaultStates = "Active",
-            Rules = new ValidationRules { EpicHasDescription = true }
+            Rules = new ValidationRules
+            {
+                Epic = new EpicRules { HasDescription = true },
+                Bug = new BugRules
+                {
+                    IncludeReproSteps = false,
+                    IncludeSystemInfo = false
+                }
+            }
         };
         await storage.SetItemAsync("devops-config", stored);
         var service = new DevOpsConfigService(storage);
@@ -63,9 +81,11 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Token", service.Config.PatToken);
         Assert.True(service.Config.DarkMode);
         Assert.True(service.Config.ReleaseNotesTreeView);
+        Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
+        Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
         Assert.Equal("Active", service.Config.DefaultStates);
-        Assert.True(service.Config.Rules.EpicHasDescription);
+        Assert.True(service.Config.Rules.Epic.HasDescription);
     }
 
     [Fact]
@@ -108,6 +128,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.PatToken);
         Assert.False(service.Config.DarkMode);
         Assert.False(service.Config.ReleaseNotesTreeView);
+        Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
+        Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.NotNull(service.Config.Rules);
     }
@@ -124,6 +146,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.Organization);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.False(service.Config.ReleaseNotesTreeView);
+        Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
+        Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.False(await storage.ContainKeyAsync("devops-config"));
     }
 }

@@ -60,6 +60,12 @@ else
                 <MudSelectItem Value="@s">@s</MudSelectItem>
             }
         </MudSelect>
+        <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedTypes" SelectedValuesChanged="@(vals => OnTypesChanged(vals))" Label="Types">
+            @foreach (var t in _types)
+            {
+                <MudSelectItem Value="@t">@t</MudSelectItem>
+            }
+        </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules">Check</MudButton>
     </MudStack>
 </MudPaper>
@@ -103,7 +109,9 @@ else if (_results != null)
     private string _path = string.Empty;
     private string[] _backlogs = [];
     private string[] _states = [];
+    private readonly string[] _types = ["Epic", "Feature", "User Story", "Bug"];
     private HashSet<string> SelectedStates { get; set; } = new();
+    private HashSet<string> SelectedTypes { get; set; } = new();
     private bool _loading;
     private bool _hasRules;
     private string[] _activeRules = [];
@@ -125,6 +133,7 @@ else if (_results != null)
                             s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
                             extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
                 .ToHashSet();
+            SelectedTypes = _types.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
@@ -142,7 +151,7 @@ else if (_results != null)
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetValidationItemsAsync(_path, SelectedStates);
+            var items = await ApiService.GetValidationItemsAsync(_path, SelectedStates, SelectedTypes);
             _results = Validate(items);
             _error = null;
         }
@@ -165,20 +174,25 @@ else if (_results != null)
             List<string> v = [];
             if (item.Info.WorkItemType.Equals("Epic", StringComparison.OrdinalIgnoreCase))
             {
-                if (rules.EpicHasDescription && !item.HasDescription) v.Add("Missing description");
+                if (rules.Epic.HasDescription && !item.HasDescription) v.Add("Missing description");
             }
             else if (item.Info.WorkItemType.Equals("Feature", StringComparison.OrdinalIgnoreCase))
             {
-                if (rules.FeatureHasDescription && !item.HasDescription) v.Add("Missing description");
-                if (rules.FeatureHasParent && !item.HasParent) v.Add("Missing parent");
+                if (rules.Feature.HasDescription && !item.HasDescription) v.Add("Missing description");
+                if (rules.Feature.HasParent && !item.HasParent) v.Add("Missing parent");
             }
             else if (item.Info.WorkItemType.Equals("User Story", StringComparison.OrdinalIgnoreCase))
             {
-                if (rules.StoryHasDescription && !item.HasDescription) v.Add("Missing description");
-                if (rules.StoryHasParent && !item.HasParent) v.Add("Missing parent");
-                if (rules.StoryHasStoryPoints && !item.HasStoryPoints) v.Add("Missing story points");
-                if (rules.StoryHasAcceptanceCriteria && !item.HasAcceptanceCriteria) v.Add("Missing acceptance criteria");
-                if (rules.StoryHasAssignee && !item.HasAssignee) v.Add("Unassigned");
+                if (rules.Story.HasDescription && !item.HasDescription) v.Add("Missing description");
+                if (rules.Story.HasParent && !item.HasParent) v.Add("Missing parent");
+                if (rules.Story.HasStoryPoints && !item.HasStoryPoints) v.Add("Missing story points");
+                if (rules.Story.HasAcceptanceCriteria && !item.HasAcceptanceCriteria) v.Add("Missing acceptance criteria");
+                if (rules.Story.HasAssignee && !item.HasAssignee) v.Add("Unassigned");
+            }
+            else if (item.Info.WorkItemType.Equals("Bug", StringComparison.OrdinalIgnoreCase))
+            {
+                if (rules.Bug.IncludeReproSteps && !item.HasReproSteps) v.Add("Missing repro steps");
+                if (rules.Bug.IncludeSystemInfo && !item.HasSystemInfo) v.Add("Missing system info");
             }
 
             if (v.Count > 0)
@@ -194,18 +208,26 @@ else if (_results != null)
         return Task.CompletedTask;
     }
 
+    private Task OnTypesChanged(IEnumerable<string> values)
+    {
+        SelectedTypes = new HashSet<string>(values);
+        return Task.CompletedTask;
+    }
+
     private void ComputeRules()
     {
         var r = ConfigService.Config.Rules;
         List<string> list = [];
-        if (r.EpicHasDescription) list.Add("Epics must have a description");
-        if (r.FeatureHasDescription) list.Add("Features must have a description");
-        if (r.FeatureHasParent) list.Add("Features must have a parent");
-        if (r.StoryHasDescription) list.Add("Stories must have a description");
-        if (r.StoryHasParent) list.Add("Stories must have a parent");
-        if (r.StoryHasStoryPoints) list.Add("Stories must have story points");
-        if (r.StoryHasAcceptanceCriteria) list.Add("Stories must have acceptance criteria");
-        if (r.StoryHasAssignee) list.Add("Stories must have an assignee");
+        if (r.Epic.HasDescription) list.Add("Epics must have a description");
+        if (r.Feature.HasDescription) list.Add("Features must have a description");
+        if (r.Feature.HasParent) list.Add("Features must have a parent");
+        if (r.Story.HasDescription) list.Add("Stories must have a description");
+        if (r.Story.HasParent) list.Add("Stories must have a parent");
+        if (r.Story.HasStoryPoints) list.Add("Stories must have story points");
+        if (r.Story.HasAcceptanceCriteria) list.Add("Stories must have acceptance criteria");
+        if (r.Story.HasAssignee) list.Add("Stories must have an assignee");
+        if (r.Bug.IncludeReproSteps) list.Add("Bugs must have repro steps");
+        if (r.Bug.IncludeSystemInfo) list.Add("Bugs must have system info");
         _activeRules = list.ToArray();
         _hasRules = _activeRules.Length > 0;
     }
