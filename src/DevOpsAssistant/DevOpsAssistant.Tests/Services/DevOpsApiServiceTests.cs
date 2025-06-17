@@ -74,7 +74,7 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [area, states])!;
     }
 
-    private class TestLocalizer : IStringLocalizer
+    private class TestLocalizer : IStringLocalizer<DevOpsApiService>
     {
         private static readonly Dictionary<string, string> _data = new()
         {
@@ -101,7 +101,7 @@ public class DevOpsApiServiceTests
 
     private static DevOpsApiService CreateService(HttpClient client, DevOpsConfigService config)
     {
-        var localizer = new TestLocalizer();
+        IStringLocalizer<DevOpsApiService> localizer = new TestLocalizer();
         return new DevOpsApiService(client, config, new DeploymentConfigService(new HttpClient()), localizer);
     }
 
