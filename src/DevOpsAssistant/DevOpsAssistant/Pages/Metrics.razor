@@ -3,6 +3,7 @@
 @using DevOpsAssistant.Services
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
 
@@ -35,6 +36,7 @@
         </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -82,6 +84,7 @@ else if (_periods.Any())
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
     private string? _error;
+    private const string StateKey = "metrics";
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,6 +93,17 @@ else if (_periods.Any())
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+
+            var state = await StateService.LoadAsync<PageState>(StateKey);
+            if (state != null)
+            {
+                if (!string.IsNullOrWhiteSpace(state.Path))
+                    _path = state.Path;
+                _mode = state.Mode;
+                _velocityMode = state.VelocityMode;
+                _startDate = state.StartDate;
+            }
+
             _error = null;
         }
         catch (Exception ex)
@@ -106,6 +120,13 @@ else if (_periods.Any())
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
             ComputePeriods(items);
+            await StateService.SaveAsync(StateKey, new PageState
+            {
+                Path = _path,
+                Mode = _mode,
+                VelocityMode = _velocityMode,
+                StartDate = _startDate
+            });
             _error = null;
         }
         catch (Exception ex)
@@ -178,6 +199,18 @@ else if (_periods.Any())
         await JS.InvokeVoidAsync("downloadCsv", "metrics.csv", csv);
     }
 
+    private async Task Reset()
+    {
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+        _mode = AggregateMode.Week;
+        _velocityMode = VelocityMode.StoryPoints;
+        _startDate = DateTime.Today.AddDays(-84);
+        _periods.Clear();
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
+    }
+
     private static DateTime StartOfWeek(DateTime dt)
     {
         int diff = (7 + (int)dt.DayOfWeek - (int)DayOfWeek.Monday) % 7;
@@ -192,5 +225,13 @@ else if (_periods.Any())
         public double AvgCycleTime { get; set; }
         public int Throughput { get; set; }
         public double Velocity { get; set; }
+    }
+
+    private class PageState
+    {
+        public string Path { get; set; } = string.Empty;
+        public AggregateMode Mode { get; set; }
+        public VelocityMode VelocityMode { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }

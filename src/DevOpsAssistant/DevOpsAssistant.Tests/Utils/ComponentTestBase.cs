@@ -20,6 +20,7 @@ public abstract class ComponentTestBase : TestContext
         JSInterop.Mode = JSRuntimeMode.Loose;
         var config = new DevOpsConfigService(new FakeLocalStorageService());
         Services.AddSingleton(config);
+        Services.AddSingleton(new PageStateService(new FakeLocalStorageService()));
         if (includeApi)
         {
             var deployment = new DeploymentConfigService(new HttpClient());

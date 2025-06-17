@@ -3,6 +3,7 @@
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Story Validation</PageTitle>
 
@@ -67,6 +68,7 @@ else
             }
         </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules">Check</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -124,6 +126,7 @@ else if (_results != null)
     private bool _rulesExpanded;
     private List<ResultItem>? _results;
     private string? _error;
+    private const string StateKey = "validation";
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,6 +135,12 @@ else if (_results != null)
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+            var state = await StateService.LoadAsync<PageState>(StateKey);
+            if (state != null)
+            {
+                if (!string.IsNullOrWhiteSpace(state.Path))
+                    _path = state.Path;
+            }
             _states = await ApiService.GetStatesAsync();
             var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
             SelectedStates = _states
@@ -139,6 +148,8 @@ else if (_results != null)
                             s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
                             extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
                 .ToHashSet();
+            if (state?.States != null)
+                SelectedStates = state.States.ToHashSet();
             SelectedTypes = _types.ToHashSet();
             _error = null;
         }
@@ -159,6 +170,12 @@ else if (_results != null)
         {
             var items = await ApiService.GetValidationItemsAsync(_path, SelectedStates, SelectedTypes);
             _results = Validate(items);
+            await StateService.SaveAsync(StateKey, new PageState
+            {
+                Path = _path,
+                States = SelectedStates.ToArray(),
+                Types = SelectedTypes.ToArray()
+            });
             _error = null;
         }
         catch (Exception ex)
@@ -297,11 +314,33 @@ else if (_results != null)
         }
     }
 
+    private async Task Reset()
+    {
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+        var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
+        SelectedStates = _states
+            .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
+                        s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
+                        extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
+            .ToHashSet();
+        SelectedTypes = _types.ToHashSet();
+        _results = null;
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
+    }
+
     private class ResultItem
     {
         public WorkItemInfo Info { get; set; } = new();
         public List<string> Violations { get; set; } = [];
     }
 
+    private class PageState
+    {
+        public string Path { get; set; } = string.Empty;
+        public string[]? States { get; set; }
+        public string[]? Types { get; set; }
+    }
 
 }

@@ -5,6 +5,7 @@
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Requirement Planner</PageTitle>
 
@@ -29,6 +30,7 @@
                 </MudTreeView>
             }
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_selectedPages == null || _selectedPages.Count == 0" OnClick="Generate">Generate Prompt</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
     </MudStep>
     <MudStep Title="Import Response" Disabled="@string.IsNullOrWhiteSpace(_prompt)">
@@ -100,6 +102,7 @@
     private string[] _backlogs = [];
     private string _backlog = string.Empty;
     private Plan? _plan;
+    private const string StateKey = "requirements-planner";
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,10 +113,20 @@
             if (_backlogs.Length > 0)
                 _backlog = _backlogs[0];
 
+            var state = await StateService.LoadAsync<PageState>(StateKey);
+            if (state != null)
+            {
+                if (!string.IsNullOrWhiteSpace(state.Backlog))
+                    _backlog = state.Backlog;
+                if (!string.IsNullOrWhiteSpace(state.WikiId))
+                    _wikiId = state.WikiId;
+            }
+
             var wikis = await ApiService.GetWikisAsync();
             if (wikis.Count > 0)
             {
-                _wikiId = wikis[0].Id;
+                if (string.IsNullOrWhiteSpace(_wikiId))
+                    _wikiId = wikis[0].Id;
                 var root = await ApiService.GetWikiPageTreeAsync(_wikiId);
                 if (root != null)
                     _wikiItems = [BuildTreeItem(root)];
@@ -141,6 +154,11 @@
                 pages.Add((p.Name, text));
             }
             _prompt = BuildPrompt(pages);
+            await StateService.SaveAsync(StateKey, new PageState
+            {
+                Backlog = _backlog,
+                WikiId = _wikiId
+            });
             _error = null;
             await CopyPrompt();
             await (_stepper?.NextStepAsync() ?? Task.CompletedTask);
@@ -159,6 +177,18 @@
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
+    }
+
+    private async Task Reset()
+    {
+        _selectedPages = null;
+        _prompt = string.Empty;
+        _responseText = string.Empty;
+        _plan = null;
+        if (_backlogs.Length > 0)
+            _backlog = _backlogs[0];
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
     }
 
     private void ImportPlan()
@@ -277,5 +307,11 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string AcceptanceCriteria { get; set; } = string.Empty;
+    }
+
+    private class PageState
+    {
+        public string Backlog { get; set; } = string.Empty;
+        public string WikiId { get; set; } = string.Empty;
     }
 }
