@@ -10,4 +10,5 @@ public class WorkItemDetails
     public bool HasAssignee { get; set; }
     public bool HasReproSteps { get; set; }
     public bool HasSystemInfo { get; set; }
+    public bool NeedsAttention { get; set; }
 }
