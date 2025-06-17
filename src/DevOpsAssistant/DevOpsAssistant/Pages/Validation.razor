@@ -71,9 +71,17 @@ else if (_results != null)
                 @foreach (var r in _results)
                 {
                     <MudListItem T="ResultItem">
-                        <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
-                        <br/>
-                        <span class="text-secondary">@string.Join(", ", r.Violations)</span>
+                        <MudStack Spacing="1">
+                            <MudText>
+                                <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
+                            </MudText>
+                            <ul class="work-item-violations">
+                                @foreach (var v in r.Violations)
+                                {
+                                    <li>@v</li>
+                                }
+                            </ul>
+                        </MudStack>
                     </MudListItem>
                 }
             </MudList>

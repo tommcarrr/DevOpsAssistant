@@ -124,9 +124,17 @@ else if (_roots != null)
         {
             if (!node.StatusValid)
             {
-                builder.OpenComponent<MudIcon>(0);
-                builder.AddAttribute(1, "Color", Color.Warning);
-                builder.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
+                builder.OpenComponent<MudTooltip>(0);
+                builder.AddAttribute(1, "Text",
+                    $"Expected state: {node.ExpectedState}");
+                builder.AddAttribute(2, "ChildContent",
+                    (RenderFragment)(b =>
+                    {
+                        b.OpenComponent<MudIcon>(0);
+                        b.AddAttribute(1, "Color", Color.Warning);
+                        b.AddAttribute(2, "Icon", Icons.Material.Filled.Warning);
+                        b.CloseComponent();
+                    }));
                 builder.CloseComponent();
             }
         };
