@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using MudBlazor
 @using DevOpsAssistant.Services
+@using Microsoft.AspNetCore.Components.Forms
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
@@ -21,7 +22,12 @@
 <MudStepper @ref="_stepper" Class="mb-4" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
     <MudStep Title="Select Requirements">
         <MudStack Spacing="2">
-            @if (_wikiItems != null)
+            <MudSwitch T="bool" @bind-Value="_useDocument" Color="Color.Primary" Label="Use Document" />
+            @if (_useDocument)
+            {
+                <InputFile OnChange="OnFileSelected" accept=".pdf,.docx,.pptx" />
+            }
+            else if (_wikiItems != null)
             {
                 <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Style="max-height:300px; overflow:auto; width:100%;">
                     <ItemTemplate>
@@ -30,7 +36,7 @@
                 </MudTreeView>
             }
             <MudSwitch T="bool" @bind-Value="_storiesOnly" Color="Color.Primary" Label="Stories Only" />
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_selectedPages == null || _selectedPages.Count == 0" OnClick="Generate">Generate Prompt</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
     </MudStep>
@@ -116,6 +122,8 @@
     private MudStepper? _stepper;
     private List<TreeItemData<WikiPageNode>>? _wikiItems;
     private IReadOnlyCollection<WikiPageNode>? _selectedPages;
+    private IBrowserFile? _file;
+    private bool _useDocument;
     private string _wikiId = string.Empty;
     private string _prompt = string.Empty;
     private string _responseText = string.Empty;
@@ -127,6 +135,11 @@
     private WorkItemInfo? _feature;
     private Plan? _plan;
     private const string StateKey = "requirements-planner";
+    private const long MaxFileSize = 10 * 1024 * 1024;
+
+    private bool GenerateDisabled =>
+        _loading ||
+        (_useDocument ? _file == null : _selectedPages == null || _selectedPages.Count == 0);
 
     protected override async Task OnInitializedAsync()
     {
@@ -166,16 +179,28 @@
 
     private async Task Generate()
     {
-        if (_selectedPages == null || _selectedPages.Count == 0) return;
+        if (GenerateDisabled) return;
         _loading = true;
         StateHasChanged();
         try
         {
             List<(string Name, string Text)> pages = [];
-            foreach (var p in _selectedPages)
+            if (_useDocument)
             {
-                var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
-                pages.Add((p.Name, text));
+                if (_file != null)
+                {
+                    using var stream = _file.OpenReadStream(MaxFileSize);
+                    var text = DocumentHelpers.ExtractText(stream, _file.Name);
+                    pages.Add((_file.Name, text));
+                }
+            }
+            else if (_selectedPages != null)
+            {
+                foreach (var p in _selectedPages)
+                {
+                    var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                    pages.Add((p.Name, text));
+                }
             }
             _prompt = BuildPrompt(pages, _storiesOnly);
             await StateService.SaveAsync(StateKey, new PageState
@@ -203,9 +228,17 @@
             await JS.InvokeVoidAsync("copyText", _prompt);
     }
 
+    private Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _file = e.File;
+        return Task.CompletedTask;
+    }
+
     private async Task Reset()
     {
         _selectedPages = null;
+        _file = null;
+        _useDocument = false;
         _prompt = string.Empty;
         _responseText = string.Empty;
         _plan = null;
