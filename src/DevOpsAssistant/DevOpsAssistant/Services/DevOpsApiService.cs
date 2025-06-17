@@ -320,6 +320,47 @@ public class DevOpsApiService
         return list;
     }
 
+    public async Task<List<WorkItemInfo>> SearchFeaturesAsync(string term)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        var wiql = BuildFeatureSearchWiql(term);
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
+            return [];
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Take(20).ToArray();
+        var idList = string.Join(',', ids);
+        var itemsResult = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
+        List<WorkItemInfo> list = [];
+        if (itemsResult?.Value != null)
+        {
+            var dict = new Dictionary<int, WorkItem>();
+            foreach (var w in itemsResult.Value) dict[w.Id] = w;
+
+            foreach (var id in ids)
+            {
+                if (!dict.TryGetValue(id, out var w))
+                    continue;
+
+                list.Add(new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = w.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{w.Id}"
+                });
+            }
+        }
+
+        return list;
+    }
+
     public async Task<List<StoryHierarchyDetails>> GetStoriesAsync(string areaPath, IEnumerable<string> states)
     {
         var config = GetValidatedConfig();
@@ -769,6 +810,13 @@ public class DevOpsApiService
         term = term.Replace("'", "''");
         return
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'User Story' AND [System.Title] CONTAINS '{term}' ORDER BY [System.ChangedDate] DESC";
+    }
+
+    private static string BuildFeatureSearchWiql(string term)
+    {
+        term = term.Replace("'", "''");
+        return
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'Feature' AND [System.Title] CONTAINS '{term}' ORDER BY [System.ChangedDate] DESC";
     }
 
     private static string BuildReleaseSearchWiql(string term)
