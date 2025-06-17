@@ -30,6 +30,17 @@ public class WorkItemsPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void Invalid_Items_Are_Highlighted()
+    {
+        SetupServices(includeApi: true);
+
+        var cut = RenderWithProvider<LoadedWorkItems>();
+
+        var invalid = cut.FindAll(".work-item-invalid-state");
+        Assert.NotEmpty(invalid);
+    }
+
+    [Fact]
     public void IssuesOnly_Hides_Epics_Without_Issues()
     {
         SetupServices(includeApi: true);
