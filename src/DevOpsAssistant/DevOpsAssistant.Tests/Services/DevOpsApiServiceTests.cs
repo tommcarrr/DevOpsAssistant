@@ -283,6 +283,35 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task AddTagAsync_Sends_Patch_Request()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
+
+        await service.AddTagAsync(42, "Needs Attention");
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Patch, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0",
+            captured.RequestUri.ToString());
+        var body = await captured.Content!.ReadAsStringAsync();
+        Assert.Contains("Needs Attention", body);
+    }
+
+    [Fact]
     public async Task GetValidationItemsAsync_Returns_Work_Items()
     {
         var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
