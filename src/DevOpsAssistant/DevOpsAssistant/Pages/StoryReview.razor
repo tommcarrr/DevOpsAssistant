@@ -5,6 +5,7 @@
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Story Quality</PageTitle>
 
@@ -31,6 +32,7 @@
             }
         </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Generate">Generate</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -58,6 +60,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     private bool _loading;
     private string? _prompt;
     private string? _error;
+    private const string StateKey = "story-review";
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,6 +69,10 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+            var state = await StateService.LoadAsync<PageState>(StateKey);
+            if (state != null && !string.IsNullOrWhiteSpace(state.Path))
+                _path = state.Path;
+
             _states = await ApiService.GetStatesAsync();
             var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
             SelectedStates = _states
@@ -73,6 +80,8 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                             s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
                             extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
                 .ToHashSet();
+            if (state?.States != null)
+                SelectedStates = state.States.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
@@ -89,6 +98,11 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             var items = await ApiService.GetStoriesAsync(_path, SelectedStates);
             _prompt = BuildPrompt(items, ConfigService.Config.DefinitionOfReady);
+            await StateService.SaveAsync(StateKey, new PageState
+            {
+                Path = _path,
+                States = SelectedStates.ToArray()
+            });
             _error = null;
             await CopyPrompt();
         }
@@ -106,6 +120,21 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
+    }
+
+    private async Task Reset()
+    {
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+        var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
+        SelectedStates = _states
+            .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
+                        s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
+                        extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
+            .ToHashSet();
+        _prompt = null;
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
     }
 
     private Task OnStatesChanged(IEnumerable<string> values)
@@ -149,4 +178,9 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         return sb.ToString();
     }
 
+    private class PageState
+    {
+        public string Path { get; set; } = string.Empty;
+        public string[]? States { get; set; }
+    }
 }

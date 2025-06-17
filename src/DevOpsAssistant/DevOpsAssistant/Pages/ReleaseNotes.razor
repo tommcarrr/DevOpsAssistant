@@ -7,6 +7,7 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject DevOpsConfigService ConfigService
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Release Notes</PageTitle>
 
@@ -42,6 +43,7 @@
                              ValueChanged="OnItemSelected"/>
         }
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -115,6 +117,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     private string[] _backlogs = [];
     private List<TreeItemData<WorkItemNode>>? _treeItems;
     private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
+    private const string StateKey = "release-notes";
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,6 +128,10 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                 _backlogs = await ApiService.GetBacklogsAsync();
                 if (_backlogs.Length > 0)
                     _path = _backlogs[0];
+
+                var state = await StateService.LoadAsync<PageState>(StateKey);
+                if (state != null && !string.IsNullOrWhiteSpace(state.Path))
+                    _path = state.Path;
                 _error = null;
             }
             catch (Exception ex)
@@ -142,6 +149,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             var roots = await ApiService.GetWorkItemHierarchyAsync(_path);
             _treeItems = roots.Select(BuildTreeItem).ToList();
+            await StateService.SaveAsync(StateKey, new PageState { Path = _path });
             _error = null;
         }
         catch (Exception ex)
@@ -233,6 +241,23 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
+    }
+
+    private async Task Reset()
+    {
+        if (ConfigService.Config.ReleaseNotesTreeView && _backlogs.Length > 0)
+            _path = _backlogs[0];
+        _selectedItems.Clear();
+        _treeItems = null;
+        _selectedNodes = null;
+        _prompt = null;
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
+    }
+
+    private class PageState
+    {
+        public string Path { get; set; } = string.Empty;
     }
 
     private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)

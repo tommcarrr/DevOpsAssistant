@@ -1,6 +1,7 @@
 @page "/epics-features"
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
+@inject PageStateService StateService
 
 <PageTitle>DevOpsAssistant - Epics and Features</PageTitle>
 
@@ -23,6 +24,7 @@
             }
         </MudSelect>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -84,6 +86,7 @@ else if (_roots != null)
     private List<WorkItemNode>? _roots;
     private string? _error;
     private bool _issuesOnly = true;
+    private const string StateKey = "work-items";
 
     private IEnumerable<WorkItemNode> DisplayRoots =>
         _roots == null
@@ -99,6 +102,14 @@ else if (_roots != null)
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+
+            var state = await StateService.LoadAsync<PageState>(StateKey);
+            if (state != null)
+            {
+                if (!string.IsNullOrWhiteSpace(state.Path))
+                    _path = state.Path;
+                _issuesOnly = state.IssuesOnly;
+            }
             _error = null;
         }
         catch (Exception ex)
@@ -114,6 +125,11 @@ else if (_roots != null)
         try
         {
             _roots = await ApiService.GetWorkItemHierarchyAsync(_path);
+            await StateService.SaveAsync(StateKey, new PageState
+            {
+                Path = _path,
+                IssuesOnly = _issuesOnly
+            });
             _error = null;
         }
         catch (Exception ex)
@@ -274,6 +290,22 @@ else if (_roots != null)
         }
 
         return false;
+    }
+
+    private async Task Reset()
+    {
+        if (_backlogs.Length > 0)
+            _path = _backlogs[0];
+        _issuesOnly = true;
+        _roots = null;
+        await StateService.ClearAsync(StateKey);
+        StateHasChanged();
+    }
+
+    private class PageState
+    {
+        public string Path { get; set; } = string.Empty;
+        public bool IssuesOnly { get; set; }
     }
 
 }
