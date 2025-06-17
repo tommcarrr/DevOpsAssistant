@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Heading" xml:space="preserve">
+    <value>Help &amp; Instructions</value>
+  </data>
+  <data name="Intro" xml:space="preserve">
+    <value>This page describes how to use each section of DevOpsAssistant.</value>
+  </data>
+  <data name="Epics" xml:space="preserve">
+    <value>Load a backlog to visualize Epics and Features. Suggested states appear when parents differ from their children and can be updated.</value>
+  </data>
+  <data name="Validation" xml:space="preserve">
+    <value>Select a backlog and states then check work items against your rules. Violations can be tagged for follow up.</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Generate a prompt to review stories for INVEST compliance using your Definition of Ready.</value>
+  </data>
+  <data name="RequirementsPlanner" xml:space="preserve">
+    <value>Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.</value>
+  </data>
+  <data name="ReleaseNotes" xml:space="preserve">
+    <value>Select stories and build a prompt that summarizes them for release notes.</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Display throughput, lead time and cycle time charts for the chosen backlog.</value>
+  </data>
+  <data name="BranchHealth" xml:space="preserve">
+    <value>View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configure your organization, project, PAT token and other options used by the site.</value>
+  </data>
+</root>

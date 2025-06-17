@@ -48,4 +48,7 @@
   <data name="BranchHealth" xml:space="preserve">
     <value>Estado de Ramas</value>
   </data>
+  <data name="Help" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
 </root>
