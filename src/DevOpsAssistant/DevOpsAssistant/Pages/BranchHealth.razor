@@ -22,6 +22,11 @@
                 <MudSelectItem Value="@r">@r.Name</MudSelectItem>
             }
         </MudSelect>
+        <MudAutocomplete T="string"
+                         Label="Base Branch"
+                         Value="_baseBranch"
+                         ValueChanged="@((string? v) => _baseBranch = v ?? string.Empty)"
+                         SearchFunc="SearchBranches" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
     </MudStack>
 </MudPaper>
@@ -64,13 +69,16 @@ else if (_branches != null)
     private RepositoryInfo? _repo;
     private List<RepositoryInfo> _repos = new();
     private List<BranchInfo>? _branches;
+    private List<string> _branchNames = new();
+    private string _baseBranch = string.Empty;
     private bool _loading;
     private string? _error;
-    private bool ShowAheadBehind => !string.IsNullOrWhiteSpace(ConfigService.Config.MainBranch);
+    private bool ShowAheadBehind => !string.IsNullOrWhiteSpace(_baseBranch);
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        _baseBranch = ConfigService.Config.MainBranch;
         try
         {
             _repos = await ApiService.GetRepositoriesAsync();
@@ -91,7 +99,8 @@ else if (_branches != null)
         StateHasChanged();
         try
         {
-            _branches = await ApiService.GetBranchesAsync(_repo.Id, ConfigService.Config.MainBranch);
+            _branches = await ApiService.GetBranchesAsync(_repo.Id, _baseBranch);
+            _branchNames = _branches.Select(b => b.Name).OrderBy(n => n).ToList();
             _error = null;
         }
         catch (Exception ex)
@@ -107,5 +116,13 @@ else if (_branches != null)
     private static bool IsStale(BranchInfo branch)
     {
         return branch.CommitDate < DateTime.UtcNow.AddDays(-30);
+    }
+
+    private Task<IEnumerable<string>> SearchBranches(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _branchNames;
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(b => b.Contains(value, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(result);
     }
 }
