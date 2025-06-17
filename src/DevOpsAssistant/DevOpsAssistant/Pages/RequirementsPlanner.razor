@@ -29,6 +29,7 @@
                     </ItemTemplate>
                 </MudTreeView>
             }
+            <MudSwitch T="bool" @bind-Value="_storiesOnly" Color="Color.Primary" Label="Stories Only" />
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_selectedPages == null || _selectedPages.Count == 0" OnClick="Generate">Generate Prompt</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
@@ -44,32 +45,53 @@
     <MudStep Title="Create Work Items" Disabled="@(_plan == null)">
         @if (_plan != null)
         {
-            @foreach (var epic in _plan.Epics)
+            if (_storiesOnly)
             {
-                <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("Epic")}")">
-                    <MudText Typo="Typo.h6">Epic</MudText>
-                    <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-2" />
-                    <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-2" />
+                <MudAutocomplete T="WorkItemInfo"
+                                 @bind-Value="_feature"
+                                 SearchFunc="SearchFeatures"
+                                 ToStringFunc="@(f => f == null ? string.Empty : $"{f.Id} - {f.Title}")"
+                                 Label="Feature" />
 
-                    @foreach (var feature in epic.Features)
-                    {
-                        <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("Feature")}")">
-                            <MudText Typo="Typo.subtitle1">Feature</MudText>
-                            <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-2" />
-                            <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-2" />
+                @foreach (var story in _plan.Stories)
+                {
+                    <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("User Story")}")">
+                        <MudText Typo="Typo.subtitle2">Story</MudText>
+                        <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
+                        <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
+                        <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                    </MudPaper>
+                }
+            }
+            else
+            {
+                @foreach (var epic in _plan.Epics)
+                {
+                    <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("Epic")}")">
+                        <MudText Typo="Typo.h6">Epic</MudText>
+                        <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-2" />
+                        <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-2" />
 
-                            @foreach (var story in feature.Stories)
-                            {
-                                <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("User Story")}")">
-                                    <MudText Typo="Typo.subtitle2">Story</MudText>
-                                    <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
-                                    <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
-                                    <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
-                                </MudPaper>
-                            }
-                        </MudPaper>
-                    }
-                </MudPaper>
+                        @foreach (var feature in epic.Features)
+                        {
+                            <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("Feature")}")">
+                                <MudText Typo="Typo.subtitle1">Feature</MudText>
+                                <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-2" />
+                                <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-2" />
+
+                                @foreach (var story in feature.Stories)
+                                {
+                                    <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("User Story")}")">
+                                        <MudText Typo="Typo.subtitle2">Story</MudText>
+                                        <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
+                                        <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
+                                        <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                                    </MudPaper>
+                                }
+                            </MudPaper>
+                        }
+                    </MudPaper>
+                }
             }
 
             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
@@ -101,6 +123,8 @@
     private string? _error;
     private string[] _backlogs = [];
     private string _backlog = string.Empty;
+    private bool _storiesOnly;
+    private WorkItemInfo? _feature;
     private Plan? _plan;
     private const string StateKey = "requirements-planner";
 
@@ -153,7 +177,7 @@
                 var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
                 pages.Add((p.Name, text));
             }
-            _prompt = BuildPrompt(pages);
+            _prompt = BuildPrompt(pages, _storiesOnly);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Backlog = _backlog,
@@ -185,6 +209,8 @@
         _prompt = string.Empty;
         _responseText = string.Empty;
         _plan = null;
+        _storiesOnly = false;
+        _feature = null;
         if (_backlogs.Length > 0)
             _backlog = _backlogs[0];
         await StateService.ClearAsync(StateKey);
@@ -224,22 +250,41 @@
         StateHasChanged();
         try
         {
-            foreach (var epic in _plan.Epics)
+            if (_storiesOnly)
             {
-                epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, new[] { "AI Generated" });
-                foreach (var feature in epic.Features)
+                var parentId = _feature?.Id;
+                foreach (var story in _plan.Stories)
                 {
-                    feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, new[] { "AI Generated" });
-                    foreach (var story in feature.Stories)
-                        story.Id = await ApiService.CreateWorkItemAsync(
-                            "User Story",
-                            story.Title,
-                            story.Description,
-                            _backlog,
-                            feature.Id,
-                            story.AcceptanceCriteria,
-                            new[] { "AI Generated" }
-                        );
+                    story.Id = await ApiService.CreateWorkItemAsync(
+                        "User Story",
+                        story.Title,
+                        story.Description,
+                        _backlog,
+                        parentId,
+                        story.AcceptanceCriteria,
+                        new[] { "AI Generated" }
+                    );
+                }
+            }
+            else
+            {
+                foreach (var epic in _plan.Epics)
+                {
+                    epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, new[] { "AI Generated" });
+                    foreach (var feature in epic.Features)
+                    {
+                        feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, new[] { "AI Generated" });
+                        foreach (var story in feature.Stories)
+                            story.Id = await ApiService.CreateWorkItemAsync(
+                                "User Story",
+                                story.Title,
+                                story.Description,
+                                _backlog,
+                                feature.Id,
+                                story.AcceptanceCriteria,
+                                new[] { "AI Generated" }
+                            );
+                    }
                 }
             }
             _error = null;
@@ -262,13 +307,21 @@
         return item;
     }
 
-    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages)
+    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly)
     {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
-        sb.AppendLine(
-            "Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}"
-        );
+        if (storiesOnly)
+        {
+            sb.AppendLine("You are a business analyst. Break down the following requirements into User Stories only.");
+            sb.AppendLine("Return JSON in this format:\n{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}");
+        }
+        else
+        {
+            sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
+            sb.AppendLine(
+                "Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}"
+            );
+        }
         sb.AppendLine();
         sb.AppendLine("Document:");
         foreach (var page in pages)
@@ -280,9 +333,27 @@
         return sb.ToString();
     }
 
+    private async Task<IEnumerable<WorkItemInfo>> SearchFeatures(string value, CancellationToken _)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Array.Empty<WorkItemInfo>();
+        try
+        {
+            var result = await ApiService.SearchFeaturesAsync(value);
+            _error = null;
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+            return Array.Empty<WorkItemInfo>();
+        }
+    }
+
     private class Plan
     {
         public List<Epic> Epics { get; set; } = new();
+        public List<Story> Stories { get; set; } = new();
     }
 
     private class Epic
