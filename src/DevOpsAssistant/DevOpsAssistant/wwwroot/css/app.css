@@ -1,13 +1,27 @@
+:root {
+    --color-success: #26b050;
+    --color-error: red;
+    --color-epic: #F7630C;
+    --color-feature: #773B93;
+    --color-story: #0078D4;
+    --color-task: #0078D4;
+    --color-bug: #D13438;
+    --color-invalid-state-bg: #fff8e1;
+    --color-code: #c02d76;
+    --color-progress-bg: #e0e0e0;
+    --color-progress-fg: #1b6ec2;
+}
+
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid var(--color-success);
 }
 
 .invalid {
-    outline: 1px solid red;
+    outline: 1px solid var(--color-error);
 }
 
 .validation-message {
-    color: red;
+    color: var(--color-error);
 }
 
 #blazor-error-ui {
@@ -47,16 +61,17 @@
     margin: 20vh auto 1rem auto;
 }
 
+
 .loading-progress circle {
     fill: none;
-    stroke: #e0e0e0;
+    stroke: var(--color-progress-bg);
     stroke-width: 0.6rem;
     transform-origin: 50% 50%;
     transform: rotate(-90deg);
 }
 
 .loading-progress circle:last-child {
-    stroke: #1b6ec2;
+    stroke: var(--color-progress-fg);
     stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
     transition: stroke-dasharray 0.05s ease-in-out;
 }
@@ -73,7 +88,7 @@
 }
 
 code {
-    color: #c02d76;
+    color: var(--color-code);
 }
 
 /* Styling for work item hierarchy */
@@ -103,33 +118,33 @@ code {
 
 /* Colour coding similar to Azure DevOps */
 .work-item-epic {
-    border-left: 3px solid #F7630C;
+    border-left: 3px solid var(--color-epic);
     padding-left: 4px;
 }
 
 .work-item-feature {
-    border-left: 3px solid #773B93;
+    border-left: 3px solid var(--color-feature);
     padding-left: 4px;
 }
 
 /* Stories should be highlighted in blue to match Azure DevOps */
 .work-item-story {
-    border-left: 3px solid #0078D4;
+    border-left: 3px solid var(--color-story);
     padding-left: 4px;
 }
 
 .work-item-task {
-    border-left: 3px solid #0078D4;
+    border-left: 3px solid var(--color-task);
     padding-left: 4px;
 }
 
 .work-item-bug {
-    border-left: 3px solid #D13438;
+    border-left: 3px solid var(--color-bug);
     padding-left: 4px;
 }
 
 .work-item-invalid-state {
-    background-color: #fff8e1;
+    background-color: var(--color-invalid-state-bg);
 }
 
 .work-item-violations {
@@ -143,4 +158,35 @@ code {
 html, body { height: 100%; }
 #app { min-height: 100%; display: flex; flex-direction: column; }
 footer { margin-top: auto; }
+
+/* High contrast mode for users requesting extra contrast */
+@media (prefers-contrast: more), (forced-colors: active) {
+    :root {
+        --color-success: #00ff00;
+        --color-error: #ff0000;
+        --color-epic: #ffff00;
+        --color-feature: #00ffff;
+        --color-story: #ffffff;
+        --color-task: #ffffff;
+        --color-bug: #ff00ff;
+        --color-invalid-state-bg: #000000;
+        --color-code: #ffffff;
+        --color-progress-bg: #ffffff;
+        --color-progress-fg: #ffff00;
+    }
+}
+
+.high-contrast {
+    --color-success: #00ff00;
+    --color-error: #ff0000;
+    --color-epic: #ffff00;
+    --color-feature: #00ffff;
+    --color-story: #ffffff;
+    --color-task: #ffffff;
+    --color-bug: #ff00ff;
+    --color-invalid-state-bg: #000000;
+    --color-code: #ffffff;
+    --color-progress-bg: #ffffff;
+    --color-progress-fg: #ffff00;
+}
 

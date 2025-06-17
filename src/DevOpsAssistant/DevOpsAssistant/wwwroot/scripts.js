@@ -20,3 +20,7 @@ window.blazorCulture = {
         localStorage['BlazorCulture'] = value;
     }
 };
+
+if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
+    document.body.classList.add('high-contrast');
+}
