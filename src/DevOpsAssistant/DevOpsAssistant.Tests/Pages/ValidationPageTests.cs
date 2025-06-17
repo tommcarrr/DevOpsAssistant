@@ -47,6 +47,27 @@ public class ValidationPageTests : ComponentTestBase
         Assert.Contains("Active", cut.Markup);
     }
 
+    [Fact]
+    public async Task Rules_Are_Collapsed_By_Default()
+    {
+        var config = SetupServices(includeApi: true);
+        await config.SaveAsync(new DevOpsConfig
+        {
+            Rules = new ValidationRules { StoryHasDescription = true }
+        });
+
+        var cut = RenderWithProvider<TestPage>();
+        var method = typeof(Validation).GetMethod("ComputeRules", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        await cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
+        cut.Render();
+
+        var expandedField = typeof(Validation).GetField("_rulesExpanded", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        Assert.False((bool)expandedField.GetValue(cut.Instance)!);
+
+        cut.Find("button.rules-toggle").Click();
+        cut.WaitForAssertion(() => Assert.True((bool)expandedField.GetValue(cut.Instance)!));
+    }
+
     private class TestPage : Validation
     {
         protected override Task OnInitializedAsync()
