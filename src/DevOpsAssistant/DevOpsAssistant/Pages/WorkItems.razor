@@ -32,12 +32,13 @@
 }
 else if (_roots != null)
 {
-    <MudStack Row="true" Spacing="2" Class="mb-2">
+    <MudStack Row="true" Spacing="2" Class="mb-2" AlignItems="AlignItems.Center">
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateAll" Disabled="@(!HasPendingUpdates)">Update All</MudButton>
+        <MudSwitch T="bool" @bind-Value="_issuesOnly" Color="Color.Primary" Label="Show only items with issues" Class="ms-2" />
     </MudStack>
     <MudPaper Class="work-item-container">
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
-            @foreach (var epic in _roots)
+            @foreach (var epic in DisplayRoots)
             {
                 <MudListItem T="WorkItemNode">
                     <MudLink Href="@epic.Info.Url" Class="@WorkItemHelpers.GetItemClass(epic.Info.WorkItemType)" Target="_blank">
@@ -82,6 +83,14 @@ else if (_roots != null)
     private bool _loading;
     private List<WorkItemNode>? _roots;
     private string? _error;
+    private bool _issuesOnly = true;
+
+    private IEnumerable<WorkItemNode> DisplayRoots =>
+        _roots == null
+            ? Enumerable.Empty<WorkItemNode>()
+            : _issuesOnly
+                ? _roots.Where(HasIssue)
+                : _roots;
 
     protected override async Task OnInitializedAsync()
     {
@@ -223,6 +232,16 @@ else if (_roots != null)
         foreach (var child in node.Children)
             foreach (var c in EnumerateNodes(child))
                 yield return c;
+    }
+
+    private static bool HasIssue(WorkItemNode node)
+    {
+        if (!node.StatusValid)
+            return true;
+        foreach (var child in node.Children)
+            if (HasIssue(child))
+                return true;
+        return false;
     }
 
     private WorkItemNode? FindRoot(WorkItemNode node)
