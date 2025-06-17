@@ -449,6 +449,25 @@ public class DevOpsApiService
         await SendAsync(request);
     }
 
+    public async Task AddTagAsync(int id, string tag)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var patch = new[]
+        {
+            new { op = "add", path = "/fields/System.Tags", value = tag }
+        };
+        var content = new StringContent(JsonSerializer.Serialize(patch));
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json-patch+json");
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"{baseUri}/workitems/{id}?api-version={ApiVersion}")
+        {
+            Content = content
+        };
+        await SendAsync(request);
+    }
+
     public async Task<List<WorkItemInfo>> SearchUserStoriesAsync(string term)
     {
         var config = GetValidatedConfig();

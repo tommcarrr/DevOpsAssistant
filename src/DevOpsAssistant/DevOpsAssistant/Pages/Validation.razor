@@ -82,15 +82,21 @@ else if (_results != null)
     }
     else
     {
+        <MudStack Row="true" Spacing="2" Class="mb-2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All</MudButton>
+        </MudStack>
         <MudPaper Class="pa-2 work-item-container">
             <MudList T="ResultItem" Dense="true" Class="work-item-tree">
                 @foreach (var r in _results)
                 {
                     <MudListItem T="ResultItem">
                         <MudStack Spacing="1">
-                            <MudText>
-                                <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
-                            </MudText>
+                            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                <MudText>
+                                    <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
+                                </MudText>
+                                <MudButton Variant="Variant.Text" Size="Size.Small" Disabled="@_loading" OnClick="() => TagItem(r)">Tag</MudButton>
+                            </MudStack>
                             <ul class="work-item-violations">
                                 @foreach (var v in r.Violations)
                                 {
@@ -245,6 +251,41 @@ else if (_results != null)
         {
             ComputeRules();
             StateHasChanged();
+        }
+    }
+
+    private async Task TagItem(ResultItem item)
+    {
+        try
+        {
+            await ApiService.AddTagAsync(item.Info.Id, "Needs Attention");
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        StateHasChanged();
+    }
+
+    private async Task TagAll()
+    {
+        if (_results == null || _results.Count == 0) return;
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            foreach (var r in _results)
+                await ApiService.AddTagAsync(r.Info.Id, "Needs Attention");
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 
