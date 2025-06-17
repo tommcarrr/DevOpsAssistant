@@ -259,6 +259,9 @@ else if (_results != null)
         try
         {
             await ApiService.AddTagAsync(item.Info.Id, "Needs Attention");
+            var comment = "Flagged as needing attention\n" +
+                string.Join("\n", item.Violations.Select(v => $"- {v}"));
+            await ApiService.AddCommentAsync(item.Info.Id, comment);
             _error = null;
         }
         catch (Exception ex)
@@ -276,7 +279,12 @@ else if (_results != null)
         try
         {
             foreach (var r in _results)
+            {
                 await ApiService.AddTagAsync(r.Info.Id, "Needs Attention");
+                var comment = "Flagged as needing attention\n" +
+                    string.Join("\n", r.Violations.Select(v => $"- {v}"));
+                await ApiService.AddCommentAsync(r.Info.Id, comment);
+            }
             _error = null;
         }
         catch (Exception ex)
