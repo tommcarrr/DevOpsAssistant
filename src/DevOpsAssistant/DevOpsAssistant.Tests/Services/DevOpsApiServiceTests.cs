@@ -13,11 +13,11 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [area])!;
     }
 
-    private static string InvokeBuildValidationWiql(string area, IEnumerable<string> states)
+    private static string InvokeBuildValidationWiql(string area, IEnumerable<string> states, IEnumerable<string> types)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildValidationWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, [area, states])!;
+        return (string)method.Invoke(null, [area, states, types])!;
     }
 
 
@@ -110,7 +110,7 @@ public class DevOpsApiServiceTests
     [Fact]
     public void BuildValidationWiql_Selects_Epic_Feature_Story()
     {
-        var query = InvokeBuildValidationWiql("Area", ["New", "Active"]);
+        var query = InvokeBuildValidationWiql("Area", ["New", "Active"], ["Epic", "Feature", "User Story"]);
 
         Assert.Contains("'Epic'", query);
         Assert.Contains("'Feature'", query);
@@ -198,7 +198,7 @@ public class DevOpsApiServiceTests
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
         var service = new DevOpsApiService(new HttpClient(), configService, new DeploymentConfigService(new HttpClient()));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area", new[] { "New" }));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area", new[] { "New" }, ["User Story"]));
     }
 
     [Theory]
@@ -303,7 +303,7 @@ public class DevOpsApiServiceTests
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
         var service = new DevOpsApiService(client, configService, new DeploymentConfigService(new HttpClient()));
 
-        var result = await service.GetValidationItemsAsync("Area", new[] { "New" });
+        var result = await service.GetValidationItemsAsync("Area", new[] { "New" }, ["User Story"]);
 
         Assert.Single(result);
         Assert.Equal(1, result[0].Info.Id);

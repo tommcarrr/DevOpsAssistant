@@ -12,7 +12,21 @@ public class SettingsDialogTests : ComponentTestBase
     public async Task SettingsDialog_Shows_Config_Values()
     {
         var config = SetupServices();
-        await config.SaveAsync(new DevOpsConfig { Organization = "Org", MainBranch = "main", DefaultStates = "Active", ReleaseNotesTreeView = true });
+        await config.SaveAsync(new DevOpsConfig
+        {
+            Organization = "Org",
+            MainBranch = "main",
+            DefaultStates = "Active",
+            ReleaseNotesTreeView = true,
+            Rules = new ValidationRules
+            {
+                Bug = new BugRules
+                {
+                    IncludeReproSteps = false,
+                    IncludeSystemInfo = false
+                }
+            }
+        });
 
         var cut = RenderComponent<SettingsDialog>();
         var modelField = cut.Instance.GetType().GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -22,5 +36,7 @@ public class SettingsDialogTests : ComponentTestBase
         Assert.Equal("main", model.MainBranch);
         Assert.Equal("Active", model.DefaultStates);
         Assert.True(model.ReleaseNotesTreeView);
+        Assert.False(model.Rules.Bug.IncludeReproSteps);
+        Assert.False(model.Rules.Bug.IncludeSystemInfo);
     }
 }

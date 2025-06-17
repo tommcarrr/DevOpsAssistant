@@ -1,6 +1,7 @@
 @page "/release-notes"
 @using System.Text
 @using System.Text.Json
+@using System.Text.Json.Serialization
 @using DevOpsAssistant.Services
 @using MudBlazor
 @inject DevOpsApiService ApiService
@@ -202,7 +203,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         {
             var ids = _selectedItems.Select(s => s.Id);
             var details = await ApiService.GetStoryHierarchyDetailsAsync(ids);
-            _prompt = BuildPrompt(details);
+            _prompt = BuildPrompt(details, ConfigService.Config);
             _error = null;
             await CopyPrompt();
         }
@@ -234,7 +235,7 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
     }
 
-    private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details)
+    private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)
     {
         var hierarchy = details.Select(d => new
         {
@@ -260,15 +261,19 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
                 d.Story.Title,
                 d.Story.WorkItemType,
                 Description = TextHelpers.Sanitize(d.Description),
-                ReproSteps = TextHelpers.Sanitize(d.ReproSteps),
-                SystemInfo = TextHelpers.Sanitize(d.SystemInfo),
+                ReproSteps = config.Rules.Bug.IncludeReproSteps ? TextHelpers.Sanitize(d.ReproSteps) : null,
+                SystemInfo = config.Rules.Bug.IncludeSystemInfo ? TextHelpers.Sanitize(d.SystemInfo) : null,
                 AcceptanceCriteria = TextHelpers.Sanitize(d.AcceptanceCriteria)
             }
         });
 
         var json = JsonSerializer.Serialize(
             hierarchy,
-            new JsonSerializerOptions { WriteIndented = true });
+            new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
 
         var sb = new StringBuilder();
 

@@ -53,7 +53,7 @@ public class ValidationPageTests : ComponentTestBase
         var config = SetupServices(includeApi: true);
         await config.SaveAsync(new DevOpsConfig
         {
-            Rules = new ValidationRules { StoryHasDescription = true }
+            Rules = new ValidationRules { Story = new StoryRules { HasDescription = true } }
         });
 
         var cut = RenderWithProvider<TestPage>();
