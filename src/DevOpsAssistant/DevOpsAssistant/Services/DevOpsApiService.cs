@@ -13,7 +13,7 @@ public class DevOpsApiService
 {
     private const string ApiVersion = "7.0";
     private readonly DevOpsConfigService _configService;
-    private readonly IStringLocalizer _localizer;
+    private readonly IStringLocalizer<DevOpsApiService> _localizer;
 
     private readonly HttpClient _httpClient;
     private readonly DeploymentConfigService _deploymentConfig;
@@ -41,7 +41,7 @@ public class DevOpsApiService
 
     private string? StaticApiPath => _deploymentConfig.Config.StaticApiPath;
 
-    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService, DeploymentConfigService deploymentConfig, IStringLocalizer localizer)
+    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService, DeploymentConfigService deploymentConfig, IStringLocalizer<DevOpsApiService> localizer)
     {
         _httpClient = httpClient;
         _configService = configService;
