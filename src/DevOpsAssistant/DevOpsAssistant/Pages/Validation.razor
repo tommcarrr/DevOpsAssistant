@@ -156,6 +156,8 @@ else if (_results != null)
             if (state?.States != null)
                 SelectedStates = state.States.ToHashSet();
             SelectedTypes = _types.ToHashSet();
+            if (state?.Types != null)
+                SelectedTypes = state.Types.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
