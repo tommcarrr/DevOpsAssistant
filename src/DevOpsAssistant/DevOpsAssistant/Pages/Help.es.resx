@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Heading" xml:space="preserve">
+    <value>Ayuda e instrucciones</value>
+  </data>
+  <data name="Intro" xml:space="preserve">
+    <value>Esta página describe cómo usar cada sección de DevOpsAssistant.</value>
+  </data>
+  <data name="Epics" xml:space="preserve">
+    <value>Cargue un backlog para visualizar épicas y características. Los estados sugeridos aparecen cuando los padres difieren de sus hijos y se pueden actualizar.</value>
+  </data>
+  <data name="Validation" xml:space="preserve">
+    <value>Seleccione un backlog y estados y luego verifique los elementos de trabajo con sus reglas. Las violaciones pueden etiquetarse para seguimiento.</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Genere un prompt para revisar historias con los principios INVEST usando su Definición de Ready.</value>
+  </data>
+  <data name="RequirementsPlanner" xml:space="preserve">
+    <value>Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.</value>
+  </data>
+  <data name="ReleaseNotes" xml:space="preserve">
+    <value>Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento.</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Muestre gráficos de rendimiento, tiempo de entrega y tiempo de ciclo para el backlog elegido.</value>
+  </data>
+  <data name="BranchHealth" xml:space="preserve">
+    <value>Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configure su organización, proyecto, token PAT y otras opciones utilizadas por el sitio.</value>
+  </data>
+</root>

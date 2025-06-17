@@ -3,6 +3,8 @@
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<BranchHealth> L
 
 <PageTitle>DevOpsAssistant - Branch Health</PageTitle>
 
@@ -23,7 +25,9 @@
                 <MudSelectItem Value="@r">@r.Name</MudSelectItem>
             }
         </MudSelect>
-        <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
+        <MudTooltip Text='@L["BaseBranchTooltip"]'>
+            <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
+        </MudTooltip>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
     </MudStack>

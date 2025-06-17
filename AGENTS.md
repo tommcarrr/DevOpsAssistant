@@ -9,6 +9,7 @@ The following guidelines apply to the entire repository and inform how Codex sho
 - Run `dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror` to ensure there are no Roslyn warnings.
 - If these commands fail because the environment lacks `dotnet`, note this in the PR's testing section.
 - Ensure all user-facing strings come from localization resources. Add new `.resx` entries when introducing UI text.
+- Keep `src/DevOpsAssistant/DevOpsAssistant/Pages/Help.razor` and its `.resx` files current with instructions for each page whenever features change.
 
 ## Commit guidelines
 

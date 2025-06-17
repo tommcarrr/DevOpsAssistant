@@ -4,6 +4,8 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Metrics> L
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
 
@@ -30,10 +32,12 @@
             <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
         </MudSelect>
         <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
-        <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
-            <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
-            <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
-        </MudSelect>
+        <MudTooltip Text='@L["VelocityTooltip"]'>
+            <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
+                <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
+                <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
+            </MudSelect>
+        </MudTooltip>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>

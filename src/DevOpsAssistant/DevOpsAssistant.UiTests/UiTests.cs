@@ -47,6 +47,7 @@ public class UiTests
     [InlineData("/story-review", "reviewing user stories")]
     [InlineData("/validation", "validate work items")]
     [InlineData("/epics-features", "epics and features")]
+    [InlineData("/help", "Help & Instructions")]
     public async Task Page_Loads_With_Expected_Content(string path, string text)
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -68,6 +69,7 @@ public class UiTests
     [InlineData("Metrics", "Metrics")]
     [InlineData("Requirement Planner", "Requirement Planner")]
     [InlineData("Branch Health", "Branch Health")]
+    [InlineData("Help", "Help & Instructions")]
     public async Task Nav_Menu_Navigates_To_Correct_Page(string linkText, string heading)
     {
         if (string.IsNullOrEmpty(_baseUrl))
