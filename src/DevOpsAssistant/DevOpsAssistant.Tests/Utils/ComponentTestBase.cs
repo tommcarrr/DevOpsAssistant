@@ -6,6 +6,7 @@ using DevOpsAssistant.Tests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -25,7 +26,11 @@ public abstract class ComponentTestBase : TestContext
         {
             var deployment = new DeploymentConfigService(new HttpClient());
             Services.AddSingleton(deployment);
-            Services.AddSingleton(sp => new DevOpsApiService(new HttpClient(), config, deployment));
+            Services.AddSingleton(sp => new DevOpsApiService(
+                new HttpClient(),
+                config,
+                deployment,
+                sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
         }
         var client = new HttpClient(new FakeHttpMessageHandler(_ =>
             new HttpResponseMessage(HttpStatusCode.OK)

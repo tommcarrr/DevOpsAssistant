@@ -7,10 +7,13 @@ using System.Text.Json;
 
 namespace DevOpsAssistant.Services;
 
+using Microsoft.Extensions.Localization;
+
 public class DevOpsApiService
 {
     private const string ApiVersion = "7.0";
     private readonly DevOpsConfigService _configService;
+    private readonly IStringLocalizer _localizer;
 
     private readonly HttpClient _httpClient;
     private readonly DeploymentConfigService _deploymentConfig;
@@ -38,11 +41,12 @@ public class DevOpsApiService
 
     private string? StaticApiPath => _deploymentConfig.Config.StaticApiPath;
 
-    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService, DeploymentConfigService deploymentConfig)
+    public DevOpsApiService(HttpClient httpClient, DevOpsConfigService configService, DeploymentConfigService deploymentConfig, IStringLocalizer localizer)
     {
         _httpClient = httpClient;
         _configService = configService;
         _deploymentConfig = deploymentConfig;
+        _localizer = localizer;
     }
 
     private DevOpsConfig GetValidatedConfig()
@@ -51,7 +55,7 @@ public class DevOpsApiService
         if (string.IsNullOrWhiteSpace(config.Organization) ||
             string.IsNullOrWhiteSpace(config.Project) ||
             string.IsNullOrWhiteSpace(config.PatToken))
-            throw new InvalidOperationException("DevOps configuration is incomplete.");
+            throw new InvalidOperationException(_localizer["ConfigIncomplete"]);
         return config;
     }
 
@@ -95,27 +99,27 @@ public class DevOpsApiService
         return response;
     }
 
-    private static async Task HandleError(HttpResponseMessage response)
+    private async Task HandleError(HttpResponseMessage response)
     {
         string message = response.StatusCode switch
         {
             HttpStatusCode.BadRequest
-                => "Invalid request. Please verify your parameters.",
+                => _localizer["InvalidRequest"],
             HttpStatusCode.Unauthorized
-                => "Authentication failed. Please verify your PAT token.",
+                => _localizer["Unauthorized"],
             HttpStatusCode.Forbidden
-                => "Access denied. Please check your PAT permissions.",
+                => _localizer["Forbidden"],
             HttpStatusCode.NotFound
-                => "The requested project was not found.",
+                => _localizer["NotFound"],
             HttpStatusCode.Conflict
-                => "The item was updated elsewhere. Refresh and try again.",
+                => _localizer["Conflict"],
             HttpStatusCode.TooManyRequests
-                => "Rate limit exceeded. Please wait and retry.",
+                => _localizer["TooManyRequests"],
             HttpStatusCode.InternalServerError or
                 HttpStatusCode.BadGateway or
                 HttpStatusCode.ServiceUnavailable or
                 HttpStatusCode.GatewayTimeout
-                => "Azure DevOps service is unavailable. Please try again later.",
+                => _localizer["ServiceUnavailable"],
             _ => string.Empty
         };
 
@@ -139,7 +143,7 @@ public class DevOpsApiService
         }
 
         if (string.IsNullOrWhiteSpace(message))
-            message = $"Request failed with status code {(int)response.StatusCode} ({response.ReasonPhrase})";
+            message = string.Format(_localizer["GenericFailure"], (int)response.StatusCode, response.ReasonPhrase);
 
         throw new InvalidOperationException(message);
     }

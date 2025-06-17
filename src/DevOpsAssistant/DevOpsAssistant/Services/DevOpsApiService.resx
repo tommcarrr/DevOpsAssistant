@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfigIncomplete" xml:space="preserve">
+    <value>DevOps configuration is incomplete.</value>
+  </data>
+  <data name="InvalidRequest" xml:space="preserve">
+    <value>Invalid request. Please verify your parameters.</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>Authentication failed. Please verify your PAT token.</value>
+  </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>Access denied. Please check your PAT permissions.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>The requested project was not found.</value>
+  </data>
+  <data name="Conflict" xml:space="preserve">
+    <value>The item was updated elsewhere. Refresh and try again.</value>
+  </data>
+  <data name="TooManyRequests" xml:space="preserve">
+    <value>Rate limit exceeded. Please wait and retry.</value>
+  </data>
+  <data name="ServiceUnavailable" xml:space="preserve">
+    <value>Azure DevOps service is unavailable. Please try again later.</value>
+  </data>
+  <data name="GenericFailure" xml:space="preserve">
+    <value>Request failed with status code {0} ({1})</value>
+  </data>
+</root>
