@@ -40,7 +40,7 @@ else if (_roots != null)
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
             @foreach (var epic in DisplayRoots)
             {
-                <MudListItem T="WorkItemNode">
+                <MudListItem T="WorkItemNode" Class="@InvalidClass(epic)">
                     <MudLink Href="@epic.Info.Url" Class="@WorkItemHelpers.GetItemClass(epic.Info.WorkItemType)" Target="_blank">
                         <b>@epic.Info.Title</b>
                     </MudLink> - @epic.Info.WorkItemType (@epic.Info.State)
@@ -50,7 +50,7 @@ else if (_roots != null)
                         <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                             @foreach (var feature in epic.Children)
                             {
-                                <MudListItem T="WorkItemNode">
+                                <MudListItem T="WorkItemNode" Class="@InvalidClass(feature)">
                                     <MudLink Href="@feature.Info.Url" Class="@WorkItemHelpers.GetItemClass(feature.Info.WorkItemType)" Target="_blank">
                                         <b>@feature.Info.Title</b>
                                     </MudLink> - @feature.Info.WorkItemType (@feature.Info.State)
@@ -60,7 +60,7 @@ else if (_roots != null)
                                         <MudList T="WorkItemNode" Dense="true" Class="ms-4">
                                             @foreach (var item in feature.Children)
                                             {
-                                                <MudListItem T="WorkItemNode">
+                                                <MudListItem T="WorkItemNode" Class="@InvalidClass(item)">
                                                     <MudLink Href="@item.Info.Url" Class="@WorkItemHelpers.GetItemClass(item.Info.WorkItemType)" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
                                                     @SuggestedState(item)
                                                 </MudListItem>
@@ -215,6 +215,11 @@ else if (_roots != null)
     }
 
     private bool HasPendingUpdates => _roots != null && EnumerateNodes(_roots).Any(n => !n.StatusValid);
+
+    private static string? InvalidClass(WorkItemNode node)
+    {
+        return node.StatusValid ? null : "work-item-invalid-state";
+    }
 
     private static IEnumerable<WorkItemNode> EnumerateNodes(IEnumerable<WorkItemNode> nodes)
     {
