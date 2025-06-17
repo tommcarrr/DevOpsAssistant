@@ -16,12 +16,13 @@
 
 <MudPaper Class="p-4 mb-4">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSelect T="RepositoryInfo" @bind-Value="_repo" Label="Repository" ToStringFunc="r => r.Name">
+        <MudSelect T="RepositoryInfo" Value="_repo" ValueChanged="OnRepoChanged" Label="Repository" ToStringFunc="r => r.Name">
             @foreach (var r in _repos)
             {
                 <MudSelectItem Value="@r">@r.Name</MudSelectItem>
             }
         </MudSelect>
+        <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
     </MudStack>
 </MudPaper>
@@ -64,9 +65,11 @@ else if (_branches != null)
     private RepositoryInfo? _repo;
     private List<RepositoryInfo> _repos = new();
     private List<BranchInfo>? _branches;
+    private List<string> _branchNames = new();
+    private string _baseBranch = string.Empty;
     private bool _loading;
     private string? _error;
-    private bool ShowAheadBehind => !string.IsNullOrWhiteSpace(ConfigService.Config.MainBranch);
+    private bool ShowAheadBehind => !string.IsNullOrWhiteSpace(_baseBranch);
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +78,11 @@ else if (_branches != null)
         {
             _repos = await ApiService.GetRepositoriesAsync();
             if (_repos.Count > 0)
+            {
                 _repo = _repos[0];
+                await LoadBranchList();
+            }
+            _baseBranch = ConfigService.Config.MainBranch;
             _error = null;
         }
         catch (Exception ex)
@@ -91,7 +98,7 @@ else if (_branches != null)
         StateHasChanged();
         try
         {
-            _branches = await ApiService.GetBranchesAsync(_repo.Id, ConfigService.Config.MainBranch);
+            _branches = await ApiService.GetBranchesAsync(_repo.Id, _baseBranch);
             _error = null;
         }
         catch (Exception ex)
@@ -102,6 +109,36 @@ else if (_branches != null)
         {
             _loading = false;
         }
+    }
+
+    private async Task OnRepoChanged(RepositoryInfo repo)
+    {
+        _repo = repo;
+        await LoadBranchList();
+        _branches = null;
+    }
+
+    private async Task LoadBranchList()
+    {
+        if (_repo == null) return;
+        try
+        {
+            var infos = await ApiService.GetBranchesAsync(_repo.Id);
+            _branchNames = infos.Select(b => b.Name).OrderBy(b => b).ToList();
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private Task<IEnumerable<string>> SearchBranches(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _branchNames;
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(b => b.Contains(value, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(result);
     }
 
     private static bool IsStale(BranchInfo branch)
