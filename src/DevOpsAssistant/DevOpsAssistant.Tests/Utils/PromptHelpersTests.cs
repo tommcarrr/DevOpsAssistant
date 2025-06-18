@@ -9,9 +9,14 @@ public class PromptHelpersTests
     {
         var text = "line1\nline2\nline3";
 
-        var result = PromptHelpers.SplitPrompt(text, 10);
+        var limit = 16;
+        var result = PromptHelpers.SplitPrompt(text, limit);
 
         Assert.Equal(3, result.Count);
+        foreach (var part in result)
+        {
+            Assert.True(part.Length <= limit);
+        }
         Assert.StartsWith("[PART 1/3]", result[0]);
         Assert.StartsWith("[PART 2/3]", result[1]);
     }
