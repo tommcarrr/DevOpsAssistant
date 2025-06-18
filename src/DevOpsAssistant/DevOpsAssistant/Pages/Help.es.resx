@@ -25,13 +25,13 @@
     <value>Seleccione un backlog y estados y luego verifique los elementos de trabajo con sus reglas. Las violaciones pueden etiquetarse para seguimiento.</value>
   </data>
   <data name="Quality" xml:space="preserve">
-    <value>Genere un prompt detallado para revisar y calificar historias con INVEST y brindar coaching usando su Definición de Ready.</value>
+    <value>Genere un prompt detallado para revisar y calificar historias con INVEST y brindar coaching usando su Definición de Ready. Los prompts largos se dividen en partes y puede cambiar entre ellas con las flechas.</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
     <value>Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
-    <value>Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento.</value>
+    <value>Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento. Puede copiar o descargar los prompts, que se dividen en partes navegables con flechas.</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Muestre gráficos de rendimiento, tiempo de entrega y tiempo de ciclo para el backlog elegido.</value>

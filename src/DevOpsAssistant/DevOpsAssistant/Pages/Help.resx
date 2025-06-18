@@ -25,13 +25,13 @@
     <value>Select a backlog and states then check work items against your rules. Violations can be tagged for follow up.</value>
   </data>
   <data name="Quality" xml:space="preserve">
-    <value>Generate a detailed prompt to score stories against INVEST and provide coaching using your Definition of Ready.</value>
+    <value>Generate a detailed prompt to score stories against INVEST and provide coaching using your Definition of Ready. Long prompts are split into parts and you can switch between them using the arrows.</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
     <value>Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
-    <value>Select stories and build a prompt that summarizes them for release notes.</value>
+    <value>Select stories and build a prompt that summarizes them for release notes. Prompts can be copied or downloaded, splitting into parts with arrows to navigate.</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Display throughput, lead time and cycle time charts for the chosen backlog.</value>

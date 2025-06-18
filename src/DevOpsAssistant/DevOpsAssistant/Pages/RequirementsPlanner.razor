@@ -51,8 +51,17 @@
     </MudStep>
     <MudStep Title="Import Response" Disabled="@string.IsNullOrWhiteSpace(_prompt)">
         <MudStack Spacing="2">
-            <MudTextField T="string" Text="@_prompt" Lines="10" ReadOnly="true" Class="w-100" />
-            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="CopyPrompt">Copy</MudButton>
+            @if (_promptParts != null)
+            {
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadPrompt">Download</MudButton>
+                <MudTextField T="string" Text="@_promptParts[_partIndex]" Lines="10" ReadOnly="true" Class="w-100" />
+                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="_partIndex == 0" OnClick="PrevPart" />
+                    <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="_partIndex == _promptParts.Count - 1" OnClick="NextPart" />
+                    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">Copy</MudButton>
+                </MudStack>
+            }
             <MudTextField T="string" @bind-Value="_responseText" Lines="6" Label="LLM Response" Class="w-100" />
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ImportPlan">Import</MudButton>
         </MudStack>
@@ -135,6 +144,8 @@
     private bool _useDocument;
     private string _wikiId = string.Empty;
     private string _prompt = string.Empty;
+    private List<string>? _promptParts;
+    private int _partIndex;
     private string _responseText = string.Empty;
     private bool _loading;
     private string? _error;
@@ -213,6 +224,8 @@
                 }
             }
             _prompt = BuildPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
+            _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
+            _partIndex = 0;
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Backlog = _backlog,
@@ -238,6 +251,29 @@
             await JS.InvokeVoidAsync("copyText", _prompt);
     }
 
+    private async Task CopyPart(string text)
+    {
+        await JS.InvokeVoidAsync("copyText", text);
+    }
+
+    private void PrevPart()
+    {
+        if (_partIndex > 0)
+            _partIndex--;
+    }
+
+    private void NextPart()
+    {
+        if (_promptParts != null && _partIndex < _promptParts.Count - 1)
+            _partIndex++;
+    }
+
+    private async Task DownloadPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(_prompt))
+            await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
+    }
+
     private Task OnFileSelected(InputFileChangeEventArgs e)
     {
         _file = e.File;
@@ -250,6 +286,8 @@
         _file = null;
         _useDocument = false;
         _prompt = string.Empty;
+        _promptParts = null;
+        _partIndex = 0;
         _responseText = string.Empty;
         _plan = null;
         _storiesOnly = false;
