@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace DevOpsAssistant.Services;
 
 public static class PromptHelpers
@@ -39,18 +37,20 @@ public static class PromptHelpers
     private static List<string> SplitInternal(string text, int limit)
     {
         var parts = new List<string>();
-        var sb = new StringBuilder();
-        foreach (var line in text.Split(NewLine))
+        var remaining = text.Trim();
+
+        while (remaining.Length > limit)
         {
-            if (sb.Length + line.Length + 1 > limit && sb.Length > 0)
-            {
-                parts.Add(sb.ToString().TrimEnd());
-                sb.Clear();
-            }
-            sb.Append(line).Append(NewLine);
+            var splitPos = remaining.LastIndexOfAny(new[] { ' ', '\n' }, limit);
+            if (splitPos <= 0)
+                splitPos = limit;
+
+            parts.Add(remaining.Substring(0, splitPos).TrimEnd());
+            remaining = remaining.Substring(splitPos).TrimStart();
         }
-        if (sb.Length > 0)
-            parts.Add(sb.ToString().TrimEnd());
+
+        if (remaining.Length > 0)
+            parts.Add(remaining);
 
         return parts;
     }
