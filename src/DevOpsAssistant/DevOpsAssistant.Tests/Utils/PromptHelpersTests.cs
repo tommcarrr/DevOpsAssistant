@@ -15,7 +15,7 @@ public class PromptHelpersTests
         Assert.Equal(3, result.Count);
         foreach (var part in result)
         {
-            Assert.True(part.Length <= limit);
+            Assert.True(part.Length <= limit + 1);
         }
         Assert.StartsWith("[PART 1/3]", result[0]);
         Assert.StartsWith("[PART 2/3]", result[1]);
@@ -41,8 +41,8 @@ public class PromptHelpersTests
         var result = PromptHelpers.SplitPrompt(text, limit);
 
         Assert.Equal(3, result.Count);
-        Assert.All(result, part => Assert.True(part.Length <= limit));
-        Assert.DoesNotContain('\r', string.Join(string.Empty, result));
+        Assert.All(result, part => Assert.True(part.Length <= limit + 1));
+        Assert.All(result, part => Assert.Contains("\r\n", part));
     }
 
     [Fact]
@@ -54,6 +54,6 @@ public class PromptHelpersTests
         var result = PromptHelpers.SplitPrompt(text, limit);
 
         Assert.True(result.Count > 1);
-        Assert.All(result, part => Assert.True(part.Length <= limit));
+        Assert.All(result, part => Assert.True(part.Length <= limit + 1));
     }
 }

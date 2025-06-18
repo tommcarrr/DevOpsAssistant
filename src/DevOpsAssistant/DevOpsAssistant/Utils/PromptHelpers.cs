@@ -2,7 +2,7 @@ namespace DevOpsAssistant.Services;
 
 public static class PromptHelpers
 {
-    private const char NewLine = '\n';
+    private const string NewLine = "\r\n";
 
     public static IReadOnlyList<string> SplitPrompt(string text, int limit)
     {
@@ -29,7 +29,7 @@ public static class PromptHelpers
 
         for (int i = 0; i < parts.Count; i++)
         {
-            parts[i] = $"[PART {i + 1}/{parts.Count}]" + NewLine + parts[i];
+            parts[i] = $"[PART {i + 1}/{parts.Count}]" + NewLine + parts[i].Replace("\n", NewLine);
         }
         return parts;
     }
