@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Docker Compose Up" type="DockerComposeRunConfiguration" factoryName="Docker Compose">
+    <option name="file" value="$PROJECT_DIR$/docker-compose.yml" />
+    <option name="service" value="devopsassistant" />
+    <option name="command" value="up" />
+    <option name="build" value="true" />
+  </configuration>
+</component>

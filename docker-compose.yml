@@ -1,6 +1,7 @@
-version: '3.8'
 services:
   devopsassistant:
     build: .
     ports:
       - "5678:5678"
+    volumes:
+      - ./version.txt:/usr/share/nginx/html/version.txt:ro

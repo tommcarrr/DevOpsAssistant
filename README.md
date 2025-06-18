@@ -14,6 +14,10 @@ docker compose up --build
 
 Once the container is running, browse to <http://localhost:5678>.
 
+To change the version displayed in the site's footer, edit the `version.txt`
+file in the repository root. The file is mounted into the container so you can
+update it without rebuilding.
+
 ### Using the `dotnet` CLI
 
 If you prefer to run the site without Docker you can use the .NET SDK. A helper script `dotnet-install.sh` is provided for installing the SDK on Linux. After installing, execute:
