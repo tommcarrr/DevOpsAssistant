@@ -40,6 +40,9 @@ public class DevOpsConfigService
             ReleaseNotesTreeView = config.ReleaseNotesTreeView,
             DefaultStates = config.DefaultStates.Trim(),
             DefinitionOfReady = config.DefinitionOfReady.Trim(),
+            StoryQualityPrompt = config.StoryQualityPrompt.Trim(),
+            ReleaseNotesPrompt = config.ReleaseNotesPrompt.Trim(),
+            RequirementsPrompt = config.RequirementsPrompt.Trim(),
             Rules = config.Rules
         };
     }
