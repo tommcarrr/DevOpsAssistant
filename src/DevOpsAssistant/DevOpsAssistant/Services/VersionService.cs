@@ -17,7 +17,7 @@ public class VersionService
     {
         try
         {
-            var text = await _httpClient.GetStringAsync("/version.txt");
+            var text = await _httpClient.GetStringAsync("version.txt");
             Version = text.Trim();
         }
         catch
