@@ -18,4 +18,10 @@
   <data name="StoriesOnlyTooltip" xml:space="preserve">
     <value>Ignore Epics and Features and create User Stories only</value>
   </data>
+  <data name="ClarifyLabel" xml:space="preserve">
+    <value>Clarify Requirements</value>
+  </data>
+  <data name="ClarifyTooltip" xml:space="preserve">
+    <value>Push back on unclear requirements and request clarification</value>
+  </data>
 </root>
