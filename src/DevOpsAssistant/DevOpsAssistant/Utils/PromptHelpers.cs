@@ -4,10 +4,14 @@ namespace DevOpsAssistant.Services;
 
 public static class PromptHelpers
 {
+    private const char NewLine = '\n';
+
     public static IReadOnlyList<string> SplitPrompt(string text, int limit)
     {
         if (string.IsNullOrWhiteSpace(text) || limit <= 0 || text.Length <= limit)
             return new[] { text };
+
+        text = text.Replace("\r\n", "\n").Replace('\r', '\n');
 
         var adjustedLimit = limit;
         var parts = SplitInternal(text, adjustedLimit);
@@ -27,7 +31,7 @@ public static class PromptHelpers
 
         for (int i = 0; i < parts.Count; i++)
         {
-            parts[i] = $"[PART {i + 1}/{parts.Count}]\n" + parts[i];
+            parts[i] = $"[PART {i + 1}/{parts.Count}]" + NewLine + parts[i];
         }
         return parts;
     }
@@ -36,14 +40,14 @@ public static class PromptHelpers
     {
         var parts = new List<string>();
         var sb = new StringBuilder();
-        foreach (var line in text.Split('\n'))
+        foreach (var line in text.Split(NewLine))
         {
             if (sb.Length + line.Length + 1 > limit && sb.Length > 0)
             {
                 parts.Add(sb.ToString().TrimEnd());
                 sb.Clear();
             }
-            sb.AppendLine(line);
+            sb.Append(line).Append(NewLine);
         }
         if (sb.Length > 0)
             parts.Add(sb.ToString().TrimEnd());
@@ -53,6 +57,6 @@ public static class PromptHelpers
 
     private static int PrefixLength(int count)
     {
-        return $"[PART {count}/{count}]\n".Length;
+        return $"[PART {count}/{count}]".Length + 1; // +1 for newline
     }
 }
