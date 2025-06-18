@@ -25,7 +25,7 @@
     <value>Select a backlog and states then check work items against your rules. Violations can be tagged for follow up.</value>
   </data>
   <data name="Quality" xml:space="preserve">
-    <value>Generate a prompt to review stories for INVEST compliance using your Definition of Ready.</value>
+    <value>Generate a detailed prompt to score stories against INVEST and provide coaching using your Definition of Ready.</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
     <value>Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.</value>
