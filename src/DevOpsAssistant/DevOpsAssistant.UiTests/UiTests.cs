@@ -246,4 +246,18 @@ public class UiTests
         var row = await page.WaitForSelectorAsync("text=feature");
         Assert.NotNull(row);
     }
+
+    [Fact]
+    public async Task Footer_Displays_Version()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        var text = await page.TextContentAsync("footer");
+        Assert.Contains("Version", text);
+    }
 }
