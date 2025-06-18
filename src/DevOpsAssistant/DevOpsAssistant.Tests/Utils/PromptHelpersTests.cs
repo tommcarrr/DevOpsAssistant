@@ -31,4 +31,17 @@ public class PromptHelpersTests
         Assert.Single(result);
         Assert.Equal(text, result[0]);
     }
+
+    [Fact]
+    public void SplitPrompt_Normalizes_Windows_Newlines()
+    {
+        var text = "line1\r\nline2\r\nline3";
+
+        var limit = 16;
+        var result = PromptHelpers.SplitPrompt(text, limit);
+
+        Assert.Equal(3, result.Count);
+        Assert.All(result, part => Assert.True(part.Length <= limit));
+        Assert.DoesNotContain('\r', string.Join(string.Empty, result));
+    }
 }
