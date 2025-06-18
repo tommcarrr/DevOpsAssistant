@@ -31,6 +31,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
         var page = RenderWithProvider<TestPage>();
         var field = typeof(ReleaseNotes).GetField("_prompt", BindingFlags.NonPublic | BindingFlags.Instance)!;
         field.SetValue(page.Instance, "text");
+        var partsField = typeof(ReleaseNotes).GetField("_promptParts", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        partsField.SetValue(page.Instance, new List<string> { "text" });
         page.Render();
 
         Assert.Contains("Copy", page.Markup);

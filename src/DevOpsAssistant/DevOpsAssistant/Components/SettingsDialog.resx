@@ -24,4 +24,7 @@
   <data name="RequirementsPrompt" xml:space="preserve">
     <value>Requirements Prompt</value>
   </data>
+  <data name="PromptLimit" xml:space="preserve">
+    <value>Prompt Character Limit</value>
+  </data>
 </root>

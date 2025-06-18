@@ -43,6 +43,7 @@ public class DevOpsConfigService
             StoryQualityPrompt = config.StoryQualityPrompt.Trim(),
             ReleaseNotesPrompt = config.ReleaseNotesPrompt.Trim(),
             RequirementsPrompt = config.RequirementsPrompt.Trim(),
+            PromptCharacterLimit = config.PromptCharacterLimit,
             Rules = config.Rules
         };
     }

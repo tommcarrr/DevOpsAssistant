@@ -24,4 +24,7 @@
   <data name="RequirementsPrompt" xml:space="preserve">
     <value>Prompt de Requerimientos</value>
   </data>
+  <data name="PromptLimit" xml:space="preserve">
+    <value>Límite de caracteres del prompt</value>
+  </data>
 </root>

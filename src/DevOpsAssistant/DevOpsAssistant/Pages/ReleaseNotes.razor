@@ -89,20 +89,34 @@
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 }
-else if (!string.IsNullOrWhiteSpace(_prompt))
+else if (_promptParts != null)
 {
     <MudPaper Class="pa-2">
         <MudStack Spacing="2">
+            <MudButton Variant="Variant.Text"
+                       StartIcon="@Icons.Material.Filled.Download"
+                       OnClick="DownloadPrompt">
+                Download
+            </MudButton>
             <MudTextField T="string"
-                          Text="@_prompt"
+                          Text="@_promptParts[_partIndex]"
                           Lines="10"
                           ReadOnly="true"
-                          Class="w-100"/>
-            <MudButton Variant="Variant.Text"
-                       StartIcon="@Icons.Material.Filled.ContentCopy"
-                       OnClick="CopyPrompt">
-                Copy
-            </MudButton>
+                          Class="w-100" />
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                               Disabled="_partIndex == 0"
+                               OnClick="PrevPart" />
+                <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                               Disabled="_partIndex == _promptParts.Count - 1"
+                               OnClick="NextPart" />
+                <MudButton Variant="Variant.Text"
+                           StartIcon="@Icons.Material.Filled.ContentCopy"
+                           OnClick="() => CopyPart(_promptParts[_partIndex])">
+                    Copy
+                </MudButton>
+            </MudStack>
         </MudStack>
     </MudPaper>
 }
@@ -112,6 +126,8 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
     private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;
+    private List<string>? _promptParts;
+    private int _partIndex;
     private string? _error;
     private string _path = string.Empty;
     private string[] _backlogs = [];
@@ -212,6 +228,8 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             var ids = _selectedItems.Select(s => s.Id);
             var details = await ApiService.GetStoryHierarchyDetailsAsync(ids);
             _prompt = BuildPrompt(details, ConfigService.Config);
+            _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
+            _partIndex = 0;
             _error = null;
             await CopyPrompt();
         }
@@ -243,6 +261,29 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
     }
 
+    private async Task CopyPart(string text)
+    {
+        await JS.InvokeVoidAsync("copyText", text);
+    }
+
+    private void PrevPart()
+    {
+        if (_partIndex > 0)
+            _partIndex--;
+    }
+
+    private void NextPart()
+    {
+        if (_promptParts != null && _partIndex < _promptParts.Count - 1)
+            _partIndex++;
+    }
+
+    private async Task DownloadPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(_prompt))
+            await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
+    }
+
     private async Task Reset()
     {
         if (ConfigService.Config.ReleaseNotesTreeView && _backlogs.Length > 0)
@@ -251,6 +292,8 @@ else if (!string.IsNullOrWhiteSpace(_prompt))
         _treeItems = null;
         _selectedNodes = null;
         _prompt = null;
+        _promptParts = null;
+        _partIndex = 0;
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
