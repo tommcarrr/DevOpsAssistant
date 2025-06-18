@@ -44,4 +44,16 @@ public class PromptHelpersTests
         Assert.All(result, part => Assert.True(part.Length <= limit));
         Assert.DoesNotContain('\r', string.Join(string.Empty, result));
     }
+
+    [Fact]
+    public void SplitPrompt_Splits_Long_Lines()
+    {
+        var text = new string('a', 50);
+
+        var limit = 20;
+        var result = PromptHelpers.SplitPrompt(text, limit);
+
+        Assert.True(result.Count > 1);
+        Assert.All(result, part => Assert.True(part.Length <= limit));
+    }
 }
