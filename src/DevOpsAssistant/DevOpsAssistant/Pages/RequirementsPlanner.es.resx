@@ -18,4 +18,10 @@
   <data name="StoriesOnlyTooltip" xml:space="preserve">
     <value>Ignorar épicas y características y crear solo historias</value>
   </data>
+  <data name="ClarifyLabel" xml:space="preserve">
+    <value>Aclarar requisitos</value>
+  </data>
+  <data name="ClarifyTooltip" xml:space="preserve">
+    <value>Cuestionar requisitos poco claros y pedir aclaraciones</value>
+  </data>
 </root>

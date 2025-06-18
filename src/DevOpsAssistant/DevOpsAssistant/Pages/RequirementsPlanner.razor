@@ -42,6 +42,9 @@
             <MudTooltip Text='@L["StoriesOnlyTooltip"]'>
                 <MudSwitch T="bool" @bind-Value="_storiesOnly" Color="Color.Primary" Label="Stories Only" />
             </MudTooltip>
+            <MudTooltip Text='@L["ClarifyTooltip"]'>
+                <MudSwitch T="bool" @bind-Value="_clarify" Color="Color.Primary" Label='@L["ClarifyLabel"]' />
+            </MudTooltip>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
@@ -138,6 +141,7 @@
     private string[] _backlogs = [];
     private string _backlog = string.Empty;
     private bool _storiesOnly;
+    private bool _clarify;
     private WorkItemInfo? _feature;
     private Plan? _plan;
     private const string StateKey = "requirements-planner";
@@ -208,7 +212,7 @@
                     pages.Add((p.Name, text));
                 }
             }
-            _prompt = BuildPrompt(pages, _storiesOnly);
+            _prompt = BuildPrompt(pages, _storiesOnly, _clarify);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Backlog = _backlog,
@@ -249,6 +253,7 @@
         _responseText = string.Empty;
         _plan = null;
         _storiesOnly = false;
+        _clarify = false;
         _feature = null;
         if (_backlogs.Length > 0)
             _backlog = _backlogs[0];
@@ -346,7 +351,7 @@
         return item;
     }
 
-    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly)
+    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify)
     {
         var sb = new System.Text.StringBuilder();
         if (storiesOnly)
@@ -361,6 +366,8 @@
                 "Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}"
             );
         }
+        if (clarify)
+            sb.AppendLine("If any requirements are unclear or incomplete, ask for clarification before proceeding.");
         sb.AppendLine();
         sb.AppendLine("Document:");
         foreach (var page in pages)
