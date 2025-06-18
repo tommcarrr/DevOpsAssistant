@@ -52,7 +52,7 @@ The application communicates with Azure DevOps using a Personal Access Token (PA
    the **Work Items (Read & write)**, **Wiki (Read)** and **Code (Read)** scopes.
 4. Create the token and copy the value.
 
-Run the site and click the settings icon in the top right corner. Enter your organization, project and PAT token, then save. You can also specify a comma separated list of additional default states which will be pre-selected on the story screens. These values are stored in your browser's local storage.
+Run the site and click the settings icon in the top right corner. Enter your organization, project and PAT token, then save. You can also specify a comma separated list of additional default states which will be pre-selected on the story screens. Each AI feature has a field for a custom prompt, allowing you to tailor the generated instructions. These values are stored in your browser's local storage.
 When you're done, click the **Sign Out** button in the top bar to clear the saved settings.
 
 ## Faking the DevOps API for tests

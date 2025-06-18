@@ -212,7 +212,7 @@
                     pages.Add((p.Name, text));
                 }
             }
-            _prompt = BuildPrompt(pages, _storiesOnly, _clarify);
+            _prompt = BuildPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Backlog = _backlog,
@@ -351,23 +351,28 @@
         return item;
     }
 
-    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify)
+        private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify, DevOpsConfig config)
     {
         var sb = new System.Text.StringBuilder();
-        if (storiesOnly)
+        if (string.IsNullOrWhiteSpace(config.RequirementsPrompt))
         {
-            sb.AppendLine("You are a business analyst. Break down the following requirements into User Stories only.");
-            sb.AppendLine("Return JSON in this format:\n{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}");
+            if (storiesOnly)
+            {
+                sb.AppendLine("You are a business analyst. Break down the following requirements into User Stories only.");
+                sb.AppendLine("Return JSON in this format:\n{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}");
+            }
+            else
+            {
+                sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
+                sb.AppendLine("Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}");
+            }
+            if (clarify)
+                sb.AppendLine("If any requirements are unclear or incomplete, ask for clarification before proceeding.");
         }
         else
         {
-            sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
-            sb.AppendLine(
-                "Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}"
-            );
+            sb.AppendLine(config.RequirementsPrompt.Trim());
         }
-        if (clarify)
-            sb.AppendLine("If any requirements are unclear or incomplete, ask for clarification before proceeding.");
         sb.AppendLine();
         sb.AppendLine("Document:");
         foreach (var page in pages)

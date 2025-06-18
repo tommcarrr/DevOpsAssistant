@@ -1,4 +1,6 @@
 @inject DevOpsConfigService ConfigService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SettingsDialog> L
 
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
     <DialogContent>
@@ -17,6 +19,13 @@
             <MudTabPanel Text="Story Quality">
                 <MudStack Spacing="2">
                     <MudTextField @bind-Value="_model.DefinitionOfReady" Label="Definition of Ready" Lines="3"/>
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text='@L["PromptsTab"]'>
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.StoryQualityPrompt" Label='@L["StoryQualityPrompt"]' Lines="3"/>
+                    <MudTextField @bind-Value="_model.ReleaseNotesPrompt" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
+                    <MudTextField @bind-Value="_model.RequirementsPrompt" Label='@L["RequirementsPrompt"]' Lines="3"/>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text="Validation Rules">
@@ -73,6 +82,9 @@
             DarkMode = cfg.DarkMode,
             ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
             DefinitionOfReady = cfg.DefinitionOfReady,
+            StoryQualityPrompt = cfg.StoryQualityPrompt,
+            ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
+            RequirementsPrompt = cfg.RequirementsPrompt,
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = cfg.Rules.Epic.HasDescription },

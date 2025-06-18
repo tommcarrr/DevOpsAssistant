@@ -17,6 +17,9 @@ public class DevOpsConfigServiceTests
             DarkMode = true,
             ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
+            StoryQualityPrompt = "SQ",
+            ReleaseNotesPrompt = "RN",
+            RequirementsPrompt = "RP",
             DefaultStates = "Resolved",
             MainBranch = " main ",
             Rules = new ValidationRules
@@ -43,6 +46,9 @@ public class DevOpsConfigServiceTests
         Assert.False(stored.Rules.Bug.IncludeReproSteps);
         Assert.False(stored.Rules.Bug.IncludeSystemInfo);
         Assert.Equal("DOR", stored.DefinitionOfReady);
+        Assert.Equal("SQ", stored.StoryQualityPrompt);
+        Assert.Equal("RN", stored.ReleaseNotesPrompt);
+        Assert.Equal("RP", stored.RequirementsPrompt);
         Assert.Equal("Resolved", stored.DefaultStates);
         Assert.Equal("main", stored.MainBranch);
         Assert.True(stored.Rules.Epic.HasDescription);
@@ -60,6 +66,9 @@ public class DevOpsConfigServiceTests
             DarkMode = true,
             ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
+            StoryQualityPrompt = "SQ",
+            ReleaseNotesPrompt = "RN",
+            RequirementsPrompt = "RP",
             DefaultStates = "Active",
             Rules = new ValidationRules
             {
@@ -84,6 +93,9 @@ public class DevOpsConfigServiceTests
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
+        Assert.Equal("SQ", service.Config.StoryQualityPrompt);
+        Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
+        Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal("Active", service.Config.DefaultStates);
         Assert.True(service.Config.Rules.Epic.HasDescription);
     }
@@ -99,6 +111,9 @@ public class DevOpsConfigServiceTests
             PatToken = " Token ",
             MainBranch = " main ",
             DefinitionOfReady = " DOR ",
+            StoryQualityPrompt = " SQ ",
+            ReleaseNotesPrompt = " RN ",
+            RequirementsPrompt = " RP ",
             DefaultStates = " Active ",
             Rules = new ValidationRules()
         };
@@ -112,6 +127,9 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Token", service.Config.PatToken);
         Assert.Equal("main", service.Config.MainBranch);
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
+        Assert.Equal("SQ", service.Config.StoryQualityPrompt);
+        Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
+        Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal("Active", service.Config.DefaultStates);
     }
 
@@ -145,6 +163,9 @@ public class DevOpsConfigServiceTests
 
         Assert.Equal(string.Empty, service.Config.Organization);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
+        Assert.Equal(string.Empty, service.Config.StoryQualityPrompt);
+        Assert.Equal(string.Empty, service.Config.ReleaseNotesPrompt);
+        Assert.Equal(string.Empty, service.Config.RequirementsPrompt);
         Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);

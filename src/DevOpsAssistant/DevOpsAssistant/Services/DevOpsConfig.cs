@@ -10,5 +10,8 @@ public class DevOpsConfig
     public bool ReleaseNotesTreeView { get; set; }
     public string DefaultStates { get; set; } = string.Empty;
     public string DefinitionOfReady { get; set; } = string.Empty;
+    public string StoryQualityPrompt { get; set; } = string.Empty;
+    public string ReleaseNotesPrompt { get; set; } = string.Empty;
+    public string RequirementsPrompt { get; set; } = string.Empty;
     public ValidationRules Rules { get; set; } = new();
 }

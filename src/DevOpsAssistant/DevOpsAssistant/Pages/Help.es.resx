@@ -40,6 +40,6 @@
     <value>Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configure su organización, proyecto, token PAT y otras opciones utilizadas por el sitio.</value>
+    <value>Configure su organización, proyecto, token PAT y otras opciones utilizadas por el sitio. También puede personalizar los prompts para cada función de IA.</value>
   </data>
 </root>
