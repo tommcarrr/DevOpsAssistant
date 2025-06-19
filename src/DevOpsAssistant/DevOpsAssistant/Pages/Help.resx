@@ -28,7 +28,7 @@
     <value>Generate a detailed prompt to score stories against INVEST and provide coaching using your Definition of Ready. Long prompts are split into parts and you can switch between them using the arrows.</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
-    <value>Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.</value>
+    <value>Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items. Descriptions and acceptance criteria may use HTML. Toggle Preview HTML after importing to verify markup.</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Select stories and build a prompt that summarizes them for release notes. Prompts can be copied or downloaded, splitting into parts with arrows to navigate.</value>
