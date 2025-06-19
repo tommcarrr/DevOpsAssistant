@@ -1,16 +1,12 @@
+@using Microsoft.Extensions.Localization
 @inject IDialogService DialogService
+@inject IStringLocalizer<SplashScreen> L
 
 <MudPaper Class="pa-4" Style="max-width:500px;margin:auto;">
-    <MudText Typo="Typo.h4" Class="mb-2">Configuration Required</MudText>
-    <MudText>
-        To use DevOpsAssistant you need to configure your Azure DevOps organization,
-        project and a Personal Access Token. You can create a token in Azure DevOps
-        under <b>User settings &gt; Personal access tokens</b>. When creating the
-        token, enable the <b>Work Items (Read &amp; write)</b> and
-        <b>Wiki (Read)</b> scopes.
-    </MudText>
+    <MudText Typo="Typo.h4" Class="mb-2">@L["Heading"]</MudText>
+    <MudText>@L["Intro"]</MudText>
     <MudButton StartIcon="@Icons.Material.Filled.Settings" Color="Color.Primary" Class="mt-4" OnClick="OpenSettings">
-        Open Settings
+        @L["OpenSettings"]
     </MudButton>
 </MudPaper>
 

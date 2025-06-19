@@ -40,6 +40,6 @@
     <value>View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configure your organization, project, PAT token and other options used by the site. You can also customize prompts and validation rules.</value>
+    <value>Configure your organization, project and PAT token using the settings dialog. Use the project dropdown to add or switch projects. You can also customize prompts and validation rules.</value>
   </data>
 </root>

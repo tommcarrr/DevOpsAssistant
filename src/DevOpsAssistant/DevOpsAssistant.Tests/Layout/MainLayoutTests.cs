@@ -35,7 +35,7 @@ public class MainLayoutTests : ComponentTestBase
 
         var cut = RenderComponent<MainLayout>();
 
-        Assert.Contains("Configuration Required", cut.Markup);
+        Assert.Contains("Create Your First Project", cut.Markup);
         Assert.Contains("mud-nav-link-disabled", cut.Markup);
     }
 
@@ -47,7 +47,7 @@ public class MainLayoutTests : ComponentTestBase
 
         var cut = RenderComponent<MainLayout>();
 
-        Assert.DoesNotContain("Configuration Required", cut.Markup);
+        Assert.DoesNotContain("Create Your First Project", cut.Markup);
         Assert.DoesNotContain("mud-nav-link-disabled", cut.Markup);
     }
 
@@ -60,7 +60,7 @@ public class MainLayoutTests : ComponentTestBase
         var cut = RenderComponent<MainLayout>();
         cut.Find("button[title='Sign Out']").Click();
 
-        Assert.Contains("Configuration Required", cut.Markup);
+        Assert.Contains("Create Your First Project", cut.Markup);
     }
 
     [Fact]

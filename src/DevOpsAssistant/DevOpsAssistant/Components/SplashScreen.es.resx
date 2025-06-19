@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Heading" xml:space="preserve">
+    <value>Crea tu primer proyecto</value>
+  </data>
+  <data name="Intro" xml:space="preserve">
+    <value>Bienvenido a DevOpsAssistant. Abre la configuración para especificar tu organización, proyecto y token PAT. Puedes administrar varios proyectos y cambiar entre ellos en cualquier momento.</value>
+  </data>
+  <data name="OpenSettings" xml:space="preserve">
+    <value>Abrir Configuración</value>
+  </data>
+</root>
