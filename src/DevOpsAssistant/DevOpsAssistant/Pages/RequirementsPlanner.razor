@@ -85,8 +85,11 @@
                         <MudText Typo="Typo.subtitle2">Story</MudText>
                         @if (_previewHtml)
                         {
+                            <MudText Typo="Typo.subtitle2">Description</MudText>
                             <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
                             <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                            <MudText Typo="Typo.subtitle2">Tags</MudText>
                             <div class="mb-2">@string.Join(", ", story.Tags)</div>
                         }
                         else
@@ -121,8 +124,11 @@
                                         <MudText Typo="Typo.subtitle2">Story</MudText>
                                         @if (_previewHtml)
                                         {
+                                            <MudText Typo="Typo.subtitle2">Description</MudText>
                                             <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                                            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
                                             <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                                            <MudText Typo="Typo.subtitle2">Tags</MudText>
                                             <div class="mb-2">@string.Join(", ", story.Tags)</div>
                                         }
                                         else
@@ -450,7 +456,7 @@
             sb.AppendLine("- A clear, user-centric title and description");
             sb.AppendLine("- Acceptance criteria in Gherkin-style format");
             sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
-            sb.AppendLine("Descriptions and acceptance criteria can include HTML formatting where appropriate.");
+            sb.AppendLine("Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.");
 
             if (storiesOnly)
             {
