@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace DevOpsAssistant.Services;
 
 public static class PromptHelpers
@@ -6,17 +8,20 @@ public static class PromptHelpers
 
     public static IReadOnlyList<string> SplitPrompt(string text, int limit)
     {
-        if (string.IsNullOrWhiteSpace(text) || limit <= 0 || text.Length <= limit)
+        if (string.IsNullOrWhiteSpace(text))
             return new[] { text };
 
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');
+
+        if (limit <= 0 || AdjustedLength(text) <= limit)
+            return new[] { text.Replace("\n", NewLine) };
 
         var adjustedLimit = limit;
         var parts = SplitInternal(text, adjustedLimit);
         var prefixLength = PrefixLength(parts.Count);
         adjustedLimit = limit - prefixLength;
 
-        while (adjustedLimit > 0 && parts.Any(p => p.Length > adjustedLimit))
+        while (adjustedLimit > 0 && parts.Any(p => AdjustedLength(p) > adjustedLimit))
         {
             parts = SplitInternal(text, adjustedLimit);
             var newPrefix = PrefixLength(parts.Count);
@@ -55,8 +60,14 @@ public static class PromptHelpers
         return parts;
     }
 
-    private static int PrefixLength(int count)
+    private static int PrefixLength(int totalPages)
     {
-        return $"[PART {count}/{count}]".Length + 1; // +1 for newline
+        // Calculate using the longest possible prefix
+        return $"[PART {totalPages}/{totalPages}]".Length + NewLine.Length;
+    }
+
+    private static int AdjustedLength(string text)
+    {
+        return text.Length + text.Count(c => c == '\n');
     }
 }
