@@ -1,5 +1,6 @@
 @page "/requirements-planner"
 @using System.Text.Json
+@using System.Text.Json.Serialization
 @using MudBlazor
 @using DevOpsAssistant.Services
 @using Microsoft.AspNetCore.Components.Forms
@@ -69,6 +70,7 @@
     <MudStep Title="Create Work Items" Disabled="@(_plan == null)">
         @if (_plan != null)
         {
+            <MudSwitch T="bool" @bind-Value="_previewHtml" Color="Color.Primary" Label="Preview HTML" Class="mb-2" />
             if (_storiesOnly)
             {
                 <MudAutocomplete T="WorkItemInfo"
@@ -81,9 +83,19 @@
                 {
                     <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("User Story")}")">
                         <MudText Typo="Typo.subtitle2">Story</MudText>
-                        <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
-                        <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
-                        <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                        @if (_previewHtml)
+                        {
+                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                            <div class="mb-2">@string.Join(", ", story.Tags)</div>
+                        }
+                        else
+                        {
+                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
+                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
+                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-2" />
+                        }
                     </MudPaper>
                 }
             }
@@ -107,9 +119,19 @@
                                 {
                                     <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("User Story")}")">
                                         <MudText Typo="Typo.subtitle2">Story</MudText>
-                                        <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
-                                        <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
-                                        <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                                        @if (_previewHtml)
+                                        {
+                                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                                            <div class="mb-2">@string.Join(", ", story.Tags)</div>
+                                        }
+                                        else
+                                        {
+                                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
+                                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
+                                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
+                                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-2" />
+                                        }
                                     </MudPaper>
                                 }
                             </MudPaper>
@@ -153,6 +175,7 @@
     private string _backlog = string.Empty;
     private bool _storiesOnly;
     private bool _clarify;
+    private bool _previewHtml;
     private WorkItemInfo? _feature;
     private Plan? _plan;
     private const string StateKey = "requirements-planner";
@@ -292,6 +315,7 @@
         _plan = null;
         _storiesOnly = false;
         _clarify = false;
+        _previewHtml = false;
         _feature = null;
         if (_backlogs.Length > 0)
             _backlog = _backlogs[0];
@@ -306,6 +330,8 @@
             var json = ExtractJson(_responseText);
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _plan = JsonSerializer.Deserialize<Plan>(json, options);
+            if (_plan != null)
+                SetTagStrings(_plan);
             _error = null;
             _ = _stepper?.NextStepAsync();
         }
@@ -325,6 +351,20 @@
             : text;
     }
 
+    private static void SetTagStrings(Plan plan)
+    {
+        foreach (var story in plan.Stories)
+            story.TagString = string.Join(", ", story.Tags);
+        foreach (var epic in plan.Epics)
+        {
+            foreach (var feature in epic.Features)
+            {
+                foreach (var story in feature.Stories)
+                    story.TagString = string.Join(", ", story.Tags);
+            }
+        }
+    }
+
     private async Task CreateItems()
     {
         if (_plan == null) return;
@@ -337,6 +377,7 @@
                 var parentId = _feature?.Id;
                 foreach (var story in _plan.Stories)
                 {
+                    var tags = story.Tags.Concat(new[] { "AI Generated" }).ToArray();
                     story.Id = await ApiService.CreateWorkItemAsync(
                         "User Story",
                         story.Title,
@@ -344,7 +385,7 @@
                         _backlog,
                         parentId,
                         story.AcceptanceCriteria,
-                        new[] { "AI Generated" }
+                        tags
                     );
                 }
             }
@@ -357,15 +398,18 @@
                     {
                         feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, new[] { "AI Generated" });
                         foreach (var story in feature.Stories)
-                            story.Id = await ApiService.CreateWorkItemAsync(
-                                "User Story",
-                                story.Title,
-                                story.Description,
-                                _backlog,
-                                feature.Id,
-                                story.AcceptanceCriteria,
-                                new[] { "AI Generated" }
-                            );
+                            {
+                                var tags2 = story.Tags.Concat(new[] { "AI Generated" }).ToArray();
+                                story.Id = await ApiService.CreateWorkItemAsync(
+                                    "User Story",
+                                    story.Title,
+                                    story.Description,
+                                    _backlog,
+                                    feature.Id,
+                                    story.AcceptanceCriteria,
+                                    tags2
+                                );
+                            }
                     }
                 }
             }
@@ -396,13 +440,25 @@
         {
             if (storiesOnly)
             {
-                sb.AppendLine("You are a business analyst. Break down the following requirements into User Stories only.");
-                sb.AppendLine("Return JSON in this format:\n{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}");
+                sb.AppendLine("You are a senior business analyst. Break down the following product requirement into User Stories.");
             }
             else
             {
-                sb.AppendLine("You are a business analyst. Break down the following requirements into Epics, Features and User Stories.");
-                sb.AppendLine("Return JSON in this format:\n{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\"}]}]}]}");
+                sb.AppendLine("You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.");
+            }
+            sb.AppendLine("Each story must include:");
+            sb.AppendLine("- A clear, user-centric title and description");
+            sb.AppendLine("- Acceptance criteria in Gherkin-style format");
+            sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
+            sb.AppendLine("Descriptions and acceptance criteria can include HTML formatting where appropriate.");
+            sb.AppendLine("Return strict JSON using this format:");
+            if (storiesOnly)
+            {
+                sb.AppendLine("{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}");
+            }
+            else
+            {
+                sb.AppendLine("{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}]}]}");
             }
             if (clarify)
                 sb.AppendLine("If any requirements are unclear or incomplete, ask for clarification before proceeding.");
@@ -467,6 +523,16 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string AcceptanceCriteria { get; set; } = string.Empty;
+        public List<string> Tags { get; set; } = new();
+
+        [JsonIgnore]
+        public string TagString
+        {
+            get => string.Join(", ", Tags);
+            set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(t => t.Trim())
+                                .ToList();
+        }
     }
 
     private class PageState
