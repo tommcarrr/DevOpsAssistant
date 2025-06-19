@@ -1,4 +1,5 @@
 @inject DevOpsConfigService ConfigService
+@inject IJSRuntime JS
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
 @using DevOpsAssistant.Services
@@ -6,29 +7,36 @@
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
     <DialogContent>
         <MudStack Spacing="2">
-            <MudSelect T="string" Value="_projectName" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true">
+            <MudSelect T="string" Value="_selected" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true">
                 @foreach (var p in ConfigService.Projects)
                 {
                     <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
                 }
+                <MudSelectItem Value="@NewProjectValue">@L["NewProject"]</MudSelectItem>
             </MudSelect>
-            <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
-            <MudExpansionPanels>
-                <MudExpansionPanel Text='@L["NewProject"]'>
-                    <MudTextField @bind-Value="_newProjectName" Label='@L["ProjectName"]' />
-                    @if (ConfigService.Projects.Count > 0)
-                    {
-                        <MudSelect T="string" Label='@L["ImportFrom"]' @bind-Value="_importFrom">
-                            <MudSelectItem Value="@string.Empty">None</MudSelectItem>
-                            @foreach (var p in ConfigService.Projects)
-                            {
-                                <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
-                            }
-                        </MudSelect>
-                    }
-                    <MudButton OnClick="CreateProject" Color="Color.Primary" Class="mt-2">@L["NewProject"]</MudButton>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
+            @if (_creating)
+            {
+                <MudTextField @bind-Value="_newProjectName" Label='@L["ProjectName"]' />
+                @if (ConfigService.Projects.Count > 0)
+                {
+                    <MudSelect T="string" Label='@L["ImportFrom"]' @bind-Value="_importFrom">
+                        <MudSelectItem Value="@string.Empty">None</MudSelectItem>
+                        @foreach (var p in ConfigService.Projects)
+                        {
+                            <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                <MudStack Row="true" Spacing="1" Class="mt-2">
+                    <MudButton OnClick="CreateProject" Color="Color.Primary" Disabled="_newProjectName.Trim().Length < 2">@L["NewProject"]</MudButton>
+                    <MudButton OnClick="CancelNewProject" Color="Color.Secondary">Cancel</MudButton>
+                </MudStack>
+            }
+            else
+            {
+                <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
+                <MudButton OnClick="DeleteProject" Color="Color.Error" Disabled="ConfigService.Projects.Count == 1" Class="mt-2">@L["DeleteProject"]</MudButton>
+            }
         </MudStack>
         <MudTabs Class="mt-4">
             <MudTabPanel Text="General">
@@ -94,14 +102,18 @@
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
+    private const string NewProjectValue = "__new";
     private DevOpsConfig _model = new();
-    private string _projectName = "";
-    private string _newProjectName = "";
-    private string _importFrom = "";
+    private string _selected = string.Empty;
+    private string _projectName = string.Empty;
+    private string _newProjectName = string.Empty;
+    private string _importFrom = string.Empty;
+    private bool _creating;
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        _selected = ConfigService.CurrentProject.Name;
         _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
@@ -158,6 +170,16 @@
 
     private void OnProjectChanged(string name)
     {
+        _selected = name;
+        if (name == NewProjectValue)
+        {
+            _creating = true;
+            _newProjectName = string.Empty;
+            _importFrom = string.Empty;
+            return;
+        }
+
+        _creating = false;
         ConfigService.SelectProject(name);
         _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
@@ -186,6 +208,42 @@
         await ConfigService.AddProjectAsync(_newProjectName, copy);
         _newProjectName = string.Empty;
         _importFrom = string.Empty;
+        _creating = false;
+        _selected = ConfigService.CurrentProject.Name;
+        _projectName = ConfigService.CurrentProject.Name;
+        var cfg = ConfigService.Config;
+        _model = new DevOpsConfig
+        {
+            Organization = cfg.Organization,
+            Project = cfg.Project,
+            PatToken = cfg.PatToken,
+            MainBranch = cfg.MainBranch,
+            DefaultStates = cfg.DefaultStates,
+            DarkMode = cfg.DarkMode,
+            ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
+            DefinitionOfReady = cfg.DefinitionOfReady,
+            StoryQualityPrompt = cfg.StoryQualityPrompt,
+            ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
+            RequirementsPrompt = cfg.RequirementsPrompt,
+            PromptCharacterLimit = cfg.PromptCharacterLimit,
+            Rules = cfg.Rules
+        };
+    }
+
+    private void CancelNewProject()
+    {
+        _creating = false;
+        _selected = ConfigService.CurrentProject.Name;
+        _newProjectName = string.Empty;
+        _importFrom = string.Empty;
+    }
+
+    private async Task DeleteProject()
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"{L["ConfirmDelete"]} {_projectName}?");
+        if (!ok) return;
+        await ConfigService.RemoveProjectAsync(_projectName);
+        _selected = ConfigService.CurrentProject.Name;
         _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
