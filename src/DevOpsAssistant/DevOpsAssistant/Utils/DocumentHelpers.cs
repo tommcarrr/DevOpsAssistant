@@ -16,6 +16,7 @@ public static class DocumentHelpers
             ".pdf" => ExtractPdf(stream),
             ".docx" => ExtractDocx(stream),
             ".pptx" => ExtractPptx(stream),
+            ".md" => ExtractMarkdown(stream),
             _ => string.Empty
         };
     }
@@ -45,5 +46,11 @@ public static class DocumentHelpers
         return string.Join("\n", doc.PresentationPart!.SlideParts.SelectMany(
             s => s.Slide.Descendants<DocumentFormat.OpenXml.Drawing.Text>())
             .Select(t => t.Text));
+    }
+
+    private static string ExtractMarkdown(Stream stream)
+    {
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 }
