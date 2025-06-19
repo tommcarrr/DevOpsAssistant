@@ -6,7 +6,7 @@
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
     <DialogContent>
         <MudStack Spacing="2">
-            <MudSelect T="string" Value="_projectName" ValueChanged="OnProjectChanged" ValueExpression="@(() => _projectName)" Label='@L["Project"]' Immediate="true">
+            <MudSelect T="string" Value="_projectName" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true">
                 @foreach (var p in ConfigService.Projects)
                 {
                     <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
@@ -14,7 +14,7 @@
             </MudSelect>
             <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
             <MudExpansionPanels>
-                <MudExpansionPanel Text='@L["NewProject"]' ExpandIcon="@Icons.Material.Filled.Add">
+                <MudExpansionPanel Text='@L["NewProject"]'>
                     <MudTextField @bind-Value="_newProjectName" Label='@L["ProjectName"]' />
                     @if (ConfigService.Projects.Count > 0)
                     {
