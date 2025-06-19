@@ -54,6 +54,7 @@
                     <MudText Typo="Typo.h6" Class="mt-2">Bug</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeReproSteps" Color="Color.Primary" Label="Include Repro Steps"/>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeSystemInfo" Color="Color.Primary" Label="Include System Info"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.HasStoryPoints" Color="Color.Primary" Label='@L["BugHasStoryPoints"]'/>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
@@ -106,7 +107,8 @@
                 Bug = new BugRules
                 {
                     IncludeReproSteps = cfg.Rules.Bug.IncludeReproSteps,
-                    IncludeSystemInfo = cfg.Rules.Bug.IncludeSystemInfo
+                    IncludeSystemInfo = cfg.Rules.Bug.IncludeSystemInfo,
+                    HasStoryPoints = cfg.Rules.Bug.HasStoryPoints
                 }
             }
         };

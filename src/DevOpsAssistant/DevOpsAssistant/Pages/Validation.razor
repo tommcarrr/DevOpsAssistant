@@ -5,6 +5,8 @@
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
 @inject PageStateService StateService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Validation> L
 
 <PageTitle>DevOpsAssistant - Story Validation</PageTitle>
 
@@ -223,6 +225,7 @@ else if (_results != null)
             {
                 if (rules.Bug.IncludeReproSteps && !item.HasReproSteps) v.Add("Missing repro steps");
                 if (rules.Bug.IncludeSystemInfo && !item.HasSystemInfo) v.Add("Missing system info");
+                if (rules.Bug.HasStoryPoints && !item.HasStoryPoints) v.Add("Missing story points");
             }
 
             if (v.Count > 0)
@@ -263,6 +266,7 @@ else if (_results != null)
         if (r.Story.HasAssignee) list.Add("Stories must have an assignee");
         if (r.Bug.IncludeReproSteps) list.Add("Bugs must have repro steps");
         if (r.Bug.IncludeSystemInfo) list.Add("Bugs must have system info");
+        if (r.Bug.HasStoryPoints) list.Add(L["BugStoryPointsRule"]);
         _activeRules = list.ToArray();
         _hasRules = _activeRules.Length > 0;
     }
