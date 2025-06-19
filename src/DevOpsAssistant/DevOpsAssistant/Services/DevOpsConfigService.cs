@@ -70,6 +70,18 @@ public class DevOpsConfigService
         await SaveProjectsAsync();
     }
 
+    public async Task RemoveProjectAsync(string name)
+    {
+        var proj = Projects.FirstOrDefault(p => p.Name == name);
+        if (proj == null) return;
+        Projects.Remove(proj);
+        if (Projects.Count == 0)
+            Projects.Add(new DevOpsProject { Name = "default" });
+        if (CurrentProject.Name == name)
+            CurrentProject = Projects[0];
+        await SaveProjectsAsync();
+    }
+
     public void SelectProject(string name)
     {
         var proj = Projects.FirstOrDefault(p => p.Name == name);

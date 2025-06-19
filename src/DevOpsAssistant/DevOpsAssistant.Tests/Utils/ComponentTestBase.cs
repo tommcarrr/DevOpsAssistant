@@ -19,9 +19,10 @@ public abstract class ComponentTestBase : TestContext
         Services.AddMudServices();
         Services.AddLocalization();
         JSInterop.Mode = JSRuntimeMode.Loose;
-        var config = new DevOpsConfigService(new FakeLocalStorageService());
+        var storage = new FakeLocalStorageService();
+        var config = new DevOpsConfigService(storage);
         Services.AddSingleton(config);
-        Services.AddSingleton(new PageStateService(new FakeLocalStorageService()));
+        Services.AddSingleton(new PageStateService(storage, config));
         if (includeApi)
         {
             var deployment = new DeploymentConfigService(new HttpClient());

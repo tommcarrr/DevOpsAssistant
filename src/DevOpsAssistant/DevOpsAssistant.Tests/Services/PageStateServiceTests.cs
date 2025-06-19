@@ -8,11 +8,15 @@ public class PageStateServiceTests
     public async Task Save_And_Load_State()
     {
         var storage = new FakeLocalStorageService();
-        var service = new PageStateService(storage);
+        var config = new DevOpsConfigService(storage);
+        var service = new PageStateService(storage, config);
         await service.SaveAsync("key", new TestState { Value = 1 });
         var loaded = await service.LoadAsync<TestState>("key");
         Assert.NotNull(loaded);
         Assert.Equal(1, loaded!.Value);
+
+        var stored = await storage.GetItemAsync<TestState>("default-key");
+        Assert.NotNull(stored);
     }
 
     private class TestState

@@ -42,4 +42,10 @@
   <data name="ImportFrom" xml:space="preserve">
     <value>Import From</value>
   </data>
+  <data name="DeleteProject" xml:space="preserve">
+    <value>Delete Project</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Delete project</value>
+  </data>
 </root>
