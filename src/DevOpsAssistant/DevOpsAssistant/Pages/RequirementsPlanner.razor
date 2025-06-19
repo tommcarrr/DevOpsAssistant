@@ -451,17 +451,35 @@
             sb.AppendLine("- Acceptance criteria in Gherkin-style format");
             sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
             sb.AppendLine("Descriptions and acceptance criteria can include HTML formatting where appropriate.");
-            sb.AppendLine("Return strict JSON using this format:");
+
             if (storiesOnly)
             {
+                sb.AppendLine();
+                sb.AppendLine("Stories Only:");
+                sb.AppendLine("Do not generate epics or features. Only return an array of user stories in this format:");
                 sb.AppendLine("{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}");
             }
             else
             {
+                sb.AppendLine();
+                sb.AppendLine("Return strict JSON using this format:");
                 sb.AppendLine("{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}]}]}");
             }
+
             if (clarify)
-                sb.AppendLine("If any requirements are unclear or incomplete, ask for clarification before proceeding.");
+            {
+                sb.AppendLine();
+                sb.AppendLine("Clarify Requirements:");
+                sb.AppendLine("Before writing the output, review the requirement and ask for clarification if:");
+                sb.AppendLine("- Expected user behaviors or flows are ambiguous");
+                sb.AppendLine("- Access restrictions or permissions are not clearly defined");
+                sb.AppendLine("- Search or filtering functionality is mentioned without scope (e.g., partial matches, filtering fields)");
+                sb.AppendLine("- External system dependencies are implied but not detailed (e.g., email sending, file uploads, audit logging)");
+                sb.AppendLine("- Non-functional requirements are vague (e.g., \"must be fast\")");
+                sb.AppendLine("- It's unclear if optional elements (e.g., \"nice to have\" features) are in scope");
+                sb.AppendLine();
+                sb.AppendLine("If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.");
+            }
         }
         else
         {
