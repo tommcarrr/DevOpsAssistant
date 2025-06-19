@@ -37,23 +37,26 @@ public class DevOpsConfigServiceTests
         await service.SaveAsync(config);
 
         Assert.Equal("Org", service.Config.Organization);
-        var stored = await storage.GetItemAsync<DevOpsConfig>("devops-config");
+        var stored = await storage.GetItemAsync<List<DevOpsProject>>("devops-projects");
         Assert.NotNull(stored);
-        Assert.Equal("Org", stored.Organization);
-        Assert.Equal("Proj", stored.Project);
-        Assert.Equal("Token", stored.PatToken);
-        Assert.True(stored.DarkMode);
-        Assert.True(stored.ReleaseNotesTreeView);
-        Assert.False(stored.Rules.Bug.IncludeReproSteps);
-        Assert.False(stored.Rules.Bug.IncludeSystemInfo);
-        Assert.False(stored.Rules.Bug.HasStoryPoints);
-        Assert.Equal("DOR", stored.DefinitionOfReady);
-        Assert.Equal("SQ", stored.StoryQualityPrompt);
-        Assert.Equal("RN", stored.ReleaseNotesPrompt);
-        Assert.Equal("RP", stored.RequirementsPrompt);
-        Assert.Equal("Resolved", stored.DefaultStates);
-        Assert.Equal("main", stored.MainBranch);
-        Assert.True(stored.Rules.Epic.HasDescription);
+        var p = Assert.Single(stored!);
+        Assert.Equal("default", p.Name);
+        var storedCfg = p.Config;
+        Assert.Equal("Org", storedCfg.Organization);
+        Assert.Equal("Proj", storedCfg.Project);
+        Assert.Equal("Token", storedCfg.PatToken);
+        Assert.True(storedCfg.DarkMode);
+        Assert.True(storedCfg.ReleaseNotesTreeView);
+        Assert.False(storedCfg.Rules.Bug.IncludeReproSteps);
+        Assert.False(storedCfg.Rules.Bug.IncludeSystemInfo);
+        Assert.False(storedCfg.Rules.Bug.HasStoryPoints);
+        Assert.Equal("DOR", storedCfg.DefinitionOfReady);
+        Assert.Equal("SQ", storedCfg.StoryQualityPrompt);
+        Assert.Equal("RN", storedCfg.ReleaseNotesPrompt);
+        Assert.Equal("RP", storedCfg.RequirementsPrompt);
+        Assert.Equal("Resolved", storedCfg.DefaultStates);
+        Assert.Equal("main", storedCfg.MainBranch);
+        Assert.True(storedCfg.Rules.Epic.HasDescription);
     }
 
     [Fact]
@@ -83,7 +86,8 @@ public class DevOpsConfigServiceTests
                 }
             }
         };
-        await storage.SetItemAsync("devops-config", stored);
+        var project = new DevOpsProject { Name = "proj", Config = stored };
+        await storage.SetItemAsync("devops-projects", new List<DevOpsProject> { project });
         var service = new DevOpsConfigService(storage);
 
         await service.LoadAsync();
@@ -103,6 +107,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal("Active", service.Config.DefaultStates);
         Assert.True(service.Config.Rules.Epic.HasDescription);
+        Assert.Equal("proj", service.CurrentProject.Name);
     }
 
     [Fact]
@@ -136,6 +141,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal("Active", service.Config.DefaultStates);
+        Assert.Equal("default", service.CurrentProject.Name);
     }
 
     [Fact]
@@ -176,6 +182,6 @@ public class DevOpsConfigServiceTests
         Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.True(service.Config.Rules.Bug.HasStoryPoints);
-        Assert.False(await storage.ContainKeyAsync("devops-config"));
+        Assert.False(await storage.ContainKeyAsync("devops-projects"));
     }
 }
