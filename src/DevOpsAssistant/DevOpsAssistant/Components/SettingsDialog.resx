@@ -30,4 +30,16 @@
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Has story points</value>
   </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Project Name</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>New Project</value>
+  </data>
+  <data name="ImportFrom" xml:space="preserve">
+    <value>Import From</value>
+  </data>
 </root>

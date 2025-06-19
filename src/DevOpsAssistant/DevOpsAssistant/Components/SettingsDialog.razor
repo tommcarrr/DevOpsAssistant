@@ -1,10 +1,36 @@
 @inject DevOpsConfigService ConfigService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
+@using DevOpsAssistant.Services
 
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
     <DialogContent>
-        <MudTabs>
+        <MudStack Spacing="2">
+            <MudSelect T="string" Value="_projectName" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true">
+                @foreach (var p in ConfigService.Projects)
+                {
+                    <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
+            <MudExpansionPanels>
+                <MudExpansionPanel Text='@L["NewProject"]'>
+                    <MudTextField @bind-Value="_newProjectName" Label='@L["ProjectName"]' />
+                    @if (ConfigService.Projects.Count > 0)
+                    {
+                        <MudSelect T="string" Label='@L["ImportFrom"]' @bind-Value="_importFrom">
+                            <MudSelectItem Value="@string.Empty">None</MudSelectItem>
+                            @foreach (var p in ConfigService.Projects)
+                            {
+                                <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    <MudButton OnClick="CreateProject" Color="Color.Primary" Class="mt-2">@L["NewProject"]</MudButton>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudStack>
+        <MudTabs Class="mt-4">
             <MudTabPanel Text="General">
                 <MudStack Spacing="2">
                     <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
@@ -69,10 +95,14 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     private DevOpsConfig _model = new();
+    private string _projectName = "";
+    private string _newProjectName = "";
+    private string _importFrom = "";
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
@@ -117,13 +147,63 @@
 
     private async Task Save()
     {
-        await ConfigService.SaveAsync(_model);
+        await ConfigService.SaveCurrentAsync(_projectName, _model);
         MudDialog.Close(DialogResult.Ok(true));
     }
 
     private void Cancel()
     {
         MudDialog.Cancel();
+    }
+
+    private void OnProjectChanged(string name)
+    {
+        ConfigService.SelectProject(name);
+        _projectName = ConfigService.CurrentProject.Name;
+        var cfg = ConfigService.Config;
+        _model = new DevOpsConfig
+        {
+            Organization = cfg.Organization,
+            Project = cfg.Project,
+            PatToken = cfg.PatToken,
+            MainBranch = cfg.MainBranch,
+            DefaultStates = cfg.DefaultStates,
+            DarkMode = cfg.DarkMode,
+            ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
+            DefinitionOfReady = cfg.DefinitionOfReady,
+            StoryQualityPrompt = cfg.StoryQualityPrompt,
+            ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
+            RequirementsPrompt = cfg.RequirementsPrompt,
+            PromptCharacterLimit = cfg.PromptCharacterLimit,
+            Rules = cfg.Rules
+        };
+        StateHasChanged();
+    }
+
+    private async Task CreateProject()
+    {
+        DevOpsProject? copy = ConfigService.Projects.FirstOrDefault(p => p.Name == _importFrom);
+        await ConfigService.AddProjectAsync(_newProjectName, copy);
+        _newProjectName = string.Empty;
+        _importFrom = string.Empty;
+        _projectName = ConfigService.CurrentProject.Name;
+        var cfg = ConfigService.Config;
+        _model = new DevOpsConfig
+        {
+            Organization = cfg.Organization,
+            Project = cfg.Project,
+            PatToken = cfg.PatToken,
+            MainBranch = cfg.MainBranch,
+            DefaultStates = cfg.DefaultStates,
+            DarkMode = cfg.DarkMode,
+            ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
+            DefinitionOfReady = cfg.DefinitionOfReady,
+            StoryQualityPrompt = cfg.StoryQualityPrompt,
+            ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
+            RequirementsPrompt = cfg.RequirementsPrompt,
+            PromptCharacterLimit = cfg.PromptCharacterLimit,
+            Rules = cfg.Rules
+        };
     }
 
 }
