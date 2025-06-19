@@ -28,7 +28,8 @@ public class DevOpsConfigServiceTests
                 Bug = new BugRules
                 {
                     IncludeReproSteps = false,
-                    IncludeSystemInfo = false
+                    IncludeSystemInfo = false,
+                    HasStoryPoints = false
                 }
             }
         };
@@ -45,6 +46,7 @@ public class DevOpsConfigServiceTests
         Assert.True(stored.ReleaseNotesTreeView);
         Assert.False(stored.Rules.Bug.IncludeReproSteps);
         Assert.False(stored.Rules.Bug.IncludeSystemInfo);
+        Assert.False(stored.Rules.Bug.HasStoryPoints);
         Assert.Equal("DOR", stored.DefinitionOfReady);
         Assert.Equal("SQ", stored.StoryQualityPrompt);
         Assert.Equal("RN", stored.ReleaseNotesPrompt);
@@ -76,7 +78,8 @@ public class DevOpsConfigServiceTests
                 Bug = new BugRules
                 {
                     IncludeReproSteps = false,
-                    IncludeSystemInfo = false
+                    IncludeSystemInfo = false,
+                    HasStoryPoints = false
                 }
             }
         };
@@ -92,6 +95,8 @@ public class DevOpsConfigServiceTests
         Assert.True(service.Config.ReleaseNotesTreeView);
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
+        Assert.False(service.Config.Rules.Bug.HasStoryPoints);
+        Assert.False(service.Config.Rules.Bug.HasStoryPoints);
         Assert.Equal("DOR", service.Config.DefinitionOfReady);
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
@@ -148,6 +153,7 @@ public class DevOpsConfigServiceTests
         Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
+        Assert.True(service.Config.Rules.Bug.HasStoryPoints);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.NotNull(service.Config.Rules);
     }
@@ -169,6 +175,7 @@ public class DevOpsConfigServiceTests
         Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
+        Assert.True(service.Config.Rules.Bug.HasStoryPoints);
         Assert.False(await storage.ContainKeyAsync("devops-config"));
     }
 }

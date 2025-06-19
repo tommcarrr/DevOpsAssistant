@@ -23,7 +23,8 @@ public class SettingsDialogTests : ComponentTestBase
                 Bug = new BugRules
                 {
                     IncludeReproSteps = false,
-                    IncludeSystemInfo = false
+                    IncludeSystemInfo = false,
+                    HasStoryPoints = false
                 }
             }
         });
@@ -38,5 +39,6 @@ public class SettingsDialogTests : ComponentTestBase
         Assert.True(model.ReleaseNotesTreeView);
         Assert.False(model.Rules.Bug.IncludeReproSteps);
         Assert.False(model.Rules.Bug.IncludeSystemInfo);
+        Assert.False(model.Rules.Bug.HasStoryPoints);
     }
 }
