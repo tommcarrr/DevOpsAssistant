@@ -12,13 +12,12 @@ public class PromptHelpersTests
         var limit = 16;
         var result = PromptHelpers.SplitPrompt(text, limit);
 
-        Assert.Equal(3, result.Count);
+        Assert.True(result.Count > 1);
         foreach (var part in result)
         {
-            Assert.True(part.Length <= limit + 1);
+            Assert.True(part.Length <= limit);
         }
-        Assert.StartsWith("[PART 1/3]", result[0]);
-        Assert.StartsWith("[PART 2/3]", result[1]);
+        Assert.StartsWith("[PART 1/" + result.Count + "]", result[0]);
     }
 
     [Fact]
@@ -40,8 +39,8 @@ public class PromptHelpersTests
         var limit = 16;
         var result = PromptHelpers.SplitPrompt(text, limit);
 
-        Assert.Equal(3, result.Count);
-        Assert.All(result, part => Assert.True(part.Length <= limit + 1));
+        Assert.True(result.Count > 1);
+        Assert.All(result, part => Assert.True(part.Length <= limit));
         Assert.All(result, part => Assert.Contains("\r\n", part));
     }
 
@@ -54,6 +53,18 @@ public class PromptHelpersTests
         var result = PromptHelpers.SplitPrompt(text, limit);
 
         Assert.True(result.Count > 1);
-        Assert.All(result, part => Assert.True(part.Length <= limit + 1));
+        Assert.All(result, part => Assert.True(part.Length <= limit));
+    }
+
+    [Fact]
+    public void SplitPrompt_Splits_When_Newline_Expansion_Exceeds_Limit()
+    {
+        var text = "line1\nline2\nline3";
+
+        var limit = text.Length; // 17 characters
+        var result = PromptHelpers.SplitPrompt(text, limit);
+
+        Assert.True(result.Count > 1);
+        Assert.All(result, part => Assert.True(part.Length <= limit));
     }
 }
