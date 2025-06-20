@@ -106,10 +106,12 @@
         if (name == ConfigService.CurrentProject.Name)
             return;
 
+        _selectedProject = name;
         var ok = await JS.InvokeAsync<bool>("confirm", L["ChangeProjectWarning"]);
         if (!ok)
         {
             _selectedProject = ConfigService.CurrentProject.Name;
+            StateHasChanged();
             return;
         }
 
