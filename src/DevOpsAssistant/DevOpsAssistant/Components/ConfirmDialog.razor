@@ -1,0 +1,21 @@
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IStringLocalizer<ConfirmDialog> L
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@Message</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Confirm" Color="Color.Primary">@L["Ok"]</MudButton>
+        <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string Message { get; set; } = string.Empty;
+
+    private void Confirm() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

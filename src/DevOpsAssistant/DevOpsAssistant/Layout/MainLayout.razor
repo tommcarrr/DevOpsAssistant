@@ -107,8 +107,10 @@
             return;
 
         _selectedProject = name;
-        var ok = await JS.InvokeAsync<bool>("confirm", L["ChangeProjectWarning"]);
-        if (!ok)
+        var parameters = new DialogParameters { ["Message"] = L["ChangeProjectWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result.Canceled)
         {
             _selectedProject = ConfigService.CurrentProject.Name;
             StateHasChanged();

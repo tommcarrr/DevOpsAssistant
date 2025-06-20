@@ -57,4 +57,7 @@
   <data name="ChangeProjectWarning" xml:space="preserve">
     <value>Cambiar de proyecto descartará el estado actual. ¿Continuar?</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
 </root>

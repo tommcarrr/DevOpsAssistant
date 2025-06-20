@@ -48,4 +48,7 @@
   <data name="ConfirmDelete" xml:space="preserve">
     <value>Delete project</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
 </root>
