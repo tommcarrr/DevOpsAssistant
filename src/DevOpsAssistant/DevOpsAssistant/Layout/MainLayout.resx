@@ -51,4 +51,10 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ChangeProjectWarning" xml:space="preserve">
+    <value>Changing the project will clear the current page state. Continue?</value>
+  </data>
 </root>
