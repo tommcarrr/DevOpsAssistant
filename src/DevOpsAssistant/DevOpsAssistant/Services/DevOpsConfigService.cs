@@ -58,6 +58,15 @@ public class DevOpsConfigService
         await SaveProjectsAsync();
     }
 
+    public async Task UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
+    {
+        var proj = Projects.FirstOrDefault(p => p.Name == existingName);
+        if (proj == null) return;
+        proj.Name = newName.Trim();
+        proj.Config = Normalize(config);
+        await SaveProjectsAsync();
+    }
+
     public async Task AddProjectAsync(string name, DevOpsProject? source = null)
     {
         var project = new DevOpsProject

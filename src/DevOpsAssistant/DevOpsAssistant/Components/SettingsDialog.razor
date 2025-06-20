@@ -2,6 +2,7 @@
 @inject IJSRuntime JS
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
+@using System.Linq
 @using DevOpsAssistant.Services
 
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
@@ -159,8 +160,15 @@
 
     private async Task Save()
     {
-        await ConfigService.SaveCurrentAsync(_projectName, _model);
-        MudDialog.Close(DialogResult.Ok(true));
+        if (_selected == ConfigService.CurrentProject.Name)
+        {
+            await ConfigService.SaveCurrentAsync(_projectName, _model);
+        }
+        else
+        {
+            await ConfigService.UpdateProjectAsync(_selected, _projectName, _model);
+        }
+        MudDialog?.Close(DialogResult.Ok(true));
     }
 
     private void Cancel()
@@ -168,7 +176,7 @@
         MudDialog.Cancel();
     }
 
-    private async Task OnProjectChanged(string name)
+    private void OnProjectChanged(string name)
     {
         _selected = name;
         if (name == NewProjectValue)
@@ -180,9 +188,9 @@
         }
 
         _creating = false;
-        await ConfigService.SelectProjectAsync(name);
-        _projectName = ConfigService.CurrentProject.Name;
-        var cfg = ConfigService.Config;
+        var proj = ConfigService.Projects.First(p => p.Name == name);
+        _projectName = proj.Name;
+        var cfg = proj.Config;
         _model = new DevOpsConfig
         {
             Organization = cfg.Organization,

@@ -1,4 +1,5 @@
 using DevOpsAssistant.Services;
+using System.Linq;
 
 namespace DevOpsAssistant.Tests;
 
@@ -197,5 +198,22 @@ public class DevOpsConfigServiceTests
 
         Assert.DoesNotContain(service.Projects, p => p.Name == "proj2");
         Assert.Equal("default", service.CurrentProject.Name);
+    }
+
+    [Fact]
+    public async Task UpdateProjectAsync_Updates_Project_Without_Changing_Current()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("one");
+        await service.AddProjectAsync("two");
+        await service.SelectProjectAsync("one");
+
+        var cfg = new DevOpsConfig { Organization = "Org" };
+        await service.UpdateProjectAsync("two", "two", cfg);
+
+        Assert.Equal("one", service.CurrentProject.Name);
+        var other = service.Projects.First(p => p.Name == "two");
+        Assert.Equal("Org", other.Config.Organization);
     }
 }
