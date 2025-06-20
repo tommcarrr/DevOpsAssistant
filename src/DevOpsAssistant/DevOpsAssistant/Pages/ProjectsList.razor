@@ -1,0 +1,31 @@
+@page "/projects"
+@using DevOpsAssistant.Services
+@inject DevOpsConfigService ConfigService
+@inject NavigationManager NavigationManager
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Home> L
+
+<PageTitle>DevOpsAssistant - Projects</PageTitle>
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5" Class="mb-2">@L["Project"]</MudText>
+    <MudList T="string">
+        @foreach (var p in ConfigService.Projects)
+        {
+            <MudListItem T="string" Style="cursor:pointer" OnClick="() => OpenProject(p.Name)">@p.Name</MudListItem>
+        }
+    </MudList>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/projects/new" Class="mt-2">@L["NewProject"]</MudButton>
+</MudPaper>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+    }
+
+    private void OpenProject(string name)
+    {
+        NavigationManager.NavigateTo($"/projects/{name}");
+    }
+}

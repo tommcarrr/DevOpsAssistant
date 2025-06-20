@@ -1,0 +1,44 @@
+@page "/projects/{ProjectName}/settings"
+@inject DevOpsConfigService ConfigService
+@using DevOpsAssistant.Services.Models
+@using DevOpsAssistant.Components
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SettingsDialog> L
+
+<PageTitle>DevOpsAssistant - Settings</PageTitle>
+
+<MudPaper Class="p-4">
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h5">@L["ProjectSettings"] @ProjectName</MudText>
+        <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
+        <MudTabs Class="mt-4">
+            <MudTabPanel Text="General">
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
+                    <MudTextField @bind-Value="_model.Project" Label="Project"/>
+                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password"/>
+                </MudStack>
+            </MudTabPanel>
+        </MudTabs>
+        <MudButton OnClick="Save" Color="Color.Primary" Class="mt-2">Save</MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
+    private string _projectName = string.Empty;
+    private DevOpsConfig _model = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ConfigService.LoadAsync();
+        await ConfigService.SelectProjectAsync(ProjectName);
+        _projectName = ConfigService.CurrentProject.Name;
+        _model = ConfigService.Config;
+    }
+
+    private async Task Save()
+    {
+        await ConfigService.SaveCurrentAsync(_projectName, _model);
+    }
+}

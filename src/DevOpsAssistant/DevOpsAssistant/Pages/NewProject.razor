@@ -1,0 +1,30 @@
+@page "/projects/new"
+@using DevOpsAssistant.Services
+@using DevOpsAssistant.Components
+@inject DevOpsConfigService ConfigService
+@inject NavigationManager NavigationManager
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SettingsDialog> L
+
+<PageTitle>DevOpsAssistant - New Project</PageTitle>
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5" Class="mb-2">@L["NewProject"]</MudText>
+    <MudTextField @bind-Value="_name" Label='@L["ProjectName"]' />
+    <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2" Class="mt-2">@L["Create"]</MudButton>
+</MudPaper>
+
+@code {
+    private string _name = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+    }
+
+    private async Task Create()
+    {
+        await ConfigService.AddProjectAsync(_name);
+        NavigationManager.NavigateTo($"/projects/{_name}", forceLoad: true);
+    }
+}
