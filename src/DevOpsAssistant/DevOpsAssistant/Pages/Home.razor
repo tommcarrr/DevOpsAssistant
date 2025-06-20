@@ -1,6 +1,9 @@
 @page "/"
+@page "/projects/{ProjectName}"
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Home> L
+@inject DevOpsAssistant.Services.DevOpsConfigService ConfigService
+@inject NavigationManager NavigationManager
 
 <PageTitle>DevOpsAssistant - Home</PageTitle>
 
@@ -23,3 +26,17 @@
         </MudPaper>
     </MudItem>
 </MudGrid>
+
+@code {
+    [Parameter] public string? ProjectName { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) && ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+            NavigationManager.NavigateTo(NavigationManager.Uri.Replace($"/projects/{ProjectName}", "/"), forceLoad: true);
+        }
+    }
+}

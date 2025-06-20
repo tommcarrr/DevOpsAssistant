@@ -19,13 +19,14 @@
             <MudNavLink Href="" Match="NavLinkMatch.All" Style="color:inherit;text-decoration:none">DevOpsAssistant</MudNavLink>
         </MudText>
         <MudSpacer/>
-        <MudSelect T="string" Class="me-2" Style="width:150px" Label='@L["Project"]' Value="_selectedProject" ValueChanged="ChangeProject" Dense="true" Immediate="true">
+        <MudMenu Text='@L["Projects"]' Class="me-2">
             @foreach (var p in ConfigService.Projects)
             {
-                <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
+                <MudMenuItem OnClick="() => ChangeProject(p.Name)">@p.Name</MudMenuItem>
             }
-        </MudSelect>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" title='@L["Settings"]'/>
+            <MudDivider />
+            <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
+        </MudMenu>
         <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
@@ -43,6 +44,7 @@
                 <MudNavLink Href="metrics" Icon="@Icons.Material.Filled.Insights" Disabled="@IsConfigMissing">@L["Metrics"]</MudNavLink>
                 <MudNavLink Href="branch-health" Icon="@Icons.Material.Filled.Source" Disabled="@IsConfigMissing">@L["BranchHealth"]</MudNavLink>
             </MudNavGroup>
+            <MudNavLink Href="@($"/projects/{_selectedProject}/settings")" Icon="@Icons.Material.Filled.Settings" Disabled="@IsConfigMissing">@L["Settings"]</MudNavLink>
             <MudNavLink Href="help" Icon="@Icons.Material.Filled.Help">@L["Help"]</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
@@ -84,16 +86,6 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    private async Task OpenSettings()
-    {
-        var dialog = await DialogService.ShowAsync<SettingsDialog>("Settings");
-        var result = await dialog.Result;
-        if (result != null && !result.Canceled)
-        {
-            _selectedProject = ConfigService.CurrentProject.Name;
-            StateHasChanged();
-        }
-    }
 
     private async Task SignOut()
     {
