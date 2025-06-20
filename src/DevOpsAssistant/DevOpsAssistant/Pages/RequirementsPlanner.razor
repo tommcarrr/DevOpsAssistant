@@ -16,6 +16,10 @@
 <PageTitle>DevOpsAssistant - Requirement Planner</PageTitle>
 
 <MudAlert Severity="Severity.Info" Class="mb-4">
+    <MudLink Href="#" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudLink> @L["CopyPromptMessage"]
+</MudAlert>
+
+<MudAlert Severity="Severity.Info" Class="mb-4">
     Search a wiki page and generate a prompt to break requirements into Epics, Features and User Stories.
     Paste the LLM response below to import items and create them in a backlog.
 </MudAlert>
@@ -189,6 +193,62 @@
     private const string StateKey = "requirements-planner";
     private const long MaxFileSize = 10 * 1024 * 1024;
 
+    private static readonly string InitialPrompt = @"You are a senior Agile Business Analyst and Scrum Agent helping a product owner or stakeholder build a clear Agile-ready feature requirements document.
+
+Your job is to:
+1. Ask structured, iterative questions to gather **all relevant details** for the feature.
+2. Organize the answers into a professional **requirements document** in **Markdown format**.
+3. Include **both functional and non-functional requirements**.
+4. Ensure the final document includes all the sections needed to break the feature down into INVEST-compliant user stories.
+
+Use a conversational tone. Do not generate the full document until you have gathered all necessary inputs from the user.
+
+---
+
+### 🧱 Document Template to Fill (Markdown Output)
+Only output this once all required info has been collected.
+
+```markdown
+# Feature Name: [Title]
+
+## Summary
+[1–2 sentence overview of the feature and business need.]
+
+## Goals and Objectives
+- [Goal 1]
+- [Goal 2]
+
+## Functional Requirements
+List the system behaviors, capabilities, or interactions this feature must provide.
+
+- FR1: [Functional requirement 1]
+- FR2: [Functional requirement 2]
+
+## Non-Functional Requirements
+Document performance, usability, reliability, and other quality criteria.
+
+- NFR1: [e.g. Must support 10,000 users concurrently]
+- NFR2: [e.g. Page loads in under 2 seconds on 3G]
+
+## Success Criteria
+Define what success looks like — business or system-level outcomes.
+
+- [e.g. 95% of users complete the flow without error]
+- [e.g. Reduction in manual support tickets]
+
+## Stakeholders
+- [Role: Name or description]
+- [Role: Name or description]
+
+## Dependencies / Constraints
+- [List any system, team, or timing constraints]
+
+## Open Questions
+- [Use this to track clarification needed during refinement]
+
+## Notes
+- [Any background info, URLs, legacy behavior, etc.]
+```";
     private bool GenerateDisabled =>
         _loading ||
         (_useDocument ? _file == null : _selectedPages == null || _selectedPages.Count == 0);
@@ -280,6 +340,11 @@
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("copyText", _prompt);
+    }
+
+    private async Task CopyInitialPrompt()
+    {
+        await JS.InvokeVoidAsync("copyText", InitialPrompt);
     }
 
     private async Task CopyPart(string text)

@@ -24,4 +24,10 @@
   <data name="ClarifyTooltip" xml:space="preserve">
     <value>Push back on unclear requirements and request clarification</value>
   </data>
+  <data name="CopyPromptLink" xml:space="preserve">
+    <value>Copy starter prompt</value>
+  </data>
+  <data name="CopyPromptMessage" xml:space="preserve">
+    <value>Paste it into your LLM to begin capturing requirements.</value>
+  </data>
 </root>
