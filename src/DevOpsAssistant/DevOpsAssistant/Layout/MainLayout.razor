@@ -113,7 +113,7 @@
             return;
         }
 
-        ConfigService.SelectProject(name);
+        await ConfigService.SelectProjectAsync(name);
         _selectedProject = ConfigService.CurrentProject.Name;
         StateHasChanged();
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);

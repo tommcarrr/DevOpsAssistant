@@ -80,11 +80,12 @@ public class MainLayoutTests : ComponentTestBase
         var config = SetupServices();
         await config.AddProjectAsync("One");
         await config.AddProjectAsync("Two");
-        config.SelectProject("One");
+        await config.SelectProjectAsync("One");
+        JSInterop.Setup<bool>("confirm", _ => true).SetResult(true);
 
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        await (Task)method.Invoke(cut.Instance, new object[] { "Two" })!;
+        await cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
 
         Assert.Equal("Two", config.CurrentProject.Name);
     }
