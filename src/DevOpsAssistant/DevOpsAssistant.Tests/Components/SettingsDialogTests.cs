@@ -41,4 +41,22 @@ public class SettingsDialogTests : ComponentTestBase
         Assert.False(model.Rules.Bug.IncludeSystemInfo);
         Assert.False(model.Rules.Bug.HasStoryPoints);
     }
+
+    [Fact]
+    public async Task Save_Does_Not_Change_Current_Project()
+    {
+        var config = SetupServices();
+        await config.AddProjectAsync("One");
+        await config.AddProjectAsync("Two");
+        await config.SelectProjectAsync("One");
+
+        var cut = RenderComponent<SettingsDialog>();
+        var change = typeof(SettingsDialog).GetMethod("OnProjectChanged", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        await cut.InvokeAsync(() => (Task)change.Invoke(cut.Instance, new object[] { "Two" })!);
+
+        var save = typeof(SettingsDialog).GetMethod("Save", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        await cut.InvokeAsync(() => (Task)save.Invoke(cut.Instance, null)!);
+
+        Assert.Equal("One", config.CurrentProject.Name);
+    }
 }
