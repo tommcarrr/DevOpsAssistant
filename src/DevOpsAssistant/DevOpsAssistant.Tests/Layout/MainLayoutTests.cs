@@ -81,11 +81,12 @@ public class MainLayoutTests : ComponentTestBase
         await config.AddProjectAsync("One");
         await config.AddProjectAsync("Two");
         await config.SelectProjectAsync("One");
-        JSInterop.Setup<bool>("confirm", _ => true).SetResult(true);
-
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        await cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+        var dialog = cut.WaitForElement("div.mud-dialog");
+        dialog.GetElementsByTagName("button")[0].Click();
+        await task;
 
         Assert.Equal("Two", config.CurrentProject.Name);
     }

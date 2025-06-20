@@ -1,5 +1,5 @@
 @inject DevOpsConfigService ConfigService
-@inject IJSRuntime JS
+@inject IDialogService DialogService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
 @using System.Linq
@@ -249,8 +249,10 @@
 
     private async Task DeleteProject()
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"{L["ConfirmDelete"]} {_projectName}?");
-        if (!ok) return;
+        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_projectName}?" };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result.Canceled) return;
         await ConfigService.RemoveProjectAsync(_projectName);
         _selected = ConfigService.CurrentProject.Name;
         _projectName = ConfigService.CurrentProject.Name;
