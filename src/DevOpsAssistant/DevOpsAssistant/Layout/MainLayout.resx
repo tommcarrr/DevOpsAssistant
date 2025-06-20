@@ -57,4 +57,7 @@
   <data name="ChangeProjectWarning" xml:space="preserve">
     <value>Changing the project will clear the current page state. Continue?</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
 </root>
