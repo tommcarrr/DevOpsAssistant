@@ -168,7 +168,7 @@
         MudDialog.Cancel();
     }
 
-    private void OnProjectChanged(string name)
+    private async Task OnProjectChanged(string name)
     {
         _selected = name;
         if (name == NewProjectValue)
@@ -180,7 +180,7 @@
         }
 
         _creating = false;
-        ConfigService.SelectProject(name);
+        await ConfigService.SelectProjectAsync(name);
         _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig

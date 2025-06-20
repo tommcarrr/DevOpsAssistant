@@ -2,6 +2,7 @@ using Bunit;
 using DevOpsAssistant.Layout;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
+using System.Threading.Tasks;
 
 namespace DevOpsAssistant.Tests.Layout;
 
@@ -71,5 +72,21 @@ public class MainLayoutTests : ComponentTestBase
         var cut = RenderComponent<MainLayout>();
 
         cut.WaitForAssertion(() => Assert.Contains("Version 1.0", cut.Markup));
+    }
+
+    [Fact]
+    public async Task Project_Select_Changes_Current_Project()
+    {
+        var config = SetupServices();
+        await config.AddProjectAsync("One");
+        await config.AddProjectAsync("Two");
+        await config.SelectProjectAsync("One");
+        JSInterop.Setup<bool>("confirm", _ => true).SetResult(true);
+
+        var cut = RenderComponent<MainLayout>();
+        var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        await cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+
+        Assert.Equal("Two", config.CurrentProject.Name);
     }
 }

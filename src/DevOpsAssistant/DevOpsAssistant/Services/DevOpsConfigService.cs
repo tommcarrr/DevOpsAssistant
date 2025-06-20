@@ -82,10 +82,14 @@ public class DevOpsConfigService
         await SaveProjectsAsync();
     }
 
-    public void SelectProject(string name)
+    public async Task SelectProjectAsync(string name)
     {
         var proj = Projects.FirstOrDefault(p => p.Name == name);
-        if (proj != null) CurrentProject = proj;
+        if (proj == null) return;
+        Projects.Remove(proj);
+        Projects.Insert(0, proj);
+        CurrentProject = proj;
+        await SaveProjectsAsync();
     }
 
     private static DevOpsConfig Normalize(DevOpsConfig config)
