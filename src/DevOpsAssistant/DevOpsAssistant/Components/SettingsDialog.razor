@@ -252,7 +252,7 @@
         var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_projectName}?" };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
         var result = await dialog.Result;
-        if (result.Canceled) return;
+        if (result?.Canceled != false) return;
         await ConfigService.RemoveProjectAsync(_projectName);
         _selected = ConfigService.CurrentProject.Name;
         _projectName = ConfigService.CurrentProject.Name;

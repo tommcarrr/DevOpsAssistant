@@ -7,11 +7,11 @@ namespace DevOpsAssistant.Tests.Pages;
 public class ProjectsListPageTests : ComponentTestBase
 {
     [Fact]
-    public void ProjectsList_Shows_Projects()
+    public async Task ProjectsList_Shows_Projects()
     {
         var config = SetupServices();
-        config.AddProjectAsync("One").GetAwaiter().GetResult();
-        config.AddProjectAsync("Two").GetAwaiter().GetResult();
+        await config.AddProjectAsync("One");
+        await config.AddProjectAsync("Two");
 
         var cut = RenderComponent<ProjectsList>();
 
