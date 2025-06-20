@@ -1,6 +1,7 @@
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Tests.Utils;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Services;
 
 public class PageStateServiceTests
 {

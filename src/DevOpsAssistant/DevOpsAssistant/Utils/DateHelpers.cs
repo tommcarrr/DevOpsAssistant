@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace DevOpsAssistant.Services;
+namespace DevOpsAssistant.Utils;
 
 public static class DateHelpers
 {

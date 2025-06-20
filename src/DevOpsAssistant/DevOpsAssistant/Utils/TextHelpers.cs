@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace DevOpsAssistant.Services;
+namespace DevOpsAssistant.Utils;
 
 public static class TextHelpers
 {

@@ -1,6 +1,4 @@
-using System.Linq;
-
-namespace DevOpsAssistant.Services;
+namespace DevOpsAssistant.Utils;
 
 public static class PromptHelpers
 {

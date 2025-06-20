@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Utils;
 using Xunit;
 
 namespace DevOpsAssistant.Tests.Utils;

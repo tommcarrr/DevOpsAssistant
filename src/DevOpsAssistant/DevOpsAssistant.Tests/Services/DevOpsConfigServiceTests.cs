@@ -1,7 +1,8 @@
 using DevOpsAssistant.Services;
-using System.Linq;
+using DevOpsAssistant.Services.Models;
+using DevOpsAssistant.Tests.Utils;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Services;
 
 public class DevOpsConfigServiceTests
 {

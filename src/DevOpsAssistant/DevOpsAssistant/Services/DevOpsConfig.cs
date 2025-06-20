@@ -1,3 +1,5 @@
+using DevOpsAssistant.Services.Models;
+
 namespace DevOpsAssistant.Services;
 
 public class DevOpsConfig

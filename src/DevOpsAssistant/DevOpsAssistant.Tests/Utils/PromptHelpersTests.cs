@@ -1,4 +1,5 @@
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Utils;
 
 namespace DevOpsAssistant.Tests.Utils;
 

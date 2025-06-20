@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Linq;
 using System.Text.Json;
+using DevOpsAssistant.Services.Models;
 
 namespace DevOpsAssistant.Services;
 

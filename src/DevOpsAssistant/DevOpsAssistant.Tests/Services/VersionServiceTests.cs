@@ -1,5 +1,6 @@
 using System.Net;
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Tests.Utils;
 
 namespace DevOpsAssistant.Tests.Services;
 

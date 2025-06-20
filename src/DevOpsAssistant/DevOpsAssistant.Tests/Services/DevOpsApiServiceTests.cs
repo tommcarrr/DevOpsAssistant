@@ -1,14 +1,13 @@
-using System.Net;
-using System.Text.Json;
-using System.Reflection;
-using DevOpsAssistant.Services;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging.Abstractions;
 using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Text.Json;
+using DevOpsAssistant.Services;
+using DevOpsAssistant.Services.Models;
+using DevOpsAssistant.Tests.Utils;
+using Microsoft.Extensions.Localization;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Services;
 
 public class DevOpsApiServiceTests
 {

@@ -1,10 +1,7 @@
-using System.IO;
-using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
 
-namespace DevOpsAssistant.Services;
+namespace DevOpsAssistant.Utils;
 
 public static class DocumentHelpers
 {

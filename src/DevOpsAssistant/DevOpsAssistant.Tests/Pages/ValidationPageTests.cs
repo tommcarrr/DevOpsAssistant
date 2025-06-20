@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Net;
 using System.Net.Http;
+using DevOpsAssistant.Services.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 

@@ -2,6 +2,7 @@ using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
 
 namespace DevOpsAssistant.Tests.Components;

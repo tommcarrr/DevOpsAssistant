@@ -1,4 +1,4 @@
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Utils;
 
 public class FakeHttpMessageHandler : HttpMessageHandler
 {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;

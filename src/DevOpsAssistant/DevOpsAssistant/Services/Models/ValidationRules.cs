@@ -1,4 +1,4 @@
-namespace DevOpsAssistant.Services;
+namespace DevOpsAssistant.Services.Models;
 
 public class ValidationRules
 {

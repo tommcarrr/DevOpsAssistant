@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Blazored.LocalStorage;
 
-namespace DevOpsAssistant.Tests;
+namespace DevOpsAssistant.Tests.Utils;
 
 public class FakeLocalStorageService : ILocalStorageService
 {
