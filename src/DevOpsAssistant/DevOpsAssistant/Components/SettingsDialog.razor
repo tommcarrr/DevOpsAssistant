@@ -176,7 +176,7 @@
         MudDialog.Cancel();
     }
 
-    private async Task OnProjectChanged(string name)
+    private void OnProjectChanged(string name)
     {
         _selected = name;
         if (name == NewProjectValue)

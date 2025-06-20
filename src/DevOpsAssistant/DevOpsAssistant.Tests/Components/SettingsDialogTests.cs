@@ -52,7 +52,7 @@ public class SettingsDialogTests : ComponentTestBase
 
         var cut = RenderComponent<SettingsDialog>();
         var change = typeof(SettingsDialog).GetMethod("OnProjectChanged", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        await cut.InvokeAsync(() => (Task)change.Invoke(cut.Instance, new object[] { "Two" })!);
+        await cut.InvokeAsync(() => change.Invoke(cut.Instance, new object[] { "Two" }));
 
         var save = typeof(SettingsDialog).GetMethod("Save", BindingFlags.NonPublic | BindingFlags.Instance)!;
         await cut.InvokeAsync(() => (Task)save.Invoke(cut.Instance, null)!);
