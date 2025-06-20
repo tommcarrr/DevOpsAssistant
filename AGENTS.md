@@ -35,6 +35,10 @@ Codex must be proficient in the following technologies and frameworks, which are
 - Use test-driven development (TDD) where practical.
 - Maintain Playwright UI tests alongside UI changes.
 - Ensure tests run reliably both locally and in CI.
+- **Running tests locally:**
+  1. Install the .NET SDK if `dotnet` is not present by executing `./dotnet-install.sh --channel 9.0` and add `$HOME/.dotnet` to `PATH` (and set `DOTNET_ROOT=$HOME/.dotnet`) as described in the [dotnet-install script documentation](https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script).
+  2. Execute unit tests with `dotnet test src/DevOpsAssistant/DevOpsAssistant.Tests/DevOpsAssistant.Tests.csproj --verbosity normal`.
+  3. Before running UI tests, install Playwright browsers using `npx playwright install --with-deps`, then run `dotnet test src/DevOpsAssistant/DevOpsAssistant.UiTests/DevOpsAssistant.UiTests.csproj` with `STAGING_URL` pointing at the deployed or locally running site.
 
 ### Documentation
 
