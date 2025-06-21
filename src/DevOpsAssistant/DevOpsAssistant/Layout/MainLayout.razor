@@ -27,6 +27,7 @@
             <MudDivider />
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
+        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenPatDialog" title='@L["PatToken"]' class="me-2"/>
         <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
@@ -86,6 +87,11 @@
         StateHasChanged();
     }
 
+    private async Task OpenPatDialog()
+    {
+        await DialogService.ShowAsync<PatTokenDialog>(L["PatToken"]);
+    }
+
     private async Task ChangeProject(string name)
     {
         if (name == ConfigService.CurrentProject.Name)
@@ -127,6 +133,6 @@
     private bool IsConfigMissing =>
         string.IsNullOrWhiteSpace(ConfigService.Config.Organization) ||
         string.IsNullOrWhiteSpace(ConfigService.Config.Project) ||
-        string.IsNullOrWhiteSpace(ConfigService.Config.PatToken);
+        (string.IsNullOrWhiteSpace(ConfigService.Config.PatToken) && string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken));
 
 }

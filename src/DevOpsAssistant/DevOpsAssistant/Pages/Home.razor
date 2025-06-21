@@ -44,8 +44,7 @@ else
         await ConfigService.LoadAsync();
         var anyConfigured = ConfigService.Projects.Any(p =>
             !string.IsNullOrWhiteSpace(p.Config.Organization) &&
-            !string.IsNullOrWhiteSpace(p.Config.Project) &&
-            !string.IsNullOrWhiteSpace(p.Config.PatToken));
+            !string.IsNullOrWhiteSpace(p.Config.Project));
 
         if (!anyConfigured)
         {

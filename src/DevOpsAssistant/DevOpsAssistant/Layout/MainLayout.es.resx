@@ -36,6 +36,9 @@
   <data name="SignOut" xml:space="preserve">
     <value>Cerrar sesión</value>
   </data>
+  <data name="PatToken" xml:space="preserve">
+    <value>Token PAT</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Configuración</value>
   </data>

@@ -52,7 +52,7 @@ public class DevOpsApiService
 
     private DevOpsConfig GetValidatedConfig()
     {
-        var config = _configService.Config;
+        var config = _configService.GetEffectiveConfig();
         if (string.IsNullOrWhiteSpace(config.Organization) ||
             string.IsNullOrWhiteSpace(config.Project) ||
             string.IsNullOrWhiteSpace(config.PatToken))
