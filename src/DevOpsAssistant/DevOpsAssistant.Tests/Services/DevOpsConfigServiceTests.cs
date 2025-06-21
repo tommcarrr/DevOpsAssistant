@@ -217,4 +217,17 @@ public class DevOpsConfigServiceTests
         var other = service.Projects.First(p => p.Name == "two");
         Assert.Equal("Org", other.Config.Organization);
     }
+
+    [Fact]
+    public async Task SaveGlobalDarkModeAsync_Persists_Value()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+
+        await service.SaveGlobalDarkModeAsync(true);
+
+        Assert.True(service.GlobalDarkMode);
+        var stored = await storage.GetItemAsync<bool?>("devops-dark");
+        Assert.True(stored);
+    }
 }

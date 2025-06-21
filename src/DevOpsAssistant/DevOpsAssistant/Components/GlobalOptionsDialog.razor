@@ -2,11 +2,14 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<PatTokenDialog> L
+@inject IStringLocalizer<GlobalOptionsDialog> L
 
 <MudDialog ContentClass="pa-4" ActionsClass="pa-4">
     <DialogContent>
-        <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
+        <MudStack Spacing="2">
+            <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
+            <MudSwitch T="bool" @bind-Value="_darkMode" Color="Color.Primary" Label="Dark Mode"/>
+        </MudStack>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Save" Color="Color.Primary">@L["Save"]</MudButton>
@@ -17,16 +20,19 @@
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     private string _token = string.Empty;
+    private bool _darkMode;
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
         _token = ConfigService.GlobalPatToken;
+        _darkMode = ConfigService.GlobalDarkMode;
     }
 
     private async Task Save()
     {
         await ConfigService.SaveGlobalPatAsync(_token);
+        await ConfigService.SaveGlobalDarkModeAsync(_darkMode);
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }

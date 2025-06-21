@@ -6,7 +6,7 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SimpleLayout> L
 
-<MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode"/>
+<MudThemeProvider IsDarkMode="@ConfigService.GlobalDarkMode"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
@@ -17,7 +17,7 @@
             <MudNavLink Href="" Match="NavLinkMatch.All" Style="color:inherit;text-decoration:none">DevOpsAssistant</MudNavLink>
         </MudText>
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenPatDialog" title='@L["PatToken"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenOptionsDialog" title='@L["PatToken"]'/>
         <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
@@ -46,8 +46,8 @@
         StateHasChanged();
     }
 
-    private async Task OpenPatDialog()
+    private async Task OpenOptionsDialog()
     {
-        await DialogService.ShowAsync<PatTokenDialog>(L["PatToken"]);
+        await DialogService.ShowAsync<GlobalOptionsDialog>(L["PatToken"]);
     }
 }

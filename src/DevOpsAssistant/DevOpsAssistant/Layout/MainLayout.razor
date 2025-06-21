@@ -8,7 +8,7 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<MainLayout> L
 
-<MudThemeProvider IsDarkMode="@ConfigService.Config.DarkMode"/>
+<MudThemeProvider IsDarkMode="@ConfigService.GlobalDarkMode"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
@@ -28,7 +28,7 @@
             <MudDivider />
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
-        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenPatDialog" title='@L["PatToken"]' class="me-2"/>
+        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenOptionsDialog" title='@L["PatToken"]' class="me-2"/>
         <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
@@ -93,9 +93,9 @@
         StateHasChanged();
     }
 
-    private async Task OpenPatDialog()
+    private async Task OpenOptionsDialog()
     {
-        await DialogService.ShowAsync<PatTokenDialog>(L["PatToken"]);
+        await DialogService.ShowAsync<GlobalOptionsDialog>(L["PatToken"]);
     }
 
     private async Task ChangeProject(string name)
