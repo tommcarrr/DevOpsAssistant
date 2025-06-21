@@ -39,6 +39,9 @@
   <data name="Organization" xml:space="preserve">
     <value>Organization</value>
   </data>
+  <data name="PatToken" xml:space="preserve">
+    <value>PAT Token</value>
+  </data>
   <data name="NewProject" xml:space="preserve">
     <value>New Project</value>
   </data>
