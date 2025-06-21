@@ -105,7 +105,23 @@
         await ConfigService.SelectProjectAsync(name);
         _selectedProject = ConfigService.CurrentProject.Name;
         StateHasChanged();
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (relative.StartsWith("projects/"))
+        {
+            var segments = relative.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length > 1 && segments[1] != "new")
+            {
+                segments[1] = name;
+                NavigationManager.NavigateTo($"/{string.Join('/', segments)}", forceLoad: true);
+                return;
+            }
+            NavigationManager.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
     }
 
     private bool IsConfigMissing =>

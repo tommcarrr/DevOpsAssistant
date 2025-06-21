@@ -4,6 +4,8 @@ using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Components;
+using Bunit.TestDoubles;
 
 namespace DevOpsAssistant.Tests.Layout;
 
@@ -81,5 +83,25 @@ public class MainLayoutTests : ComponentTestBase
         await task;
 
         Assert.Equal("Two", config.CurrentProject.Name);
+    }
+
+    [Fact]
+    public async Task ChangeProject_Replaces_Project_Segment_In_Url()
+    {
+        var config = SetupServices();
+        await config.AddProjectAsync("One");
+        await config.AddProjectAsync("Two");
+
+        var nav = Services.GetRequiredService<NavigationManager>() as FakeNavigationManager;
+        nav!.NavigateTo("projects/new");
+
+        var cut = RenderComponent<MainLayout>();
+        var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+        var dialog = cut.WaitForElement("div.mud-dialog");
+        dialog.GetElementsByTagName("button")[0].Click();
+        await task;
+
+        Assert.EndsWith("/", nav.Uri);
     }
 }
