@@ -30,4 +30,7 @@
   <data name="CopyPromptMessage" xml:space="preserve">
     <value>Péguelo en su LLM para comenzar a recopilar requisitos.</value>
   </data>
+  <data name="CopyToast" xml:space="preserve">
+    <value>Copiado al portapapeles</value>
+  </data>
 </root>

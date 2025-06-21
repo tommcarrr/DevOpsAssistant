@@ -1,5 +1,6 @@
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
 @using System.Linq
@@ -169,6 +170,7 @@
         {
             await ConfigService.UpdateProjectAsync(_selected, _projectName, _model);
         }
+        Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog?.Close(DialogResult.Ok(true));
     }
 

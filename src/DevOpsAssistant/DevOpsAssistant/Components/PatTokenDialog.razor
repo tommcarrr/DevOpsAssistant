@@ -1,5 +1,6 @@
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<PatTokenDialog> L
 
@@ -26,6 +27,7 @@
     private async Task Save()
     {
         await ConfigService.SaveGlobalPatAsync(_token);
+        Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
 

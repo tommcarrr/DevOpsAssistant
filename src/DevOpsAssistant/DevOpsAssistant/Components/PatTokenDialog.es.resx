@@ -21,4 +21,7 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
+  <data name="SavedMessage" xml:space="preserve">
+    <value>Token guardado</value>
+  </data>
 </root>

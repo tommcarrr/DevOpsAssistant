@@ -10,6 +10,9 @@
 @inject IJSRuntime JS
 @inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
+@inject ISnackbar Snackbar
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ReleaseNotes> L
 
 <PageTitle>DevOpsAssistant - Release Notes</PageTitle>
 
@@ -260,12 +263,16 @@ else if (_promptParts != null)
     private async Task CopyPrompt()
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
+        {
             await JS.InvokeVoidAsync("copyText", _prompt);
+            Snackbar.Add(L["CopyToast"].Value, Severity.Success);
+        }
     }
 
     private async Task CopyPart(string text)
     {
         await JS.InvokeVoidAsync("copyText", text);
+        Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
     private void PrevPart()
