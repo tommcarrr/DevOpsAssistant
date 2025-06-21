@@ -5,12 +5,12 @@
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
 @inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
 @inject PageStateService StateService
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<StoryReview> L
+@inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Story Quality</PageTitle>
 
@@ -302,5 +302,10 @@ else if (_promptParts != null)
     {
         public string Path { get; set; } = string.Empty;
         public string[]? States { get; set; }
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 }

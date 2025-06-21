@@ -7,9 +7,9 @@
 @using DevOpsAssistant.Utils
 @using Microsoft.AspNetCore.Components.Forms
 @inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
 @inject PageStateService StateService
+@inherits ProjectComponentBase
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<RequirementsPlanner> L
@@ -636,5 +636,10 @@ Define what success looks like — business or system-level outcomes.
     {
         public string Backlog { get; set; } = string.Empty;
         public string WikiId { get; set; } = string.Empty;
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 }

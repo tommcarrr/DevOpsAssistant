@@ -2,10 +2,10 @@
 @using System
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Validation> L
+@inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Story Validation</PageTitle>
 
@@ -350,6 +350,11 @@ else if (_results != null)
         public string Path { get; set; } = string.Empty;
         public string[]? States { get; set; }
         public string[]? Types { get; set; }
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 
 }

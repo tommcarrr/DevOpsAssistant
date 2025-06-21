@@ -126,14 +126,10 @@
             if (segments.Length > 1 && segments[1] != "new")
             {
                 segments[1] = name;
-                NavigationManager.NavigateTo($"/{string.Join('/', segments)}", forceLoad: true);
+                NavigationManager.NavigateTo($"/{string.Join('/', segments)}", replace: true);
                 return;
             }
-            NavigationManager.NavigateTo("/", forceLoad: true);
-        }
-        else
-        {
-            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+            NavigationManager.NavigateTo("/", replace: true);
         }
     }
 
@@ -144,7 +140,7 @@
             !relative.StartsWith("projects/new") &&
             !relative.EndsWith("/settings"))
         {
-            NavigationManager.NavigateTo($"/projects/{_selectedProject}/settings", true);
+            NavigationManager.NavigateTo($"/projects/{_selectedProject}/settings", replace: true);
         }
     }
 

@@ -3,10 +3,10 @@
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
 @inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<BranchHealth> L
+@inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Branch Health</PageTitle>
 
@@ -186,5 +186,10 @@ else if (_branches != null)
     {
         public string RepoId { get; set; } = string.Empty;
         public string BaseBranch { get; set; } = string.Empty;
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 }
