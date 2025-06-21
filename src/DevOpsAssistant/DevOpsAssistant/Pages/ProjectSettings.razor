@@ -17,6 +17,51 @@
                     <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
                     <MudTextField @bind-Value="_model.Project" Label="Project"/>
                     <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token"/>
+                    <MudTextField @bind-Value="_model.MainBranch" Label="Main Branch"/>
+                    <MudTextField @bind-Value="_model.DefaultStates" Label="Default States" HelperText="Comma separated"/>
+                    <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label="Dark Mode"/>
+                    <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label="Release Notes Tree View"/>
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text="Story Quality">
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.DefinitionOfReady" Label="Definition of Ready" Lines="3"/>
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text='@L["PromptsTab"]'>
+                <MudStack Spacing="2">
+                    <MudTextField @bind-Value="_model.StoryQualityPrompt" Label='@L["StoryQualityPrompt"]' Lines="3"/>
+                    <MudTextField @bind-Value="_model.ReleaseNotesPrompt" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
+                    <MudTextField @bind-Value="_model.RequirementsPrompt" Label='@L["RequirementsPrompt"]' Lines="3"/>
+                    <MudTextField @bind-Value="_model.PromptCharacterLimit" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                </MudStack>
+            </MudTabPanel>
+            <MudTabPanel Text="Validation Rules">
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Color="Color.Primary" Label="Has description"/>
+
+                    <MudDivider Class="my-2"/>
+
+                    <MudText Typo="Typo.h6" Class="mt-2">Feature</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasDescription" Color="Color.Primary" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasParent" Color="Color.Primary" Label="Has parent"/>
+
+                    <MudDivider Class="my-2"/>
+
+                    <MudText Typo="Typo.h6" Class="mt-2">User Story</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasDescription" Color="Color.Primary" Label="Has description"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasParent" Color="Color.Primary" Label="Has parent"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasStoryPoints" Color="Color.Primary" Label="Has story points"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAcceptanceCriteria" Color="Color.Primary" Label="Has acceptance criteria"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAssignee" Color="Color.Primary" Label="Has assignee"/>
+
+                    <MudDivider Class="my-2"/>
+
+                    <MudText Typo="Typo.h6" Class="mt-2">Bug</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeReproSteps" Color="Color.Primary" Label="Include Repro Steps"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeSystemInfo" Color="Color.Primary" Label="Include System Info"/>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.HasStoryPoints" Color="Color.Primary" Label='@L["BugHasStoryPoints"]'/>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
@@ -34,7 +79,45 @@
         await ConfigService.LoadAsync();
         await ConfigService.SelectProjectAsync(ProjectName);
         _projectName = ConfigService.CurrentProject.Name;
-        _model = ConfigService.Config;
+        var cfg = ConfigService.Config;
+        _model = new DevOpsConfig
+        {
+            Organization = cfg.Organization,
+            Project = cfg.Project,
+            PatToken = cfg.PatToken,
+            MainBranch = cfg.MainBranch,
+            DefaultStates = cfg.DefaultStates,
+            DarkMode = cfg.DarkMode,
+            ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
+            DefinitionOfReady = cfg.DefinitionOfReady,
+            StoryQualityPrompt = cfg.StoryQualityPrompt,
+            ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
+            RequirementsPrompt = cfg.RequirementsPrompt,
+            PromptCharacterLimit = cfg.PromptCharacterLimit,
+            Rules = new ValidationRules
+            {
+                Epic = new EpicRules { HasDescription = cfg.Rules.Epic.HasDescription },
+                Feature = new FeatureRules
+                {
+                    HasDescription = cfg.Rules.Feature.HasDescription,
+                    HasParent = cfg.Rules.Feature.HasParent
+                },
+                Story = new StoryRules
+                {
+                    HasDescription = cfg.Rules.Story.HasDescription,
+                    HasParent = cfg.Rules.Story.HasParent,
+                    HasStoryPoints = cfg.Rules.Story.HasStoryPoints,
+                    HasAcceptanceCriteria = cfg.Rules.Story.HasAcceptanceCriteria,
+                    HasAssignee = cfg.Rules.Story.HasAssignee
+                },
+                Bug = new BugRules
+                {
+                    IncludeReproSteps = cfg.Rules.Bug.IncludeReproSteps,
+                    IncludeSystemInfo = cfg.Rules.Bug.IncludeSystemInfo,
+                    HasStoryPoints = cfg.Rules.Bug.HasStoryPoints
+                }
+            }
+        };
     }
 
     private async Task Save()
