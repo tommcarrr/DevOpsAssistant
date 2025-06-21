@@ -40,6 +40,6 @@
     <value>Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configure su organización, proyecto y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto. También puede personalizar los prompts y las reglas de validación.</value>
+    <value>Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto. También puede personalizar los prompts y las reglas de validación.</value>
   </data>
 </root>
