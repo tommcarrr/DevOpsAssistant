@@ -4,39 +4,60 @@
 @inject IStringLocalizer<Home> L
 @inject DevOpsAssistant.Services.DevOpsConfigService ConfigService
 @inject NavigationManager NavigationManager
+@using DevOpsAssistant.Pages
 
 <PageTitle>DevOpsAssistant - Home</PageTitle>
 
-<MudGrid>
-    <MudItem xs="12">
-        <MudText Typo="Typo.h4" Class="mb-2">@L["Welcome"]</MudText>
-    </MudItem>
-    <MudItem xs="12">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.body1">
-                @L["Description"]
-            </MudText>
-            <MudList T="string" Dense="true" Class="ms-4 mt-2">
-                <MudListItem T="string">@L["Epics"]</MudListItem>
-                <MudListItem T="string">@L["Validation"]</MudListItem>
-                <MudListItem T="string">@L["ReleaseNotes"]</MudListItem>
-                <MudListItem T="string">@L["Quality"]</MudListItem>
-                <MudListItem T="string">@L["Metrics"]</MudListItem>
-            </MudList>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+@if (_showProjects)
+{
+    <ProjectsList />
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4" Class="mb-2">@L["Welcome"]</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.body1">
+                    @L["Description"]
+                </MudText>
+                <MudList T="string" Dense="true" Class="ms-4 mt-2">
+                    <MudListItem T="string">@L["Epics"]</MudListItem>
+                    <MudListItem T="string">@L["Validation"]</MudListItem>
+                    <MudListItem T="string">@L["ReleaseNotes"]</MudListItem>
+                    <MudListItem T="string">@L["Quality"]</MudListItem>
+                    <MudListItem T="string">@L["Metrics"]</MudListItem>
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
 
 @code {
     [Parameter] public string? ProjectName { get; set; }
+    private bool _showProjects;
 
     protected override async Task OnParametersSetAsync()
     {
         await ConfigService.LoadAsync();
+        var anyConfigured = ConfigService.Projects.Any(p =>
+            !string.IsNullOrWhiteSpace(p.Config.Organization) &&
+            !string.IsNullOrWhiteSpace(p.Config.Project) &&
+            !string.IsNullOrWhiteSpace(p.Config.PatToken));
+
+        if (!anyConfigured)
+        {
+            NavigationManager.NavigateTo("/projects/new", true);
+            return;
+        }
+
         if (!string.IsNullOrWhiteSpace(ProjectName) && ConfigService.CurrentProject.Name != ProjectName)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
             NavigationManager.NavigateTo(NavigationManager.Uri.Replace($"/projects/{ProjectName}", "/"), forceLoad: true);
         }
+        _showProjects = string.IsNullOrWhiteSpace(ProjectName);
     }
 }

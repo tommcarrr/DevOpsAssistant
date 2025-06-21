@@ -3,6 +3,7 @@ using DevOpsAssistant.Layout;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DevOpsAssistant.Tests.Layout;
 
@@ -30,26 +31,17 @@ public class MainLayoutTests : ComponentTestBase
     }
 
     [Fact]
-    public void Layout_Shows_Splash_When_Config_Incomplete()
+    public void Settings_Link_Is_Always_Enabled()
     {
         SetupServices();
 
         var cut = RenderComponent<MainLayout>();
+        var link = cut.Find($"a[href='/projects/default/settings']");
 
-        Assert.Contains("Create Your First Project", cut.Markup);
-        Assert.Contains("mud-nav-link-disabled", cut.Markup);
-    }
+        Assert.DoesNotContain("mud-nav-link-disabled", link.ClassName);
 
-    [Fact]
-    public async Task Layout_Hides_Splash_When_Config_Complete()
-    {
-        var config = SetupServices();
-        await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
-
-        var cut = RenderComponent<MainLayout>();
-
-        Assert.DoesNotContain("Create Your First Project", cut.Markup);
-        Assert.DoesNotContain("mud-nav-link-disabled", cut.Markup);
+        var config = cut.Services.GetRequiredService<DevOpsConfigService>();
+        Assert.NotNull(config);
     }
 
     [Fact]
@@ -61,7 +53,7 @@ public class MainLayoutTests : ComponentTestBase
         var cut = RenderComponent<MainLayout>();
         cut.Find("button[title='Sign Out']").Click();
 
-        Assert.Contains("Create Your First Project", cut.Markup);
+        Assert.Equal("default", config.CurrentProject.Name);
     }
 
     [Fact]

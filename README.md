@@ -56,8 +56,8 @@ The application communicates with Azure DevOps using a Personal Access Token (PA
    the **Work Items (Read & write)**, **Wiki (Read)** and **Code (Read)** scopes.
 4. Create the token and copy the value.
 
-Run the site and you'll see a welcome screen if no configuration is found. Click **Open Settings** to create your first project. Enter your organization, project and PAT token, then save. You can add more projects using the dropdown at the top of the settings dialog. A comma separated list of default states can also be provided and each AI feature has a field for a custom prompt. These values are stored in your browser's local storage.
-When you're done, click the **Sign Out** button in the top bar to remove the saved projects and return to the welcome screen.
+Run the site and you'll see a project selection screen if any projects are configured or be taken to the **New Project** page otherwise. Use the settings page from the project menu to configure each project. A comma separated list of default states can also be provided and each AI feature has a field for a custom prompt. These values are stored in your browser's local storage.
+When you're done, click the **Sign Out** button in the top bar to remove the saved projects and return to the project selection screen.
 
 ## Faking the DevOps API for tests
 
