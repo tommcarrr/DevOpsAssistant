@@ -102,6 +102,6 @@ public class MainLayoutTests : ComponentTestBase
         dialog.GetElementsByTagName("button")[0].Click();
         await task;
 
-        Assert.EndsWith("/", nav.Uri);
+        Assert.Equal("http://localhost/projects/Two/settings", nav.Uri);
     }
 }

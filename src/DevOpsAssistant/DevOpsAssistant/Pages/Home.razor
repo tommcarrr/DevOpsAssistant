@@ -42,11 +42,9 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await ConfigService.LoadAsync();
-        var anyConfigured = ConfigService.Projects.Any(p =>
-            !string.IsNullOrWhiteSpace(p.Config.Organization) &&
-            !string.IsNullOrWhiteSpace(p.Config.Project));
+        var anyProjects = ConfigService.Projects.Any();
 
-        if (!anyConfigured)
+        if (!anyProjects)
         {
             NavigationManager.NavigateTo("/projects/new", true);
             return;
