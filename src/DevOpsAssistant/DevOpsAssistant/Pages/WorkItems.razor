@@ -1,8 +1,8 @@
 @page "/epics-features"
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
-@inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
+@inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Epics and Features</PageTitle>
 
@@ -307,6 +307,11 @@ else if (_roots != null)
     {
         public string Path { get; set; } = string.Empty;
         public bool IssuesOnly { get; set; }
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 
 }

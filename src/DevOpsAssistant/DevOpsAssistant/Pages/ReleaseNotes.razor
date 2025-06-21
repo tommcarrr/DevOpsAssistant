@@ -8,8 +8,8 @@
 @using MudBlazor
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
-@inject DevOpsConfigService ConfigService
 @inject PageStateService StateService
+@inherits ProjectComponentBase
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<ReleaseNotes> L
@@ -401,6 +401,11 @@ else if (_promptParts != null)
 
         sb.AppendLine(json);
         return sb.ToString();
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 
 }

@@ -9,6 +9,8 @@ public class DevOpsConfigService
     private const string GlobalPatKey = "devops-pat";
     private readonly ILocalStorageService _localStorage;
 
+    public event Action? ProjectChanged;
+
     public DevOpsConfigService(ILocalStorageService localStorage)
     {
         _localStorage = localStorage;
@@ -94,6 +96,7 @@ public class DevOpsConfigService
         Projects.Add(Normalize(project));
         CurrentProject = project;
         await SaveProjectsAsync();
+        OnProjectChanged();
     }
 
     public async Task RemoveProjectAsync(string name)
@@ -106,6 +109,7 @@ public class DevOpsConfigService
         if (CurrentProject.Name == name)
             CurrentProject = Projects[0];
         await SaveProjectsAsync();
+        OnProjectChanged();
     }
 
     public async Task SelectProjectAsync(string name)
@@ -116,6 +120,12 @@ public class DevOpsConfigService
         Projects.Insert(0, proj);
         CurrentProject = proj;
         await SaveProjectsAsync();
+        OnProjectChanged();
+    }
+
+    private void OnProjectChanged()
+    {
+        ProjectChanged?.Invoke();
     }
 
     private static DevOpsConfig Normalize(DevOpsConfig config)
@@ -181,6 +191,7 @@ public class DevOpsConfigService
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
         await _localStorage.RemoveItemAsync(GlobalPatKey);
+        OnProjectChanged();
     }
 
     private async Task SaveProjectsAsync()

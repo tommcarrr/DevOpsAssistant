@@ -8,6 +8,7 @@
 @inject PageStateService StateService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Metrics> L
+@inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
 
@@ -239,5 +240,10 @@ else if (_periods.Any())
         public AggregateMode Mode { get; set; }
         public VelocityMode VelocityMode { get; set; }
         public DateTime? StartDate { get; set; }
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
     }
 }
