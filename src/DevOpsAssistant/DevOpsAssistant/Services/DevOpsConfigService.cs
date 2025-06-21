@@ -25,6 +25,13 @@ public class DevOpsConfigService
 
     public DevOpsConfig Config => CurrentProject.Config;
 
+    public bool IsCurrentProjectValid =>
+        !string.IsNullOrWhiteSpace(CurrentProject.Name) &&
+        !string.IsNullOrWhiteSpace(Config.Organization) &&
+        !string.IsNullOrWhiteSpace(Config.Project) &&
+        (!string.IsNullOrWhiteSpace(Config.PatToken) ||
+         !string.IsNullOrWhiteSpace(GlobalPatToken));
+
     public async Task LoadAsync()
     {
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
