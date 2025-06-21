@@ -1,4 +1,4 @@
-@page "/metrics"
+@page "/projects/{ProjectName}/metrics"
 @using System.Text
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
@@ -79,6 +79,7 @@ else if (_periods.Any())
 }
 
 @code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
     private string _path = string.Empty;
     private string[] _backlogs = [];
     private bool _loading;
@@ -95,6 +96,12 @@ else if (_periods.Any())
 
     protected override async Task OnInitializedAsync()
     {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) &&
+            ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
         try
         {
             _backlogs = await ApiService.GetBacklogsAsync();
