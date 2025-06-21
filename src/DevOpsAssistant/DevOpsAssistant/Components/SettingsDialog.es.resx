@@ -51,4 +51,7 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirmar</value>
   </data>
+  <data name="SavedMessage" xml:space="preserve">
+    <value>Configuración guardada</value>
+  </data>
 </root>

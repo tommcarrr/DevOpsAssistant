@@ -10,6 +10,7 @@
 @inject DevOpsConfigService ConfigService
 @inject IJSRuntime JS
 @inject PageStateService StateService
+@inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<RequirementsPlanner> L
 
@@ -339,17 +340,22 @@ Define what success looks like — business or system-level outcomes.
     private async Task CopyPrompt()
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
+        {
             await JS.InvokeVoidAsync("copyText", _prompt);
+            Snackbar.Add(L["CopyToast"].Value, Severity.Success);
+        }
     }
 
     private async Task CopyInitialPrompt()
     {
         await JS.InvokeVoidAsync("copyText", InitialPrompt);
+        Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
     private async Task CopyPart(string text)
     {
         await JS.InvokeVoidAsync("copyText", text);
+        Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
     private void PrevPart()
