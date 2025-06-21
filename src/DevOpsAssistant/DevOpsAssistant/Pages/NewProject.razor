@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
+@inject IStringLocalizer<PatTokenDialog> TL
 
 <PageTitle>DevOpsAssistant - New Project</PageTitle>
 
@@ -14,6 +15,7 @@
     <MudTextField @bind-Value="_name" Label='@L["ProjectName"]' />
     <MudTextField @bind-Value="_organization" Label="Organization" Class="mt-2" />
     <MudTextField @bind-Value="_project" Label="Project" Class="mt-2" />
+    <MudTextField @bind-Value="_patToken" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Class="mt-2" />
     <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2 || string.IsNullOrWhiteSpace(_organization) || string.IsNullOrWhiteSpace(_project)" Class="mt-2">@L["Create"]</MudButton>
 </MudPaper>
 
@@ -21,6 +23,7 @@
     private string _name = string.Empty;
     private string _organization = string.Empty;
     private string _project = string.Empty;
+    private string _patToken = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,7 +36,8 @@
         await ConfigService.SaveAsync(new DevOpsConfig
         {
             Organization = _organization,
-            Project = _project
+            Project = _project,
+            PatToken = _patToken
         });
         NavigationManager.NavigateTo($"/projects/{_name}", forceLoad: true);
     }

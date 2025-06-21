@@ -12,5 +12,6 @@ public class NewProjectPageTests : ComponentTestBase
         SetupServices();
         var cut = RenderComponent<NewProject>();
         Assert.Contains("New Project", cut.Markup);
+        Assert.Contains("PAT Token", cut.Markup);
     }
 }
