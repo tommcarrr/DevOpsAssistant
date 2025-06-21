@@ -36,15 +36,15 @@
         <MudNavMenu>
             <MudNavLink Href="" Icon="@Icons.Material.Filled.Home" Match="NavLinkMatch.All">@L["Home"]</MudNavLink>
             <MudNavGroup Title="@L["WorkItems"]" Expanded="true">
-                <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List" Disabled="@IsConfigMissing">@L["Epics"]</MudNavLink>
-                <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule" Disabled="@IsConfigMissing">@L["Validation"]</MudNavLink>
-                <MudNavLink Href="story-review" Icon="@Icons.Material.Filled.Check" Disabled="@IsConfigMissing">@L["StoryReview"]</MudNavLink>
-                <MudNavLink Href="requirements-planner" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsConfigMissing">@L["RequirementPlanner"]</MudNavLink>
+                <MudNavLink Href="epics-features" Icon="@Icons.Material.Filled.List" Disabled="@IsProjectInvalid">@L["Epics"]</MudNavLink>
+                <MudNavLink Href="validation" Icon="@Icons.Material.Filled.Rule" Disabled="@IsProjectInvalid">@L["Validation"]</MudNavLink>
+                <MudNavLink Href="story-review" Icon="@Icons.Material.Filled.Check" Disabled="@IsProjectInvalid">@L["StoryReview"]</MudNavLink>
+                <MudNavLink Href="requirements-planner" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsProjectInvalid">@L["RequirementPlanner"]</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Title="@L["Reports"]" Expanded="true">
-                <MudNavLink Href="release-notes" Icon="@Icons.Material.Filled.Article" Disabled="@IsConfigMissing">@L["ReleaseNotes"]</MudNavLink>
-                <MudNavLink Href="metrics" Icon="@Icons.Material.Filled.Insights" Disabled="@IsConfigMissing">@L["Metrics"]</MudNavLink>
-                <MudNavLink Href="branch-health" Icon="@Icons.Material.Filled.Source" Disabled="@IsConfigMissing">@L["BranchHealth"]</MudNavLink>
+                <MudNavLink Href="release-notes" Icon="@Icons.Material.Filled.Article" Disabled="@IsProjectInvalid">@L["ReleaseNotes"]</MudNavLink>
+                <MudNavLink Href="metrics" Icon="@Icons.Material.Filled.Insights" Disabled="@IsProjectInvalid">@L["Metrics"]</MudNavLink>
+                <MudNavLink Href="branch-health" Icon="@Icons.Material.Filled.Source" Disabled="@IsProjectInvalid">@L["BranchHealth"]</MudNavLink>
             </MudNavGroup>
             <MudNavLink Href="@($"/projects/{_selectedProject}/settings")" Icon="@Icons.Material.Filled.Settings">@L["Settings"]</MudNavLink>
             <MudNavLink Href="help" Icon="@Icons.Material.Filled.Help">@L["Help"]</MudNavLink>
@@ -140,7 +140,7 @@
     private void EnsureSettingsIfNeeded()
     {
         var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (IsConfigMissing &&
+        if (IsProjectInvalid &&
             !relative.StartsWith("projects/new") &&
             !relative.EndsWith("/settings"))
         {
@@ -148,9 +148,6 @@
         }
     }
 
-    private bool IsConfigMissing =>
-        string.IsNullOrWhiteSpace(ConfigService.Config.Organization) ||
-        string.IsNullOrWhiteSpace(ConfigService.Config.Project) ||
-        (string.IsNullOrWhiteSpace(ConfigService.Config.PatToken) && string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken));
+    private bool IsProjectInvalid => !ConfigService.IsCurrentProjectValid;
 
 }
