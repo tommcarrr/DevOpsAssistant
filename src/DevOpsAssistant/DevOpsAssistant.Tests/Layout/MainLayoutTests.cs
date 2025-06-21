@@ -54,6 +54,8 @@ public class MainLayoutTests : ComponentTestBase
 
         var cut = RenderComponent<MainLayout>();
         cut.Find("button[title='Sign Out']").Click();
+        var dialog = cut.WaitForElement("div.mud-dialog");
+        dialog.GetElementsByTagName("button")[0].Click();
 
         Assert.Equal("default", config.CurrentProject.Name);
     }

@@ -119,6 +119,7 @@ public class UiTests
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
         await page.ReloadAsync();
         await page.GetByTitle("Sign Out").ClickAsync();
+        await page.GetByText("OK").ClickAsync();
         var json = await page.EvaluateAsync<string>("() => localStorage.getItem('devops-config')");
         Assert.True(string.IsNullOrEmpty(json));
         var splash = await page.QuerySelectorAsync("text=Open Settings");

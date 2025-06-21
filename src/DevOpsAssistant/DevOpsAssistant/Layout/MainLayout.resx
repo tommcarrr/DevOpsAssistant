@@ -36,6 +36,9 @@
   <data name="SignOut" xml:space="preserve">
     <value>Sign Out</value>
   </data>
+  <data name="SignOutWarning" xml:space="preserve">
+    <value>Signing out will remove all saved settings. Continue?</value>
+  </data>
   <data name="PatToken" xml:space="preserve">
     <value>PAT Token</value>
   </data>
