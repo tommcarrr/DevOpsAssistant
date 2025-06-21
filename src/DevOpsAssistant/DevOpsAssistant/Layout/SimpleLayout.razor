@@ -42,6 +42,11 @@
 
     private async Task SignOut()
     {
+        var parameters = new DialogParameters { ["Message"] = L["SignOutWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
         await ConfigService.ClearAsync();
         StateHasChanged();
     }
