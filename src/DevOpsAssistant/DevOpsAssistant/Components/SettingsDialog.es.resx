@@ -31,13 +31,13 @@
     <value>Tiene story points</value>
   </data>
   <data name="Project" xml:space="preserve">
-    <value>Proyecto</value>
+    <value>Proyecto de DevOps</value>
   </data>
   <data name="ProjectName" xml:space="preserve">
     <value>Nombre del Proyecto</value>
   </data>
   <data name="Organization" xml:space="preserve">
-    <value>Organización</value>
+    <value>Organización de DevOps</value>
   </data>
   <data name="PatToken" xml:space="preserve">
     <value>Token PAT</value>
