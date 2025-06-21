@@ -16,7 +16,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 - **Backend:** ASP.NET Core – for web APIs and server-side functionality.
 - **Frontend/UI:** Razor Pages or **Blazor** (Server or WebAssembly). Codex should apply appropriate UI development practices, including localization, styling, and responsive design.
 - **Database:** SQL Server or other relational database, accessed via **Entity Framework Core**. Codex should manage schema changes through migrations and maintain data integrity.
-- **Testing:** Use **xUnit** (or an equivalent) for unit/integration tests and **Playwright** for end-to-end UI tests. Codex should ensure new features are fully tested.
+- **Testing:** Use **xUnit** (or an equivalent) for unit and integration tests. Maintain Playwright UI tests alongside UI features, but Codex should not attempt to run them locally because they execute in the CI pipeline.
 - **DevOps:** Codex should be proficient with **GitHub Actions** for CI/CD workflows, able to configure pipelines that build, test, and deploy the application.
 - **Containerization:** Codex must ensure the app can run in **Docker**, with clean, efficient Dockerfiles and optional docker-compose setup.
 
@@ -38,7 +38,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 - **Running tests locally:**
   1. Install the .NET SDK if `dotnet` is not present by executing `./dotnet-install.sh --channel 9.0` and add `$HOME/.dotnet` to `PATH` (and set `DOTNET_ROOT=$HOME/.dotnet`) as described in the [dotnet-install script documentation](https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script).
   2. Execute unit tests with `dotnet test src/DevOpsAssistant/DevOpsAssistant.Tests/DevOpsAssistant.Tests.csproj --verbosity normal`.
-  3. Before running UI tests, install Playwright browsers using `npx playwright install --with-deps`, then run `dotnet test src/DevOpsAssistant/DevOpsAssistant.UiTests/DevOpsAssistant.UiTests.csproj` with `STAGING_URL` pointing at the deployed or locally running site.
+   3. Playwright UI tests run in the CI pipeline. Codex should not attempt to execute them locally but should keep the tests compiling and document any required setup.
 
 ### Documentation
 
@@ -64,7 +64,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 
 ## Final Checklist Before Completing Work
 
-- ✅ All tests pass (unit, integration, UI)
+- ✅ All tests pass (unit and integration)
 - ✅ Code is formatted and free of warnings
 - ✅ All user-facing strings are localized
 - ✅ Documentation and help content updated
