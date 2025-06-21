@@ -13,5 +13,6 @@ public class NewProjectPageTests : ComponentTestBase
         var cut = RenderComponent<NewProject>();
         Assert.Contains("New Project", cut.Markup);
         Assert.Contains("PAT Token", cut.Markup);
+        Assert.Contains("Use as global token", cut.Markup);
     }
 }

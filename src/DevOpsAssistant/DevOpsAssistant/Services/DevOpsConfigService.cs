@@ -7,6 +7,7 @@ public class DevOpsConfigService
     private const string LegacyStorageKey = "devops-config";
     private const string StorageKey = "devops-projects";
     private const string GlobalPatKey = "devops-pat";
+    private const string GlobalDarkKey = "devops-dark";
     private readonly ILocalStorageService _localStorage;
 
     public event Action? ProjectChanged;
@@ -24,6 +25,7 @@ public class DevOpsConfigService
     public DevOpsProject CurrentProject { get; private set; } = new();
 
     public string GlobalPatToken { get; private set; } = string.Empty;
+    public bool GlobalDarkMode { get; private set; }
 
     public DevOpsConfig Config => CurrentProject.Config;
 
@@ -37,6 +39,7 @@ public class DevOpsConfigService
     public async Task LoadAsync()
     {
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
+        GlobalDarkMode = await _localStorage.GetItemAsync<bool?>(GlobalDarkKey) ?? false;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
         if (projects != null && projects.Count > 0)
         {
@@ -75,6 +78,12 @@ public class DevOpsConfigService
     {
         GlobalPatToken = token.Trim();
         await _localStorage.SetItemAsync(GlobalPatKey, GlobalPatToken);
+    }
+
+    public async Task SaveGlobalDarkModeAsync(bool value)
+    {
+        GlobalDarkMode = value;
+        await _localStorage.SetItemAsync(GlobalDarkKey, GlobalDarkMode);
     }
 
     public async Task UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
@@ -188,9 +197,11 @@ public class DevOpsConfigService
         Projects = new List<DevOpsProject> { new DevOpsProject { Name = "default" } };
         CurrentProject = Projects[0];
         GlobalPatToken = string.Empty;
+        GlobalDarkMode = false;
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
         await _localStorage.RemoveItemAsync(GlobalPatKey);
+        await _localStorage.RemoveItemAsync(GlobalDarkKey);
         OnProjectChanged();
     }
 
