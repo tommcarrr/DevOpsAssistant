@@ -1,0 +1,36 @@
+@inject DevOpsConfigService ConfigService
+@inject IDialogService DialogService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<PatTokenDialog> L
+
+<MudDialog ContentClass="pa-4" ActionsClass="pa-4">
+    <DialogContent>
+        <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Save" Color="Color.Primary">@L["Save"]</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">@L["Cancel"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    private string _token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+        _token = ConfigService.GlobalPatToken;
+    }
+
+    private async Task Save()
+    {
+        await ConfigService.SaveGlobalPatAsync(_token);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

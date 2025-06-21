@@ -6,6 +6,7 @@ public class DevOpsConfigService
 {
     private const string LegacyStorageKey = "devops-config";
     private const string StorageKey = "devops-projects";
+    private const string GlobalPatKey = "devops-pat";
     private readonly ILocalStorageService _localStorage;
 
     public DevOpsConfigService(ILocalStorageService localStorage)
@@ -20,10 +21,13 @@ public class DevOpsConfigService
     public List<DevOpsProject> Projects { get; private set; } = new();
     public DevOpsProject CurrentProject { get; private set; } = new();
 
+    public string GlobalPatToken { get; private set; } = string.Empty;
+
     public DevOpsConfig Config => CurrentProject.Config;
 
     public async Task LoadAsync()
     {
+        GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
         if (projects != null && projects.Count > 0)
         {
@@ -56,6 +60,12 @@ public class DevOpsConfigService
         CurrentProject.Name = name.Trim();
         CurrentProject.Config = Normalize(config);
         await SaveProjectsAsync();
+    }
+
+    public async Task SaveGlobalPatAsync(string token)
+    {
+        GlobalPatToken = token.Trim();
+        await _localStorage.SetItemAsync(GlobalPatKey, GlobalPatToken);
     }
 
     public async Task UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
@@ -148,12 +158,22 @@ public class DevOpsConfigService
         };
     }
 
+    public DevOpsConfig GetEffectiveConfig()
+    {
+        var cfg = Clone(Config);
+        if (string.IsNullOrWhiteSpace(cfg.PatToken))
+            cfg.PatToken = GlobalPatToken;
+        return cfg;
+    }
+
     public async Task ClearAsync()
     {
         Projects = new List<DevOpsProject> { new DevOpsProject { Name = "default" } };
         CurrentProject = Projects[0];
+        GlobalPatToken = string.Empty;
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
+        await _localStorage.RemoveItemAsync(GlobalPatKey);
     }
 
     private async Task SaveProjectsAsync()

@@ -16,7 +16,7 @@
                 <MudStack Spacing="2">
                     <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
                     <MudTextField @bind-Value="_model.Project" Label="Project"/>
-                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password"/>
+                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token"/>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
