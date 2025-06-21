@@ -13,8 +13,8 @@
 <MudPaper Class="p-4">
     <MudText Typo="Typo.h5" Class="mb-2">@L["NewProject"]</MudText>
     <MudTextField @bind-Value="_name" Label='@L["ProjectName"]' />
-    <MudTextField @bind-Value="_organization" Label="Organization" Class="mt-2" />
-    <MudTextField @bind-Value="_project" Label="Project" Class="mt-2" />
+    <MudTextField @bind-Value="_organization" Label="DevOps Organization" Class="mt-2" />
+    <MudTextField @bind-Value="_project" Label="DevOps Project" Class="mt-2" />
     <MudTextField @bind-Value="_patToken" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Class="mt-2" />
     <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2 || string.IsNullOrWhiteSpace(_organization) || string.IsNullOrWhiteSpace(_project)" Class="mt-2">@L["Create"]</MudButton>
 </MudPaper>
