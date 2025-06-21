@@ -18,7 +18,7 @@
     <MudTextField @bind-Value="_patToken" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Class="mt-2" />
     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
     {
-        <MudCheckBox T="bool" @bind-Checked="_useAsGlobal" Label="Use as global token" Class="mt-2" />
+        <MudCheckBox T="bool" @bind-Value="_useAsGlobal" Label="Use as global token" Class="mt-2" />
     }
     <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2 || string.IsNullOrWhiteSpace(_organization) || string.IsNullOrWhiteSpace(_project)" Class="mt-2">@L["Create"]</MudButton>
 </MudPaper>
