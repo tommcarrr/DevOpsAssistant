@@ -1,10 +1,8 @@
 @page "/validation"
-@using DevOpsAssistant.Components
 @using System
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
 @inject DevOpsConfigService ConfigService
-@inject IDialogService DialogService
 @inject PageStateService StateService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Validation> L
@@ -17,7 +15,8 @@
         No validation rules are configured.
         <MudButton Variant="Variant.Text"
                    StartIcon="@Icons.Material.Filled.Settings"
-                   OnClick="OpenSettings" Class="ms-2">
+                   Href="@($"/projects/{ConfigService.CurrentProject.Name}/settings")"
+                   Class="ms-2">
             Open Settings
         </MudButton>
     </MudAlert>
@@ -277,16 +276,6 @@ else if (_results != null)
         _rulesExpanded = !_rulesExpanded;
     }
 
-    private async Task OpenSettings()
-    {
-        var dialog = await DialogService.ShowAsync<SettingsDialog>("Settings");
-        var result = await dialog.Result;
-        if (result != null && !result.Canceled)
-        {
-            ComputeRules();
-            StateHasChanged();
-        }
-    }
 
     private async Task TagItem(ResultItem item)
     {
