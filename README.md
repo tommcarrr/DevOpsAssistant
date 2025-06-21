@@ -44,7 +44,7 @@ During pull requests the CI workflow only runs the unit tests.
 
 Production hosting uses Azure Static Web Apps. The configuration file
 `staticwebapp.config.json` rewrites unknown URLs to `index.html` so deep links
-(for example `/requirements-planner`) work correctly.
+(for example `/projects/myProject/requirements-planner`) work correctly.
 
 ## Obtaining a PAT token
 

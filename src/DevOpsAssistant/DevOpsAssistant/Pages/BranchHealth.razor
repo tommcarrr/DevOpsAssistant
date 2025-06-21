@@ -1,4 +1,4 @@
-@page "/branch-health"
+@page "/projects/{ProjectName}/branch-health"
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
@@ -70,6 +70,7 @@ else if (_branches != null)
 }
 
 @code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
     private RepositoryInfo? _repo;
     private List<RepositoryInfo> _repos = new();
     private List<BranchInfo>? _branches;
@@ -83,6 +84,11 @@ else if (_branches != null)
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) &&
+            ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
         try
         {
             _repos = await ApiService.GetRepositoriesAsync();

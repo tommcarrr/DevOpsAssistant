@@ -41,12 +41,12 @@ public class UiTests
 
     [Theory]
     [InlineData("/", "Welcome to DevOpsAssistant")]
-    [InlineData("/metrics", "weekly throughput")]
-    [InlineData("/release-notes", "release notes")]
-    [InlineData("/requirements-planner", "break requirements")]
-    [InlineData("/story-review", "reviewing user stories")]
-    [InlineData("/validation", "validate work items")]
-    [InlineData("/epics-features", "epics and features")]
+    [InlineData("/projects/Proj/metrics", "weekly throughput")]
+    [InlineData("/projects/Proj/release-notes", "release notes")]
+    [InlineData("/projects/Proj/requirements-planner", "break requirements")]
+    [InlineData("/projects/Proj/story-review", "reviewing user stories")]
+    [InlineData("/projects/Proj/validation", "validate work items")]
+    [InlineData("/projects/Proj/epics-features", "epics and features")]
     [InlineData("/help", "Help & Instructions")]
     public async Task Page_Loads_With_Expected_Content(string path, string text)
     {
@@ -137,7 +137,7 @@ public class UiTests
         await page.GotoAsync(_baseUrl);
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
         await page.ReloadAsync();
-        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/requirements-planner");
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/projects/Proj/requirements-planner");
         var root = await page.WaitForSelectorAsync("text=Home");
         var child = await page.WaitForSelectorAsync("text=Setup");
         Assert.NotNull(root);
@@ -169,7 +169,7 @@ public class UiTests
         await page.GotoAsync(_baseUrl);
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
         await page.ReloadAsync();
-        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/release-notes");
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/projects/Proj/release-notes");
         await page.FillAsync("input[aria-label='User Stories']", "Story");
         await page.WaitForSelectorAsync("div.mud-popover");
         await page.ClickAsync("text=Story 1");
@@ -210,7 +210,7 @@ public class UiTests
         await page.GotoAsync(_baseUrl);
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Project', PatToken: 'Token' }))");
         await page.ReloadAsync();
-        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/metrics");
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/projects/Project/metrics");
         await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();
         var table = await page.WaitForSelectorAsync("text=Period Ending");
         Assert.NotNull(table);
@@ -241,7 +241,7 @@ public class UiTests
         await page.GotoAsync(_baseUrl);
         await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token', MainBranch: 'main' }))");
         await page.ReloadAsync();
-        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/branch-health");
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/projects/Proj/branch-health");
         await page.GetByRole(AriaRole.Button, new() { Name = "Load" }).ClickAsync();
         var row = await page.WaitForSelectorAsync("text=feature");
         Assert.NotNull(row);

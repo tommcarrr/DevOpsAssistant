@@ -1,4 +1,4 @@
-@page "/release-notes"
+@page "/projects/{ProjectName}/release-notes"
 @using System.Text
 @using System.Text.Json
 @using System.Text.Json.Serialization
@@ -127,6 +127,7 @@ else if (_promptParts != null)
 }
 
 @code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
     private readonly HashSet<WorkItemInfo> _selectedItems = [];
     private WorkItemInfo? _searchValue;
     private bool _loading;
@@ -142,6 +143,12 @@ else if (_promptParts != null)
 
     protected override async Task OnInitializedAsync()
     {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) &&
+            ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
         if (ConfigService.Config.ReleaseNotesTreeView)
         {
             try
