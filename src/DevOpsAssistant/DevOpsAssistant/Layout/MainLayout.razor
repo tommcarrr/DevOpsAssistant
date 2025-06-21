@@ -68,6 +68,11 @@
     private bool _drawerOpen = true;
     private string _selectedProject = string.Empty;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        EnsureSettingsIfNeeded();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await VersionService.LoadAsync();
@@ -112,6 +117,7 @@
         await ConfigService.SelectProjectAsync(name);
         _selectedProject = ConfigService.CurrentProject.Name;
         StateHasChanged();
+        EnsureSettingsIfNeeded();
 
         var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         if (relative.StartsWith("projects/"))
@@ -128,6 +134,17 @@
         else
         {
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
+    }
+
+    private void EnsureSettingsIfNeeded()
+    {
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (IsConfigMissing &&
+            !relative.StartsWith("projects/new") &&
+            !relative.EndsWith("/settings"))
+        {
+            NavigationManager.NavigateTo($"/projects/{_selectedProject}/settings", true);
         }
     }
 

@@ -12,11 +12,15 @@
 <MudPaper Class="p-4">
     <MudText Typo="Typo.h5" Class="mb-2">@L["NewProject"]</MudText>
     <MudTextField @bind-Value="_name" Label='@L["ProjectName"]' />
-    <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2" Class="mt-2">@L["Create"]</MudButton>
+    <MudTextField @bind-Value="_organization" Label="Organization" Class="mt-2" />
+    <MudTextField @bind-Value="_project" Label="Project" Class="mt-2" />
+    <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2 || string.IsNullOrWhiteSpace(_organization) || string.IsNullOrWhiteSpace(_project)" Class="mt-2">@L["Create"]</MudButton>
 </MudPaper>
 
 @code {
     private string _name = string.Empty;
+    private string _organization = string.Empty;
+    private string _project = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,6 +30,11 @@
     private async Task Create()
     {
         await ConfigService.AddProjectAsync(_name);
+        await ConfigService.SaveAsync(new DevOpsConfig
+        {
+            Organization = _organization,
+            Project = _project
+        });
         NavigationManager.NavigateTo($"/projects/{_name}", forceLoad: true);
     }
 }

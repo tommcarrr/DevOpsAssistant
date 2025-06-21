@@ -36,6 +36,9 @@
   <data name="ProjectName" xml:space="preserve">
     <value>Nombre del Proyecto</value>
   </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organización</value>
+  </data>
   <data name="NewProject" xml:space="preserve">
     <value>Nuevo Proyecto</value>
   </data>
