@@ -18,6 +18,9 @@
   <data name="SignOutWarning" xml:space="preserve">
     <value>Signing out will remove all saved settings. Continue?</value>
   </data>
+  <data name="GlobalSettings" xml:space="preserve">
+    <value>Global Settings</value>
+  </data>
   <data name="PatToken" xml:space="preserve">
     <value>PAT Token</value>
   </data>

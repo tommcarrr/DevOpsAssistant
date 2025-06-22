@@ -18,6 +18,9 @@
   <data name="SignOutWarning" xml:space="preserve">
     <value>Cerrar sesión eliminará toda la configuración guardada. ¿Continuar?</value>
   </data>
+  <data name="GlobalSettings" xml:space="preserve">
+    <value>Configuración global</value>
+  </data>
   <data name="PatToken" xml:space="preserve">
     <value>Token PAT</value>
   </data>
