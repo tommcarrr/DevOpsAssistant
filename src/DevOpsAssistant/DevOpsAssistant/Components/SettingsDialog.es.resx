@@ -69,6 +69,9 @@
   <data name="SavedMessage" xml:space="preserve">
     <value>Configuración guardada</value>
   </data>
+  <data name="Back" xml:space="preserve">
+    <value>Volver</value>
+  </data>
   <data name="DuplicateName" xml:space="preserve">
     <value>Ya existe un proyecto con ese nombre.</value>
   </data>

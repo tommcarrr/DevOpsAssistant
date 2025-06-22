@@ -40,6 +40,6 @@
     <value>View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects. You can also customize prompts and validation rules.</value>
+    <value>Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects. You can also customize prompts and validation rules. Create a PAT from your profile menu in Azure DevOps and select New Token (see https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate). The organization name is the first segment after dev.azure.com/ in the URL and the project name appears next to the home icon when viewing a project.</value>
   </data>
 </root>
