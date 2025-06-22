@@ -1,12 +1,15 @@
-name: Azure Static Web Apps CI/CD
+name: Manual Staging Deployment
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: main
 
 jobs:
-  deploy_staging:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,6 +17,7 @@ jobs:
           submodules: true
           lfs: false
           fetch-depth: 0
+          ref: ${{ github.event.inputs.branch }}
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -42,9 +46,11 @@ jobs:
 
   ui_tests:
     runs-on: ubuntu-latest
-    needs: deploy_staging
+    needs: deploy
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -65,32 +71,3 @@ jobs:
         env:
           STAGING_URL: ${{ env.STAGING_URL }}
 
-  deploy_production:
-    runs-on: ubuntu-latest
-    needs: ui_tests
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-          lfs: false
-          fetch-depth: 0
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore
-        run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
-      - name: Build
-        run: dotnet build src/DevOpsAssistant/DevOpsAssistant.sln -c Release -warnaserror
-      - name: Test
-        run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln -c Release --no-build --no-restore --verbosity normal
-      - name: Set version
-        run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
-      - name: Deploy to Production
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BRAVE_ROCK_022B8FE03 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "src/DevOpsAssistant/DevOpsAssistant"
-          output_location: "wwwroot"
