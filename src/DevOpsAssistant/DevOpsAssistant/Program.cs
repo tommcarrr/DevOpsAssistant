@@ -13,10 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp =>
 {
-    var client = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
-    client.DefaultRequestHeaders.Add("Access-Control-Allow-Origin", "*");
-    client.DefaultRequestHeaders.Add("Access-Control-Allow-Credentials", "true");
-    return client;
+    return new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
 });
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
