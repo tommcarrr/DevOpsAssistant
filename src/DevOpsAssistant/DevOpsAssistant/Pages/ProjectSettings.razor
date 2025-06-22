@@ -5,6 +5,8 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 <PageTitle>DevOpsAssistant - Settings</PageTitle>
 
@@ -66,7 +68,10 @@
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
-        <MudButton OnClick="Save" Color="Color.Primary" Class="mt-2">Save</MudButton>
+        <MudStack Row="true" Spacing="1" Class="mt-2">
+            <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+            <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
+        </MudStack>
     </MudStack>
 </MudPaper>
 
@@ -125,5 +130,18 @@
     {
         await ConfigService.SaveCurrentAsync(_projectName, _model);
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
+    }
+
+    private async Task Delete()
+    {
+        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_projectName}?" };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+        await ConfigService.RemoveProjectAsync(_projectName);
+        if (ConfigService.Projects.Any())
+            NavigationManager.NavigateTo("/projects", true);
+        else
+            NavigationManager.NavigateTo("/projects/new", true);
     }
 }
