@@ -45,6 +45,12 @@ public class DevOpsApiServiceTests
         method.Invoke(null, [el, list]);
     }
 
+    private static void InvokeExtractIterations(JsonElement el, List<IterationInfo> list)
+    {
+        var method = typeof(DevOpsApiService).GetMethod("ExtractIterations", BindingFlags.NonPublic | BindingFlags.Static)!;
+        method.Invoke(null, [el, list]);
+    }
+
     private static string InvokeBuildStorySearchWiql(string term)
     {
         var method =
@@ -264,6 +270,21 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void ExtractIterations_Collects_All()
+    {
+        var json =
+            "{\"name\":\"Root\",\"children\":[{\"name\":\"Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
+        var doc = JsonDocument.Parse(json);
+        List<IterationInfo> list = [];
+
+        InvokeExtractIterations(doc.RootElement, list);
+
+        Assert.Single(list);
+        Assert.Equal("Sprint 1", list[0].Name);
+        Assert.Equal(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), list[0].StartDate);
+    }
+
+    [Fact]
     public async Task GetBacklogsAsync_Returns_Normalized_Paths()
     {
         var classificationJson =
@@ -286,6 +307,26 @@ public class DevOpsApiServiceTests
         var result = await service.GetBacklogsAsync();
 
         Assert.Equal(["Project", "Project\\Sub"], result);
+    }
+
+    [Fact]
+    public async Task GetIterationsAsync_Returns_Iterations()
+    {
+        var json = "{\"children\":[{\"name\":\"Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(json)
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Project", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.GetIterationsAsync();
+
+        Assert.Single(result);
+        Assert.Equal("Sprint 1", result[0].Name);
     }
 
     [Fact]

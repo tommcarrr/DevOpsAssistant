@@ -239,6 +239,21 @@ public class DevOpsApiService
         return normalized;
     }
 
+    public async Task<List<IterationInfo>> GetIterationsAsync()
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+
+        var result =
+            await GetJsonAsync<JsonElement>(
+                $"{baseUri}/classificationnodes/iterations?$depth=3&api-version={ApiVersion}");
+        List<IterationInfo> list = [];
+        ExtractIterations(result, list);
+        return list.OrderBy(i => i.StartDate).ToList();
+    }
+
     public async Task<string[]> GetStatesAsync()
     {
         var config = GetValidatedConfig();
@@ -359,6 +374,26 @@ public class DevOpsApiService
         if (el.TryGetProperty("children", out var children))
             foreach (var child in children.EnumerateArray())
                 ExtractPaths(child, list);
+    }
+
+    private static void ExtractIterations(JsonElement el, List<IterationInfo> list)
+    {
+        if (el.TryGetProperty("name", out var name) &&
+            el.TryGetProperty("attributes", out var attrs) &&
+            attrs.TryGetProperty("startDate", out var start) && start.ValueKind == JsonValueKind.String &&
+            attrs.TryGetProperty("finishDate", out var end) && end.ValueKind == JsonValueKind.String)
+        {
+            list.Add(new IterationInfo
+            {
+                Name = name.GetString() ?? string.Empty,
+                StartDate = start.GetDateTime(),
+                EndDate = end.GetDateTime()
+            });
+        }
+
+        if (el.TryGetProperty("children", out var children))
+            foreach (var child in children.EnumerateArray())
+                ExtractIterations(child, list);
     }
 
     private static List<WorkItemNode> FilterClosedEpics(IEnumerable<WorkItemNode> roots)

@@ -53,7 +53,7 @@ public class MetricsPageTests : ComponentTestBase
         var compute = type.GetMethod("ComputePeriods", BindingFlags.NonPublic | BindingFlags.Instance)!;
         type.GetField("_mode", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, AggregateMode.Fortnight);
         type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today);
-        compute.Invoke(metrics, new object?[] { new List<StoryMetric>() });
+        compute.Invoke(metrics, new object?[] { new List<StoryMetric>(), null });
 
         var periodsField = type.GetField("_periods", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var list = (System.Collections.IList)periodsField.GetValue(metrics)!;
