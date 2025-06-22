@@ -30,12 +30,12 @@
             @Body
         </MudContainer>
         <footer class="app-footer">
-            <MudContainer MaxWidth="MaxWidth.Large" Class="py-2">
-                <MudText Typo="Typo.caption" Align="Align.Center">
-                    Version @VersionService.Version
-                </MudText>
-                <MudText Typo="Typo.caption" Align="Align.Center">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="py-2 footer-content">
+                <MudText Typo="Typo.body2" Align="Align.Left">
                     @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
+                </MudText>
+                <MudText Typo="Typo.caption" Align="Align.Right">
+                    Version @VersionService.Version
                 </MudText>
             </MudContainer>
         </footer>
