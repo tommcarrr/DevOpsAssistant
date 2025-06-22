@@ -16,9 +16,7 @@ public class DevOpsConfigService
     {
         _localStorage = localStorage;
 
-        var project = new DevOpsProject { Name = "default" };
-        Projects.Add(project);
-        CurrentProject = project;
+        CurrentProject = new DevOpsProject();
     }
 
     public List<DevOpsProject> Projects { get; private set; } = new();
@@ -114,8 +112,8 @@ public class DevOpsConfigService
         if (proj == null) return;
         Projects.Remove(proj);
         if (Projects.Count == 0)
-            Projects.Add(new DevOpsProject { Name = "default" });
-        if (CurrentProject.Name == name)
+            CurrentProject = new DevOpsProject();
+        else if (CurrentProject.Name == name)
             CurrentProject = Projects[0];
         await SaveProjectsAsync();
         OnProjectChanged();
@@ -194,8 +192,8 @@ public class DevOpsConfigService
 
     public async Task ClearAsync()
     {
-        Projects = new List<DevOpsProject> { new DevOpsProject { Name = "default" } };
-        CurrentProject = Projects[0];
+        Projects = new List<DevOpsProject>();
+        CurrentProject = new DevOpsProject();
         GlobalPatToken = string.Empty;
         GlobalDarkMode = false;
         await _localStorage.RemoveItemAsync(StorageKey);

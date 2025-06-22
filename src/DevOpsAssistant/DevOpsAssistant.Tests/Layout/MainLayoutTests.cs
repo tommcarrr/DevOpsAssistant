@@ -38,7 +38,7 @@ public class MainLayoutTests : ComponentTestBase
         SetupServices();
 
         var cut = RenderComponent<MainLayout>();
-        var link = cut.Find($"a[href='/projects/default/settings']");
+        var link = cut.Find("a[href^='/projects/'][href$='/settings']");
 
         Assert.DoesNotContain("mud-nav-link-disabled", link.ClassName);
 
@@ -57,7 +57,7 @@ public class MainLayoutTests : ComponentTestBase
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
 
-        Assert.Equal("default", config.CurrentProject.Name);
+        Assert.Equal(string.Empty, config.CurrentProject.Name);
     }
 
     [Fact]

@@ -11,6 +11,7 @@ public class DevOpsConfigServiceTests
     {
         var storage = new FakeLocalStorageService();
         var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("default");
         var config = new DevOpsConfig
         {
             Organization = " Org ",
@@ -198,7 +199,7 @@ public class DevOpsConfigServiceTests
         await service.RemoveProjectAsync("proj2");
 
         Assert.DoesNotContain(service.Projects, p => p.Name == "proj2");
-        Assert.Equal("default", service.CurrentProject.Name);
+        Assert.Equal("proj1", service.CurrentProject.Name);
     }
 
     [Fact]
