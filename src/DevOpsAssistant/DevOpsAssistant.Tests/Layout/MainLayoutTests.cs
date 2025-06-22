@@ -3,6 +3,7 @@ using DevOpsAssistant.Layout;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Bunit.TestDoubles;
@@ -53,9 +54,11 @@ public class MainLayoutTests : ComponentTestBase
         await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
 
         var cut = RenderComponent<MainLayout>();
-        cut.Find("button[title='Sign Out']").Click();
+        var method = typeof(MainLayout).GetMethod("SignOut", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, null)!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
+        await task;
 
         Assert.Equal(string.Empty, config.CurrentProject.Name);
     }

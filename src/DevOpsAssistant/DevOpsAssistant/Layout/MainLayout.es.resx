@@ -36,7 +36,16 @@
   <data name="SignOut" xml:space="preserve">
     <value>Cerrar sesión</value>
   </data>
-  <data name="SignOutWarning" xml:space="preserve">
+  <data name="RemovePat" xml:space="preserve">
+    <value>Eliminar token PAT</value>
+  </data>
+  <data name="RemoveAll" xml:space="preserve">
+    <value>Eliminar toda la configuración</value>
+  </data>
+  <data name="RemovePatWarning" xml:space="preserve">
+    <value>Esto eliminará el token PAT global. ¿Continuar?</value>
+  </data>
+  <data name="RemoveAllWarning" xml:space="preserve">
     <value>Cerrar sesión eliminará toda la configuración guardada. ¿Continuar?</value>
   </data>
   <data name="GlobalSettings" xml:space="preserve">

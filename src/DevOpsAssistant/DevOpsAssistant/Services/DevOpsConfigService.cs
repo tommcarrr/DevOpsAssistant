@@ -203,6 +203,12 @@ public class DevOpsConfigService
         OnProjectChanged();
     }
 
+    public async Task RemoveGlobalPatAsync()
+    {
+        GlobalPatToken = string.Empty;
+        await _localStorage.RemoveItemAsync(GlobalPatKey);
+    }
+
     private async Task SaveProjectsAsync()
     {
         await _localStorage.SetItemAsync(StorageKey, Projects);

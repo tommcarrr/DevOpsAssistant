@@ -18,7 +18,11 @@
         </MudText>
         <MudSpacer/>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]'/>
-        <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.Help" Href="/help" title='@L["Help"]' class="mx-2"/>
+        <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
+            <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
+            <MudMenuItem OnClick="SignOut">@L["RemoveAll"]</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
 
     <MudMainContent>
@@ -42,12 +46,23 @@
 
     private async Task SignOut()
     {
-        var parameters = new DialogParameters { ["Message"] = L["SignOutWarning"].Value };
+        var parameters = new DialogParameters { ["Message"] = L["RemoveAllWarning"].Value };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
         var result = await dialog.Result;
         if (result?.Canceled != false) return;
 
         await ConfigService.ClearAsync();
+        StateHasChanged();
+    }
+
+    private async Task RemovePat()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["RemovePatWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
+        await ConfigService.RemoveGlobalPatAsync();
         StateHasChanged();
     }
 
