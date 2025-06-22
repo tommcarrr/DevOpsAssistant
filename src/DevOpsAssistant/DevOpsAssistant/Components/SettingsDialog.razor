@@ -38,7 +38,7 @@
             else
             {
                 <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
-                <MudButton OnClick="DeleteProject" Color="Color.Error" Disabled="ConfigService.Projects.Count == 1" Class="mt-2">@L["DeleteProject"]</MudButton>
+                <MudButton OnClick="DeleteProject" Color="Color.Error" Disabled="ConfigService.Projects.Count == 0" Class="mt-2">@L["DeleteProject"]</MudButton>
             }
         </MudStack>
         <MudTabs Class="mt-4">

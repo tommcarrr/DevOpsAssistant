@@ -2,6 +2,9 @@ using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Services;
+using Microsoft.AspNetCore.Components;
+using Bunit.TestDoubles;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DevOpsAssistant.Tests.Pages;
 
@@ -23,8 +26,9 @@ public class HomePageTests : ComponentTestBase
         var config = SetupServices();
         await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
 
+        var nav = Services.GetRequiredService<NavigationManager>() as FakeNavigationManager;
         var cut = RenderComponent<Home>();
 
-        Assert.Contains("NewProject", cut.Markup);
+        Assert.Equal("http://localhost/projects/new", nav!.Uri);
     }
 }

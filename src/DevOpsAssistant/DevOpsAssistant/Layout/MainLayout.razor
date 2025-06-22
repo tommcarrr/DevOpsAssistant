@@ -141,6 +141,13 @@
     private void EnsureSettingsIfNeeded()
     {
         var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (!ConfigService.Projects.Any())
+        {
+            if (!relative.StartsWith("projects/new"))
+                NavigationManager.NavigateTo("/projects/new", replace: true);
+            return;
+        }
+
         if (IsProjectInvalid &&
             !relative.StartsWith("projects/new") &&
             !relative.EndsWith("/settings"))
