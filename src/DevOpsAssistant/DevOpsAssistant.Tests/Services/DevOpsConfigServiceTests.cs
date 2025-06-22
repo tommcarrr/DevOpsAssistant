@@ -272,4 +272,43 @@ public class DevOpsConfigServiceTests
         var stored = await storage.GetItemAsync<bool?>("devops-dark");
         Assert.True(stored);
     }
+
+    [Fact]
+    public async Task SaveCurrentAsync_Raises_Event_When_Validity_Changes()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("one");
+        bool raised = false;
+        service.ProjectChanged += () => raised = true;
+
+        await service.SaveCurrentAsync("one", new DevOpsConfig
+        {
+            Organization = "Org",
+            Project = "Proj",
+            PatToken = "token"
+        });
+
+        Assert.True(raised);
+    }
+
+    [Fact]
+    public async Task SaveCurrentAsync_Does_Not_Raise_Event_When_Validity_Unchanged()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("one");
+        await service.SaveCurrentAsync("one", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        bool raised = false;
+        service.ProjectChanged += () => raised = true;
+
+        await service.SaveCurrentAsync("one", new DevOpsConfig
+        {
+            Organization = "Org2",
+            Project = "Proj2",
+            PatToken = "token2"
+        });
+
+        Assert.False(raised);
+    }
 }
