@@ -29,7 +29,11 @@
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]' class="me-2"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.Help" Href="/help" title='@L["Help"]' class="me-2"/>
+        <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
+            <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
+            <MudMenuItem OnClick="SignOut">@L["RemoveAll"]</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" Class="mud-width-220" ClipMode="DrawerClipMode.Always">
@@ -47,7 +51,6 @@
                 <MudNavLink Href="@($"projects/{_selectedProject}/branch-health")" Icon="@Icons.Material.Filled.Source" Disabled="@IsProjectInvalid">@L["BranchHealth"]</MudNavLink>
             </MudNavGroup>
             <MudNavLink Href="@($"/projects/{_selectedProject}/settings")" Icon="@Icons.Material.Filled.Settings">@L["Settings"]</MudNavLink>
-            <MudNavLink Href="help" Icon="@Icons.Material.Filled.Help">@L["Help"]</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 
@@ -93,12 +96,23 @@
 
     private async Task SignOut()
     {
-        var parameters = new DialogParameters { ["Message"] = L["SignOutWarning"].Value };
+        var parameters = new DialogParameters { ["Message"] = L["RemoveAllWarning"].Value };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
         var result = await dialog.Result;
         if (result?.Canceled != false) return;
 
         await ConfigService.ClearAsync();
+        StateHasChanged();
+    }
+
+    private async Task RemovePat()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["RemovePatWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
+        await ConfigService.RemoveGlobalPatAsync();
         StateHasChanged();
     }
 

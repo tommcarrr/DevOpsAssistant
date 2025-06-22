@@ -15,7 +15,16 @@
   <data name="SignOut" xml:space="preserve">
     <value>Sign Out</value>
   </data>
-  <data name="SignOutWarning" xml:space="preserve">
+  <data name="RemovePat" xml:space="preserve">
+    <value>Remove PAT Token</value>
+  </data>
+  <data name="RemoveAll" xml:space="preserve">
+    <value>Remove All Settings</value>
+  </data>
+  <data name="RemovePatWarning" xml:space="preserve">
+    <value>This will delete the global PAT token. Continue?</value>
+  </data>
+  <data name="RemoveAllWarning" xml:space="preserve">
     <value>Signing out will remove all saved settings. Continue?</value>
   </data>
   <data name="GlobalSettings" xml:space="preserve">
