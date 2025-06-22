@@ -28,7 +28,7 @@
             <MudDivider />
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
-        <MudIconButton Icon="@Icons.Material.Filled.VpnKey" OnClick="OpenOptionsDialog" title='@L["PatToken"]' class="me-2"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]' class="me-2"/>
         <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" title='@L["SignOut"]'/>
     </MudAppBar>
 
@@ -104,7 +104,7 @@
 
     private async Task OpenOptionsDialog()
     {
-        await DialogService.ShowAsync<GlobalOptionsDialog>(L["PatToken"]);
+        await DialogService.ShowAsync<GlobalOptionsDialog>(L["GlobalSettings"]);
     }
 
     private async Task ChangeProject(string name)
