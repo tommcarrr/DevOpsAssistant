@@ -13,13 +13,13 @@
 <MudPaper Class="p-4">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["ProjectSettings"] @ProjectName</MudText>
-        <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
+        <MudTextField T="string" Value="_projectName" ValueChanged="OnNameChanged" Label='@L["ProjectName"]' Immediate="true" />
         <MudTabs Class="mt-4">
             <MudTabPanel Text="General">
                 <MudStack Spacing="2">
-                    <MudTextField @bind-Value="_model.Organization" Label="DevOps Organization"/>
-                    <MudTextField @bind-Value="_model.Project" Label="DevOps Project"/>
-                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token"/>
+                    <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                    <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label="DevOps Project" Immediate="true"/>
+                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
                     <MudTextField @bind-Value="_model.MainBranch" Label="Main Branch"/>
                     <MudTextField @bind-Value="_model.DefaultStates" Label="Default States" HelperText="Comma separated"/>
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label="Dark Mode"/>
@@ -68,8 +68,17 @@
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
+        @if (_errors.Count > 0)
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-2">
+                @foreach (var e in _errors)
+                {
+                    <div>@e</div>
+                }
+            </MudAlert>
+        }
         <MudStack Row="true" Spacing="1" Class="mt-2">
-            <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+            <MudButton OnClick="Save" Color="Color.Primary" Disabled="!CanSave">Save</MudButton>
             <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
         </MudStack>
     </MudStack>
@@ -79,6 +88,9 @@
     [Parameter] public string ProjectName { get; set; } = string.Empty;
     private string _projectName = string.Empty;
     private DevOpsConfig _model = new();
+    private List<string> _errors = new();
+
+    private bool CanSave => _errors.Count == 0;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -124,11 +136,21 @@
                 }
             }
         };
+        Validate();
     }
 
     private async Task Save()
     {
-        await ConfigService.SaveCurrentAsync(_projectName, _model);
+        Validate();
+        if (!CanSave)
+            return;
+
+        var saved = await ConfigService.SaveCurrentAsync(_projectName, _model);
+        if (!saved)
+        {
+            _errors = new List<string> { L["DuplicateName"] };
+            return;
+        }
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
     }
 
@@ -143,5 +165,49 @@
             NavigationManager.NavigateTo("/projects", true);
         else
             NavigationManager.NavigateTo("/projects/new", true);
+    }
+
+    private Task OnNameChanged(string value)
+    {
+        _projectName = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnOrgChanged(string value)
+    {
+        _model.Organization = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnProjectChanged(string value)
+    {
+        _model.Project = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnPatChanged(string value)
+    {
+        _model.PatToken = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private void Validate()
+    {
+        _errors.Clear();
+        if (string.IsNullOrWhiteSpace(_projectName))
+            _errors.Add(L["MissingName"]);
+        else if (!_projectName.Equals(ConfigService.CurrentProject.Name, StringComparison.OrdinalIgnoreCase) &&
+                 ConfigService.Projects.Any(p => p.Name.Equals(_projectName, StringComparison.OrdinalIgnoreCase)))
+            _errors.Add(L["DuplicateName"]);
+        if (string.IsNullOrWhiteSpace(_model.Organization))
+            _errors.Add(L["MissingOrganization"]);
+        if (string.IsNullOrWhiteSpace(_model.Project))
+            _errors.Add(L["MissingProject"]);
+        if (string.IsNullOrWhiteSpace(_model.PatToken) && string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
+            _errors.Add(L["MissingPat"]);
     }
 }

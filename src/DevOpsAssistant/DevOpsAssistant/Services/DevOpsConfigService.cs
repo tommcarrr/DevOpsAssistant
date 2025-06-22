@@ -65,11 +65,17 @@ public class DevOpsConfigService
         await SaveProjectsAsync();
     }
 
-    public async Task SaveCurrentAsync(string name, DevOpsConfig config)
+    public async Task<bool> SaveCurrentAsync(string name, DevOpsConfig config)
     {
-        CurrentProject.Name = name.Trim();
+        name = name.Trim();
+        if (!CurrentProject.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+            Projects.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        CurrentProject.Name = name;
         CurrentProject.Config = Normalize(config);
         await SaveProjectsAsync();
+        return true;
     }
 
     public async Task SaveGlobalPatAsync(string token)
@@ -84,26 +90,35 @@ public class DevOpsConfigService
         await _localStorage.SetItemAsync(GlobalDarkKey, GlobalDarkMode);
     }
 
-    public async Task UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
+    public async Task<bool> UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
     {
         var proj = Projects.FirstOrDefault(p => p.Name == existingName);
-        if (proj == null) return;
-        proj.Name = newName.Trim();
+        if (proj == null) return false;
+        newName = newName.Trim();
+        if (!existingName.Equals(newName, StringComparison.OrdinalIgnoreCase) &&
+            Projects.Any(p => p.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+            return false;
+        proj.Name = newName;
         proj.Config = Normalize(config);
         await SaveProjectsAsync();
+        return true;
     }
 
-    public async Task AddProjectAsync(string name, DevOpsProject? source = null)
+    public async Task<bool> AddProjectAsync(string name, DevOpsProject? source = null)
     {
+        name = name.Trim();
+        if (Projects.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            return false;
         var project = new DevOpsProject
         {
-            Name = name.Trim(),
+            Name = name,
             Config = source != null ? Clone(source.Config) : new DevOpsConfig()
         };
         Projects.Add(Normalize(project));
         CurrentProject = project;
         await SaveProjectsAsync();
         OnProjectChanged();
+        return true;
     }
 
     public async Task RemoveProjectAsync(string name)

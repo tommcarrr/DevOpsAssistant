@@ -220,6 +220,47 @@ public class DevOpsConfigServiceTests
     }
 
     [Fact]
+    public async Task AddProjectAsync_Returns_False_For_Duplicate()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+
+        await service.AddProjectAsync("proj");
+        var result = await service.AddProjectAsync("proj");
+
+        Assert.False(result);
+        Assert.Single(service.Projects);
+    }
+
+    [Fact]
+    public async Task SaveCurrentAsync_Returns_False_When_NewName_Exists()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("one");
+        await service.AddProjectAsync("two");
+        await service.SelectProjectAsync("one");
+
+        var result = await service.SaveCurrentAsync("two", new DevOpsConfig());
+
+        Assert.False(result);
+        Assert.Equal("one", service.CurrentProject.Name);
+    }
+
+    [Fact]
+    public async Task UpdateProjectAsync_Returns_False_When_NewName_Exists()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+        await service.AddProjectAsync("one");
+        await service.AddProjectAsync("two");
+
+        var result = await service.UpdateProjectAsync("two", "one", new DevOpsConfig());
+
+        Assert.False(result);
+    }
+
+    [Fact]
     public async Task SaveGlobalDarkModeAsync_Persists_Value()
     {
         var storage = new FakeLocalStorageService();
