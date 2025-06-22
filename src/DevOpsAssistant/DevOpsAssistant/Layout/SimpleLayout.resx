@@ -33,4 +33,7 @@
   <data name="PatToken" xml:space="preserve">
     <value>PAT Token</value>
   </data>
+  <data name="FooterCopyright" xml:space="preserve">
+    <value>&#169; {0} TommCarrr industries</value>
+  </data>
 </root>

@@ -40,6 +40,6 @@
     <value>Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto. También puede personalizar los prompts y las reglas de validación. Cree un PAT desde el menú de perfil en Azure DevOps eligiendo Nuevo token (vea https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate). El nombre de la organización es la primera parte después de dev.azure.com/ en la URL y el nombre del proyecto aparece junto al icono de inicio al ver un proyecto.</value>
+    <value>Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto. También puede personalizar los prompts y las reglas de validación. Cree un PAT desde el menú de perfil en Azure DevOps eligiendo Nuevo token. Consulte {0} para ver las instrucciones. El nombre de la organización es la primera parte después de dev.azure.com/ en la URL y el nombre del proyecto aparece junto al icono de inicio al ver un proyecto.</value>
   </data>
 </root>

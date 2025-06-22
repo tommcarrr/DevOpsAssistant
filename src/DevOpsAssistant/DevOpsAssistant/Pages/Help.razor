@@ -37,5 +37,8 @@
 </MudPaper>
 <MudPaper Class="pa-4 mb-4">
     <MudText Typo="Typo.h6">Settings</MudText>
-    <MudText Typo="Typo.body2">@L["Settings"]</MudText>
+    <MudText Typo="Typo.body2">
+        @((MarkupString)string.Format(L["Settings"],
+            "<a href='https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate' target='_blank'>this guide</a>"))
+    </MudText>
 </MudPaper>

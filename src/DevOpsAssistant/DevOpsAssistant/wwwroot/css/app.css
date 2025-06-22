@@ -159,10 +159,10 @@ html, body { height: 100%; }
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 .app-footer {
     margin-top: auto;
-    background-color: var(--mud-palette-background, #f5f5f5);
+    background-color: var(--mud-palette-surface, #fff);
     border-top: 1px solid var(--mud-palette-lines, #e0e0e0);
     color: var(--mud-palette-text-primary, #000);
-    padding: 0.5rem 0;
+    padding: 1rem 0;
     z-index: 1;
     position: relative;
 }
