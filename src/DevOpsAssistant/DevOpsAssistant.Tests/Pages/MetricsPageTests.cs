@@ -59,6 +59,7 @@ public class MetricsPageTests : ComponentTestBase
         var list = (System.Collections.IList)periodsField.GetValue(metrics)!;
         Assert.True(list.Count > 0);
         var first = list[0];
+        Assert.NotNull(first);
         var start = (DateTime)first.GetType().GetProperty("Start")!.GetValue(first)!;
         var end = (DateTime)first.GetType().GetProperty("End")!.GetValue(first)!;
         Assert.Equal(13, (end - start).TotalDays);
