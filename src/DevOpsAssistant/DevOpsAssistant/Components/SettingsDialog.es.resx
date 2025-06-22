@@ -30,6 +30,15 @@
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Tiene story points</value>
   </data>
+  <data name="GeneralTab" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="StoryQualityTab" xml:space="preserve">
+    <value>Calidad de Historia</value>
+  </data>
+  <data name="ValidationTab" xml:space="preserve">
+    <value>Reglas de Validación</value>
+  </data>
   <data name="Project" xml:space="preserve">
     <value>Proyecto de DevOps</value>
   </data>
@@ -74,5 +83,20 @@
   </data>
   <data name="MissingPat" xml:space="preserve">
     <value>Se requiere un token PAT o global.</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>Rama principal</value>
+  </data>
+  <data name="DefaultStates" xml:space="preserve">
+    <value>Estados predeterminados</value>
+  </data>
+  <data name="DarkMode" xml:space="preserve">
+    <value>Modo oscuro</value>
+  </data>
+  <data name="ReleaseNotesTreeView" xml:space="preserve">
+    <value>Vista en árbol de notas de lanzamiento</value>
+  </data>
+  <data name="DefinitionOfReady" xml:space="preserve">
+    <value>Definición de Terminado</value>
   </data>
 </root>

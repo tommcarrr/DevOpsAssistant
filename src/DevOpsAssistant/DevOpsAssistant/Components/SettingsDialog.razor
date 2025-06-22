@@ -42,20 +42,20 @@
             }
         </MudStack>
         <MudTabs Class="mt-4">
-            <MudTabPanel Text="General">
+            <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
                     <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
                     <MudTextField @bind-Value="_model.Project" Label="Project"/>
                     <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token"/>
-                    <MudTextField @bind-Value="_model.MainBranch" Label="Main Branch"/>
-                    <MudTextField @bind-Value="_model.DefaultStates" Label="Default States" HelperText="Comma separated"/>
-                    <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label="Dark Mode"/>
-                    <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label="Release Notes Tree View"/>
+                    <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
+                    <MudTextField @bind-Value="_model.DefaultStates" Label='@L["DefaultStates"]' HelperText="Comma separated"/>
+                    <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
+                    <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label='@L["ReleaseNotesTreeView"]'/>
                 </MudStack>
             </MudTabPanel>
-            <MudTabPanel Text="Story Quality">
+            <MudTabPanel Text='@L["StoryQualityTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField @bind-Value="_model.DefinitionOfReady" Label="Definition of Ready" Lines="3"/>
+                    <MudTextField @bind-Value="_model.DefinitionOfReady" Label='@L["DefinitionOfReady"]' Lines="3"/>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["PromptsTab"]'>
@@ -66,7 +66,7 @@
                     <MudTextField @bind-Value="_model.PromptCharacterLimit" Label='@L["PromptLimit"]' InputType="InputType.Number" />
                 </MudStack>
             </MudTabPanel>
-            <MudTabPanel Text="Validation Rules">
+            <MudTabPanel Text='@L["ValidationTab"]'>
                 <MudStack Spacing="1">
                     <MudText Typo="Typo.h6" Class="mt-2">Epic</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Color="Color.Primary" Label="Has description"/>
