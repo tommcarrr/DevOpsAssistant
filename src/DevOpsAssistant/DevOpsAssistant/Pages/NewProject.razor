@@ -13,6 +13,9 @@
 <MudPaper Class="p-4">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["NewProject"]</MudText>
+        <MudText Typo="Typo.body2" Class="mb-2">
+            For help finding these values see the <MudLink Href="/help">help page</MudLink>.
+        </MudText>
         <MudTextField T="string" Value="_name" ValueChanged="OnNameChanged" Label='@L["ProjectName"]' Immediate="true" />
         <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" />
         <MudTextField T="string" Value="_project" ValueChanged="OnProjectChanged" Label="DevOps Project" Immediate="true" />
@@ -30,7 +33,13 @@
                 }
             </MudAlert>
         }
-        <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanCreate">@L["Create"]</MudButton>
+        <MudStack Row="true" Spacing="1">
+            @if (ConfigService.Projects.Any())
+            {
+                <MudButton OnClick="Back" Color="Color.Secondary" Variant="Variant.Text">@L["Back"]</MudButton>
+            }
+            <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanCreate">@L["Create"]</MudButton>
+        </MudStack>
     </MudStack>
 </MudPaper>
 
@@ -119,5 +128,10 @@
             await ConfigService.SaveGlobalPatAsync(_patToken);
         }
         NavigationManager.NavigateTo($"/projects/{_name}", forceLoad: true);
+    }
+
+    private void Back()
+    {
+        NavigationManager.NavigateTo("/projects");
     }
 }
