@@ -67,6 +67,7 @@ public class DevOpsConfigService
 
     public async Task<bool> SaveCurrentAsync(string name, DevOpsConfig config)
     {
+        var wasValid = IsCurrentProjectValid;
         name = name.Trim();
         if (!CurrentProject.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
             Projects.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
@@ -75,6 +76,8 @@ public class DevOpsConfigService
         CurrentProject.Name = name;
         CurrentProject.Config = Normalize(config);
         await SaveProjectsAsync();
+        if (wasValid != IsCurrentProjectValid)
+            OnProjectChanged();
         return true;
     }
 

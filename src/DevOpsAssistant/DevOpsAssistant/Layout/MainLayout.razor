@@ -1,5 +1,6 @@
 @using DevOpsAssistant.Components
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
 @inject VersionService VersionService
@@ -71,6 +72,17 @@
     private bool _drawerOpen = true;
     private string _selectedProject = string.Empty;
     private bool _initialized;
+    
+    private void HandleProjectChanged()
+    {
+        _selectedProject = ConfigService.CurrentProject.Name;
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        ConfigService.ProjectChanged += HandleProjectChanged;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -175,5 +187,10 @@
     }
 
     private bool IsProjectInvalid => !ConfigService.IsCurrentProjectValid;
+
+    public void Dispose()
+    {
+        ConfigService.ProjectChanged -= HandleProjectChanged;
+    }
 
 }
