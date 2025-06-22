@@ -60,4 +60,19 @@
   <data name="SavedMessage" xml:space="preserve">
     <value>Configuración guardada</value>
   </data>
+  <data name="DuplicateName" xml:space="preserve">
+    <value>Ya existe un proyecto con ese nombre.</value>
+  </data>
+  <data name="MissingName" xml:space="preserve">
+    <value>Se requiere el nombre del proyecto.</value>
+  </data>
+  <data name="MissingOrganization" xml:space="preserve">
+    <value>Se requiere la organización.</value>
+  </data>
+  <data name="MissingProject" xml:space="preserve">
+    <value>Se requiere el proyecto.</value>
+  </data>
+  <data name="MissingPat" xml:space="preserve">
+    <value>Se requiere un token PAT o global.</value>
+  </data>
 </root>

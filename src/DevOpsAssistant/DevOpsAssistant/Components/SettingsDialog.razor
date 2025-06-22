@@ -162,13 +162,19 @@
 
     private async Task Save()
     {
+        bool result;
         if (_selected == ConfigService.CurrentProject.Name)
         {
-            await ConfigService.SaveCurrentAsync(_projectName, _model);
+            result = await ConfigService.SaveCurrentAsync(_projectName, _model);
         }
         else
         {
-            await ConfigService.UpdateProjectAsync(_selected, _projectName, _model);
+            result = await ConfigService.UpdateProjectAsync(_selected, _projectName, _model);
+        }
+        if (!result)
+        {
+            Snackbar.Add(L["DuplicateName"].Value, Severity.Error);
+            return;
         }
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog?.Close(DialogResult.Ok(true));
@@ -216,7 +222,12 @@
     private async Task CreateProject()
     {
         DevOpsProject? copy = ConfigService.Projects.FirstOrDefault(p => p.Name == _importFrom);
-        await ConfigService.AddProjectAsync(_newProjectName, copy);
+        var added = await ConfigService.AddProjectAsync(_newProjectName, copy);
+        if (!added)
+        {
+            Snackbar.Add(L["DuplicateName"].Value, Severity.Error);
+            return;
+        }
         _newProjectName = string.Empty;
         _importFrom = string.Empty;
         _creating = false;

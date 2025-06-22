@@ -13,15 +13,24 @@
 <MudPaper Class="p-4">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["NewProject"]</MudText>
-        <MudTextField @bind-Value="_name" Label='@L["ProjectName"]' />
-        <MudTextField @bind-Value="_organization" Label="DevOps Organization" />
-        <MudTextField @bind-Value="_project" Label="DevOps Project" />
-        <MudTextField @bind-Value="_patToken" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" />
+        <MudTextField T="string" Value="_name" ValueChanged="OnNameChanged" Label='@L["ProjectName"]' Immediate="true" />
+        <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" />
+        <MudTextField T="string" Value="_project" ValueChanged="OnProjectChanged" Label="DevOps Project" Immediate="true" />
+        <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" />
         @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
         {
             <MudCheckBox T="bool" @bind-Value="_useAsGlobal" Label="Use as global token" />
         }
-        <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="_name.Trim().Length < 2 || string.IsNullOrWhiteSpace(_organization) || string.IsNullOrWhiteSpace(_project)">@L["Create"]</MudButton>
+        @if (_errors.Count > 0)
+        {
+            <MudAlert Severity="Severity.Error">
+                @foreach (var e in _errors)
+                {
+                    <div>@e</div>
+                }
+            </MudAlert>
+        }
+        <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanCreate">@L["Create"]</MudButton>
     </MudStack>
 </MudPaper>
 
@@ -31,17 +40,74 @@
     private string _project = string.Empty;
     private string _patToken = string.Empty;
     private bool _useAsGlobal;
+    private List<string> _errors = new();
+
+    private bool CanCreate => _errors.Count == 0;
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
         if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
             _useAsGlobal = true;
+        Validate();
     }
+
+    private Task OnNameChanged(string value)
+    {
+        _name = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnOrgChanged(string value)
+    {
+        _organization = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnProjectChanged(string value)
+    {
+        _project = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnPatChanged(string value)
+    {
+        _patToken = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private void Validate()
+    {
+        _errors.Clear();
+        if (string.IsNullOrWhiteSpace(_name))
+            _errors.Add(L["MissingName"]);
+        else if (ConfigService.Projects.Any(p => p.Name.Equals(_name, StringComparison.OrdinalIgnoreCase)))
+            _errors.Add(L["DuplicateName"]);
+        if (string.IsNullOrWhiteSpace(_organization))
+            _errors.Add(L["MissingOrganization"]);
+        if (string.IsNullOrWhiteSpace(_project))
+            _errors.Add(L["MissingProject"]);
+        if (string.IsNullOrWhiteSpace(_patToken) && string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
+            _errors.Add(L["MissingPat"]);
+    }
+
 
     private async Task Create()
     {
-        await ConfigService.AddProjectAsync(_name);
+        Validate();
+        if (!CanCreate)
+            return;
+
+        var added = await ConfigService.AddProjectAsync(_name);
+        if (!added)
+        {
+            _errors = new List<string> { L["DuplicateName"] };
+            return;
+        }
         await ConfigService.SaveAsync(new DevOpsConfig
         {
             Organization = _organization,
