@@ -67,9 +67,12 @@
 
     private bool _drawerOpen = true;
     private string _selectedProject = string.Empty;
+    private bool _initialized;
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (!_initialized)
+            return;
         EnsureSettingsIfNeeded();
     }
 
@@ -78,6 +81,7 @@
         await VersionService.LoadAsync();
         await ConfigService.LoadAsync();
         _selectedProject = ConfigService.CurrentProject.Name;
+        _initialized = true;
         StateHasChanged();
     }
 
