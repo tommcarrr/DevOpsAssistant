@@ -33,4 +33,7 @@
   <data name="Metrics" xml:space="preserve">
     <value>Métricas — analice el rendimiento y el tiempo de ciclo</value>
   </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>Nuevo Proyecto</value>
+  </data>
 </root>
