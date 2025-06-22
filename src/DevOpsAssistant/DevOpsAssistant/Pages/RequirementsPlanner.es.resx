@@ -28,7 +28,7 @@
     <value>Copiar prompt inicial</value>
   </data>
   <data name="CopyPromptMessage" xml:space="preserve">
-    <value>Péguelo en su LLM para comenzar a recopilar requisitos.</value>
+    <value>Si necesita ayuda para recopilar los requisitos, copie este prompt inicial y péguelo en su LLM. Este paso es opcional.</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>
