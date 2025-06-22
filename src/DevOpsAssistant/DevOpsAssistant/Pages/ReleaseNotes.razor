@@ -363,40 +363,21 @@ else if (_promptParts != null)
 
         if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
         {
-            sb.AppendLine("You are a highly meticulous Delivery Manager. Your task is to generate a structured Word document based on the following instructions. Before producing any output, you must reflect on each requirement and confirm how you will meet it. Do not proceed until you have done so.");
+            sb.AppendLine("You are a meticulous Delivery Manager preparing release notes for a software update.");
+            sb.AppendLine("Write in clear, plain language so non-technical stakeholders can understand the changes.");
             sb.AppendLine();
-            sb.AppendLine("Document Purpose:");
-            sb.AppendLine("- Create a Word document that includes:");
-            sb.AppendLine("  - Release Notes: Clear, plain-language summaries of software changes.");
-            sb.AppendLine("  - Change Control Details: A high-level summary, list of stories, and potential risks.");
-            sb.AppendLine("  - No branding is required.");
+            sb.AppendLine("Document sections:");
+            sb.AppendLine("- Release Notes: a high-level summary of all stories in 1–2 paragraphs.");
+            sb.AppendLine("- Change Control: a short summary, list of stories, and potential risks.");
+            sb.AppendLine("- No branding is required.");
             sb.AppendLine();
-            sb.AppendLine("Checklist of Requirements:");
-            sb.AppendLine("1. Audience Awareness");
-            sb.AppendLine("   - Write for a general audience, including non-technical stakeholders.");
-            sb.AppendLine();
-            sb.AppendLine("2. Release Notes Section");
-            sb.AppendLine("   - Write a high-level summary of all stories in 1–2 paragraphs.");
-            sb.AppendLine("   - Group stories under their respective Features and Epics.");
-            sb.AppendLine("   - Bugs are also in scope and may not have a Feature.");
-            sb.AppendLine("   - For each story:");
-            sb.AppendLine("     - Write a new summary in plain, non-technical language.");
-            sb.AppendLine("     - Do NOT copy or paraphrase the original description.");
-            sb.AppendLine("     - Use the context of the Feature and Epic to explain the story’s purpose and value.");
-            sb.AppendLine();
-            sb.AppendLine("3. Change Control Section");
-            sb.AppendLine("   - Write a high-level summary of all stories in 1–2 paragraphs.");
-            sb.AppendLine("   - Include a list of all stories with their IDs and titles.");
-            sb.AppendLine("   - Highlight any potential risks associated with the changes.");
-            sb.AppendLine();
-            sb.AppendLine("4. Formatting");
-            sb.AppendLine("   - Use clear headings for each Epic, Feature, and Story.");
-            sb.AppendLine("   - Use bullet points or paragraphs as appropriate for readability.");
-            sb.AppendLine();
-            sb.AppendLine("Reflection Step (Mandatory Before Output):");
-            sb.AppendLine("- For each checklist item above, explain how you will fulfill it.");
-            sb.AppendLine("- If any item is ambiguous or incomplete or requires further context, ask for clarification.");
-            sb.AppendLine("- Only proceed once you have confirmed that all requirements are understood and feasible.");
+            sb.AppendLine("Guidelines:");
+            sb.AppendLine("- Group stories under their respective Features and Epics.");
+            sb.AppendLine("- Bugs are also in scope and may not have a Feature.");
+            sb.AppendLine("- For each story write a new summary in plain, non-technical language.");
+            sb.AppendLine("- Do NOT copy or paraphrase the original description.");
+            sb.AppendLine("- Use clear headings for each Epic, Feature, and Story.");
+            sb.AppendLine("- Use bullet points or paragraphs for readability.");
         }
         else
         {
