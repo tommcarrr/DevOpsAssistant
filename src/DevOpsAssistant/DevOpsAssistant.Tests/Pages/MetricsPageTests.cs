@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using DevOpsAssistant.Pages;
+using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
 
 namespace DevOpsAssistant.Tests.Pages;
@@ -40,6 +41,27 @@ public class MetricsPageTests : ComponentTestBase
 
         Assert.Contains("Velocity", csv);
         Assert.Contains("4.0", csv);
+    }
+
+    [Fact]
+    public void Fortnight_Mode_Uses_Two_Week_Period()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        var compute = type.GetMethod("ComputePeriods", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        type.GetField("_mode", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, AggregateMode.Fortnight);
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today);
+        compute.Invoke(metrics, new object?[] { new List<StoryMetric>() });
+
+        var periodsField = type.GetField("_periods", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var list = (System.Collections.IList)periodsField.GetValue(metrics)!;
+        Assert.True(list.Count > 0);
+        var first = list[0];
+        var start = (DateTime)first.GetType().GetProperty("Start")!.GetValue(first)!;
+        var end = (DateTime)first.GetType().GetProperty("End")!.GetValue(first)!;
+        Assert.Equal(13, (end - start).TotalDays);
     }
 
     private class TestMetrics : Metrics

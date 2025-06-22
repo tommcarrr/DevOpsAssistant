@@ -32,6 +32,7 @@
         </MudSelect>
         <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
             <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
+            <MudSelectItem Value="AggregateMode.Fortnight">Fortnight</MudSelectItem>
             <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
         </MudSelect>
         <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
@@ -157,13 +158,18 @@ else if (_periods.Any())
     {
         _periods.Clear();
         var startDate = _startDate ?? DateTime.Today.AddDays(-84);
-        DateTime start = _mode == AggregateMode.Week
-            ? StartOfWeek(startDate)
-            : new DateTime(startDate.Year, startDate.Month, 1);
+        DateTime start = _mode == AggregateMode.Month
+            ? new DateTime(startDate.Year, startDate.Month, 1)
+            : StartOfWeek(startDate);
         var endBoundary = DateTime.Today;
         while (start <= endBoundary)
         {
-            DateTime next = _mode == AggregateMode.Week ? start.AddDays(7) : start.AddMonths(1);
+            DateTime next = _mode switch
+            {
+                AggregateMode.Week => start.AddDays(7),
+                AggregateMode.Fortnight => start.AddDays(14),
+                _ => start.AddMonths(1)
+            };
             var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next).ToList();
             var metrics = new PeriodMetrics
             {
@@ -178,9 +184,9 @@ else if (_periods.Any())
             start = next;
         }
 
-        _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Week
-                ? p.End.ToLocalDateString()
-                : p.End.ToString("yyyy-MM")).ToArray();
+        _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Month
+                ? p.End.ToString("yyyy-MM")
+                : p.End.ToLocalDateString()).ToArray();
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
