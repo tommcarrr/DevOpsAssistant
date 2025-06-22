@@ -46,6 +46,7 @@ Production hosting uses Azure Static Web Apps. The configuration file
 `staticwebapp.config.json` rewrites unknown URLs to `index.html` so deep links
 (for example `/projects/myProject/requirements-planner`) work correctly.
 
+
 ## Obtaining a PAT token
 
 The application communicates with Azure DevOps using a Personal Access Token (PAT). To create one:
