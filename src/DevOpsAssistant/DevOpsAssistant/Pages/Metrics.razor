@@ -34,6 +34,7 @@
             <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
             <MudSelectItem Value="AggregateMode.Fortnight">Fortnight</MudSelectItem>
             <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
+            <MudSelectItem Value="AggregateMode.Iteration">Iteration</MudSelectItem>
         </MudSelect>
         <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
         <MudTooltip Text='@L["VelocityTooltip"]'>
@@ -63,7 +64,9 @@ else if (_periods.Any())
             <MudTh>Velocity</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Period">@context.End.ToLocalDateString()</MudTd>
+            <MudTd DataLabel="Period">
+                @(_mode == AggregateMode.Iteration ? context.Name : context.End.ToLocalDateString())
+            </MudTd>
             <MudTd DataLabel="Lead">@context.AvgLeadTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
@@ -88,6 +91,7 @@ else if (_periods.Any())
     private VelocityMode _velocityMode = VelocityMode.StoryPoints;
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
     private List<PeriodMetrics> _periods = new();
+    private List<IterationInfo> _iterations = new();
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -134,7 +138,10 @@ else if (_periods.Any())
         try
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
-            ComputePeriods(items);
+            _iterations = _mode == AggregateMode.Iteration
+                ? await ApiService.GetIterationsAsync()
+                : [];
+            ComputePeriods(items, _iterations);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Path = _path,
@@ -154,39 +161,61 @@ else if (_periods.Any())
         }
     }
 
-    private void ComputePeriods(List<StoryMetric> items)
+    private void ComputePeriods(List<StoryMetric> items, List<IterationInfo>? iterations = null)
     {
         _periods.Clear();
         var startDate = _startDate ?? DateTime.Today.AddDays(-84);
-        DateTime start = _mode == AggregateMode.Month
-            ? new DateTime(startDate.Year, startDate.Month, 1)
-            : StartOfWeek(startDate);
-        var endBoundary = DateTime.Today;
-        while (start <= endBoundary)
+
+        if (_mode == AggregateMode.Iteration && iterations != null)
         {
-            DateTime next = _mode switch
+            foreach (var it in iterations.Where(i => i.EndDate >= startDate))
             {
-                AggregateMode.Week => start.AddDays(7),
-                AggregateMode.Fortnight => start.AddDays(14),
-                _ => start.AddMonths(1)
-            };
-            var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next).ToList();
-            var metrics = new PeriodMetrics
+                var rangeItems = items.Where(x => x.ClosedDate >= it.StartDate && x.ClosedDate <= it.EndDate).ToList();
+                var metrics = new PeriodMetrics
+                {
+                    Name = it.Name,
+                    Start = it.StartDate,
+                    End = it.EndDate,
+                    Throughput = rangeItems.Count,
+                    AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
+                    AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
+                    Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
+                };
+                _periods.Add(metrics);
+            }
+        }
+        else
+        {
+            DateTime start = _mode == AggregateMode.Month
+                ? new DateTime(startDate.Year, startDate.Month, 1)
+                : StartOfWeek(startDate);
+            var endBoundary = DateTime.Today;
+            while (start <= endBoundary)
             {
-                Start = start,
-                End = next.AddDays(-1),
-                Throughput = rangeItems.Count,
-                AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
-                AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
-                Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
-            };
-            _periods.Add(metrics);
-            start = next;
+                DateTime next = _mode switch
+                {
+                    AggregateMode.Week => start.AddDays(7),
+                    AggregateMode.Fortnight => start.AddDays(14),
+                    _ => start.AddMonths(1)
+                };
+                var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next).ToList();
+                var metrics = new PeriodMetrics
+                {
+                    Start = start,
+                    End = next.AddDays(-1),
+                    Throughput = rangeItems.Count,
+                    AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
+                    AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
+                    Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
+                };
+                _periods.Add(metrics);
+                start = next;
+            }
         }
 
         _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Month
                 ? p.End.ToString("yyyy-MM")
-                : p.End.ToLocalDateString()).ToArray();
+                : _mode == AggregateMode.Iteration ? p.Name : p.End.ToLocalDateString()).ToArray();
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
@@ -227,6 +256,7 @@ else if (_periods.Any())
         _velocityMode = VelocityMode.StoryPoints;
         _startDate = DateTime.Today.AddDays(-84);
         _periods.Clear();
+        _iterations.Clear();
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
@@ -239,6 +269,7 @@ else if (_periods.Any())
 
     private class PeriodMetrics
     {
+        public string Name { get; set; } = string.Empty;
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public double AvgLeadTime { get; set; }

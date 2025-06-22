@@ -4,5 +4,6 @@ public enum AggregateMode
 {
     Week,
     Fortnight,
-    Month
+    Month,
+    Iteration
 }
