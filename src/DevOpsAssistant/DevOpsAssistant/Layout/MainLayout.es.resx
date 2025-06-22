@@ -78,4 +78,7 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirmar</value>
   </data>
+  <data name="FooterCopyright" xml:space="preserve">
+    <value>&#169; {0} TommCarrr industries</value>
+  </data>
 </root>
