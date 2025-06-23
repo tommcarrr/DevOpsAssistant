@@ -15,6 +15,9 @@
   <data name="PatToken" xml:space="preserve">
     <value>PAT Token</value>
   </data>
+  <data name="Organization" xml:space="preserve">
+    <value>DevOps Organization</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
@@ -26,5 +29,8 @@
   </data>
   <data name="DarkMode" xml:space="preserve">
     <value>Dark Mode</value>
+  </data>
+  <data name="HighContrast" xml:space="preserve">
+    <value>High Contrast</value>
   </data>
 </root>

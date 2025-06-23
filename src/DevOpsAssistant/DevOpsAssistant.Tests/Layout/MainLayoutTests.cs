@@ -4,6 +4,7 @@ using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Bunit.TestDoubles;
@@ -71,6 +72,25 @@ public class MainLayoutTests : ComponentTestBase
         var cut = RenderComponent<MainLayout>();
 
         cut.WaitForAssertion(() => Assert.Contains("Version 1.0", cut.Markup));
+    }
+
+    [Fact]
+    public void Footer_Uses_Sticky_Flexbox_Css()
+    {
+        var cssPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
+            "../../../../DevOpsAssistant/wwwroot/css/app.css"));
+        Assert.True(File.Exists(cssPath));
+        var css = File.ReadAllText(cssPath);
+
+        Assert.Contains("body {", css);
+        Assert.Contains("display: flex", css);
+        Assert.Contains("min-height: 100vh", css);
+        Assert.Contains(".app-footer {", css);
+        Assert.Contains("margin-top: auto", css);
+        Assert.Contains(".mud-main-content", css);
+        Assert.Contains("flex-direction: column", css);
+        Assert.Contains(".mud-layout", css);
+        Assert.Contains("flex: 1", css);
     }
 
     [Fact]

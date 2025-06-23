@@ -22,6 +22,13 @@ window.downloadText = function (filename, text) {
     URL.revokeObjectURL(url);
 };
 
+window.setErrorDismissLabel = function (label) {
+    const el = document.querySelector('#blazor-error-ui .dismiss');
+    if (el) {
+        el.setAttribute('aria-label', label);
+    }
+};
+
 window.blazorCulture = {
     get: function () {
         return localStorage['BlazorCulture'];
@@ -31,6 +38,13 @@ window.blazorCulture = {
     }
 };
 
+window.setHighContrast = function (enabled) {
+    if (enabled)
+        document.body.classList.add('high-contrast');
+    else
+        document.body.classList.remove('high-contrast');
+};
+
 if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
-    document.body.classList.add('high-contrast');
+    window.setHighContrast(true);
 }

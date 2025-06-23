@@ -175,6 +175,17 @@ body {
     display: flex;
     flex-direction: column;
 }
+.mud-layout {
+    display: flex;
+}
+.mud-main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.main-content {
+    flex: 1;
+}
 .app-footer {
     margin-top: auto;
     background-color: var(--mud-palette-surface, #fff);
@@ -214,5 +225,12 @@ body {
     --color-code: #ffffff;
     --color-progress-bg: #ffffff;
     --color-progress-fg: #ffff00;
+}
+
+.responsive-chart {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 1;
+    max-height: 600px;
 }
 

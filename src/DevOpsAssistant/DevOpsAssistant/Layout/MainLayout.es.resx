@@ -12,9 +12,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Inicio</value>
-  </data>
   <data name="Epics" xml:space="preserve">
     <value>Épicas y Características</value>
   </data>
@@ -39,11 +36,17 @@
   <data name="RemovePat" xml:space="preserve">
     <value>Eliminar token PAT</value>
   </data>
+  <data name="RemoveOrg" xml:space="preserve">
+    <value>Eliminar organización</value>
+  </data>
   <data name="RemoveAll" xml:space="preserve">
     <value>Eliminar toda la configuración</value>
   </data>
   <data name="RemovePatWarning" xml:space="preserve">
     <value>Esto eliminará el token PAT global. ¿Continuar?</value>
+  </data>
+  <data name="RemoveOrgWarning" xml:space="preserve">
+    <value>Esto eliminará la organización global. ¿Continuar?</value>
   </data>
   <data name="RemoveAllWarning" xml:space="preserve">
     <value>Cerrar sesión eliminará toda la configuración guardada. ¿Continuar?</value>
@@ -68,6 +71,9 @@
   </data>
   <data name="Help" xml:space="preserve">
     <value>Ayuda</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menú</value>
   </data>
   <data name="Project" xml:space="preserve">
     <value>Proyecto</value>

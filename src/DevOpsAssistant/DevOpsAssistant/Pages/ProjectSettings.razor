@@ -17,9 +17,33 @@
         <MudTabs Class="mt-4">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                    @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
+                    {
+                        <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                        <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" />
+                    }
+                    else
+                    {
+                        <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" />
+                        @if (_overrideOrg)
+                        {
+                            <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                        }
+                    }
                     <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label="DevOps Project" Immediate="true"/>
-                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
+                    @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
+                    {
+                        <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
+                        <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" />
+                    }
+                    else
+                    {
+                        <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" />
+                        @if (_overridePat)
+                        {
+                            <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" Immediate="true"/>
+                        }
+                    }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
                     <MudTextField @bind-Value="_model.DefaultStates" Label='@L["DefaultStates"]' HelperText="Comma separated"/>
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
@@ -89,6 +113,10 @@
     private string _projectName = string.Empty;
     private DevOpsConfig _model = new();
     private List<string> _errors = new();
+    private bool _overrideOrg;
+    private bool _overridePat;
+    private bool _useOrgAsGlobal;
+    private bool _useAsGlobal;
 
     private bool CanSave => _errors.Count == 0;
 
@@ -136,6 +164,10 @@
                 }
             }
         };
+        _overrideOrg = !string.IsNullOrWhiteSpace(_model.Organization) || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization);
+        _overridePat = !string.IsNullOrWhiteSpace(_model.PatToken) || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
+        _useOrgAsGlobal = string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization);
+        _useAsGlobal = string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
         Validate();
     }
 
@@ -145,12 +177,32 @@
         if (!CanSave)
             return;
 
-        var saved = await ConfigService.SaveCurrentAsync(_projectName, _model);
+        var toSave = new DevOpsConfig
+        {
+            Organization = _overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization) ? _model.Organization : string.Empty,
+            Project = _model.Project,
+            PatToken = _overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken) ? _model.PatToken : string.Empty,
+            MainBranch = _model.MainBranch,
+            DarkMode = _model.DarkMode,
+            ReleaseNotesTreeView = _model.ReleaseNotesTreeView,
+            DefaultStates = _model.DefaultStates,
+            DefinitionOfReady = _model.DefinitionOfReady,
+            StoryQualityPrompt = _model.StoryQualityPrompt,
+            ReleaseNotesPrompt = _model.ReleaseNotesPrompt,
+            RequirementsPrompt = _model.RequirementsPrompt,
+            PromptCharacterLimit = _model.PromptCharacterLimit,
+            Rules = _model.Rules
+        };
+        var saved = await ConfigService.SaveCurrentAsync(_projectName, toSave);
         if (!saved)
         {
             _errors = new List<string> { L["DuplicateName"] };
             return;
         }
+        if (_useOrgAsGlobal && !string.IsNullOrWhiteSpace(_model.Organization))
+            await ConfigService.SaveGlobalOrganizationAsync(_model.Organization);
+        if (_useAsGlobal && !string.IsNullOrWhiteSpace(_model.PatToken))
+            await ConfigService.SaveGlobalPatAsync(_model.PatToken);
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
     }
 
@@ -195,6 +247,32 @@
         return Task.CompletedTask;
     }
 
+    private Task OnOverrideOrgChanged(bool value)
+    {
+        _overrideOrg = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnOverridePatChanged(bool value)
+    {
+        _overridePat = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnUseOrgAsGlobalChanged(bool value)
+    {
+        _useOrgAsGlobal = value;
+        return Task.CompletedTask;
+    }
+
+    private Task OnUseAsGlobalChanged(bool value)
+    {
+        _useAsGlobal = value;
+        return Task.CompletedTask;
+    }
+
     private void Validate()
     {
         _errors.Clear();
@@ -203,11 +281,13 @@
         else if (!_projectName.Equals(ConfigService.CurrentProject.Name, StringComparison.OrdinalIgnoreCase) &&
                  ConfigService.Projects.Any(p => p.Name.Equals(_projectName, StringComparison.OrdinalIgnoreCase)))
             _errors.Add(L["DuplicateName"]);
-        if (string.IsNullOrWhiteSpace(_model.Organization))
+        if ((_overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization)) &&
+            string.IsNullOrWhiteSpace(_model.Organization))
             _errors.Add(L["MissingOrganization"]);
         if (string.IsNullOrWhiteSpace(_model.Project))
             _errors.Add(L["MissingProject"]);
-        if (string.IsNullOrWhiteSpace(_model.PatToken) && string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
+        if ((_overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken)) &&
+            string.IsNullOrWhiteSpace(_model.PatToken))
             _errors.Add(L["MissingPat"]);
     }
 }

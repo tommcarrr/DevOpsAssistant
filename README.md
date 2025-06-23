@@ -38,6 +38,8 @@ artifact.
 When changes are merged into the `main` branch, the deployment workflow first
 publishes the site to a staging environment. Playwright UI tests verify that
 each page loads correctly before the same build is promoted to production.
+The production deployment runs in the `production` environment so GitHub can
+require approval from designated reviewers before the job executes.
 During pull requests the CI workflow only runs the unit tests.
 
 ### Azure Static Web Apps
@@ -78,4 +80,5 @@ where to connect.
 Common colors are now defined using CSS variables. When the browser indicates a
 need for high contrast, the site automatically switches to a simplified color
 palette. You can also force this mode by adding the `high-contrast` class to the
-`<body>` element.
+`<body>` element or by toggling the High Contrast option in the Global Settings
+dialog.

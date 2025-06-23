@@ -3,6 +3,7 @@
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
 @inject VersionService VersionService
+@inject IJSRuntime JS
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SimpleLayout> L
 
@@ -21,20 +22,23 @@
         <MudIconButton Icon="@Icons.Material.Filled.Help" Href="/help" title='@L["Help"]' class="mx-2"/>
         <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
             <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
+            <MudMenuItem OnClick="RemoveOrg">@L["RemoveOrg"]</MudMenuItem>
             <MudMenuItem OnClick="SignOut">@L["RemoveAll"]</MudMenuItem>
         </MudMenu>
     </MudAppBar>
 
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-4 mt-4">
-            @Body
-        </MudContainer>
+        <div class="main-content">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="pa-4 mt-4">
+                @Body
+            </MudContainer>
+        </div>
         <footer class="app-footer">
             <MudContainer MaxWidth="MaxWidth.Large" Class="py-2 footer-content">
-                <MudText Typo="Typo.body2" Align="Align.Left">
+                <MudText Typo="Typo.body2" Align="Align.Left" Inline="true">
                     @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
                 </MudText>
-                <MudText Typo="Typo.caption" Align="Align.Right">
+                <MudText Typo="Typo.caption" Align="Align.Right" Inline="true">
                     Version @VersionService.Version
                 </MudText>
             </MudContainer>
@@ -47,6 +51,14 @@
     {
         await VersionService.LoadAsync();
         await ConfigService.LoadAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("setHighContrast", ConfigService.GlobalHighContrast);
+        }
     }
 
     private async Task SignOut()
@@ -68,6 +80,17 @@
         if (result?.Canceled != false) return;
 
         await ConfigService.RemoveGlobalPatAsync();
+        StateHasChanged();
+    }
+
+    private async Task RemoveOrg()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["RemoveOrgWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
+        await ConfigService.RemoveGlobalOrganizationAsync();
         StateHasChanged();
     }
 
