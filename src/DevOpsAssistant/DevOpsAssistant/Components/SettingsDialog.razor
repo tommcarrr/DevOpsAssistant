@@ -19,11 +19,11 @@
             </MudSelect>
             @if (_creating)
             {
-                <MudTextField @bind-Value="_newProjectName" Label='@L["ProjectName"]' />
+                <MudTextField @bind-Value="_newProjectName" Label='@L["Project"]' />
                 @if (ConfigService.Projects.Count > 0)
                 {
                     <MudSelect T="string" Label='@L["ImportFrom"]' @bind-Value="_importFrom">
-                        <MudSelectItem Value="@string.Empty">None</MudSelectItem>
+                        <MudSelectItem Value="@string.Empty">@L["None"]</MudSelectItem>
                         @foreach (var p in ConfigService.Projects)
                         {
                             <MudSelectItem Value="@p.Name">@p.Name</MudSelectItem>
@@ -32,21 +32,21 @@
                 }
                 <MudStack Row="true" Spacing="1" Class="mt-2">
                     <MudButton OnClick="CreateProject" Color="Color.Primary" Disabled="_newProjectName.Trim().Length < 2">@L["NewProject"]</MudButton>
-                    <MudButton OnClick="CancelNewProject" Color="Color.Secondary">Cancel</MudButton>
+                    <MudButton OnClick="CancelNewProject" Color="Color.Secondary">@L["Cancel"]</MudButton>
                 </MudStack>
             }
             else
             {
-                <MudTextField @bind-Value="_projectName" Label='@L["ProjectName"]' />
+                <MudTextField @bind-Value="_model.Project" Label='@L["Project"]' />
                 <MudButton OnClick="DeleteProject" Color="Color.Error" Disabled="ConfigService.Projects.Count == 0" Class="mt-2">@L["DeleteProject"]</MudButton>
             }
         </MudStack>
         <MudTabs Class="mt-4">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField @bind-Value="_model.Organization" Label="Organization"/>
-                    <MudTextField @bind-Value="_model.Project" Label="Project"/>
-                    <MudTextField @bind-Value="_model.PatToken" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token"/>
+                    <MudTextField @bind-Value="_model.Project" Label='@L["Project"]'/>
+                    <MudTextField @bind-Value="_model.Organization" Label='@L["Organization"]'/>
+                    <MudTextField @bind-Value="_model.PatToken" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="Leave blank to use global token"/>
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
                     <MudTextField @bind-Value="_model.DefaultStates" Label='@L["DefaultStates"]' HelperText="Comma separated"/>
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
@@ -64,6 +64,11 @@
                     <MudTextField @bind-Value="_model.ReleaseNotesPrompt" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
                     <MudTextField @bind-Value="_model.RequirementsPrompt" Label='@L["RequirementsPrompt"]' Lines="3"/>
                     <MudTextField @bind-Value="_model.PromptCharacterLimit" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                    <MudCheckBox T="bool" @bind-Value="_promptsAll" Label='@L["SaveForAll"]' />
+                    @if (_promptsAll)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
+                    }
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
@@ -92,13 +97,18 @@
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeReproSteps" Color="Color.Primary" Label="Include Repro Steps"/>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeSystemInfo" Color="Color.Primary" Label="Include System Info"/>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.HasStoryPoints" Color="Color.Primary" Label='@L["BugHasStoryPoints"]'/>
+                    <MudCheckBox T="bool" @bind-Value="_validationAll" Label='@L["SaveForAll"]' Class="mt-2" />
+                    @if (_validationAll)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
+                    }
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
-        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">@L["Save"]</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">@L["Cancel"]</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -108,16 +118,16 @@
     private const string NewProjectValue = "__new";
     private DevOpsConfig _model = new();
     private string _selected = string.Empty;
-    private string _projectName = string.Empty;
     private string _newProjectName = string.Empty;
     private string _importFrom = string.Empty;
     private bool _creating;
+    private bool _promptsAll;
+    private bool _validationAll;
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
         _selected = ConfigService.CurrentProject.Name;
-        _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
@@ -165,16 +175,42 @@
         bool result;
         if (_selected == ConfigService.CurrentProject.Name)
         {
-            result = await ConfigService.SaveCurrentAsync(_projectName, _model);
+            result = await ConfigService.SaveCurrentAsync(_model.Project, _model);
         }
         else
         {
-            result = await ConfigService.UpdateProjectAsync(_selected, _projectName, _model);
+            result = await ConfigService.UpdateProjectAsync(_selected, _model.Project, _model);
         }
         if (!result)
         {
             Snackbar.Add(L["DuplicateName"].Value, Severity.Error);
             return;
+        }
+        if (_promptsAll || _validationAll)
+        {
+            var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+            var res = await dialog.Result;
+            if (res?.Canceled != false)
+                return;
+
+            foreach (var p in ConfigService.Projects)
+            {
+                if (p.Name == _model.Project) continue;
+                var cfg = p.Config;
+                if (_promptsAll)
+                {
+                    cfg.StoryQualityPrompt = _model.StoryQualityPrompt;
+                    cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
+                    cfg.RequirementsPrompt = _model.RequirementsPrompt;
+                    cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+                }
+                if (_validationAll)
+                {
+                    cfg.Rules = _model.Rules;
+                }
+                await ConfigService.UpdateProjectAsync(p.Name, p.Name, cfg);
+            }
         }
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog?.Close(DialogResult.Ok(true));
@@ -198,7 +234,6 @@
 
         _creating = false;
         var proj = ConfigService.Projects.First(p => p.Name == name);
-        _projectName = proj.Name;
         var cfg = proj.Config;
         _model = new DevOpsConfig
         {
@@ -232,7 +267,6 @@
         _importFrom = string.Empty;
         _creating = false;
         _selected = ConfigService.CurrentProject.Name;
-        _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
@@ -262,13 +296,12 @@
 
     private async Task DeleteProject()
     {
-        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_projectName}?" };
+        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_model.Project}?" };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
         var result = await dialog.Result;
         if (result?.Canceled != false) return;
-        await ConfigService.RemoveProjectAsync(_projectName);
+        await ConfigService.RemoveProjectAsync(_model.Project);
         _selected = ConfigService.CurrentProject.Name;
-        _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
