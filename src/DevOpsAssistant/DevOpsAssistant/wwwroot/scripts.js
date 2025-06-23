@@ -22,6 +22,13 @@ window.downloadText = function (filename, text) {
     URL.revokeObjectURL(url);
 };
 
+window.setErrorDismissLabel = function (label) {
+    const el = document.querySelector('#blazor-error-ui .dismiss');
+    if (el) {
+        el.setAttribute('aria-label', label);
+    }
+};
+
 window.blazorCulture = {
     get: function () {
         return localStorage['BlazorCulture'];
