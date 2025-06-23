@@ -7,16 +7,18 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Routing
 
 <PageTitle>DevOpsAssistant - Settings</PageTitle>
 
 <MudPaper Class="p-4">
+    <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="ConfirmLeave" />
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["ProjectSettings"] @ProjectName</MudText>
-        <MudTextField T="string" Value="_projectName" ValueChanged="OnNameChanged" Label='@L["ProjectName"]' Immediate="true" />
         <MudTabs Class="mt-4">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
+                    <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true"/>
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
                     {
                         <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
@@ -30,10 +32,9 @@
                             <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
                         }
                     }
-                    <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label="DevOps Project" Immediate="true"/>
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
                     {
-                        <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
+                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
                         <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" />
                     }
                     else
@@ -48,19 +49,27 @@
                     <MudTextField @bind-Value="_model.DefaultStates" Label='@L["DefaultStates"]' HelperText="Comma separated"/>
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
                     <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label='@L["ReleaseNotesTreeView"]'/>
+                    <MudButton OnClick="SaveGeneral" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["StoryQualityTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField @bind-Value="_model.DefinitionOfReady" Label='@L["DefinitionOfReady"]' Lines="3"/>
+                    <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3"/>
+                    <MudButton OnClick="SaveQuality" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["PromptsTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField @bind-Value="_model.StoryQualityPrompt" Label='@L["StoryQualityPrompt"]' Lines="3"/>
-                    <MudTextField @bind-Value="_model.ReleaseNotesPrompt" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
-                    <MudTextField @bind-Value="_model.RequirementsPrompt" Label='@L["RequirementsPrompt"]' Lines="3"/>
-                    <MudTextField @bind-Value="_model.PromptCharacterLimit" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                    <MudTextField T="string" Value="_model.StoryQualityPrompt" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPrompt = v)" Label='@L["StoryQualityPrompt"]' Lines="3"/>
+                    <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
+                    <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
+                    <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                    <MudCheckBox T="bool" @bind-Value="_promptsAll" Label='@L["SaveForAll"]' />
+                    @if (_promptsAll)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
+                    }
+                    <MudButton OnClick="SavePrompts" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
@@ -71,24 +80,30 @@
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">Feature</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasDescription" Color="Color.Primary" Label="Has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Feature.HasParent" Color="Color.Primary" Label="Has parent"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">User Story</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasDescription" Color="Color.Primary" Label="Has description"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasParent" Color="Color.Primary" Label="Has parent"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasStoryPoints" Color="Color.Primary" Label="Has story points"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAcceptanceCriteria" Color="Color.Primary" Label="Has acceptance criteria"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Story.HasAssignee" Color="Color.Primary" Label="Has assignee"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasStoryPoints = v)" Color="Color.Primary" Label="Has story points"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAcceptanceCriteria" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAcceptanceCriteria = v)" Color="Color.Primary" Label="Has acceptance criteria"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAssignee" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAssignee = v)" Color="Color.Primary" Label="Has assignee"/>
 
                     <MudDivider Class="my-2"/>
 
                     <MudText Typo="Typo.h6" Class="mt-2">Bug</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeReproSteps" Color="Color.Primary" Label="Include Repro Steps"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.IncludeSystemInfo" Color="Color.Primary" Label="Include System Info"/>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Bug.HasStoryPoints" Color="Color.Primary" Label='@L["BugHasStoryPoints"]'/>
+                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeReproSteps" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeReproSteps = v)" Color="Color.Primary" Label="Include Repro Steps"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeSystemInfo" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeSystemInfo = v)" Color="Color.Primary" Label="Include System Info" />
+                    <MudSwitch T="bool" Value="_model.Rules.Bug.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.HasStoryPoints = v)" Color="Color.Primary" Label='@L["BugHasStoryPoints"]' />
+                    <MudCheckBox T="bool" @bind-Value="_validationAll" Label='@L["SaveForAll"]' Class="mt-2" />
+                    @if (_validationAll)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
+                    }
+                    <MudButton OnClick="SaveValidation" Color="Color.Primary" Disabled="!_validationDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
@@ -102,7 +117,6 @@
             </MudAlert>
         }
         <MudStack Row="true" Spacing="1" Class="mt-2">
-            <MudButton OnClick="Save" Color="Color.Primary" Disabled="!CanSave">Save</MudButton>
             <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
         </MudStack>
     </MudStack>
@@ -110,21 +124,26 @@
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
-    private string _projectName = string.Empty;
     private DevOpsConfig _model = new();
     private List<string> _errors = new();
     private bool _overrideOrg;
     private bool _overridePat;
     private bool _useOrgAsGlobal;
     private bool _useAsGlobal;
+    private bool _qualityDirty;
+    private bool _promptsDirty;
+    private bool _validationDirty;
+    private bool _generalDirty;
+    private bool _promptsAll;
+    private bool _validationAll;
 
+    private bool HasChanges => _generalDirty || _qualityDirty || _promptsDirty || _validationDirty;
     private bool CanSave => _errors.Count == 0;
 
     protected override async Task OnParametersSetAsync()
     {
         await ConfigService.LoadAsync();
         await ConfigService.SelectProjectAsync(ProjectName);
-        _projectName = ConfigService.CurrentProject.Name;
         var cfg = ConfigService.Config;
         _model = new DevOpsConfig
         {
@@ -171,7 +190,7 @@
         Validate();
     }
 
-    private async Task Save()
+    private async Task SaveGeneral()
     {
         Validate();
         if (!CanSave)
@@ -193,7 +212,7 @@
             PromptCharacterLimit = _model.PromptCharacterLimit,
             Rules = _model.Rules
         };
-        var saved = await ConfigService.SaveCurrentAsync(_projectName, toSave);
+        var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave);
         if (!saved)
         {
             _errors = new List<string> { L["DuplicateName"] };
@@ -203,33 +222,102 @@
             await ConfigService.SaveGlobalOrganizationAsync(_model.Organization);
         if (_useAsGlobal && !string.IsNullOrWhiteSpace(_model.PatToken))
             await ConfigService.SaveGlobalPatAsync(_model.PatToken);
-        Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
+        _generalDirty = false;
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["GeneralTab"].Value, _model.Project), Severity.Success);
+    }
+
+    private async Task SaveQuality()
+    {
+        var cfg = ConfigService.Config;
+        cfg.DefinitionOfReady = _model.DefinitionOfReady;
+        await ConfigService.SaveCurrentAsync(_model.Project, cfg);
+        _qualityDirty = false;
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["StoryQualityTab"].Value, _model.Project), Severity.Success);
+    }
+
+    private async Task SavePrompts()
+    {
+        var cfg = ConfigService.Config;
+        cfg.StoryQualityPrompt = _model.StoryQualityPrompt;
+        cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
+        cfg.RequirementsPrompt = _model.RequirementsPrompt;
+        cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+        await ConfigService.SaveCurrentAsync(_model.Project, cfg);
+        if (_promptsAll)
+        {
+            var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+            var result = await dialog.Result;
+            if (result?.Canceled == false)
+            {
+                foreach (var p in ConfigService.Projects)
+                {
+                    if (p.Name == _model.Project) continue;
+                    var pcfg = p.Config;
+                    pcfg.StoryQualityPrompt = _model.StoryQualityPrompt;
+                    pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
+                    pcfg.RequirementsPrompt = _model.RequirementsPrompt;
+                    pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+                    await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+        _promptsDirty = false;
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _promptsAll ? L["AllProjects"].Value : _model.Project), Severity.Success);
+    }
+
+    private async Task SaveValidation()
+    {
+        var vcfg = ConfigService.Config;
+        vcfg.Rules = _model.Rules;
+        await ConfigService.SaveCurrentAsync(_model.Project, vcfg);
+        if (_validationAll)
+        {
+            var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+            var result = await dialog.Result;
+            if (result?.Canceled == false)
+            {
+                foreach (var p in ConfigService.Projects)
+                {
+                    if (p.Name == _model.Project) continue;
+                    var vc = p.Config;
+                    vc.Rules = _model.Rules;
+                    await ConfigService.UpdateProjectAsync(p.Name, p.Name, vc);
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+        _validationDirty = false;
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, _validationAll ? L["AllProjects"].Value : _model.Project), Severity.Success);
     }
 
     private async Task Delete()
     {
-        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_projectName}?" };
+        var parameters = new DialogParameters { ["Message"] = $"{L["ConfirmDelete"].Value} {_model.Project}?" };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
         var result = await dialog.Result;
         if (result?.Canceled != false) return;
-        await ConfigService.RemoveProjectAsync(_projectName);
+        await ConfigService.RemoveProjectAsync(_model.Project);
         if (ConfigService.Projects.Any())
             NavigationManager.NavigateTo("/projects", true);
         else
             NavigationManager.NavigateTo("/projects/new", true);
     }
 
-    private Task OnNameChanged(string value)
-    {
-        _projectName = value;
-        Validate();
-        return Task.CompletedTask;
-    }
 
     private Task OnOrgChanged(string value)
     {
         _model.Organization = value;
         Validate();
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
@@ -237,6 +325,7 @@
     {
         _model.Project = value;
         Validate();
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
@@ -244,6 +333,7 @@
     {
         _model.PatToken = value;
         Validate();
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
@@ -251,6 +341,7 @@
     {
         _overrideOrg = value;
         Validate();
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
@@ -258,34 +349,75 @@
     {
         _overridePat = value;
         Validate();
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
     private Task OnUseOrgAsGlobalChanged(bool value)
     {
         _useOrgAsGlobal = value;
+        _generalDirty = true;
         return Task.CompletedTask;
     }
 
     private Task OnUseAsGlobalChanged(bool value)
     {
         _useAsGlobal = value;
+        _generalDirty = true;
         return Task.CompletedTask;
+    }
+
+    private Task OnQualityChanged(string value)
+    {
+        _model.DefinitionOfReady = value;
+        _qualityDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnPromptsChanged(Action update)
+    {
+        update();
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnPromptsLimitChanged(int value)
+    {
+        _model.PromptCharacterLimit = value;
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnValidationChanged(Action update)
+    {
+        update();
+        _validationDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private async Task ConfirmLeave(LocationChangingContext context)
+    {
+        if (!HasChanges) return;
+        var parameters = new DialogParameters { ["Message"] = L["LeaveWarning"] };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false)
+        {
+            context.PreventNavigation();
+        }
     }
 
     private void Validate()
     {
         _errors.Clear();
-        if (string.IsNullOrWhiteSpace(_projectName))
-            _errors.Add(L["MissingName"]);
-        else if (!_projectName.Equals(ConfigService.CurrentProject.Name, StringComparison.OrdinalIgnoreCase) &&
-                 ConfigService.Projects.Any(p => p.Name.Equals(_projectName, StringComparison.OrdinalIgnoreCase)))
+        if (string.IsNullOrWhiteSpace(_model.Project))
+            _errors.Add(L["MissingProject"]);
+        else if (!_model.Project.Equals(ConfigService.CurrentProject.Name, StringComparison.OrdinalIgnoreCase) &&
+                 ConfigService.Projects.Any(p => p.Name.Equals(_model.Project, StringComparison.OrdinalIgnoreCase)))
             _errors.Add(L["DuplicateName"]);
         if ((_overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization)) &&
             string.IsNullOrWhiteSpace(_model.Organization))
             _errors.Add(L["MissingOrganization"]);
-        if (string.IsNullOrWhiteSpace(_model.Project))
-            _errors.Add(L["MissingProject"]);
         if ((_overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken)) &&
             string.IsNullOrWhiteSpace(_model.PatToken))
             _errors.Add(L["MissingPat"]);

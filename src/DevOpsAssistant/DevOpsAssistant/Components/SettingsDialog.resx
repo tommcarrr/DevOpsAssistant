@@ -66,6 +66,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="ConfirmOverrideAll" xml:space="preserve">
+    <value>This will override settings for all projects. Continue?</value>
+  </data>
   <data name="SavedMessage" xml:space="preserve">
     <value>Settings saved</value>
   </data>
@@ -101,5 +104,29 @@
   </data>
   <data name="DefinitionOfReady" xml:space="preserve">
     <value>Definition of Ready</value>
+  </data>
+  <data name="LeaveWarning" xml:space="preserve">
+    <value>Leave without saving changes?</value>
+  </data>
+  <data name="SectionSaved" xml:space="preserve">
+    <value>Saved {0} settings for {1}</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>all projects</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SaveForAll" xml:space="preserve">
+    <value>Save for all projects</value>
+  </data>
+  <data name="OverrideWarning" xml:space="preserve">
+    <value>This will override existing settings.</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
   </data>
 </root>
