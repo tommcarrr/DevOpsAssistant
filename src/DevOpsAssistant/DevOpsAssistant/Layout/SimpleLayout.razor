@@ -34,10 +34,10 @@
         </div>
         <footer class="app-footer">
             <MudContainer MaxWidth="MaxWidth.Large" Class="py-2 footer-content">
-                <MudText Typo="Typo.body2" Align="Align.Left">
+                <MudText Typo="Typo.body2" Align="Align.Left" Inline="true">
                     @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
                 </MudText>
-                <MudText Typo="Typo.caption" Align="Align.Right">
+                <MudText Typo="Typo.caption" Align="Align.Right" Inline="true">
                     Version @VersionService.Version
                 </MudText>
             </MudContainer>
