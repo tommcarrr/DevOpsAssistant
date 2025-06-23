@@ -15,6 +15,9 @@
   <data name="PatToken" xml:space="preserve">
     <value>Token PAT</value>
   </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organización de DevOps</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Guardar</value>
   </data>

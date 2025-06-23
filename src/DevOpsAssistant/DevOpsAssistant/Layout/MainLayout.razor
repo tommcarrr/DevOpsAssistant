@@ -33,6 +33,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Help" Href="/help" title='@L["Help"]' class="me-2"/>
         <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
             <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
+            <MudMenuItem OnClick="RemoveOrg">@L["RemoveOrg"]</MudMenuItem>
             <MudMenuItem OnClick="SignOut">@L["RemoveAll"]</MudMenuItem>
         </MudMenu>
     </MudAppBar>
@@ -135,6 +136,17 @@
         if (result?.Canceled != false) return;
 
         await ConfigService.RemoveGlobalPatAsync();
+        StateHasChanged();
+    }
+
+    private async Task RemoveOrg()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["RemoveOrgWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
+        await ConfigService.RemoveGlobalOrganizationAsync();
         StateHasChanged();
     }
 
