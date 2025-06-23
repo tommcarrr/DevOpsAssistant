@@ -160,9 +160,9 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.PatToken);
         Assert.False(service.Config.DarkMode);
         Assert.False(service.Config.ReleaseNotesTreeView);
-        Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
-        Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
-        Assert.True(service.Config.Rules.Bug.HasStoryPoints);
+        Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
+        Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
+        Assert.False(service.Config.Rules.Bug.HasStoryPoints);
         Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.NotNull(service.Config.Rules);
     }
@@ -182,9 +182,9 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.ReleaseNotesPrompt);
         Assert.Equal(string.Empty, service.Config.RequirementsPrompt);
         Assert.False(service.Config.ReleaseNotesTreeView);
-        Assert.True(service.Config.Rules.Bug.IncludeReproSteps);
-        Assert.True(service.Config.Rules.Bug.IncludeSystemInfo);
-        Assert.True(service.Config.Rules.Bug.HasStoryPoints);
+        Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
+        Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
+        Assert.False(service.Config.Rules.Bug.HasStoryPoints);
         Assert.False(await storage.ContainKeyAsync("devops-projects"));
     }
 
