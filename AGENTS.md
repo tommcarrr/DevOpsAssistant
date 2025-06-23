@@ -28,6 +28,8 @@ Codex must be proficient in the following technologies and frameworks, which are
 - Write clean, idiomatic C# code with appropriate use of modern language features.
 - Use async/await for I/O operations.
 - Avoid hardcoded strings in the UI – use localization resources.
+- Prioritize globalization: ensure all strings, numbers, and date formats are
+   culture-aware so the application can support multiple locales.
 
 ### Testing Expectations
 
@@ -57,6 +59,8 @@ Codex must be proficient in the following technologies and frameworks, which are
 - Codex must ensure that the app builds and passes tests via GitHub Actions or another CI system.
 - Linting and formatting checks (e.g., `dotnet format`) should be used to enforce consistency.
 - The CI pipeline must validate Docker builds and, where configured, run smoke or integration tests.
+- Always attempt a production build (for example `dotnet publish -c Release`)
+   to surface Blazor issues that appear only in release mode.
 
 ### Running the Application
 
