@@ -87,6 +87,8 @@ public class MainLayoutTests : ComponentTestBase
         Assert.Contains("min-height: 100vh", css);
         Assert.Contains(".app-footer {", css);
         Assert.Contains("margin-top: auto", css);
+        Assert.Contains(".mud-main-content", css);
+        Assert.Contains("flex-direction: column", css);
     }
 
     [Fact]
