@@ -18,11 +18,11 @@
 
 <body>
 <div id="app">
-    <svg class="loading-progress">
+    <svg class="loading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading progress">
         <circle cx="50%" cy="50%" r="40%"/>
         <circle cx="50%" cy="50%" r="40%"/>
     </svg>
-    <div class="loading-progress-text"></div>
+    <div class="loading-progress-text" aria-live="polite">Loading</div>
 </div>
 
 <div id="blazor-error-ui">
