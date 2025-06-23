@@ -175,6 +175,10 @@ body {
     display: flex;
     flex-direction: column;
 }
+.mud-main-content {
+    display: flex;
+    flex-direction: column;
+}
 .app-footer {
     margin-top: auto;
     background-color: var(--mud-palette-surface, #fff);
