@@ -40,7 +40,8 @@ publishes the site to a staging environment. Playwright UI tests verify that
 each page loads correctly before the same build is promoted to production.
 The production deployment runs in the `production` environment so GitHub can
 require approval from designated reviewers before the job executes.
-During pull requests the CI workflow only runs the unit tests.
+During pull requests the CI workflow performs a production build before running
+the unit tests.
 
 ### Azure Static Web Apps
 
