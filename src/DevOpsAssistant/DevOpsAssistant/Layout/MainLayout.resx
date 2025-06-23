@@ -66,6 +66,9 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
   <data name="Project" xml:space="preserve">
     <value>Project</value>
   </data>
