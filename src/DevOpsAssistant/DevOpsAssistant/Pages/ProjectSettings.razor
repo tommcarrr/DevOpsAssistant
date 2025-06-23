@@ -15,7 +15,7 @@
     <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="ConfirmLeave" />
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["ProjectSettings"] @ProjectName</MudText>
-        <MudTabs Class="mt-4">
+        <MudTabs Class="mt-4" @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true"/>
@@ -50,6 +50,9 @@
                     <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
                     <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label='@L["ReleaseNotesTreeView"]'/>
                     <MudButton OnClick="SaveGeneral" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
+                    <MudStack Row="true" Spacing="1" Class="mt-2">
+                        <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
+                    </MudStack>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["StoryQualityTab"]'>
@@ -116,9 +119,6 @@
                 }
             </MudAlert>
         }
-        <MudStack Row="true" Spacing="1" Class="mt-2">
-            <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
-        </MudStack>
     </MudStack>
 </MudPaper>
 
@@ -136,6 +136,7 @@
     private bool _generalDirty;
     private bool _promptsAll;
     private bool _validationAll;
+    private int _activeTab;
 
     private bool HasChanges => _generalDirty || _qualityDirty || _promptsDirty || _validationDirty;
     private bool CanSave => _errors.Count == 0;
