@@ -175,9 +175,13 @@ body {
     display: flex;
     flex-direction: column;
 }
+.mud-layout {
+    display: flex;
+}
 .mud-main-content {
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 .main-content {
     flex: 1;
