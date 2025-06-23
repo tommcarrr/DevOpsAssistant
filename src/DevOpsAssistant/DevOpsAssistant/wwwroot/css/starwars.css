@@ -1,0 +1,11 @@
+.theme-star-wars {
+  --mud-palette-background-default: #000000;
+  --mud-palette-background-paper: #0d0d0d;
+  --mud-palette-surface: #0d0d0d;
+  --mud-palette-primary: #ffe81f;
+  --mud-palette-secondary: #ffa500;
+  --mud-palette-text-primary: #ffe81f;
+  --mud-palette-text-secondary: #ffffff;
+  font-family: Arial, sans-serif;
+}
+

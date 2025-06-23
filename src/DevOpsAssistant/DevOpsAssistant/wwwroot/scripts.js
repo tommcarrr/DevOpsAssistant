@@ -45,6 +45,11 @@ window.setHighContrast = function (enabled) {
         document.body.classList.remove('high-contrast');
 };
 
+window.setTheme = function (name) {
+    document.body.classList.remove('theme-light', 'theme-dark', 'theme-tron', 'theme-star-wars', 'theme-wes');
+    document.body.classList.add('theme-' + name);
+};
+
 if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
     window.setHighContrast(true);
 }

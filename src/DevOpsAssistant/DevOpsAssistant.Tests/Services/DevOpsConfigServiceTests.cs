@@ -261,16 +261,16 @@ public class DevOpsConfigServiceTests
     }
 
     [Fact]
-    public async Task SaveGlobalDarkModeAsync_Persists_Value()
+    public async Task SaveGlobalThemeAsync_Persists_Value()
     {
         var storage = new FakeLocalStorageService();
         var service = new DevOpsConfigService(storage);
 
-        await service.SaveGlobalDarkModeAsync(true);
+        await service.SaveGlobalThemeAsync("dark");
 
-        Assert.True(service.GlobalDarkMode);
-        var stored = await storage.GetItemAsync<bool?>("devops-dark");
-        Assert.True(stored);
+        Assert.Equal("dark", service.GlobalTheme);
+        var stored = await storage.GetItemAsync<string>("devops-theme");
+        Assert.Equal("dark", stored);
     }
 
     [Fact]

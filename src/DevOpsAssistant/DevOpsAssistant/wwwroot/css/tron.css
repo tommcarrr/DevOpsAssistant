@@ -1,0 +1,11 @@
+.theme-tron {
+  --mud-palette-background-default: #000000;
+  --mud-palette-background-paper: #00141e;
+  --mud-palette-surface: #00141e;
+  --mud-palette-primary: #00ffff;
+  --mud-palette-secondary: #ff00ff;
+  --mud-palette-text-primary: #00ffff;
+  --mud-palette-text-secondary: #ff77ff;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+

@@ -10,7 +10,13 @@
         <MudStack Spacing="2">
             <MudTextField @bind-Value="_organization" Label='@L["Organization"]' />
             <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
-            <MudSwitch T="bool" @bind-Value="_darkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
+            <MudSelect T="string" @bind-Value="_theme" Label='@L["Theme"]'>
+                <MudSelectItem Value="@("light")">@L["Light"]</MudSelectItem>
+                <MudSelectItem Value="@("dark")">@L["Dark"]</MudSelectItem>
+                <MudSelectItem Value="@("tron")">Tron</MudSelectItem>
+                <MudSelectItem Value="@("star-wars")">Star Wars</MudSelectItem>
+                <MudSelectItem Value="@("wes")">Wes Anderson</MudSelectItem>
+            </MudSelect>
             <MudSwitch T="bool" @bind-Value="_highContrast" Color="Color.Primary" Label='@L["HighContrast"]'/>
         </MudStack>
     </DialogContent>
@@ -24,7 +30,7 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     private string _organization = string.Empty;
     private string _token = string.Empty;
-    private bool _darkMode;
+    private string _theme = "light";
     private bool _highContrast;
 
     protected override async Task OnInitializedAsync()
@@ -32,7 +38,7 @@
         await ConfigService.LoadAsync();
         _organization = ConfigService.GlobalOrganization;
         _token = ConfigService.GlobalPatToken;
-        _darkMode = ConfigService.GlobalDarkMode;
+        _theme = ConfigService.GlobalTheme;
         _highContrast = ConfigService.GlobalHighContrast;
     }
 
@@ -40,9 +46,10 @@
     {
         await ConfigService.SaveGlobalOrganizationAsync(_organization);
         await ConfigService.SaveGlobalPatAsync(_token);
-        await ConfigService.SaveGlobalDarkModeAsync(_darkMode);
+        await ConfigService.SaveGlobalThemeAsync(_theme);
         await ConfigService.SaveGlobalHighContrastAsync(_highContrast);
         await JS.InvokeVoidAsync("setHighContrast", _highContrast);
+        await JS.InvokeVoidAsync("setTheme", _theme);
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }

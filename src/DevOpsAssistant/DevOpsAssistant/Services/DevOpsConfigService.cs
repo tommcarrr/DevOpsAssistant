@@ -7,7 +7,7 @@ public class DevOpsConfigService
     private const string LegacyStorageKey = "devops-config";
     private const string StorageKey = "devops-projects";
     private const string GlobalPatKey = "devops-pat";
-    private const string GlobalDarkKey = "devops-dark";
+    private const string GlobalThemeKey = "devops-theme";
     private const string GlobalOrgKey = "devops-org";
     private const string GlobalContrastKey = "devops-contrast";
     private readonly ILocalStorageService _localStorage;
@@ -26,7 +26,7 @@ public class DevOpsConfigService
 
     public string GlobalPatToken { get; private set; } = string.Empty;
     public string GlobalOrganization { get; private set; } = string.Empty;
-    public bool GlobalDarkMode { get; private set; }
+    public string GlobalTheme { get; private set; } = "light";
     public bool GlobalHighContrast { get; private set; }
 
     public DevOpsConfig Config => CurrentProject.Config;
@@ -43,7 +43,14 @@ public class DevOpsConfigService
     {
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
         GlobalOrganization = await _localStorage.GetItemAsync<string>(GlobalOrgKey) ?? string.Empty;
-        GlobalDarkMode = await _localStorage.GetItemAsync<bool?>(GlobalDarkKey) ?? false;
+        GlobalTheme = await _localStorage.GetItemAsync<string>(GlobalThemeKey) ?? "light";
+        var oldDark = await _localStorage.GetItemAsync<bool?>("devops-dark");
+        if (oldDark.HasValue)
+        {
+            GlobalTheme = oldDark.Value ? "dark" : "light";
+            await _localStorage.RemoveItemAsync("devops-dark");
+            await _localStorage.SetItemAsync(GlobalThemeKey, GlobalTheme);
+        }
         GlobalHighContrast = await _localStorage.GetItemAsync<bool?>(GlobalContrastKey) ?? false;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
         if (projects != null && projects.Count > 0)
@@ -100,10 +107,11 @@ public class DevOpsConfigService
         await _localStorage.SetItemAsync(GlobalOrgKey, GlobalOrganization);
     }
 
-    public async Task SaveGlobalDarkModeAsync(bool value)
+    public async Task SaveGlobalThemeAsync(string theme)
     {
-        GlobalDarkMode = value;
-        await _localStorage.SetItemAsync(GlobalDarkKey, GlobalDarkMode);
+        GlobalTheme = theme;
+        await _localStorage.SetItemAsync(GlobalThemeKey, GlobalTheme);
+        OnProjectChanged();
     }
 
     public async Task SaveGlobalHighContrastAsync(bool value)
@@ -235,13 +243,13 @@ public class DevOpsConfigService
         CurrentProject = new DevOpsProject();
         GlobalPatToken = string.Empty;
         GlobalOrganization = string.Empty;
-        GlobalDarkMode = false;
+        GlobalTheme = "light";
         GlobalHighContrast = false;
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
         await _localStorage.RemoveItemAsync(GlobalPatKey);
         await _localStorage.RemoveItemAsync(GlobalOrgKey);
-        await _localStorage.RemoveItemAsync(GlobalDarkKey);
+        await _localStorage.RemoveItemAsync(GlobalThemeKey);
         await _localStorage.RemoveItemAsync(GlobalContrastKey);
         OnProjectChanged();
     }

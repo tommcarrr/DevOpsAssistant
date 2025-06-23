@@ -7,7 +7,7 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SimpleLayout> L
 
-<MudThemeProvider IsDarkMode="@ConfigService.GlobalDarkMode"/>
+<MudThemeProvider IsDarkMode="@IsDark"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
@@ -59,6 +59,7 @@
         {
             await JS.InvokeVoidAsync("setHighContrast", ConfigService.GlobalHighContrast);
         }
+        await JS.InvokeVoidAsync("setTheme", ConfigService.GlobalTheme);
     }
 
     private async Task SignOut()
@@ -98,4 +99,8 @@
     {
         await DialogService.ShowAsync<GlobalOptionsDialog>(L["GlobalSettings"]);
     }
+
+    private bool IsDark => ConfigService.GlobalTheme == "dark" ||
+        ConfigService.GlobalTheme == "tron" ||
+        ConfigService.GlobalTheme == "star-wars";
 }

@@ -24,10 +24,10 @@ public class MainLayoutTests : ComponentTestBase
     }
 
     [Fact]
-    public async Task Layout_Uses_Global_DarkMode()
+    public async Task Layout_Uses_Global_Theme()
     {
         var config = SetupServices();
-        await config.SaveGlobalDarkModeAsync(true);
+        await config.SaveGlobalThemeAsync("dark");
 
         var cut = RenderComponent<MainLayout>();
 

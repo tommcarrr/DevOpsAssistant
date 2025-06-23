@@ -1,0 +1,11 @@
+.theme-wes {
+  --mud-palette-background-default: #fbeec2;
+  --mud-palette-background-paper: #fff4e6;
+  --mud-palette-surface: #fff4e6;
+  --mud-palette-primary: #d08c60;
+  --mud-palette-secondary: #90a959;
+  --mud-palette-text-primary: #4b3b2f;
+  --mud-palette-text-secondary: #7b6d5f;
+  font-family: Georgia, serif;
+}
+
