@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.Localization;
+using DevOpsAssistant.Resources;
 using System.Globalization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -33,5 +35,7 @@ if (!string.IsNullOrWhiteSpace(cultureName))
     CultureInfo.DefaultThreadCurrentCulture = culture;
     CultureInfo.DefaultThreadCurrentUICulture = culture;
 }
+var labelLocalizer = host.Services.GetRequiredService<IStringLocalizer<ErrorUi>>();
+await js.InvokeVoidAsync("setErrorDismissLabel", labelLocalizer["DismissError"].Value);
 await host.Services.GetRequiredService<DeploymentConfigService>().LoadAsync();
 await host.RunAsync();
