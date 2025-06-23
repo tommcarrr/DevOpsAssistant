@@ -89,6 +89,8 @@ public class MainLayoutTests : ComponentTestBase
         Assert.Contains("margin-top: auto", css);
         Assert.Contains(".mud-main-content", css);
         Assert.Contains("flex-direction: column", css);
+        Assert.Contains(".mud-layout", css);
+        Assert.Contains("flex: 1", css);
     }
 
     [Fact]
