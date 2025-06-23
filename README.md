@@ -80,4 +80,5 @@ where to connect.
 Common colors are now defined using CSS variables. When the browser indicates a
 need for high contrast, the site automatically switches to a simplified color
 palette. You can also force this mode by adding the `high-contrast` class to the
-`<body>` element.
+`<body>` element or by toggling the High Contrast option in the Global Settings
+dialog.

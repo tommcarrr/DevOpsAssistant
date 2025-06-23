@@ -90,8 +90,12 @@
         ConfigService.ProjectChanged += HandleProjectChanged;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("setHighContrast", ConfigService.GlobalHighContrast);
+        }
         if (!_initialized)
             return;
         EnsureSettingsIfNeeded();

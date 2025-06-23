@@ -1,6 +1,7 @@
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JS
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<GlobalOptionsDialog> L
 
@@ -9,6 +10,7 @@
         <MudStack Spacing="2">
             <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
             <MudSwitch T="bool" @bind-Value="_darkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
+            <MudSwitch T="bool" @bind-Value="_highContrast" Color="Color.Primary" Label='@L["HighContrast"]'/>
         </MudStack>
     </DialogContent>
     <DialogActions>
@@ -21,18 +23,22 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     private string _token = string.Empty;
     private bool _darkMode;
+    private bool _highContrast;
 
     protected override async Task OnInitializedAsync()
     {
         await ConfigService.LoadAsync();
         _token = ConfigService.GlobalPatToken;
         _darkMode = ConfigService.GlobalDarkMode;
+        _highContrast = ConfigService.GlobalHighContrast;
     }
 
     private async Task Save()
     {
         await ConfigService.SaveGlobalPatAsync(_token);
         await ConfigService.SaveGlobalDarkModeAsync(_darkMode);
+        await ConfigService.SaveGlobalHighContrastAsync(_highContrast);
+        await JS.InvokeVoidAsync("setHighContrast", _highContrast);
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }

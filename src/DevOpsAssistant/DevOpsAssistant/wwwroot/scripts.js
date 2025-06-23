@@ -31,6 +31,13 @@ window.blazorCulture = {
     }
 };
 
+window.setHighContrast = function (enabled) {
+    if (enabled)
+        document.body.classList.add('high-contrast');
+    else
+        document.body.classList.remove('high-contrast');
+};
+
 if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
-    document.body.classList.add('high-contrast');
+    window.setHighContrast(true);
 }

@@ -3,6 +3,7 @@
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
 @inject VersionService VersionService
+@inject IJSRuntime JS
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SimpleLayout> L
 
@@ -49,6 +50,14 @@
     {
         await VersionService.LoadAsync();
         await ConfigService.LoadAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("setHighContrast", ConfigService.GlobalHighContrast);
+        }
     }
 
     private async Task SignOut()
