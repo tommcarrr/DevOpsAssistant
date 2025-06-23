@@ -179,6 +179,9 @@ body {
     display: flex;
     flex-direction: column;
 }
+.main-content {
+    flex: 1;
+}
 .app-footer {
     margin-top: auto;
     background-color: var(--mud-palette-surface, #fff);
