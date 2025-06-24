@@ -192,12 +192,16 @@ public class ReleaseNotesPageTests : ComponentTestBase
     }
 
     [Fact]
-    public async Task ReleaseNotes_Uses_TreeView_When_Configured()
+    public void ReleaseNotes_Uses_TreeView_When_Configured()
     {
-        var config = SetupServices(includeApi: true);
-        await config.SaveAsync(new DevOpsConfig { ReleaseNotesTreeView = true });
+        SetupServices(includeApi: true);
 
         var cut = RenderWithProvider<TestPage>();
+        var field = typeof(ReleaseNotes).GetField("_treeView", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        field.SetValue(cut.Instance, true);
+        var method = typeof(ReleaseNotes).GetMethod("LoadBacklogs", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, null)!);
+        cut.Render();
 
         Assert.Contains("Load", cut.Markup);
     }

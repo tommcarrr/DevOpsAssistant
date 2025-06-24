@@ -46,9 +46,6 @@
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
-                    <MudTextField @bind-Value="_model.DefaultStates" Label='@L["DefaultStates"]' HelperText="Comma separated"/>
-                    <MudSwitch T="bool" @bind-Value="_model.DarkMode" Color="Color.Primary" Label='@L["DarkMode"]'/>
-                    <MudSwitch T="bool" @bind-Value="_model.ReleaseNotesTreeView" Color="Color.Primary" Label='@L["ReleaseNotesTreeView"]'/>
                     <MudButton OnClick="SaveGeneral" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
                     <MudStack Row="true" Spacing="1" Class="mt-05">
                         <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
@@ -152,9 +149,6 @@
             Project = cfg.Project,
             PatToken = cfg.PatToken,
             MainBranch = cfg.MainBranch,
-            DefaultStates = cfg.DefaultStates,
-            DarkMode = cfg.DarkMode,
-            ReleaseNotesTreeView = cfg.ReleaseNotesTreeView,
             DefinitionOfReady = cfg.DefinitionOfReady,
             StoryQualityPrompt = cfg.StoryQualityPrompt,
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
@@ -203,9 +197,6 @@
             Project = _model.Project,
             PatToken = _overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken) ? _model.PatToken : string.Empty,
             MainBranch = _model.MainBranch,
-            DarkMode = _model.DarkMode,
-            ReleaseNotesTreeView = _model.ReleaseNotesTreeView,
-            DefaultStates = _model.DefaultStates,
             DefinitionOfReady = _model.DefinitionOfReady,
             StoryQualityPrompt = _model.StoryQualityPrompt,
             ReleaseNotesPrompt = _model.ReleaseNotesPrompt,

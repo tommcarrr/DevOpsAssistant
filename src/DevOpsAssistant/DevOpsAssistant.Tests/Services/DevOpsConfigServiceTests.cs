@@ -17,13 +17,10 @@ public class DevOpsConfigServiceTests
             Organization = " Org ",
             Project = " Proj ",
             PatToken = " Token ",
-            DarkMode = true,
-            ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
-            DefaultStates = "Resolved",
             MainBranch = " main ",
             Rules = new ValidationRules
             {
@@ -48,8 +45,6 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Org", storedCfg.Organization);
         Assert.Equal("Proj", storedCfg.Project);
         Assert.Equal("Token", storedCfg.PatToken);
-        Assert.True(storedCfg.DarkMode);
-        Assert.True(storedCfg.ReleaseNotesTreeView);
         Assert.False(storedCfg.Rules.Bug.IncludeReproSteps);
         Assert.False(storedCfg.Rules.Bug.IncludeSystemInfo);
         Assert.False(storedCfg.Rules.Bug.HasStoryPoints);
@@ -57,7 +52,6 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", storedCfg.StoryQualityPrompt);
         Assert.Equal("RN", storedCfg.ReleaseNotesPrompt);
         Assert.Equal("RP", storedCfg.RequirementsPrompt);
-        Assert.Equal("Resolved", storedCfg.DefaultStates);
         Assert.Equal("main", storedCfg.MainBranch);
         Assert.True(storedCfg.Rules.Epic.HasDescription);
     }
@@ -71,13 +65,10 @@ public class DevOpsConfigServiceTests
             Organization = "Org",
             Project = "Proj",
             PatToken = "Token",
-            DarkMode = true,
-            ReleaseNotesTreeView = true,
             DefinitionOfReady = "DOR",
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
-            DefaultStates = "Active",
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = true },
@@ -98,8 +89,6 @@ public class DevOpsConfigServiceTests
         Assert.Equal("Org", service.Config.Organization);
         Assert.Equal("Proj", service.Config.Project);
         Assert.Equal("Token", service.Config.PatToken);
-        Assert.True(service.Config.DarkMode);
-        Assert.True(service.Config.ReleaseNotesTreeView);
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.False(service.Config.Rules.Bug.HasStoryPoints);
@@ -108,7 +97,6 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
-        Assert.Equal("Active", service.Config.DefaultStates);
         Assert.True(service.Config.Rules.Epic.HasDescription);
         Assert.Equal("proj", service.CurrentProject.Name);
     }
@@ -127,7 +115,6 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = " SQ ",
             ReleaseNotesPrompt = " RN ",
             RequirementsPrompt = " RP ",
-            DefaultStates = " Active ",
             Rules = new ValidationRules()
         };
         await storage.SetItemAsync("devops-config", stored);
@@ -143,7 +130,6 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
-        Assert.Equal("Active", service.Config.DefaultStates);
         Assert.Equal("default", service.CurrentProject.Name);
     }
 
@@ -158,12 +144,9 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.Organization);
         Assert.Equal(string.Empty, service.Config.Project);
         Assert.Equal(string.Empty, service.Config.PatToken);
-        Assert.False(service.Config.DarkMode);
-        Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.False(service.Config.Rules.Bug.HasStoryPoints);
-        Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.NotNull(service.Config.Rules);
     }
 
@@ -177,11 +160,9 @@ public class DevOpsConfigServiceTests
         await service.ClearAsync();
 
         Assert.Equal(string.Empty, service.Config.Organization);
-        Assert.Equal(string.Empty, service.Config.DefaultStates);
         Assert.Equal(string.Empty, service.Config.StoryQualityPrompt);
         Assert.Equal(string.Empty, service.Config.ReleaseNotesPrompt);
         Assert.Equal(string.Empty, service.Config.RequirementsPrompt);
-        Assert.False(service.Config.ReleaseNotesTreeView);
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.False(service.Config.Rules.Bug.HasStoryPoints);
