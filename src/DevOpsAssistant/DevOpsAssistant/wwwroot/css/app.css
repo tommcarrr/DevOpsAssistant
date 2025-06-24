@@ -208,4 +208,21 @@ body {
 .help-content a {
     color: var(--color-bug);
 }
-
+/* utility spacing classes */
+.mb-05 { margin-bottom: 0.5rem; }
+.mb-15 { margin-bottom: 1.5rem; }
+.mt-05 { margin-top: 0.5rem; }
+.mt-15 { margin-top: 1.5rem; }
+.ml-025 { margin-left: 0.25rem; }
+.ml-05 { margin-left: 0.5rem; }
+.ml-15 { margin-left: 1.5rem; }
+.mr-05 { margin-right: 0.5rem; }
+.mr-15 { margin-right: 1.5rem; }
+.p-15 { padding: 1.5rem; }
+.py-05 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.w-100 { width: 100%; }
+.scroll-300 { max-height: 300px; overflow: auto; width: 100%; }
+.float-right { float: right; }
+.cursor-pointer { cursor: pointer; }
+.no-link-style { color: inherit; text-decoration: none; }
+.preview-box { margin-bottom: 0.5rem; border: 1px solid #ccc; padding: 4px; }

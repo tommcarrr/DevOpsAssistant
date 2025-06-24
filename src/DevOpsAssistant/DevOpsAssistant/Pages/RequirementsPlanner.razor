@@ -16,21 +16,21 @@
 
 <PageTitle>DevOpsAssistant - Requirement Planner</PageTitle>
 
-<MudAlert Severity="Severity.Info" Class="mb-4">
+<MudAlert Severity="Severity.Info" Class="mb-15">
     @L["CopyPromptMessage"]
     <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
 </MudAlert>
 
-<MudAlert Severity="Severity.Info" Class="mb-4">
+<MudAlert Severity="Severity.Info" Class="mb-15">
     Select wiki pages or upload a requirements document to generate a prompt that breaks it into Epics, Features and User Stories.
     Paste the LLM response below to import items and create them in a backlog.
 </MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
-    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    <MudAlert Severity="Severity.Error" Class="mb-15">@_error</MudAlert>
 }
 
-<MudStepper @ref="_stepper" Class="mb-4" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
+<MudStepper @ref="_stepper" Class="mb-15" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
     <MudStep Title="Select Requirements">
         <MudStack Spacing="2">
             <MudTooltip Text='@L["UseDocumentTooltip"]'>
@@ -42,7 +42,7 @@
             }
             else if (_wikiItems != null)
             {
-                <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Style="max-height:300px; overflow:auto; width:100%;">
+                <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Class="scroll-300">
                     <ItemTemplate>
                         <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
                     </ItemTemplate>
@@ -78,7 +78,7 @@
     <MudStep Title="Create Work Items" Disabled="@(_plan == null)">
         @if (_plan != null)
         {
-            <MudSwitch T="bool" @bind-Value="_previewHtml" Color="Color.Primary" Label="Preview HTML" Class="mb-2" />
+            <MudSwitch T="bool" @bind-Value="_previewHtml" Color="Color.Primary" Label="Preview HTML" Class="mb-05" />
             if (_storiesOnly)
             {
                 <MudAutocomplete T="WorkItemInfo"
@@ -89,23 +89,23 @@
 
                 @foreach (var story in _plan.Stories)
                 {
-                    <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("User Story")}")">
+                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("User Story")} mb-05")">
                         <MudText Typo="Typo.subtitle2">Story</MudText>
                         @if (_previewHtml)
                         {
                             <MudText Typo="Typo.subtitle2">Description</MudText>
-                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                            <div class="preview-box">@((MarkupString)story.Description)</div>
                             <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
-                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                            <div class="preview-box">@((MarkupString)story.AcceptanceCriteria)</div>
                             <MudText Typo="Typo.subtitle2">Tags</MudText>
-                            <div class="mb-2">@string.Join(", ", story.Tags)</div>
+                            <div class="mb-05">@string.Join(", ", story.Tags)</div>
                         }
                         else
                         {
-                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
-                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
-                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
-                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-2" />
+                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-05" />
+                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-05" />
+                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-05" />
+                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-05" />
                         }
                     </MudPaper>
                 }
@@ -114,37 +114,37 @@
             {
                 @foreach (var epic in _plan.Epics)
                 {
-                    <MudPaper Class="@($"pa-2 mb-2 {WorkItemHelpers.GetItemClass("Epic")}")">
+                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("Epic")} mb-05")">
                         <MudText Typo="Typo.h6">Epic</MudText>
-                        <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-2" />
-                        <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-2" />
+                        <MudTextField @bind-Value="epic.Title" Label="Title" Class="mb-05" />
+                        <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" Class="mb-05" />
 
                         @foreach (var feature in epic.Features)
                         {
-                            <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("Feature")}")">
+                            <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("Feature")} ml-15 mb-05")">
                                 <MudText Typo="Typo.subtitle1">Feature</MudText>
-                                <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-2" />
-                                <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-2" />
+                                <MudTextField @bind-Value="feature.Title" Label="Title" Class="mb-05" />
+                                <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" Class="mb-05" />
 
                                 @foreach (var story in feature.Stories)
                                 {
-                                    <MudPaper Class="@($"pa-2 mb-2 ms-4 {WorkItemHelpers.GetItemClass("User Story")}")">
+                                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("User Story")} ml-15 mb-05")">
                                         <MudText Typo="Typo.subtitle2">Story</MudText>
                                         @if (_previewHtml)
                                         {
                                             <MudText Typo="Typo.subtitle2">Description</MudText>
-                                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.Description)</div>
+                                            <div class="preview-box">@((MarkupString)story.Description)</div>
                                             <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
-                                            <div class="mb-2" style="border:1px solid #ccc;padding:4px;">@((MarkupString)story.AcceptanceCriteria)</div>
+                                            <div class="preview-box">@((MarkupString)story.AcceptanceCriteria)</div>
                                             <MudText Typo="Typo.subtitle2">Tags</MudText>
-                                            <div class="mb-2">@string.Join(", ", story.Tags)</div>
+                                            <div class="mb-05">@string.Join(", ", story.Tags)</div>
                                         }
                                         else
                                         {
-                                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-2" />
-                                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-2" />
-                                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-2" />
-                                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-2" />
+                                            <MudTextField @bind-Value="story.Title" Label="Title" Class="mb-05" />
+                                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" Class="mb-05" />
+                                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" Class="mb-05" />
+                                            <MudTextField @bind-Value="story.TagString" Label="Tags" Class="mb-05" />
                                         }
                                     </MudPaper>
                                 }
