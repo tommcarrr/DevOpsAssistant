@@ -204,6 +204,10 @@ body {
     max-height: 600px;
 }
 
+/* Styling for links inside the help page */
+.help-content a {
+    color: var(--color-bug);
+}
 /* utility spacing classes */
 .mb-05 { margin-bottom: 0.5rem; }
 .mb-15 { margin-bottom: 1.5rem; }
@@ -222,4 +226,3 @@ body {
 .cursor-pointer { cursor: pointer; }
 .no-link-style { color: inherit; text-decoration: none; }
 .preview-box { margin-bottom: 0.5rem; border: 1px solid #ccc; padding: 4px; }
-
