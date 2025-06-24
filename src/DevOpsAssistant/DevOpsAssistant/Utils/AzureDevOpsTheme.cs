@@ -6,7 +6,7 @@ public static class AzureDevOpsTheme
 {
     public static MudTheme Theme { get; } = new MudTheme
     {
-        Palette = new Palette
+        PaletteLight = new PaletteLight
         {
             Primary = "#0078D4",
             Secondary = "#005A9E",
