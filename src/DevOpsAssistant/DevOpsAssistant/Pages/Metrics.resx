@@ -15,4 +15,16 @@
   <data name="VelocityTooltip" xml:space="preserve">
     <value>Choose which field to use for velocity calculations</value>
   </data>
+  <data name="PageHeading" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
+  <data name="OptionsHeading" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="TableHeading" xml:space="preserve">
+    <value>Throughput and Lead Times</value>
+  </data>
+  <data name="ChartsHeading" xml:space="preserve">
+    <value>Charts</value>
+  </data>
 </root>
