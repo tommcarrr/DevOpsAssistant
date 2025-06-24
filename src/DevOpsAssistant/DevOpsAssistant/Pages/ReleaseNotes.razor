@@ -27,29 +27,31 @@
 }
 
 <MudPaper Class="p-15 mb-15">
-    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSwitch T="bool" Value="_treeView" ValueChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" Class="mr-05" />
-        @if (_treeView)
-        {
-            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-                @foreach (var b in _backlogs)
-                {
-                    <MudSelectItem Value="@b">@b</MudSelectItem>
-                }
-            </MudSelect>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Load">Load</MudButton>
-        }
-        else
-        {
-            <MudAutocomplete T="WorkItemInfo"
-                             Label="Work Items"
-                             SearchFunc="SearchItems"
-                             ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                             Value="_searchValue"
-                             ValueChanged="OnItemSelected"/>
-        }
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+    <MudStack Spacing="2">
+        <MudSwitch T="bool" Value="_treeView" ValueChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" />
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+            @if (_treeView)
+            {
+                <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                    @foreach (var b in _backlogs)
+                    {
+                        <MudSelectItem Value="@b">@b</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Load">Load</MudButton>
+            }
+            else
+            {
+                <MudAutocomplete T="WorkItemInfo"
+                                 Label="Work Items"
+                                 SearchFunc="SearchItems"
+                                 ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
+                                 Value="_searchValue"
+                                 ValueChanged="OnItemSelected"/>
+            }
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+        </MudStack>
     </MudStack>
 </MudPaper>
 
@@ -60,11 +62,12 @@
                  SelectionMode="SelectionMode.MultiSelection"
                  SelectedValues="@_selectedNodes"
                  SelectedValuesChanged="OnNodesSelected"
-                 Class="scroll-300">
+                 Class="scroll-300 work-item-tree">
         <ItemTemplate>
             <MudTreeViewItem Items="@context.Children"
                              Value="@context.Value"
                              Text="@($"{context.Value!.Info.Id} - {context.Value!.Info.Title}")"
+                             Class="@WorkItemHelpers.GetItemClass(context.Value!.Info.WorkItemType)"
                              @bind-Expanded="@context.Expanded" />
         </ItemTemplate>
     </MudTreeView>
