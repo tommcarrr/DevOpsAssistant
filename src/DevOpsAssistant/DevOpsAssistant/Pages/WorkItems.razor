@@ -6,17 +6,17 @@
 
 <PageTitle>DevOpsAssistant - Epics and Features</PageTitle>
 
-<MudAlert Severity="Severity.Info" Class="mb-4">
+<MudAlert Severity="Severity.Info" Class="mb-15">
     Select a backlog and click <b>Load</b> to view epics and features.
     Items are grouped hierarchically and suggested states appear when
     parents differ from their children. Use <b>Update</b> to keep them in sync.
 </MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
-    <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    <MudAlert Severity="Severity.Error" Class="mb-15">@_error</MudAlert>
 }
 
-<MudPaper Class="p-4 mb-4">
+<MudPaper Class="p-15 mb-15">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
         <MudSelect T="string" @bind-Value="_path" Label="Backlog">
             @foreach (var b in _backlogs)
@@ -35,9 +35,9 @@
 }
 else if (_roots != null)
 {
-    <MudStack Row="true" Spacing="2" Class="mb-2" AlignItems="AlignItems.Center">
+    <MudStack Row="true" Spacing="2" Class="mb-05" AlignItems="AlignItems.Center">
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateAll" Disabled="@(!HasPendingUpdates)">Update All</MudButton>
-        <MudSwitch T="bool" @bind-Value="_issuesOnly" Color="Color.Primary" Label="Show only items with issues" Class="ms-2" />
+        <MudSwitch T="bool" @bind-Value="_issuesOnly" Color="Color.Primary" Label="Show only items with issues" Class="ml-05" />
     </MudStack>
     <MudPaper Class="work-item-container">
         <MudList T="WorkItemNode" Dense="true" Class="work-item-tree">
@@ -50,7 +50,7 @@ else if (_roots != null)
                     @StatusIcon(epic) @SuggestedState(epic)
                     @if (epic.Children.Any())
                     {
-                        <MudList T="WorkItemNode" Dense="true" Class="ms-4">
+                        <MudList T="WorkItemNode" Dense="true" Class="ml-15">
                             @foreach (var feature in epic.Children)
                             {
                                 <MudListItem T="WorkItemNode" Class="@InvalidClass(feature)">
@@ -60,7 +60,7 @@ else if (_roots != null)
                                     @StatusIcon(feature) @SuggestedState(feature)
                                     @if (feature.Children.Any())
                                     {
-                                        <MudList T="WorkItemNode" Dense="true" Class="ms-4">
+                                        <MudList T="WorkItemNode" Dense="true" Class="ml-15">
                                             @foreach (var item in feature.Children)
                                             {
                                                 <MudListItem T="WorkItemNode" Class="@InvalidClass(item)">
@@ -180,7 +180,7 @@ else if (_roots != null)
             if (!node.StatusValid)
             {
                 builder.OpenElement(0, "span");
-                builder.AddAttribute(1, "class", "ms-1 text-secondary");
+                builder.AddAttribute(1, "style", "margin-left:0.25rem;color:var(--mud-palette-text-secondary,#6c757d);");
                 builder.AddContent(2, $"(Suggested: {node.ExpectedState})");
                 builder.CloseElement();
                 builder.AddMarkupContent(3, "&nbsp;");
