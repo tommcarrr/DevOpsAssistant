@@ -15,4 +15,7 @@
   <data name="BugStoryPointsRule" xml:space="preserve">
     <value>Los bugs deben tener story points</value>
   </data>
+  <data name="AlreadyTaggedTooltip" xml:space="preserve">
+    <value>Este elemento ya está etiquetado</value>
+  </data>
 </root>

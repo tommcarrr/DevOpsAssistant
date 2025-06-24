@@ -185,7 +185,7 @@ else if (_roots != null)
                 builder.CloseElement();
                 builder.AddMarkupContent(3, "&nbsp;");
                 builder.OpenComponent<MudButton>(4);
-                builder.AddAttribute(5, "Variant", Variant.Text);
+                builder.AddAttribute(5, "Variant", Variant.Filled);
                 builder.AddAttribute(6, "Size", Size.Small);
                 builder.AddAttribute(6, "Color", Color.Primary);
                 builder.AddAttribute(7, "OnClick", EventCallback.Factory.Create<MouseEventArgs>(this, () => UpdateState(node)));
