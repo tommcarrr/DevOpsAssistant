@@ -204,3 +204,8 @@ body {
     max-height: 600px;
 }
 
+/* Styling for links inside the help page */
+.help-content a {
+    color: var(--color-bug);
+}
+
