@@ -23,7 +23,7 @@ jobs:
       - name: Restore
         run: dotnet restore src/DevOpsAssistant/DevOpsAssistant.sln
       - name: Build (Release)
-        run: dotnet publish src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj -c Release -o publish --no-restore
+        run: dotnet publish src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj -c Release -o publish --no-restore -warnaserror
       - name: Test with coverage
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.Tests/DevOpsAssistant.Tests.csproj --no-restore --verbosity normal --collect:"XPlat Code Coverage"
       - name: Install ReportGenerator
