@@ -12,17 +12,6 @@
     --color-progress-fg: #1b6ec2;
 }
 
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid var(--color-success);
-}
-
-.invalid {
-    outline: 1px solid var(--color-error);
-}
-
-.validation-message {
-    color: var(--color-error);
-}
 
 #blazor-error-ui {
     background: lightyellow;
@@ -204,10 +193,6 @@ body {
     max-height: 600px;
 }
 
-/* Styling for links inside the help page */
-.help-content a {
-    color: var(--color-bug);
-}
 /* utility spacing classes */
 .scroll-300 { max-height: 300px; overflow: auto; width: 100%; }
 .float-right { float: right; }

@@ -69,7 +69,7 @@ public class ValidationPageTests : ComponentTestBase
         var expandedField = typeof(Validation).GetField("_rulesExpanded", BindingFlags.NonPublic | BindingFlags.Instance)!;
         Assert.False((bool)expandedField.GetValue(cut.Instance)!);
 
-        cut.Find("button.rules-toggle").Click();
+        cut.Find("button").Click();
         cut.WaitForAssertion(() => Assert.True((bool)expandedField.GetValue(cut.Instance)!));
     }
 
