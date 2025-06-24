@@ -11,11 +11,11 @@
 
 <PageTitle>DevOpsAssistant - Settings</PageTitle>
 
-<MudPaper Class="p-4">
+<MudPaper Class="pa-6">
     <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="ConfirmLeave" />
-    <MudStack Spacing="2">
-        <MudText Typo="Typo.h5">@L["ProjectSettings"] @ProjectName</MudText>
-        <MudTabs Class="mt-15" @bind-ActivePanelIndex="_activeTab">
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h4" Class="mb-4">@L["ProjectSettings"] @ProjectName</MudText>
+        <MudTabs Class="mt-4" @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true"/>
@@ -46,16 +46,16 @@
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
-                    <MudButton OnClick="SaveGeneral" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
                     <MudStack Row="true" Spacing="1" Class="mt-05">
-                        <MudButton OnClick="Delete" Color="Color.Error">@L["DeleteProject"]</MudButton>
+                        <MudButton OnClick="SaveGeneral" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
+                        <MudButton OnClick="Delete" Variant="Variant.Filled" Color="Color.Error">@L["DeleteProject"]</MudButton>
                     </MudStack>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["StoryQualityTab"]'>
                 <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3"/>
-                    <MudButton OnClick="SaveQuality" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
+                    <MudButton OnClick="SaveQuality" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["PromptsTab"]'>
@@ -69,7 +69,7 @@
                     {
                         <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
                     }
-                    <MudButton OnClick="SavePrompts" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
+                    <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
@@ -103,7 +103,7 @@
                     {
                         <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
                     }
-                    <MudButton OnClick="SaveValidation" Color="Color.Primary" Disabled="!_validationDirty">@L["Save"]</MudButton>
+                    <MudButton OnClick="SaveValidation" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_validationDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
