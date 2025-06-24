@@ -42,4 +42,7 @@
   <data name="Settings" xml:space="preserve">
     <value>Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects. You can also customize prompts and validation rules. Create a PAT from your profile menu in Azure DevOps and select New Token. See {0} for instructions. The organization name is the first segment after dev.azure.com/ in the URL and the project name appears next to the home icon when viewing a project.</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
 </root>

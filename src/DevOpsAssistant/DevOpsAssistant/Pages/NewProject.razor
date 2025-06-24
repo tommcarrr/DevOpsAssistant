@@ -4,9 +4,11 @@
 @using DevOpsAssistant.Components
 @inject DevOpsConfigService ConfigService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SettingsDialog> L
 @inject IStringLocalizer<GlobalOptionsDialog> TL
+@inject IStringLocalizer<Help> HL
 
 <PageTitle>DevOpsAssistant - New Project</PageTitle>
 
@@ -14,7 +16,7 @@
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["NewProject"]</MudText>
         <MudText Typo="Typo.body2" Class="mb-2">
-            For help finding these values see the <MudLink Href="/help">help page</MudLink>.
+            For help finding these values see the <MudLink Href="#" OnClick="OpenHelpDialog">help page</MudLink>.
         </MudText>
         @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
         {
@@ -180,5 +182,10 @@
     private void Back()
     {
         NavigationManager.NavigateTo("/projects");
+    }
+
+    private async Task OpenHelpDialog()
+    {
+        await DialogService.ShowAsync<HelpDialog>(HL["Heading"]);
     }
 }

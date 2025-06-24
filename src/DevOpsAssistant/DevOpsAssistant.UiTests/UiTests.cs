@@ -69,7 +69,6 @@ public class UiTests
     [InlineData("Metrics", "Metrics")]
     [InlineData("Requirement Planner", "Requirement Planner")]
     [InlineData("Branch Health", "Branch Health")]
-    [InlineData("Help", "Help & Instructions")]
     public async Task Nav_Menu_Navigates_To_Correct_Page(string linkText, string heading)
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -83,6 +82,23 @@ public class UiTests
         await page.ReloadAsync();
         await page.GetByRole(AriaRole.Link, new() { Name = linkText }).ClickAsync();
         var element = await page.QuerySelectorAsync($"text={heading}");
+        Assert.NotNull(element);
+    }
+
+    [Fact]
+    public async Task Help_Button_Shows_Dialog()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Help" }).ClickAsync();
+        var element = await page.QuerySelectorAsync("text=Help & Instructions");
         Assert.NotNull(element);
     }
 
