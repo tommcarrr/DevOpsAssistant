@@ -66,6 +66,9 @@
   <data name="Reports" xml:space="preserve">
     <value>Informes</value>
   </data>
+  <data name="AIHelpers" xml:space="preserve">
+    <value>Asistentes de IA</value>
+  </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>Estado de Ramas</value>
   </data>
