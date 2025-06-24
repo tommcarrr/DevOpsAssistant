@@ -75,10 +75,22 @@ else if (_periods.Any())
     </MudTable>
 
     <MudPaper Class="pa-2 mt-15">
-        <MudChart ChartType="ChartType.Line" ChartSeries="_leadCycleSeries" XAxisLabels="_xAxisLabels" Class="responsive-chart" />
+        <MudChart ChartType="ChartType.Line"
+                  ChartSeries="_leadCycleSeries"
+                  XAxisLabels="_xAxisLabels"
+                  Class="responsive-chart"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="_axisOptions" />
     </MudPaper>
     <MudPaper Class="pa-2 mt-15">
-        <MudChart ChartType="ChartType.Bar" ChartSeries="_barSeries" XAxisLabels="_xAxisLabels" Class="responsive-chart" />
+        <MudChart ChartType="ChartType.Bar"
+                  ChartSeries="_barSeries"
+                  XAxisLabels="_xAxisLabels"
+                  Class="responsive-chart"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="_axisOptions" />
     </MudPaper>
 }
 
@@ -96,6 +108,7 @@ else if (_periods.Any())
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
+    private AxisChartOptions _axisOptions = new() { MatchBoundsToSize = true, XAxisLabelRotation = 45 };
     private string? _error;
     private const string StateKey = "metrics";
 
