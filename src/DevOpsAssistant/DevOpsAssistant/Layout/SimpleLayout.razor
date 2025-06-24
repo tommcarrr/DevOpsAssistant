@@ -19,9 +19,9 @@
         </MudText>
         <MudSpacer/>
         <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode" class="me-2"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]'/>
-        <MudIconButton Icon="@Icons.Material.Filled.Help" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]' class="mx-2"/>
-        <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Inherit" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]' class="mx-2"/>
+        <MudMenu Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
             <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
             <MudMenuItem OnClick="RemoveOrg">@L["RemoveOrg"]</MudMenuItem>
             <MudMenuItem OnClick="SignOut">@L["RemoveAll"]</MudMenuItem>
