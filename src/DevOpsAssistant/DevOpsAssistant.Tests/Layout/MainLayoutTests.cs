@@ -131,7 +131,7 @@ public class MainLayoutTests : ComponentTestBase
     }
 
     [Fact]
-    public async Task Current_Project_Name_Displayed_In_AppBar()
+    public async Task Current_Project_Name_Displayed_In_Project_Menu()
     {
         var config = SetupServices();
         await config.AddProjectAsync("Demo");
@@ -139,7 +139,7 @@ public class MainLayoutTests : ComponentTestBase
 
         var cut = RenderComponent<MainLayout>();
 
-        var text = cut.Find(".current-project");
-        Assert.Equal("Demo", text.TextContent);
+        var button = cut.Find("div.mud-menu button");
+        Assert.Contains("Demo", button.TextContent);
     }
 }

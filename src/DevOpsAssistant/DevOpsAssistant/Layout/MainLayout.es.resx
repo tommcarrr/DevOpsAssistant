@@ -81,6 +81,9 @@
   <data name="Project" xml:space="preserve">
     <value>Proyecto</value>
   </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>Nuevo Proyecto</value>
+  </data>
   <data name="ChangeProjectWarning" xml:space="preserve">
     <value>Cambiar de proyecto descartará el estado actual. ¿Continuar?</value>
   </data>
