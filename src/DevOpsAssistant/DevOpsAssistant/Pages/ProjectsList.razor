@@ -9,14 +9,14 @@
 <PageTitle>DevOpsAssistant - Projects</PageTitle>
 
 <MudPaper Class="p-4">
-    <MudText Typo="Typo.h5" Class="mb-2">@L["Project"]</MudText>
+    <MudText Typo="Typo.h5" Class="mb-05">@L["Project"]</MudText>
     <MudList T="string">
         @foreach (var p in ConfigService.Projects)
         {
-            <MudListItem T="string" Style="cursor:pointer" OnClick="() => OpenProject(p.Name)">@p.Name</MudListItem>
+            <MudListItem T="string" Class="cursor-pointer" OnClick="() => OpenProject(p.Name)">@p.Name</MudListItem>
         }
     </MudList>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/projects/new" Class="mt-2">@L["NewProject"]</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/projects/new" Class="mt-05">@L["NewProject"]</MudButton>
 </MudPaper>
 
 @code {
