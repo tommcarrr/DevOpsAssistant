@@ -15,20 +15,38 @@
   <data name="Epics" xml:space="preserve">
     <value>Épicas y Características</value>
   </data>
+  <data name="EpicsTooltip" xml:space="preserve">
+    <value>Seleccione un backlog y haga clic en Cargar para ver épicas y características. Los elementos se agrupan jerárquicamente y los estados sugeridos aparecen cuando los padres difieren de sus hijos. Use Actualizar para mantenerlos sincronizados.</value>
+  </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Notas de lanzamiento</value>
+  </data>
+  <data name="ReleaseNotesTooltip" xml:space="preserve">
+    <value>Busque y seleccione historias de usuario, luego haga clic en Generar para crear un resumen para las notas de lanzamiento. Use el botón copiar para copiar el texto generado.</value>
   </data>
   <data name="Validation" xml:space="preserve">
     <value>Validación de historias</value>
   </data>
+  <data name="ValidationTooltip" xml:space="preserve">
+    <value>Seleccione un backlog y estados y haga clic en Comprobar para validar los elementos según sus reglas configuradas. Se enumerarán las infracciones.</value>
+  </data>
   <data name="StoryReview" xml:space="preserve">
     <value>Calidad de la historia</value>
+  </data>
+  <data name="StoryReviewTooltip" xml:space="preserve">
+    <value>Seleccione un backlog y estados y haga clic en Generar para crear un prompt para revisar historias de usuario.</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Métricas</value>
   </data>
+  <data name="MetricsTooltip" xml:space="preserve">
+    <value>Elija un backlog y haga clic en Cargar para mostrar el rendimiento semanal y los tiempos de ciclo y entrega. Los gráficos muestran estas métricas de las últimas doce semanas.</value>
+  </data>
   <data name="RequirementPlanner" xml:space="preserve">
     <value>Planificador de requisitos</value>
+  </data>
+  <data name="RequirementPlannerTooltip" xml:space="preserve">
+    <value>Seleccione páginas de wiki o cargue un documento de requisitos para generar un prompt que lo divida en épicas, características y historias de usuario. Pegue la respuesta del LLM abajo para importar elementos y crearlos en un backlog.</value>
   </data>
   <data name="SignOut" xml:space="preserve">
     <value>Cerrar sesión</value>
@@ -71,6 +89,9 @@
   </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>Estado de Ramas</value>
+  </data>
+  <data name="BranchHealthTooltip" xml:space="preserve">
+    <value>Seleccione un repositorio y haga clic en Cargar para ver la actividad de las ramas. Las ramas sin commits recientes se marcan con un ícono de advertencia.</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>Ayuda</value>

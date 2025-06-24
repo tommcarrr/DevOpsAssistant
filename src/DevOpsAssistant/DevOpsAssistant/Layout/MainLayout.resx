@@ -15,20 +15,38 @@
   <data name="Epics" xml:space="preserve">
     <value>Epics &amp; Features</value>
   </data>
+  <data name="EpicsTooltip" xml:space="preserve">
+    <value>Select a backlog and click Load to view epics and features. Items are grouped hierarchically and suggested states appear when parents differ from their children. Use Update to keep them in sync.</value>
+  </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Release Notes</value>
+  </data>
+  <data name="ReleaseNotesTooltip" xml:space="preserve">
+    <value>Search and select user stories, then click Generate to build a prompt summarizing them for release notes. Use the copy button to copy the generated text.</value>
   </data>
   <data name="Validation" xml:space="preserve">
     <value>Story Validation</value>
   </data>
+  <data name="ValidationTooltip" xml:space="preserve">
+    <value>Select a backlog and states then click Check to validate work items against your configured rules. Any violations will be listed below.</value>
+  </data>
   <data name="StoryReview" xml:space="preserve">
     <value>Story Quality</value>
+  </data>
+  <data name="StoryReviewTooltip" xml:space="preserve">
+    <value>Select a backlog and states then click Generate to build a prompt for reviewing user stories.</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Metrics</value>
   </data>
+  <data name="MetricsTooltip" xml:space="preserve">
+    <value>Choose a backlog and click Load to display weekly throughput, lead time and cycle time statistics. Charts visualize these metrics for the last twelve weeks.</value>
+  </data>
   <data name="RequirementPlanner" xml:space="preserve">
     <value>Requirement Planner</value>
+  </data>
+  <data name="RequirementPlannerTooltip" xml:space="preserve">
+    <value>Select wiki pages or upload a requirements document to generate a prompt that breaks it into Epics, Features and User Stories. Paste the LLM response below to import items and create them in a backlog.</value>
   </data>
   <data name="SignOut" xml:space="preserve">
     <value>Sign Out</value>
@@ -71,6 +89,9 @@
   </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>Branch Health</value>
+  </data>
+  <data name="BranchHealthTooltip" xml:space="preserve">
+    <value>Select a repository and click Load to view branch activity. Branches without recent commits are marked with a warning icon.</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>

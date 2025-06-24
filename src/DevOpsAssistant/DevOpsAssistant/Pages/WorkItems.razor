@@ -6,11 +6,6 @@
 
 <PageTitle>DevOpsAssistant - Epics and Features</PageTitle>
 
-<MudAlert Severity="Severity.Info">
-    Select a backlog and click <b>Load</b> to view epics and features.
-    Items are grouped hierarchically and suggested states appear when
-    parents differ from their children. Use <b>Update</b> to keep them in sync.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>

@@ -42,17 +42,31 @@
     <MudDrawer @bind-Open="_drawerOpen" Variant="DrawerVariant.Responsive" Elevation="1" Class="mud-width-220" ClipMode="DrawerClipMode.Always">
             <MudNavMenu>
                 <MudNavGroup Title="@L["WorkItems"]" Expanded="true">
-                    <MudNavLink Href="@($"projects/{_selectedProject}/epics-features")" Icon="@Icons.Material.Filled.List" Disabled="@IsProjectInvalid">@L["Epics"]</MudNavLink>
-                    <MudNavLink Href="@($"projects/{_selectedProject}/validation")" Icon="@Icons.Material.Filled.Rule" Disabled="@IsProjectInvalid">@L["Validation"]</MudNavLink>
+                    <MudTooltip Text="@L["EpicsTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/epics-features")" Icon="@Icons.Material.Filled.List" Disabled="@IsProjectInvalid">@L["Epics"]</MudNavLink>
+                    </MudTooltip>
+                    <MudTooltip Text="@L["ValidationTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/validation")" Icon="@Icons.Material.Filled.Rule" Disabled="@IsProjectInvalid">@L["Validation"]</MudNavLink>
+                    </MudTooltip>
                 </MudNavGroup>
                 <MudNavGroup Title="@L["AIHelpers"]" Expanded="true">
-                    <MudNavLink Href="@($"projects/{_selectedProject}/story-review")" Icon="@Icons.Material.Filled.Check" Disabled="@IsProjectInvalid">@L["StoryReview"]</MudNavLink>
-                    <MudNavLink Href="@($"projects/{_selectedProject}/requirements-planner")" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsProjectInvalid">@L["RequirementPlanner"]</MudNavLink>
-                    <MudNavLink Href="@($"projects/{_selectedProject}/release-notes")" Icon="@Icons.Material.Filled.Article" Disabled="@IsProjectInvalid">@L["ReleaseNotes"]</MudNavLink>
+                    <MudTooltip Text="@L["StoryReviewTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/story-review")" Icon="@Icons.Material.Filled.Check" Disabled="@IsProjectInvalid">@L["StoryReview"]</MudNavLink>
+                    </MudTooltip>
+                    <MudTooltip Text="@L["RequirementPlannerTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/requirements-planner")" Icon="@Icons.Material.Filled.NoteAlt" Disabled="@IsProjectInvalid">@L["RequirementPlanner"]</MudNavLink>
+                    </MudTooltip>
+                    <MudTooltip Text="@L["ReleaseNotesTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/release-notes")" Icon="@Icons.Material.Filled.Article" Disabled="@IsProjectInvalid">@L["ReleaseNotes"]</MudNavLink>
+                    </MudTooltip>
                 </MudNavGroup>
                 <MudNavGroup Title="@L["Reports"]" Expanded="true">
-                    <MudNavLink Href="@($"projects/{_selectedProject}/metrics")" Icon="@Icons.Material.Filled.Insights" Disabled="@IsProjectInvalid">@L["Metrics"]</MudNavLink>
-                    <MudNavLink Href="@($"projects/{_selectedProject}/branch-health")" Icon="@Icons.Material.Filled.Source" Disabled="@IsProjectInvalid">@L["BranchHealth"]</MudNavLink>
+                    <MudTooltip Text="@L["MetricsTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/metrics")" Icon="@Icons.Material.Filled.Insights" Disabled="@IsProjectInvalid">@L["Metrics"]</MudNavLink>
+                    </MudTooltip>
+                    <MudTooltip Text="@L["BranchHealthTooltip"]">
+                        <MudNavLink Href="@($"projects/{_selectedProject}/branch-health")" Icon="@Icons.Material.Filled.Source" Disabled="@IsProjectInvalid">@L["BranchHealth"]</MudNavLink>
+                    </MudTooltip>
                 </MudNavGroup>
                 <MudNavLink Href="@($"/projects/{_selectedProject}/settings")" Icon="@Icons.Material.Filled.Settings">@L["Settings"]</MudNavLink>
             </MudNavMenu>

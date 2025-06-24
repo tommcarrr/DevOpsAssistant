@@ -25,29 +25,19 @@
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
-else
+@if (_hasRules)
 {
-    <MudAlert Severity="Severity.Info">
-        Select a backlog and states then click <b>Check</b> to validate work items against
-        your configured rules. Any violations will be listed below.
-        @if (_hasRules)
-        {
-            <MudButton
-                       Variant="Variant.Text"
-                       OnClick="ToggleRules"
-                       StartIcon="@(_rulesExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)">
-                @(_rulesExpanded ? "Hide Rules" : "Show Rules")
-            </MudButton>
-            <MudCollapse Expanded="_rulesExpanded">
-                <MudList T="string" Dense="true">
-                    @foreach (var r in _activeRules)
-                    {
-                        <MudListItem T="string">@r</MudListItem>
-                    }
-                </MudList>
-            </MudCollapse>
-        }
-    </MudAlert>
+    <MudButton Variant="Variant.Text" OnClick="ToggleRules" StartIcon="@(_rulesExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)">
+        @(_rulesExpanded ? "Hide Rules" : "Show Rules")
+    </MudButton>
+    <MudCollapse Expanded="_rulesExpanded">
+        <MudList T="string" Dense="true">
+            @foreach (var r in _activeRules)
+            {
+                <MudListItem T="string">@r</MudListItem>
+            }
+        </MudList>
+    </MudCollapse>
 }
 
 <MudExpansionPanels>

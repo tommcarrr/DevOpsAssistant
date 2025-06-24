@@ -14,11 +14,6 @@
 
 <MudText Typo="Typo.h4">@L["PageHeading"]</MudText>
 
-<MudAlert Severity="Severity.Info">
-    Choose a backlog and click <b>Load</b> to display weekly throughput,
-    lead time and cycle time statistics. Charts visualize these metrics
-    for the last twelve weeks.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
