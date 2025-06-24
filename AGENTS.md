@@ -27,6 +27,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 - Follow SOLID and DRY principles.
 - Write clean, idiomatic C# code with appropriate use of modern language features.
 - Use async/await for I/O operations.
+- Avoid Bootstrap. Prefer MudBlazor components and attributes for layout and spacing.
 - Avoid hardcoded strings in the UI – use localization resources.
 - Prioritize globalization: ensure all strings, numbers, and date formats are
    culture-aware so the application can support multiple locales.
@@ -63,8 +64,10 @@ Codex must be proficient in the following technologies and frameworks, which are
    to surface Blazor issues that appear only in release mode and treat warnings as errors.
 
 ### Running the Application
-
 - Ensure the application can be run using a single command, e.g., `docker compose up --build` or a clear `dotnet run` setup.
+### Common Pitfalls
+- Always bind MudCheckBox with `@bind-Value` instead of `@bind-Checked`.
+- Keep markup well-formed; mismatched tags cause build errors.
 
 ## Final Checklist Before Completing Work
 
