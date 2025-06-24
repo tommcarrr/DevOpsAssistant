@@ -756,8 +756,12 @@ public class DevOpsApiService
     private static string BuildReleaseSearchWiql(string term)
     {
         term = term.Replace("'", "''");
+        var idFilter = int.TryParse(term, out var id)
+            ? $"[System.Id] = {id} OR "
+            : string.Empty;
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] IN ('User Story','Bug') AND [System.Title] CONTAINS '{term}' ORDER BY [System.ChangedDate] DESC";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] IN ('User Story','Bug') AND (" +
+            $"{idFilter}[System.Title] CONTAINS '{term}') ORDER BY [System.ChangedDate] DESC";
     }
 
     private async Task<List<WorkItemInfo>> SearchWorkItemsAsync(string wiql)
