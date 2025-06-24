@@ -100,10 +100,12 @@ else if (_results != null)
                                 <MudText>
                                     <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
                                 </MudText>
-                                <MudButton Variant="Variant.Text" Size="Size.Small" Disabled="@(_loading || r.NeedsAttention)" OnClick="() => TagItem(r)">Tag</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Disabled="@(_loading || r.NeedsAttention)" OnClick="() => TagItem(r)">Tag</MudButton>
                                 @if (r.NeedsAttention)
                                 {
-                                    <MudIcon Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Class="ml-025" />
+                                    <MudTooltip Text='@L["AlreadyTaggedTooltip"]'>
+                                        <MudIcon Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Class="ml-025" />
+                                    </MudTooltip>
                                 }
                             </MudStack>
                             <ul class="work-item-violations">
