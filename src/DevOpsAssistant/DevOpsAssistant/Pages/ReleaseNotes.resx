@@ -15,4 +15,7 @@
   <data name="CopyToast" xml:space="preserve">
     <value>Copied to clipboard</value>
   </data>
+  <data name="AutocompletePlaceholder" xml:space="preserve">
+    <value>Start typing to see results</value>
+  </data>
 </root>

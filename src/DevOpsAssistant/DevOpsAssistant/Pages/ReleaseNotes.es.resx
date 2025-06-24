@@ -15,4 +15,7 @@
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>
   </data>
+  <data name="AutocompletePlaceholder" xml:space="preserve">
+    <value>Empieza a escribir para ver resultados</value>
+  </data>
 </root>

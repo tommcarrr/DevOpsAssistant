@@ -41,17 +41,17 @@
                             }
                         </MudSelect>
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Load">Load</MudButton>
-                        <MudTextField T="string" Label="Filter" Value="_filter" Immediate="true" ValueChanged="OnFilterChanged" />
                     }
                     else
                     {
                         <MudAutocomplete T="WorkItemInfo"
                                          Label="Work Items"
+                                         Placeholder="@L["AutocompletePlaceholder"]"
                                          SearchFunc="SearchItems"
-                                 ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                                 Value="_searchValue"
-                                 ValueChanged="OnItemSelected"/>
-            }
+                                         ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
+                                         Value="_searchValue"
+                                         ValueChanged="OnItemSelected" />
+                    }
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
                     <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
                 </MudStack>
@@ -59,6 +59,11 @@
         </MudPaper>
     </MudExpansionPanel>
 </MudExpansionPanels>
+
+@if (_treeView)
+{
+    <MudTextField T="string" Label="Filter" Value="_filter" Immediate="true" ValueChanged="OnFilterChanged" Class="mb-2" />
+}
 
 @if (_treeView && _displayTreeItems != null)
 {

@@ -466,6 +466,14 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildReleaseSearchWiql_Includes_Id_When_Numeric()
+    {
+        var query = InvokeBuildReleaseSearchWiql("123");
+
+        Assert.Contains("[System.Id] = 123", query);
+    }
+
+    [Fact]
     public async Task GetStoryHierarchyDetailsAsync_Throws_When_Config_Incomplete()
     {
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
