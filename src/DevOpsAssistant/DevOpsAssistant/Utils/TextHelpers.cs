@@ -5,7 +5,7 @@ namespace DevOpsAssistant.Utils;
 
 public static class TextHelpers
 {
-    public static string Sanitize(string input)
+    public static string Sanitize(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return string.Empty;
