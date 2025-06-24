@@ -92,11 +92,9 @@ else if (_promptParts != null)
                 _path = state.Path;
 
             _states = await ApiService.GetStatesAsync();
-            var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
             SelectedStates = _states
                 .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                            s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
-                            extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
+                            s.Equals("Active", StringComparison.OrdinalIgnoreCase))
                 .ToHashSet();
             if (state?.States != null)
                 SelectedStates = state.States.ToHashSet();
@@ -173,11 +171,9 @@ else if (_promptParts != null)
     {
         if (_backlogs.Length > 0)
             _path = _backlogs[0];
-        var extras = ConfigService.Config.DefaultStates?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
         SelectedStates = _states
             .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                        s.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
-                        extras.Any(e => s.Equals(e, StringComparison.OrdinalIgnoreCase)))
+                        s.Equals("Active", StringComparison.OrdinalIgnoreCase))
             .ToHashSet();
         _prompt = null;
         _promptParts = null;

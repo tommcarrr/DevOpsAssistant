@@ -93,15 +93,6 @@
   <data name="MainBranch" xml:space="preserve">
     <value>Main Branch</value>
   </data>
-  <data name="DefaultStates" xml:space="preserve">
-    <value>Default States</value>
-  </data>
-  <data name="DarkMode" xml:space="preserve">
-    <value>Dark Mode</value>
-  </data>
-  <data name="ReleaseNotesTreeView" xml:space="preserve">
-    <value>Release Notes Tree View</value>
-  </data>
   <data name="DefinitionOfReady" xml:space="preserve">
     <value>Definition of Ready</value>
   </data>

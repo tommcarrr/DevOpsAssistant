@@ -28,7 +28,8 @@
 
 <MudPaper Class="p-15 mb-15">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        @if (ConfigService.Config.ReleaseNotesTreeView)
+        <MudSwitch T="bool" Checked="_treeView" CheckedChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" Class="mr-05" />
+        @if (_treeView)
         {
             <MudSelect T="string" @bind-Value="_path" Label="Backlog">
                 @foreach (var b in _backlogs)
@@ -52,7 +53,7 @@
     </MudStack>
 </MudPaper>
 
-@if (ConfigService.Config.ReleaseNotesTreeView && _treeItems != null)
+@if (_treeView && _treeItems != null)
 {
     <MudTreeView T="WorkItemNode"
                  Items="@_treeItems"
@@ -69,7 +70,7 @@
     </MudTreeView>
 }
 
-@if (_selectedItems.Any() && !ConfigService.Config.ReleaseNotesTreeView)
+@if (_selectedItems.Any() && !_treeView)
 {
     <MudTable Items="_selectedItems" Dense="true" Class="mb-15">
         <HeaderContent>
@@ -139,6 +140,7 @@ else if (_promptParts != null)
     private string[] _backlogs = [];
     private List<TreeItemData<WorkItemNode>>? _treeItems;
     private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
+    private bool _treeView;
     private const string StateKey = "release-notes";
 
     protected override async Task OnInitializedAsync()
@@ -149,24 +151,42 @@ else if (_promptParts != null)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
         }
-        if (ConfigService.Config.ReleaseNotesTreeView)
+        var state = await StateService.LoadAsync<PageState>(StateKey);
+        if (state != null)
         {
-            try
-            {
-                _backlogs = await ApiService.GetBacklogsAsync();
-                if (_backlogs.Length > 0)
-                    _path = _backlogs[0];
-
-                var state = await StateService.LoadAsync<PageState>(StateKey);
-                if (state != null && !string.IsNullOrWhiteSpace(state.Path))
-                    _path = state.Path;
-                _error = null;
-            }
-            catch (Exception ex)
-            {
-                _error = ex.Message;
-            }
+            if (!string.IsNullOrWhiteSpace(state.Path))
+                _path = state.Path;
+            _treeView = state.TreeView;
         }
+        if (_treeView)
+        {
+            await LoadBacklogs();
+        }
+    }
+
+    private async Task LoadBacklogs()
+    {
+        try
+        {
+            _backlogs = await ApiService.GetBacklogsAsync();
+            if (_backlogs.Length > 0 && string.IsNullOrWhiteSpace(_path))
+                _path = _backlogs[0];
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task OnTreeViewChanged(bool value)
+    {
+        _treeView = value;
+        if (_treeView && _backlogs.Length == 0)
+        {
+            await LoadBacklogs();
+        }
+        await StateService.SaveAsync(StateKey, new PageState { Path = _path, TreeView = _treeView });
     }
 
     private async Task Load()
@@ -177,7 +197,7 @@ else if (_promptParts != null)
         {
             var roots = await ApiService.GetWorkItemHierarchyAsync(_path);
             _treeItems = roots.Select(BuildTreeItem).ToList();
-            await StateService.SaveAsync(StateKey, new PageState { Path = _path });
+            await StateService.SaveAsync(StateKey, new PageState { Path = _path, TreeView = _treeView });
             _error = null;
         }
         catch (Exception ex)
@@ -302,7 +322,7 @@ else if (_promptParts != null)
 
     private async Task Reset()
     {
-        if (ConfigService.Config.ReleaseNotesTreeView && _backlogs.Length > 0)
+        if (_treeView && _backlogs.Length > 0)
             _path = _backlogs[0];
         _selectedItems.Clear();
         _treeItems = null;
@@ -317,6 +337,7 @@ else if (_promptParts != null)
     private class PageState
     {
         public string Path { get; set; } = string.Empty;
+        public bool TreeView { get; set; }
     }
 
     private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)

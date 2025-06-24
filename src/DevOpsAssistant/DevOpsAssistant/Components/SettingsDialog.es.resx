@@ -93,15 +93,6 @@
   <data name="MainBranch" xml:space="preserve">
     <value>Rama principal</value>
   </data>
-  <data name="DefaultStates" xml:space="preserve">
-    <value>Estados predeterminados</value>
-  </data>
-  <data name="DarkMode" xml:space="preserve">
-    <value>Modo oscuro</value>
-  </data>
-  <data name="ReleaseNotesTreeView" xml:space="preserve">
-    <value>Vista en árbol de notas de lanzamiento</value>
-  </data>
   <data name="DefinitionOfReady" xml:space="preserve">
     <value>Definición de Terminado</value>
   </data>
