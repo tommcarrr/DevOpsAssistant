@@ -31,7 +31,7 @@
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]' class="me-2"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Help" Href="/help" title='@L["Help"]' class="me-2"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Help" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]' class="me-2"/>
         <MudMenu Icon="@Icons.Material.Filled.Logout" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
             <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
             <MudMenuItem OnClick="RemoveOrg">@L["RemoveOrg"]</MudMenuItem>
@@ -158,6 +158,11 @@
     private async Task OpenOptionsDialog()
     {
         await DialogService.ShowAsync<GlobalOptionsDialog>(L["GlobalSettings"]);
+    }
+
+    private async Task OpenHelpDialog()
+    {
+        await DialogService.ShowAsync<HelpDialog>(L["Help"]);
     }
 
     private async Task ChangeProject(string name)

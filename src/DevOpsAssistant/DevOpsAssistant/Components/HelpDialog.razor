@@ -1,0 +1,17 @@
+@using DevOpsAssistant.Pages
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Help> L
+
+<MudDialog MaxWidth="MaxWidth.False" FullWidth="true" ContentClass="pa-4" ActionsClass="pa-4">
+    <DialogContent>
+        <HelpContent />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Primary">@L["Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    private void Close() => MudDialog.Cancel();
+}

@@ -1,44 +1,8 @@
 @page "/help"
 @using Microsoft.Extensions.Localization
+@using DevOpsAssistant.Components
 @inject IStringLocalizer<Help> L
 
 <PageTitle>DevOpsAssistant - Help</PageTitle>
 
-<MudText Typo="Typo.h4" Class="mb-4">@L["Heading"]</MudText>
-<MudText Typo="Typo.body1" Class="mb-4">@L["Intro"]</MudText>
-
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Epics &amp; Features</MudText>
-    <MudText Typo="Typo.body2">@L["Epics"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Story Validation</MudText>
-    <MudText Typo="Typo.body2">@L["Validation"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Story Quality</MudText>
-    <MudText Typo="Typo.body2">@L["Quality"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Requirement Planner</MudText>
-    <MudText Typo="Typo.body2">@L["RequirementsPlanner"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Release Notes</MudText>
-    <MudText Typo="Typo.body2">@L["ReleaseNotes"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Metrics</MudText>
-    <MudText Typo="Typo.body2">@L["Metrics"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Branch Health</MudText>
-    <MudText Typo="Typo.body2">@L["BranchHealth"]</MudText>
-</MudPaper>
-<MudPaper Class="pa-4 mb-4">
-    <MudText Typo="Typo.h6">Settings</MudText>
-    <MudText Typo="Typo.body2">
-        @((MarkupString)string.Format(L["Settings"],
-            "<a href='https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate' target='_blank'>this guide</a>"))
-    </MudText>
-</MudPaper>
+<HelpContent />
