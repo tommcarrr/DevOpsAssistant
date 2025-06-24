@@ -55,7 +55,7 @@ public class DocumentHelpersTests
             var slidePart = presPart.AddNewPart<Pkg.SlidePart>("rId1");
             slidePart.Slide = new P.Slide(new P.CommonSlideData(new P.ShapeTree()));
             presPart.Presentation.SlideIdList = new P.SlideIdList(new P.SlideId { Id = 256U, RelationshipId = "rId1" });
-            var tree = slidePart.Slide.CommonSlideData!.ShapeTree;
+            var tree = slidePart.Slide.CommonSlideData!.ShapeTree!;
             tree.Append(new P.Shape(
                 new P.NonVisualShapeProperties(
                     new P.NonVisualDrawingProperties { Id = 2U, Name = "Title" },
