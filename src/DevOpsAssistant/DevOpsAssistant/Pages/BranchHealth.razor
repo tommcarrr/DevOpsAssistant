@@ -10,10 +10,6 @@
 
 <PageTitle>DevOpsAssistant - Branch Health</PageTitle>
 
-<MudAlert Severity="Severity.Info">
-    Select a repository and click <b>Load</b> to view branch activity.
-    Branches without recent commits are marked with a warning icon.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>

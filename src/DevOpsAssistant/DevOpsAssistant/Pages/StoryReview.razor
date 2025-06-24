@@ -14,9 +14,6 @@
 
 <PageTitle>DevOpsAssistant - Story Quality</PageTitle>
 
-<MudAlert Severity="Severity.Info">
-    Select a backlog and states then click <b>Generate</b> to build a prompt for reviewing user stories.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>

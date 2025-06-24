@@ -16,11 +16,6 @@
 
 <PageTitle>DevOpsAssistant - Release Notes</PageTitle>
 
-<MudAlert Severity="Severity.Info">
-    Search and select user stories, then click <b>Generate</b> to build a
-    prompt summarizing them for release notes. Use the copy button to
-    copy the generated text to the clipboard.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>

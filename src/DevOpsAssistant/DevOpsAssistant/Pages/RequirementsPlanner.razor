@@ -20,11 +20,6 @@
     @L["CopyPromptMessage"]
     <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
 </MudAlert>
-
-<MudAlert Severity="Severity.Info">
-    Select wiki pages or upload a requirements document to generate a prompt that breaks it into Epics, Features and User Stories.
-    Paste the LLM response below to import items and create them in a backlog.
-</MudAlert>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
