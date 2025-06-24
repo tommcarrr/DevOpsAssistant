@@ -17,11 +17,11 @@
 <MudLayout>
     <MudAppBar Color="Color.Primary" Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" aria-label="@L["Menu"]"/>
-        <MudText Typo="Typo.h6" Class="ml-05 mr-15">
+        <MudText Typo="Typo.h6">
             <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style">DevOpsAssistant</MudNavLink>
         </MudText>
         <MudSpacer/>
-        <MudMenu Label='@(_selectedProject.Length > 0 ? _selectedProject : L["Projects"])' EndIcon="@Icons.Material.Filled.ArrowDropDown" Class="mr-05">
+        <MudMenu Label='@(_selectedProject.Length > 0 ? _selectedProject : L["Projects"])' EndIcon="@Icons.Material.Filled.ArrowDropDown">
             @foreach (var p in ConfigService.Projects.OrderBy(p => p.Name))
             {
                 <MudMenuItem OnClick="() => ChangeProject(p.Name)">@p.Name</MudMenuItem>
@@ -29,9 +29,9 @@
             <MudDivider />
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
         </MudMenu>
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode" Class="mr-05"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]' Class="mr-05"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Inherit" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]' Class="mr-05"/>
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]'/>
+        <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Inherit" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]'/>
         <MudMenu Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>
             <MudMenuItem OnClick="RemovePat">@L["RemovePat"]</MudMenuItem>
             <MudMenuItem OnClick="RemoveOrg">@L["RemoveOrg"]</MudMenuItem>
@@ -60,12 +60,12 @@
 
     <MudMainContent>
         <div class="main-content">
-            <MudContainer MaxWidth="MaxWidth.False" Class="pa-4 mt-15">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="pa-4">
                 @Body
             </MudContainer>
         </div>
         <footer class="app-footer">
-            <MudContainer MaxWidth="MaxWidth.False" Class="footer-content py-05">
+            <MudContainer MaxWidth="MaxWidth.Large" Class="footer-content">
                 <MudText Typo="Typo.body2" Align="Align.Left" Inline="true">
                     @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
                 </MudText>

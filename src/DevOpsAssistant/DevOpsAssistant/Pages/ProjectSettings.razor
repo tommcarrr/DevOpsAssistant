@@ -14,10 +14,10 @@
 <MudPaper Class="pa-6">
     <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="ConfirmLeave" />
     <MudStack Spacing="3">
-        <MudText Typo="Typo.h4" Class="mb-4">@L["ProjectSettings"] @ProjectName</MudText>
-        <MudTabs Class="mt-4" @bind-ActivePanelIndex="_activeTab">
+        <MudText Typo="Typo.h4">@L["ProjectSettings"] @ProjectName</MudText>
+        <MudTabs @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text='@L["GeneralTab"]'>
-                <MudStack Spacing="2" Class="mt-05">
+                <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true"/>
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
                     {
@@ -46,20 +46,20 @@
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
-                    <MudStack Row="true" Spacing="1" Class="mt-05">
+                    <MudStack Row="true" Spacing="1">
                         <MudButton OnClick="SaveGeneral" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
                         <MudButton OnClick="Delete" Variant="Variant.Filled" Color="Color.Error">@L["DeleteProject"]</MudButton>
                     </MudStack>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["StoryQualityTab"]'>
-                <MudStack Spacing="2" Class="mt-05">
+                <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3"/>
                     <MudButton OnClick="SaveQuality" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["PromptsTab"]'>
-                <MudStack Spacing="2" Class="mt-05">
+                <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.StoryQualityPrompt" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPrompt = v)" Label='@L["StoryQualityPrompt"]' Lines="3"/>
                     <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
                     <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
@@ -73,32 +73,32 @@
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
-                <MudStack Spacing="1" Class="mt-05">
-                    <MudText Typo="Typo.h6" Class="mt-05">Epic</MudText>
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.h6">Epic</MudText>
                     <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Color="Color.Primary" Label="Has description"/>
 
-                    <MudDivider Class="mt-05 mb-05"/>
+                    <MudDivider/>
 
-                    <MudText Typo="Typo.h6" Class="mt-05">Feature</MudText>
+                    <MudText Typo="Typo.h6">Feature</MudText>
                     <MudSwitch T="bool" Value="_model.Rules.Feature.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
                     <MudSwitch T="bool" Value="_model.Rules.Feature.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
 
-                    <MudDivider Class="mt-05 mb-05"/>
+                    <MudDivider/>
 
-                    <MudText Typo="Typo.h6" Class="mt-05">User Story</MudText>
+                    <MudText Typo="Typo.h6">User Story</MudText>
                     <MudSwitch T="bool" Value="_model.Rules.Story.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
                     <MudSwitch T="bool" Value="_model.Rules.Story.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
                     <MudSwitch T="bool" Value="_model.Rules.Story.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasStoryPoints = v)" Color="Color.Primary" Label="Has story points"/>
                     <MudSwitch T="bool" Value="_model.Rules.Story.HasAcceptanceCriteria" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAcceptanceCriteria = v)" Color="Color.Primary" Label="Has acceptance criteria"/>
                     <MudSwitch T="bool" Value="_model.Rules.Story.HasAssignee" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAssignee = v)" Color="Color.Primary" Label="Has assignee"/>
 
-                    <MudDivider Class="mt-05 mb-05"/>
+                    <MudDivider/>
 
-                    <MudText Typo="Typo.h6" Class="mt-05">Bug</MudText>
+                    <MudText Typo="Typo.h6">Bug</MudText>
                     <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeReproSteps" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeReproSteps = v)" Color="Color.Primary" Label="Include Repro Steps"/>
                     <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeSystemInfo" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeSystemInfo = v)" Color="Color.Primary" Label="Include System Info" />
                     <MudSwitch T="bool" Value="_model.Rules.Bug.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.HasStoryPoints = v)" Color="Color.Primary" Label='@L["BugHasStoryPoints"]' />
-                    <MudCheckBox T="bool" @bind-Value="_validationAll" Label='@L["SaveForAll"]' Class="mt-05" />
+                    <MudCheckBox T="bool" @bind-Value="_validationAll" Label='@L["SaveForAll"]' />
                     @if (_validationAll)
                     {
                         <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
@@ -109,7 +109,7 @@
         </MudTabs>
         @if (_errors.Count > 0)
         {
-            <MudAlert Severity="Severity.Error" Class="mb-05">
+            <MudAlert Severity="Severity.Error">
                 @foreach (var e in _errors)
                 {
                     <div>@e</div>

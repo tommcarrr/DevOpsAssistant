@@ -11,35 +11,35 @@
 
 @if (!_hasRules)
 {
-    <MudAlert Severity="Severity.Warning" Class="mb-15">
+    <MudAlert Severity="Severity.Warning">
         No validation rules are configured.
         <MudButton Variant="Variant.Text"
                    StartIcon="@Icons.Material.Filled.Settings"
                    Href="@($"/projects/{ConfigService.CurrentProject.Name}/settings")"
-                   Class="ml-05">
+                  >
             Open Settings
         </MudButton>
     </MudAlert>
 }
 @if (!string.IsNullOrWhiteSpace(_error))
 {
-    <MudAlert Severity="Severity.Error" Class="mb-15">@_error</MudAlert>
+    <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 else
 {
-    <MudAlert Severity="Severity.Info" Class="mb-15">
+    <MudAlert Severity="Severity.Info">
         Select a backlog and states then click <b>Check</b> to validate work items against
         your configured rules. Any violations will be listed below.
         @if (_hasRules)
         {
-            <MudButton Class="rules-toggle mt-05"
+            <MudButton Class="rules-toggle"
                        Variant="Variant.Text"
                        OnClick="ToggleRules"
                        StartIcon="@(_rulesExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)">
                 @(_rulesExpanded ? "Hide Rules" : "Show Rules")
             </MudButton>
             <MudCollapse Expanded="_rulesExpanded">
-                <MudList T="string" Dense="true" Class="ml-05 mt-05">
+                <MudList T="string" Dense="true">
                     @foreach (var r in _activeRules)
                     {
                         <MudListItem T="string">@r</MudListItem>
@@ -50,7 +50,7 @@ else
     </MudAlert>
 }
 
-<MudPaper Class="p-15 mb-15">
+<MudPaper>
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
         <MudSelect T="string" @bind-Value="_path" Label="Backlog">
             @foreach (var b in _backlogs)
@@ -87,7 +87,7 @@ else if (_results != null)
     }
     else
     {
-        <MudStack Row="true" Spacing="2" Class="mb-05">
+        <MudStack Row="true" Spacing="2">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All</MudButton>
         </MudStack>
         <MudPaper Class="pa-2 work-item-container">
@@ -104,7 +104,7 @@ else if (_results != null)
                                 @if (r.NeedsAttention)
                                 {
                                     <MudTooltip Text='@L["AlreadyTaggedTooltip"]'>
-                                        <MudIcon Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Class="ml-025" />
+                                        <MudIcon Icon="@Icons.Material.Filled.Flag" Color="Color.Error" />
                                     </MudTooltip>
                                 }
                             </MudStack>
