@@ -28,7 +28,7 @@
 
 <MudPaper Class="p-15 mb-15">
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSwitch T="bool" Checked="_treeView" CheckedChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" Class="mr-05" />
+        <MudSwitch T="bool" Value="_treeView" ValueChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" Class="mr-05" />
         @if (_treeView)
         {
             <MudSelect T="string" @bind-Value="_path" Label="Backlog">
