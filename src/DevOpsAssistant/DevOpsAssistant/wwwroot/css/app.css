@@ -197,36 +197,6 @@ body {
 }
 
 /* High contrast mode for users requesting extra contrast */
-@media (prefers-contrast: more), (forced-colors: active) {
-    :root {
-        --color-success: #00ff00;
-        --color-error: #ff0000;
-        --color-epic: #ffff00;
-        --color-feature: #00ffff;
-        --color-story: #ffffff;
-        --color-task: #ffffff;
-        --color-bug: #ff00ff;
-        --color-invalid-state-bg: #000000;
-        --color-code: #ffffff;
-        --color-progress-bg: #ffffff;
-        --color-progress-fg: #ffff00;
-    }
-}
-
-.high-contrast {
-    --color-success: #00ff00;
-    --color-error: #ff0000;
-    --color-epic: #ffff00;
-    --color-feature: #00ffff;
-    --color-story: #ffffff;
-    --color-task: #ffffff;
-    --color-bug: #ff00ff;
-    --color-invalid-state-bg: #000000;
-    --color-code: #ffffff;
-    --color-progress-bg: #ffffff;
-    --color-progress-fg: #ffff00;
-}
-
 .responsive-chart {
     width: 100%;
     height: auto;

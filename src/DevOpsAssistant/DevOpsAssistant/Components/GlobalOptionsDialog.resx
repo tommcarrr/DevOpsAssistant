@@ -27,10 +27,4 @@
   <data name="SavedMessage" xml:space="preserve">
     <value>Token saved</value>
   </data>
-  <data name="DarkMode" xml:space="preserve">
-    <value>Dark Mode</value>
-  </data>
-  <data name="HighContrast" xml:space="preserve">
-    <value>High Contrast</value>
-  </data>
 </root>
