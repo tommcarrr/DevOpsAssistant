@@ -73,6 +73,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 
 - ✅ All tests pass (unit and integration)
 - ✅ Code is formatted and free of warnings
+- ✅ All compiler/Roslyn warnings are fixed before completing a task
 - ✅ All user-facing strings are localized
 - ✅ Documentation and help content updated
 - ✅ CI/CD workflows succeed
