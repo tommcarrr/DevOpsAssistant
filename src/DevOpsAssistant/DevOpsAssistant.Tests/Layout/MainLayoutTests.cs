@@ -129,4 +129,17 @@ public class MainLayoutTests : ComponentTestBase
 
         Assert.Equal("http://localhost/projects/Two/settings", nav.Uri);
     }
+
+    [Fact]
+    public async Task Current_Project_Name_Displayed_In_AppBar()
+    {
+        var config = SetupServices();
+        await config.AddProjectAsync("Demo");
+        await config.SelectProjectAsync("Demo");
+
+        var cut = RenderComponent<MainLayout>();
+
+        var text = cut.Find(".current-project");
+        Assert.Equal("Demo", text.TextContent);
+    }
 }
