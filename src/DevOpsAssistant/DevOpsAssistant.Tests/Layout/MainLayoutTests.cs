@@ -142,4 +142,14 @@ public class MainLayoutTests : ComponentTestBase
         var button = cut.Find("div.mud-menu button");
         Assert.Contains("Demo", button.TextContent);
     }
+
+    [Fact]
+    public void Menu_Does_Not_Contain_Tooltips()
+    {
+        SetupServices();
+
+        var cut = RenderComponent<MainLayout>();
+
+        Assert.DoesNotContain("mud-tooltip", cut.Markup);
+    }
 }
