@@ -16,18 +16,22 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudPaper>
-    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-            @foreach (var b in _backlogs)
-            {
-                <MudSelectItem Value="@b">@b</MudSelectItem>
-            }
-        </MudSelect>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-    </MudStack>
-</MudPaper>
+<MudExpansionPanels>
+    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
+        <MudPaper>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                    @foreach (var b in _backlogs)
+                    {
+                        <MudSelectItem Value="@b">@b</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @if (_loading)
 {
@@ -88,6 +92,7 @@ else if (_roots != null)
     private List<WorkItemNode>? _roots;
     private string? _error;
     private bool _issuesOnly = true;
+    private bool _filtersExpanded = true;
     private const string StateKey = "work-items";
 
     private IEnumerable<WorkItemNode> DisplayRoots =>

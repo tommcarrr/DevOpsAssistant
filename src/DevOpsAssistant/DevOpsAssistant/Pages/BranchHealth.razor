@@ -19,21 +19,25 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudPaper>
-    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSelect T="RepositoryInfo" Value="_repo" ValueChanged="OnRepoChanged" Label="Repository" ToStringFunc="r => r.Name">
-            @foreach (var r in _repos)
-            {
-                <MudSelectItem Value="@r">@r.Name</MudSelectItem>
-            }
-        </MudSelect>
-        <MudTooltip Text='@L["BaseBranchTooltip"]'>
-            <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
-        </MudTooltip>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-    </MudStack>
-</MudPaper>
+<MudExpansionPanels>
+    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
+        <MudPaper>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                <MudSelect T="RepositoryInfo" Value="_repo" ValueChanged="OnRepoChanged" Label="Repository" ToStringFunc="r => r.Name">
+                    @foreach (var r in _repos)
+                    {
+                        <MudSelectItem Value="@r">@r.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTooltip Text='@L["BaseBranchTooltip"]'>
+                    <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
+                </MudTooltip>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @if (_loading)
 {
@@ -78,6 +82,7 @@ else if (_branches != null)
     private string _baseBranch = string.Empty;
     private bool _loading;
     private string? _error;
+    private bool _filtersExpanded = true;
     private bool ShowAheadBehind => !string.IsNullOrWhiteSpace(_baseBranch);
     private const string StateKey = "branch-health";
 
