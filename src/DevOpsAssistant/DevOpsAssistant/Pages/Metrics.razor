@@ -12,6 +12,8 @@
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
 
+<MudText Typo="Typo.h4">@L["PageHeading"]</MudText>
+
 <MudAlert Severity="Severity.Info">
     Choose a backlog and click <b>Load</b> to display weekly throughput,
     lead time and cycle time statistics. Charts visualize these metrics
@@ -23,12 +25,14 @@
 }
 
 <MudPaper>
-    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-        <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-            @foreach (var b in _backlogs)
-            {
-                <MudSelectItem Value="@b">@b</MudSelectItem>
-            }
+    <MudStack Spacing="2">
+        <MudText Typo="Typo.h6">@L["OptionsHeading"]</MudText>
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+            <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                @foreach (var b in _backlogs)
+                {
+                    <MudSelectItem Value="@b">@b</MudSelectItem>
+                }
         </MudSelect>
         <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
             <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
@@ -46,15 +50,15 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+        </MudStack>
     </MudStack>
 </MudPaper>
 
 @if (_loading)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-}
-else if (_periods.Any())
-{
+} else if (_periods.Any()) {
+    <MudText Typo="Typo.h6" Class="mt-4">@L["TableHeading"]</MudText>
     <MudTable Items="_periods" Dense="true" Hover="true">
         <HeaderContent>
             <MudTh>Period Ending</MudTh>
@@ -73,6 +77,7 @@ else if (_periods.Any())
             <MudTd DataLabel="Velocity">@context.Velocity.ToString("0.0")</MudTd>
         </RowTemplate>
     </MudTable>
+    <MudText Typo="Typo.h6" Class="mt-4">@L["ChartsHeading"]</MudText>
 
     <MudPaper Class="pa-2">
         <MudChart ChartType="ChartType.Line"

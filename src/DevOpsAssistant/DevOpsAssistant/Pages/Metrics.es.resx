@@ -15,4 +15,16 @@
   <data name="VelocityTooltip" xml:space="preserve">
     <value>Elija qué campo usar para el cálculo de velocidad</value>
   </data>
+  <data name="PageHeading" xml:space="preserve">
+    <value>Métricas</value>
+  </data>
+  <data name="OptionsHeading" xml:space="preserve">
+    <value>Opciones</value>
+  </data>
+  <data name="TableHeading" xml:space="preserve">
+    <value>Rendimiento y tiempos</value>
+  </data>
+  <data name="ChartsHeading" xml:space="preserve">
+    <value>Gráficos</value>
+  </data>
 </root>
