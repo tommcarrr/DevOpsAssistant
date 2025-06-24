@@ -11,7 +11,7 @@
 <MudPaper Class="p-4">
     <MudText Typo="Typo.h5" Class="mb-05">@L["Project"]</MudText>
     <MudList T="string">
-        @foreach (var p in ConfigService.Projects)
+        @foreach (var p in ConfigService.Projects.OrderBy(p => p.Name))
         {
             <MudListItem T="string" Class="cursor-pointer" OnClick="() => OpenProject(p.Name)">@p.Name</MudListItem>
         }
