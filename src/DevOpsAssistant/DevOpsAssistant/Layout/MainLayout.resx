@@ -66,6 +66,9 @@
   <data name="Reports" xml:space="preserve">
     <value>Reports</value>
   </data>
+  <data name="AIHelpers" xml:space="preserve">
+    <value>AI Helpers</value>
+  </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>Branch Health</value>
   </data>
