@@ -42,9 +42,6 @@
   <data name="Project" xml:space="preserve">
     <value>DevOps Project</value>
   </data>
-  <data name="ProjectName" xml:space="preserve">
-    <value>Project Name</value>
-  </data>
   <data name="Organization" xml:space="preserve">
     <value>DevOps Organization</value>
   </data>
@@ -60,14 +57,14 @@
   <data name="CloneSource" xml:space="preserve">
     <value>Project to clone</value>
   </data>
-  <data name="ImportFrom" xml:space="preserve">
-    <value>Import From</value>
-  </data>
   <data name="DeleteProject" xml:space="preserve">
     <value>Delete Project</value>
   </data>
   <data name="ConfirmDelete" xml:space="preserve">
     <value>Delete project</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
@@ -83,9 +80,6 @@
   </data>
   <data name="DuplicateName" xml:space="preserve">
     <value>A project with that name already exists.</value>
-  </data>
-  <data name="MissingName" xml:space="preserve">
-    <value>Project name is required.</value>
   </data>
   <data name="MissingOrganization" xml:space="preserve">
     <value>Organization is required.</value>
@@ -122,11 +116,5 @@
   </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Project Settings</value>
-  </data>
-  <data name="OverrideWarning" xml:space="preserve">
-    <value>This will override existing settings.</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>None</value>
   </data>
 </root>
