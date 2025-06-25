@@ -98,7 +98,7 @@
     </MudPaper>
     <MudText Typo="Typo.h6" Class="mt-4">@L["BurnUp"]</MudText>
     <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Class="mb-2">
-        <MudNumericField T="double?" @bind-Value="_targetPoints" Label="Total Points" />
+        <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
         <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
         <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
@@ -141,7 +141,7 @@
     private List<IterationInfo> _iterations = new();
     private List<StoryMetric> _items = new();
 
-    private double? _targetPoints;
+    private double? _additionalPoints;
     private double? _efficiency;
     private double? _errorRange;
 
@@ -182,7 +182,7 @@
                 _mode = state.Mode;
                 _velocityMode = state.VelocityMode;
                 _startDate = state.StartDate;
-                _targetPoints = state.TargetPoints > 0 ? state.TargetPoints : null;
+                _additionalPoints = state.AdditionalPoints > 0 ? state.AdditionalPoints : null;
                 _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
                 _errorRange = state.Error > 0 ? state.Error : null;
             }
@@ -215,7 +215,7 @@
                 Mode = _mode,
                 VelocityMode = _velocityMode,
                 StartDate = _startDate,
-                TargetPoints = _targetPoints ?? 0,
+                AdditionalPoints = _additionalPoints ?? 0,
                 Efficiency = _efficiency ?? 0,
                 Error = _errorRange ?? 0
             });
@@ -325,7 +325,7 @@
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnSeries.Clear();
-        if (items.Count == 0 || _targetPoints is null || _targetPoints <= 0 || _efficiency is null || _errorRange is null)
+        if (items.Count == 0 || _efficiency is null || _errorRange is null)
         {
             _burnLabels = [];
             return;
@@ -353,29 +353,33 @@
         var effVel = avgVel * (_efficiency.Value / 100.0);
         var minVel = effVel * (1 - _errorRange.Value / 100.0);
         var maxVel = effVel * (1 + _errorRange.Value / 100.0);
-        var remaining = Math.Max(0, _targetPoints.Value - sum);
+        var finalTarget = sum + (_additionalPoints ?? 0);
+        var remaining = Math.Max(0, finalTarget - sum);
         int daysMin = maxVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
         int daysMax = minVel > 0 ? (int)Math.Ceiling(remaining / minVel) : 0;
         int projLen = days + Math.Max(daysMin, daysMax);
         Array.Resize(ref done, projLen);
-        double[] target = Enumerable.Repeat(_targetPoints.Value, projLen).ToArray();
+        double[] target = Enumerable.Repeat(finalTarget, projLen).ToArray();
         double[] minProj = new double[projLen];
         double[] maxProj = new double[projLen];
         for (int i = days; i < projLen; i++)
         {
             var d = i - days + 1;
-            minProj[i] = Math.Min(sum + d * minVel, _targetPoints.Value);
-            maxProj[i] = Math.Min(sum + d * maxVel, _targetPoints.Value);
+            minProj[i] = Math.Min(sum + d * minVel, finalTarget);
+            maxProj[i] = Math.Min(sum + d * maxVel, finalTarget);
             done[i] = sum;
         }
         _burnLabels = Enumerable.Range(0, projLen).Select(i => start.AddDays(i).ToLocalDateString()).ToArray();
-        _burnSeries =
-        [
+        _burnSeries = new List<ChartSeries>
+        {
             new ChartSeries { Name = "Complete", Data = done },
-            new ChartSeries { Name = "Projection Min", Data = minProj },
-            new ChartSeries { Name = "Projection Max", Data = maxProj },
             new ChartSeries { Name = "Target", Data = target }
-        ];
+        };
+        if (remaining > 0)
+        {
+            _burnSeries.Add(new ChartSeries { Name = "Projection Min", Data = minProj });
+            _burnSeries.Add(new ChartSeries { Name = "Projection Max", Data = maxProj });
+        }
     }
 
     private void ComputeFlow(List<StoryMetric> items)
@@ -451,7 +455,7 @@
             Mode = _mode,
             VelocityMode = _velocityMode,
             StartDate = _startDate,
-            TargetPoints = _targetPoints ?? 0,
+            AdditionalPoints = _additionalPoints ?? 0,
             Efficiency = _efficiency ?? 0,
             Error = _errorRange ?? 0
         });
@@ -465,7 +469,7 @@
         _mode = AggregateMode.Week;
         _velocityMode = VelocityMode.StoryPoints;
         _startDate = DateTime.Today.AddDays(-84);
-        _targetPoints = null;
+        _additionalPoints = null;
         _efficiency = null;
         _errorRange = null;
         _periods.Clear();
@@ -500,7 +504,7 @@
         public AggregateMode Mode { get; set; }
         public VelocityMode VelocityMode { get; set; }
         public DateTime? StartDate { get; set; }
-        public double TargetPoints { get; set; }
+        public double AdditionalPoints { get; set; }
         public double Efficiency { get; set; }
         public double Error { get; set; }
     }
