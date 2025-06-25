@@ -576,7 +576,7 @@
         return sb.ToString();
     }
 
-    private static string BuildPrompt(IEnumerable<PeriodMetrics> periods)
+    private static string BuildPrompt(IEnumerable<PeriodMetrics> periods, OutputFormat format)
     {
         var sb = new StringBuilder();
         sb.AppendLine("You are an Agile Coach preparing a delivery metrics report for your Delivery Manager.");
@@ -602,6 +602,8 @@
 
         var payload = new { metrics, summary };
         sb.AppendLine(JsonSerializer.Serialize(payload));
+        sb.AppendLine();
+        sb.AppendLine($"Once you summarize the metrics, convert the output to {format} format and include it.");
         return sb.ToString();
     }
 
@@ -615,7 +617,7 @@
     private async Task CopyPrompt()
     {
         if (_periods.Count == 0) return;
-        var prompt = BuildPrompt(_periods);
+        var prompt = BuildPrompt(_periods, ConfigService.Config.OutputFormat);
         await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }

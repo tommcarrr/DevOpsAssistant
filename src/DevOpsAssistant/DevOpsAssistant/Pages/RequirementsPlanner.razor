@@ -574,6 +574,8 @@ Define what success looks like — business or system-level outcomes.
             sb.AppendLine(page.Text);
             sb.AppendLine();
         }
+        sb.AppendLine();
+        sb.AppendLine($"Once finished, convert the entire output to {config.OutputFormat} format and provide that version.");
         return sb.ToString();
     }
 

@@ -64,6 +64,12 @@
                     <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
                     <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
                     <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                    <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
+                        <MudSelectItem Value="OutputFormat.Markdown">Markdown</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Pdf">PDF</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Word">Word</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Html">HTML</MudSelectItem>
+                    </MudSelect>
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                     <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
                 </MudStack>
@@ -144,6 +150,7 @@
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
+            OutputFormat = cfg.OutputFormat,
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = cfg.Rules.Epic.HasDescription },
@@ -192,6 +199,7 @@
             ReleaseNotesPrompt = _model.ReleaseNotesPrompt,
             RequirementsPrompt = _model.RequirementsPrompt,
             PromptCharacterLimit = _model.PromptCharacterLimit,
+            OutputFormat = _model.OutputFormat,
             Rules = _model.Rules
         };
         var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave);
@@ -224,6 +232,7 @@
         cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+        cfg.OutputFormat = _model.OutputFormat;
         await ConfigService.SaveCurrentAsync(_model.Project, cfg);
         _promptsDirty = false;
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _model.Project), Severity.Success);
@@ -252,6 +261,7 @@
                 pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
                 pcfg.RequirementsPrompt = _model.RequirementsPrompt;
                 pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+                pcfg.OutputFormat = _model.OutputFormat;
                 await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
             }
             Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, L["AllProjects"].Value), Severity.Success);
@@ -360,6 +370,13 @@
     private Task OnPromptsLimitChanged(int value)
     {
         _model.PromptCharacterLimit = value;
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnOutputFormatChanged(OutputFormat value)
+    {
+        _model.OutputFormat = value;
         _promptsDirty = true;
         return Task.CompletedTask;
     }

@@ -27,6 +27,9 @@
   <data name="PromptLimit" xml:space="preserve">
     <value>Límite de caracteres del prompt</value>
   </data>
+  <data name="OutputFormat" xml:space="preserve">
+    <value>Formato de salida</value>
+  </data>
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Tiene story points</value>
   </data>

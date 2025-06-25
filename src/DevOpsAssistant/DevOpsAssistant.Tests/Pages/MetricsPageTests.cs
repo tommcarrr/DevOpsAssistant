@@ -60,7 +60,7 @@ public class MetricsPageTests : ComponentTestBase
         periodType.GetProperty("Velocity")!.SetValue(period, 4.5);
         array.SetValue(period, 0);
 
-        var prompt = (string)method.Invoke(null, new object?[] { array })!;
+        var prompt = (string)method.Invoke(null, new object?[] { array, OutputFormat.Markdown })!;
 
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);
         Assert.Contains("\"leadTime\":1.2", prompt);

@@ -176,6 +176,7 @@ public class DevOpsConfigService
             ReleaseNotesPrompt = config.ReleaseNotesPrompt.Trim(),
             RequirementsPrompt = config.RequirementsPrompt.Trim(),
             PromptCharacterLimit = config.PromptCharacterLimit,
+            OutputFormat = config.OutputFormat,
             Rules = config.Rules
         };
     }
@@ -200,6 +201,7 @@ public class DevOpsConfigService
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
+            OutputFormat = cfg.OutputFormat,
             Rules = cfg.Rules
         };
     }
