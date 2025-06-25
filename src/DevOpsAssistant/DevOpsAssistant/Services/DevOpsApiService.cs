@@ -687,7 +687,7 @@ public class DevOpsApiService
             .Select(chunk =>
             {
                 var idList = string.Join(',', chunk);
-                return GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate,Microsoft.VSTS.Scheduling.StoryPoints,Microsoft.VSTS.Scheduling.OriginalEstimate&api-version={ApiVersion}");
+                return GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&fields=System.CreatedDate,Microsoft.VSTS.Common.ActivatedDate,Microsoft.VSTS.Common.ClosedDate,Microsoft.VSTS.Scheduling.StoryPoints,Microsoft.VSTS.Scheduling.OriginalEstimate,System.Tags&api-version={ApiVersion}");
             })
             .ToArray();
 
@@ -716,6 +716,9 @@ public class DevOpsApiService
             var originalEstimate = w.Fields.TryGetValue("Microsoft.VSTS.Scheduling.OriginalEstimate", out var oe) && oe.ValueKind == JsonValueKind.Number
                 ? oe.GetDouble()
                 : 0;
+            var tags = w.Fields.TryGetValue("System.Tags", out var tg) && tg.ValueKind == JsonValueKind.String
+                ? tg.GetString()?.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? []
+                : Array.Empty<string>();
 
             list.Add(new StoryMetric
             {
@@ -724,7 +727,8 @@ public class DevOpsApiService
                 ActivatedDate = activated,
                 ClosedDate = closed,
                 StoryPoints = storyPoints,
-                OriginalEstimate = originalEstimate
+                OriginalEstimate = originalEstimate,
+                Tags = tags
             });
         }
 

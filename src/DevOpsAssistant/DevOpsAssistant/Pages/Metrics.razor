@@ -10,6 +10,7 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Metrics> L
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 @inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
@@ -44,6 +45,8 @@
                 <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
             </MudSelect>
         </MudTooltip>
+        <MudTextField T="string" Label="@L["NonSprintTag"]" Immediate="true" @bind-Value="_nonSprintTag" />
+        <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_nonSprintTag)" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
@@ -64,6 +67,7 @@
             <MudTh>Throughput</MudTh>
             <MudTh>Velocity</MudTh>
             <MudTh>@L["AvgWip"]</MudTh>
+            <MudTh>@L["SprintEff"]</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Period">
@@ -74,54 +78,87 @@
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
             <MudTd DataLabel="Velocity">@context.Velocity.ToString("0.0")</MudTd>
             <MudTd DataLabel="WIP">@context.AvgWip.ToString("0.0")</MudTd>
+            <MudTd DataLabel="Sprint">@context.SprintEfficiency.ToString("0.0")</MudTd>
         </RowTemplate>
     </MudTable>
     <MudText Typo="Typo.h6" Class="mt-4">@L["ChartsHeading"]</MudText>
 
-    <MudPaper Class="pa-2">
-        <MudChart ChartType="ChartType.Line"
-                  ChartSeries="_leadCycleSeries"
-                  XAxisLabels="_xAxisLabels"
-                  Class="responsive-chart"
-                  Width="100%"
-                  Height="100%"
-                  AxisChartOptions="_axisOptions" />
-    </MudPaper>
-    <MudPaper Class="pa-2">
-        <MudChart ChartType="ChartType.Bar"
-                  ChartSeries="_barSeries"
-                  XAxisLabels="_xAxisLabels"
-                  Class="responsive-chart"
-                  Width="100%"
-                  Height="100%"
-                  AxisChartOptions="_axisOptions" />
-    </MudPaper>
-    <MudText Typo="Typo.h6" Class="mt-4">@L["BurnUp"]</MudText>
-    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Class="mb-2">
-        <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
-        <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
-        <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
-    </MudStack>
-    <MudPaper Class="pa-2">
-        <MudChart ChartType="ChartType.Line"
-                  ChartSeries="_burnSeries"
-                  XAxisLabels="_burnLabels"
-                  Class="responsive-chart"
-                  Width="100%"
-                  Height="100%"
-                  AxisChartOptions="_axisOptions" />
-    </MudPaper>
-    <MudText Typo="Typo.h6" Class="mt-4">@L["Flow"]</MudText>
-    <MudPaper Class="pa-2">
-        <MudChart ChartType="ChartType.StackedBar"
-                  ChartSeries="_flowSeries"
-                  XAxisLabels="_flowLabels"
-                  Class="responsive-chart"
-                  Width="100%"
-                  Height="100%"
-                  AxisChartOptions="_axisOptions" />
-    </MudPaper>
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowLeadCycleChart">
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="_leadCycleSeries"
+                          XAxisLabels="_xAxisLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowBarChart">
+                <MudChart ChartType="ChartType.Bar"
+                          ChartSeries="_barSeries"
+                          XAxisLabels="_xAxisLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowWipChart">
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="_wipSeries"
+                          XAxisLabels="_xAxisLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowSprintChart">
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="_sprintSeries"
+                          XAxisLabels="_xAxisLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.h6" Class="mt-4">@L["BurnUp"]</MudText>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Class="mb-2">
+                <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
+                <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
+                <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+            </MudStack>
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowBurnChart">
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="_burnSeries"
+                          XAxisLabels="_burnLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudText Typo="Typo.h6" Class="mt-4">@L["Flow"]</MudText>
+            <MudPaper Class="pa-2 cursor-pointer" @onclick="ShowFlowChart">
+                <MudChart ChartType="ChartType.StackedBar"
+                          ChartSeries="_flowSeries"
+                          XAxisLabels="_flowLabels"
+                          Class="responsive-chart"
+                          Width="100%"
+                          Height="100%"
+                          AxisChartOptions="_axisOptions" />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.ContentCopy"
@@ -144,6 +181,8 @@
     private double? _additionalPoints;
     private double? _efficiency;
     private double? _errorRange;
+    private string _nonSprintTag = string.Empty;
+    private bool _useSprintEfficiency;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -152,6 +191,8 @@
     private List<ChartSeries> _burnSeries = [];
     private string[] _flowLabels = [];
     private List<ChartSeries> _flowSeries = [];
+    private List<ChartSeries> _wipSeries = [];
+    private List<ChartSeries> _sprintSeries = [];
     private AxisChartOptions _axisOptions = new()
     {
         MatchBoundsToSize = true,
@@ -185,6 +226,8 @@
                 _additionalPoints = state.AdditionalPoints > 0 ? state.AdditionalPoints : null;
                 _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
                 _errorRange = state.Error > 0 ? state.Error : null;
+                _nonSprintTag = state.NonSprintTag ?? string.Empty;
+                _useSprintEfficiency = state.UseSprintEfficiency;
             }
 
             _error = null;
@@ -217,7 +260,9 @@
                 StartDate = _startDate,
                 AdditionalPoints = _additionalPoints ?? 0,
                 Efficiency = _efficiency ?? 0,
-                Error = _errorRange ?? 0
+                Error = _errorRange ?? 0,
+                NonSprintTag = _nonSprintTag,
+                UseSprintEfficiency = _useSprintEfficiency
             });
             _error = null;
         }
@@ -234,6 +279,8 @@
     private void ComputePeriods(List<StoryMetric> items, List<IterationInfo>? iterations = null)
     {
         _periods.Clear();
+        _wipSeries.Clear();
+        _sprintSeries.Clear();
         var startDate = _startDate ?? DateTime.Today.AddDays(-84);
 
         if (_mode == AggregateMode.Iteration && iterations != null)
@@ -261,6 +308,12 @@
                 }
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
+                if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+                {
+                    var nonSprint = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+                        .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
+                    metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
+                }
                 _periods.Add(metrics);
             }
         }
@@ -298,6 +351,12 @@
                 }
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
+                if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+                {
+                    var nonSprint = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+                        .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
+                    metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
+                }
                 _periods.Add(metrics);
                 start = next;
             }
@@ -320,12 +379,22 @@
             new ChartSeries { Name = "Throughput", Data = throughput },
             new ChartSeries { Name = "Velocity", Data = velocity }
         ];
+        var wip = _periods.Select(p => p.AvgWip).ToArray();
+        _wipSeries = [ new ChartSeries { Name = "Avg WIP", Data = wip } ];
+        if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+        {
+            var sprint = _periods.Select(p => p.SprintEfficiency).ToArray();
+            _sprintSeries = [ new ChartSeries { Name = "Sprint %", Data = sprint } ];
+        }
     }
 
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnSeries.Clear();
-        if (items.Count == 0 || _efficiency is null || _errorRange is null)
+        var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_nonSprintTag)
+            ? ComputeOverallSprintEfficiency(items)
+            : _efficiency;
+        if (items.Count == 0 || efficiency is null || _errorRange is null)
         {
             _burnLabels = [];
             return;
@@ -350,7 +419,7 @@
             done[i] = sum;
         }
         var avgVel = sum / Math.Max(1, days);
-        var effVel = avgVel * (_efficiency.Value / 100.0);
+        var effVel = avgVel * (efficiency.Value / 100.0);
         var minVel = effVel * (1 - _errorRange.Value / 100.0);
         var maxVel = effVel * (1 + _errorRange.Value / 100.0);
         var finalTarget = sum + (_additionalPoints ?? 0);
@@ -409,6 +478,14 @@
         ];
     }
 
+    private double ComputeOverallSprintEfficiency(List<StoryMetric> items)
+    {
+        double total = items.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
+        double nonSprint = items.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+            .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
+        return total > 0 ? 100.0 * (total - nonSprint) / total : 0;
+    }
+
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
     {
         var sb = new StringBuilder();
@@ -457,7 +534,9 @@
             StartDate = _startDate,
             AdditionalPoints = _additionalPoints ?? 0,
             Efficiency = _efficiency ?? 0,
-            Error = _errorRange ?? 0
+            Error = _errorRange ?? 0,
+            NonSprintTag = _nonSprintTag,
+            UseSprintEfficiency = _useSprintEfficiency
         });
         StateHasChanged();
     }
@@ -472,9 +551,13 @@
         _additionalPoints = null;
         _efficiency = null;
         _errorRange = null;
+        _nonSprintTag = string.Empty;
+        _useSprintEfficiency = false;
         _periods.Clear();
         _iterations.Clear();
         _burnSeries.Clear();
+        _wipSeries.Clear();
+        _sprintSeries.Clear();
         _flowSeries.Clear();
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
@@ -484,6 +567,25 @@
     {
         int diff = (7 + (int)dt.DayOfWeek - (int)DayOfWeek.Monday) % 7;
         return dt.Date.AddDays(-diff);
+    }
+
+    private async Task ShowLeadCycleChart() => await ShowChartDialog(ChartType.Line, _leadCycleSeries, _xAxisLabels);
+    private async Task ShowBarChart() => await ShowChartDialog(ChartType.Bar, _barSeries, _xAxisLabels);
+    private async Task ShowWipChart() => await ShowChartDialog(ChartType.Line, _wipSeries, _xAxisLabels);
+    private async Task ShowSprintChart() => await ShowChartDialog(ChartType.Line, _sprintSeries, _xAxisLabels);
+    private async Task ShowBurnChart() => await ShowChartDialog(ChartType.Line, _burnSeries, _burnLabels);
+    private async Task ShowFlowChart() => await ShowChartDialog(ChartType.StackedBar, _flowSeries, _flowLabels);
+
+    private async Task ShowChartDialog(ChartType type, List<ChartSeries> series, string[] labels)
+    {
+        var parameters = new DialogParameters
+        {
+            [nameof(ChartDialog.ChartType)] = type,
+            [nameof(ChartDialog.ChartSeries)] = series,
+            [nameof(ChartDialog.XAxisLabels)] = labels,
+            [nameof(ChartDialog.AxisChartOptions)] = _axisOptions
+        };
+        await DialogService.ShowAsync<ChartDialog>("", parameters, new DialogOptions { FullScreen = true });
     }
 
     private class PeriodMetrics
@@ -496,6 +598,7 @@
         public int Throughput { get; set; }
         public double Velocity { get; set; }
         public double AvgWip { get; set; }
+        public double SprintEfficiency { get; set; }
     }
 
     private class PageState
@@ -507,6 +610,8 @@
         public double AdditionalPoints { get; set; }
         public double Efficiency { get; set; }
         public double Error { get; set; }
+        public string? NonSprintTag { get; set; }
+        public bool UseSprintEfficiency { get; set; }
     }
 
     protected override Task OnProjectChangedAsync()

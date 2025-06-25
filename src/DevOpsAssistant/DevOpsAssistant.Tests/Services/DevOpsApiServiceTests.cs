@@ -564,7 +564,7 @@ public class DevOpsApiServiceTests
     public async Task GetStoryMetricsAsync_Returns_Metrics()
     {
         var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
-        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.CreatedDate\":\"2024-01-01T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-02T00:00:00Z\",\"Microsoft.VSTS.Common.ClosedDate\":\"2024-01-03T00:00:00Z\",\"Microsoft.VSTS.Scheduling.StoryPoints\":5,\"Microsoft.VSTS.Scheduling.OriginalEstimate\":8}}]}";
+        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.CreatedDate\":\"2024-01-01T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-02T00:00:00Z\",\"Microsoft.VSTS.Common.ClosedDate\":\"2024-01-03T00:00:00Z\",\"Microsoft.VSTS.Scheduling.StoryPoints\":5,\"Microsoft.VSTS.Scheduling.OriginalEstimate\":8,\"System.Tags\":\"Tech Debt\"}}]}";
         var call = 0;
         var handler = new FakeHttpMessageHandler(_ =>
         {
@@ -589,6 +589,7 @@ public class DevOpsApiServiceTests
         Assert.Equal(new DateTime(2024, 1, 3), result[0].ClosedDate);
         Assert.Equal(5, result[0].StoryPoints);
         Assert.Equal(8, result[0].OriginalEstimate);
+        Assert.Contains("Tech Debt", result[0].Tags);
     }
 
     [Fact]
