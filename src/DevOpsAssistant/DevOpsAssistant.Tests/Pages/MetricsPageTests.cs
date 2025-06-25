@@ -96,6 +96,9 @@ public class MetricsPageTests : ComponentTestBase
 
         var metrics = new TestMetrics();
         var type = typeof(Metrics);
+        type.GetField("_targetPoints", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        type.GetField("_efficiency", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)80);
+        type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
         var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var seriesField = type.GetField("_burnSeries", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var items = new List<StoryMetric>
