@@ -120,6 +120,9 @@
   <data name="ApplyToAll" xml:space="preserve">
     <value>Apply to all projects</value>
   </data>
+  <data name="ProjectSettings" xml:space="preserve">
+    <value>Project Settings</value>
+  </data>
   <data name="OverrideWarning" xml:space="preserve">
     <value>This will override existing settings.</value>
   </data>
