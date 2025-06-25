@@ -27,4 +27,10 @@
   <data name="ChartsHeading" xml:space="preserve">
     <value>Gráficos</value>
   </data>
+  <data name="GeneratePrompt" xml:space="preserve">
+    <value>Generar prompt</value>
+  </data>
+  <data name="CopyToast" xml:space="preserve">
+    <value>Copiado al portapapeles</value>
+  </data>
 </root>

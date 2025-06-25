@@ -8,6 +8,7 @@
 @inject PageStateService StateService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Metrics> L
+@inject ISnackbar Snackbar
 @inherits ProjectComponentBase
 
 <PageTitle>DevOpsAssistant - Metrics</PageTitle>
@@ -92,6 +93,11 @@
                   Height="100%"
                   AxisChartOptions="_axisOptions" />
     </MudPaper>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.ContentCopy"
+               Disabled="_periods.Count == 0"
+               OnClick="CopyPrompt">@L["GeneratePrompt"]</MudButton>
 }
 
 @code {
@@ -258,11 +264,31 @@
         return sb.ToString();
     }
 
+    private static string BuildPrompt(IEnumerable<PeriodMetrics> periods)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("You are an Agile Coach preparing a delivery metrics report for your Delivery Manager.");
+        sb.AppendLine("Highlight any trends or issues based on the data below.");
+        sb.AppendLine();
+        sb.AppendLine("Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity");
+        foreach (var p in periods)
+            sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
+        return sb.ToString();
+    }
+
     private async Task ExportCsv()
     {
         if (_periods.Count == 0) return;
         var csv = BuildCsv(_periods);
         await JS.InvokeVoidAsync("downloadCsv", "metrics.csv", csv);
+    }
+
+    private async Task CopyPrompt()
+    {
+        if (_periods.Count == 0) return;
+        var prompt = BuildPrompt(_periods);
+        await JS.InvokeVoidAsync("copyText", prompt);
+        Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
     private async Task Reset()

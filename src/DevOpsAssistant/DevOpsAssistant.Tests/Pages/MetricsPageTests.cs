@@ -44,6 +44,29 @@ public class MetricsPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void BuildPrompt_Includes_Metrics()
+    {
+        SetupServices();
+
+        var method = typeof(Metrics).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var periodType = typeof(Metrics).GetNestedType("PeriodMetrics", BindingFlags.NonPublic)!;
+        var array = Array.CreateInstance(periodType, 1);
+        var period = Activator.CreateInstance(periodType)!;
+        periodType.GetProperty("End")!.SetValue(period, new DateTime(2024, 1, 1));
+        periodType.GetProperty("AvgLeadTime")!.SetValue(period, 1.2);
+        periodType.GetProperty("AvgCycleTime")!.SetValue(period, 2.3);
+        periodType.GetProperty("Throughput")!.SetValue(period, 3);
+        periodType.GetProperty("Velocity")!.SetValue(period, 4.5);
+        array.SetValue(period, 0);
+
+        var prompt = (string)method.Invoke(null, new object?[] { array })!;
+
+        Assert.Contains("2024-01-01", prompt);
+        Assert.Contains("1.2", prompt);
+        Assert.Contains("4.5", prompt);
+    }
+
+    [Fact]
     public void Fortnight_Mode_Uses_Two_Week_Period()
     {
         SetupServices();
