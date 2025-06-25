@@ -44,9 +44,6 @@
                 <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
             </MudSelect>
         </MudTooltip>
-        <MudNumericField T="double" @bind-Value="_targetPoints" Label="Total Points" />
-        <MudNumericField T="double" @bind-Value="_efficiency" Label="Efficiency %" />
-        <MudNumericField T="double" @bind-Value="_errorRange" Label="Error %" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
@@ -100,6 +97,12 @@
                   AxisChartOptions="_axisOptions" />
     </MudPaper>
     <MudText Typo="Typo.h6" Class="mt-4">@L["BurnUp"]</MudText>
+    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Class="mb-2">
+        <MudNumericField T="double?" @bind-Value="_targetPoints" Label="Total Points" />
+        <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
+        <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+    </MudStack>
     <MudPaper Class="pa-2">
         <MudChart ChartType="ChartType.Line"
                   ChartSeries="_burnSeries"
@@ -111,7 +114,7 @@
     </MudPaper>
     <MudText Typo="Typo.h6" Class="mt-4">@L["Flow"]</MudText>
     <MudPaper Class="pa-2">
-        <MudChart ChartType="ChartType.Line"
+        <MudChart ChartType="ChartType.StackedBar"
                   ChartSeries="_flowSeries"
                   XAxisLabels="_flowLabels"
                   Class="responsive-chart"
@@ -138,9 +141,9 @@
     private List<IterationInfo> _iterations = new();
     private List<StoryMetric> _items = new();
 
-    private double _targetPoints = 100;
-    private double _efficiency = 80;
-    private double _errorRange = 10;
+    private double? _targetPoints;
+    private double? _efficiency;
+    private double? _errorRange;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -179,9 +182,9 @@
                 _mode = state.Mode;
                 _velocityMode = state.VelocityMode;
                 _startDate = state.StartDate;
-                _targetPoints = state.TargetPoints > 0 ? state.TargetPoints : _targetPoints;
-                _efficiency = state.Efficiency > 0 ? state.Efficiency : _efficiency;
-                _errorRange = state.Error > 0 ? state.Error : _errorRange;
+                _targetPoints = state.TargetPoints > 0 ? state.TargetPoints : null;
+                _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
+                _errorRange = state.Error > 0 ? state.Error : null;
             }
 
             _error = null;
@@ -212,9 +215,9 @@
                 Mode = _mode,
                 VelocityMode = _velocityMode,
                 StartDate = _startDate,
-                TargetPoints = _targetPoints,
-                Efficiency = _efficiency,
-                Error = _errorRange
+                TargetPoints = _targetPoints ?? 0,
+                Efficiency = _efficiency ?? 0,
+                Error = _errorRange ?? 0
             });
             _error = null;
         }
@@ -322,14 +325,19 @@
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnSeries.Clear();
-        if (items.Count == 0) { _burnLabels = []; return; }
+        if (items.Count == 0 || _targetPoints is null || _targetPoints <= 0 || _efficiency is null || _errorRange is null)
+        {
+            _burnLabels = [];
+            return;
+        }
 
         var start = items.Min(i => i.ClosedDate).Date;
-        var end = items.Max(i => i.ClosedDate).Date;
+        var end = DateTime.Today;
         var days = (end - start).Days + 1;
         double[] daily = new double[days];
         foreach (var it in items)
         {
+            if (it.ClosedDate.Date < start || it.ClosedDate.Date > end) continue;
             var idx = (it.ClosedDate.Date - start).Days;
             var val = _velocityMode == VelocityMode.StoryPoints ? it.StoryPoints : it.OriginalEstimate;
             daily[idx] += val;
@@ -342,23 +350,23 @@
             done[i] = sum;
         }
         var avgVel = sum / Math.Max(1, days);
-        var effVel = avgVel * (_efficiency / 100.0);
-        var minVel = effVel * (1 - _errorRange / 100.0);
-        var maxVel = effVel * (1 + _errorRange / 100.0);
-        var remaining = Math.Max(0, _targetPoints - sum);
-        int daysMin = minVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
-        int daysMax = maxVel > 0 ? (int)Math.Ceiling(remaining / minVel) : 0;
+        var effVel = avgVel * (_efficiency.Value / 100.0);
+        var minVel = effVel * (1 - _errorRange.Value / 100.0);
+        var maxVel = effVel * (1 + _errorRange.Value / 100.0);
+        var remaining = Math.Max(0, _targetPoints.Value - sum);
+        int daysMin = maxVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
+        int daysMax = minVel > 0 ? (int)Math.Ceiling(remaining / minVel) : 0;
         int projLen = days + Math.Max(daysMin, daysMax);
         Array.Resize(ref done, projLen);
-        double[] target = Enumerable.Repeat(_targetPoints, projLen).ToArray();
+        double[] target = Enumerable.Repeat(_targetPoints.Value, projLen).ToArray();
         double[] minProj = new double[projLen];
         double[] maxProj = new double[projLen];
         for (int i = days; i < projLen; i++)
         {
             var d = i - days + 1;
-            minProj[i] = Math.Min(sum + d * minVel, _targetPoints);
-            maxProj[i] = Math.Min(sum + d * maxVel, _targetPoints);
-            done[i] = sum; // extend actual line
+            minProj[i] = Math.Min(sum + d * minVel, _targetPoints.Value);
+            maxProj[i] = Math.Min(sum + d * maxVel, _targetPoints.Value);
+            done[i] = sum;
         }
         _burnLabels = Enumerable.Range(0, projLen).Select(i => start.AddDays(i).ToLocalDateString()).ToArray();
         _burnSeries =
@@ -433,6 +441,23 @@
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
+    private async Task UpdateBurnUp()
+    {
+        if (_items.Count == 0) return;
+        ComputeBurnUp(_items);
+        await StateService.SaveAsync(StateKey, new PageState
+        {
+            Path = _path,
+            Mode = _mode,
+            VelocityMode = _velocityMode,
+            StartDate = _startDate,
+            TargetPoints = _targetPoints ?? 0,
+            Efficiency = _efficiency ?? 0,
+            Error = _errorRange ?? 0
+        });
+        StateHasChanged();
+    }
+
     private async Task Reset()
     {
         if (_backlogs.Length > 0)
@@ -440,9 +465,9 @@
         _mode = AggregateMode.Week;
         _velocityMode = VelocityMode.StoryPoints;
         _startDate = DateTime.Today.AddDays(-84);
-        _targetPoints = 100;
-        _efficiency = 80;
-        _errorRange = 10;
+        _targetPoints = null;
+        _efficiency = null;
+        _errorRange = null;
         _periods.Clear();
         _iterations.Clear();
         _burnSeries.Clear();
