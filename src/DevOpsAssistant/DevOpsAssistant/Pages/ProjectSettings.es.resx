@@ -42,9 +42,6 @@
   <data name="Project" xml:space="preserve">
     <value>Proyecto de DevOps</value>
   </data>
-  <data name="ProjectName" xml:space="preserve">
-    <value>Nombre del Proyecto</value>
-  </data>
   <data name="Organization" xml:space="preserve">
     <value>Organización de DevOps</value>
   </data>
@@ -59,9 +56,6 @@
   </data>
   <data name="CloneSource" xml:space="preserve">
     <value>Proyecto a clonar</value>
-  </data>
-  <data name="ImportFrom" xml:space="preserve">
-    <value>Importar De</value>
   </data>
   <data name="DeleteProject" xml:space="preserve">
     <value>Eliminar Proyecto</value>
@@ -83,9 +77,6 @@
   </data>
   <data name="DuplicateName" xml:space="preserve">
     <value>Ya existe un proyecto con ese nombre.</value>
-  </data>
-  <data name="MissingName" xml:space="preserve">
-    <value>Se requiere el nombre del proyecto.</value>
   </data>
   <data name="MissingOrganization" xml:space="preserve">
     <value>Se requiere la organización.</value>
@@ -122,11 +113,5 @@
   </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Configuración del proyecto</value>
-  </data>
-  <data name="OverrideWarning" xml:space="preserve">
-    <value>Esto sobrescribirá la configuración existente.</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>Ninguno</value>
   </data>
 </root>
