@@ -54,6 +54,12 @@
   <data name="NewProject" xml:space="preserve">
     <value>New Project</value>
   </data>
+  <data name="CloneExisting" xml:space="preserve">
+    <value>Clone from existing project</value>
+  </data>
+  <data name="CloneSource" xml:space="preserve">
+    <value>Project to clone</value>
+  </data>
   <data name="ImportFrom" xml:space="preserve">
     <value>Import From</value>
   </data>
@@ -111,8 +117,8 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="SaveForAll" xml:space="preserve">
-    <value>Save for all projects</value>
+  <data name="ApplyToAll" xml:space="preserve">
+    <value>Apply to all projects</value>
   </data>
   <data name="OverrideWarning" xml:space="preserve">
     <value>This will override existing settings.</value>

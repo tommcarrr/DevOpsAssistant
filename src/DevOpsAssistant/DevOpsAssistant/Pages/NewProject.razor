@@ -18,33 +18,49 @@
         <MudText Typo="Typo.body2">
             For help finding these values see the <MudLink Href="#" OnClick="OpenHelpDialog">help page</MudLink>.
         </MudText>
-        @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
+        @if (ConfigService.Projects.Any())
         {
-            <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
-            <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" />
+            <MudCheckBox T="bool" Value="_cloneExisting" ValueChanged="OnCloneExistingChanged" Label='@L["CloneExisting"]' />
+            @if (_cloneExisting)
+            {
+                <MudSelect T="string" Value="_cloneProjectName" ValueChanged="OnCloneProjectChanged" Label='@L["CloneSource"]'>
+                    @foreach (var p in ConfigService.Projects)
+                    {
+                        <MudSelectItem T="string" Value="@p.Name">@p.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
         }
-        else
+        @if (!_cloneExisting)
         {
-            <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" />
-            @if (_overrideOrg)
+            @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
             {
                 <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
+                <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" />
+            }
+            else
+            {
+                <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" />
+                @if (_overrideOrg)
+                {
+                    <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
+                }
+            }
+            @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
+            {
+                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" />
+                <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" />
+            }
+            else
+            {
+                <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" />
+                @if (_overridePat)
+                {
+                    <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" />
+                }
             }
         }
         <MudTextField T="string" Value="_project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true" />
-        @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
-        {
-            <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" />
-            <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" />
-        }
-        else
-        {
-            <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" />
-            @if (_overridePat)
-            {
-                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" />
-            }
-        }
         @if (_errors.Count > 0)
         {
             <MudAlert Severity="Severity.Error">
@@ -72,6 +88,8 @@
     private bool _overridePat;
     private bool _useOrgAsGlobal;
     private bool _useAsGlobal;
+    private bool _cloneExisting;
+    private string _cloneProjectName = string.Empty;
     private List<string> _errors = new();
 
     private bool CanCreate => _errors.Count == 0;
@@ -83,6 +101,10 @@
         _overridePat = string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
         _useOrgAsGlobal = _overrideOrg;
         _useAsGlobal = _overridePat;
+        if (ConfigService.Projects.Any())
+        {
+            _cloneProjectName = ConfigService.Projects[0].Name;
+        }
         Validate();
     }
 
@@ -134,19 +156,36 @@
         return Task.CompletedTask;
     }
 
+    private Task OnCloneProjectChanged(string value)
+    {
+        _cloneProjectName = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
+    private Task OnCloneExistingChanged(bool value)
+    {
+        _cloneExisting = value;
+        Validate();
+        return Task.CompletedTask;
+    }
+
     private void Validate()
     {
         _errors.Clear();
         if (ConfigService.Projects.Any(p => p.Name.Equals(_project, StringComparison.OrdinalIgnoreCase)))
             _errors.Add(L["DuplicateName"]);
-        if ((_overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization)) &&
-            string.IsNullOrWhiteSpace(_organization))
-            _errors.Add(L["MissingOrganization"]);
         if (string.IsNullOrWhiteSpace(_project))
             _errors.Add(L["MissingProject"]);
-        if ((_overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken)) &&
-            string.IsNullOrWhiteSpace(_patToken))
-            _errors.Add(L["MissingPat"]);
+        if (!_cloneExisting)
+        {
+            if ((_overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization)) &&
+                string.IsNullOrWhiteSpace(_organization))
+                _errors.Add(L["MissingOrganization"]);
+            if ((_overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken)) &&
+                string.IsNullOrWhiteSpace(_patToken))
+                _errors.Add(L["MissingPat"]);
+        }
     }
 
 
@@ -156,26 +195,31 @@
         if (!CanCreate)
             return;
 
-        var added = await ConfigService.AddProjectAsync(_project);
+        DevOpsProject? source = null;
+        if (_cloneExisting)
+            source = ConfigService.Projects.FirstOrDefault(p => p.Name == _cloneProjectName);
+
+        var added = await ConfigService.AddProjectAsync(_project, source);
         if (!added)
         {
             _errors = new List<string> { L["DuplicateName"] };
             return;
         }
-        await ConfigService.SaveAsync(new DevOpsConfig
+
+        if (!_cloneExisting)
         {
-            Organization = _overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization) ? _organization : string.Empty,
-            Project = _project,
-            PatToken = _overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken) ? _patToken : string.Empty
-        });
-        if (_useOrgAsGlobal && !string.IsNullOrWhiteSpace(_organization))
-        {
-            await ConfigService.SaveGlobalOrganizationAsync(_organization);
+            await ConfigService.SaveAsync(new DevOpsConfig
+            {
+                Organization = _overrideOrg || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization) ? _organization : string.Empty,
+                Project = _project,
+                PatToken = _overridePat || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken) ? _patToken : string.Empty
+            });
+            if (_useOrgAsGlobal && !string.IsNullOrWhiteSpace(_organization))
+                await ConfigService.SaveGlobalOrganizationAsync(_organization);
+            if (_useAsGlobal && !string.IsNullOrWhiteSpace(_patToken))
+                await ConfigService.SaveGlobalPatAsync(_patToken);
         }
-        if (_useAsGlobal && !string.IsNullOrWhiteSpace(_patToken))
-        {
-            await ConfigService.SaveGlobalPatAsync(_patToken);
-        }
+
         NavigationManager.NavigateTo($"/projects/{_project}/settings", forceLoad: true);
     }
 
