@@ -9,12 +9,12 @@ public class ChartDialogTests : ComponentTestBase
 {
     private class FakeDialog : IMudDialogInstance
     {
-        public string Id => "1";
+        public Guid Id => Guid.Empty;
         public string ElementId => "1";
         public DialogOptions Options => new();
         public string Title { get; set; } = string.Empty;
         public Task SetOptionsAsync(DialogOptions options) => Task.CompletedTask;
-        public Task SetTitleAsync(string title) { Title = title; return Task.CompletedTask; }
+        public Task SetTitleAsync(string? title) { Title = title ?? string.Empty; return Task.CompletedTask; }
         public void Close() { }
         public void Close(DialogResult result) { }
         public void Close<T>(T returnValue) { }
