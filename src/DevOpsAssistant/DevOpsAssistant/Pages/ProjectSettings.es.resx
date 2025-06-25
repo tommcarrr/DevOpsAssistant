@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PromptsTab" xml:space="preserve">
+    <value>Prompts</value>
+  </data>
+  <data name="StoryQualityPrompt" xml:space="preserve">
+    <value>Prompt de Calidad de Historia</value>
+  </data>
+  <data name="ReleaseNotesPrompt" xml:space="preserve">
+    <value>Prompt de Notas de Lanzamiento</value>
+  </data>
+  <data name="RequirementsPrompt" xml:space="preserve">
+    <value>Prompt de Requerimientos</value>
+  </data>
+  <data name="PromptLimit" xml:space="preserve">
+    <value>Límite de caracteres del prompt</value>
+  </data>
+  <data name="BugHasStoryPoints" xml:space="preserve">
+    <value>Tiene story points</value>
+  </data>
+  <data name="GeneralTab" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="StoryQualityTab" xml:space="preserve">
+    <value>Calidad de Historia</value>
+  </data>
+  <data name="ValidationTab" xml:space="preserve">
+    <value>Reglas de Validación</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>Proyecto de DevOps</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Nombre del Proyecto</value>
+  </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organización de DevOps</value>
+  </data>
+  <data name="PatToken" xml:space="preserve">
+    <value>Token PAT</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>Nuevo Proyecto</value>
+  </data>
+  <data name="CloneExisting" xml:space="preserve">
+    <value>Clonar de un proyecto existente</value>
+  </data>
+  <data name="CloneSource" xml:space="preserve">
+    <value>Proyecto a clonar</value>
+  </data>
+  <data name="ImportFrom" xml:space="preserve">
+    <value>Importar De</value>
+  </data>
+  <data name="DeleteProject" xml:space="preserve">
+    <value>Eliminar Proyecto</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Eliminar proyecto</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
+  <data name="ConfirmOverrideAll" xml:space="preserve">
+    <value>Esto sobrescribirá la configuración de todos los proyectos. ¿Continuar?</value>
+  </data>
+  <data name="SavedMessage" xml:space="preserve">
+    <value>Configuración guardada</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Volver</value>
+  </data>
+  <data name="DuplicateName" xml:space="preserve">
+    <value>Ya existe un proyecto con ese nombre.</value>
+  </data>
+  <data name="MissingName" xml:space="preserve">
+    <value>Se requiere el nombre del proyecto.</value>
+  </data>
+  <data name="MissingOrganization" xml:space="preserve">
+    <value>Se requiere la organización.</value>
+  </data>
+  <data name="MissingProject" xml:space="preserve">
+    <value>Se requiere el proyecto.</value>
+  </data>
+  <data name="MissingPat" xml:space="preserve">
+    <value>Se requiere un token PAT o global.</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>Rama principal</value>
+  </data>
+  <data name="DefinitionOfReady" xml:space="preserve">
+    <value>Definición de Terminado</value>
+  </data>
+  <data name="LeaveWarning" xml:space="preserve">
+    <value>¿Salir sin guardar los cambios?</value>
+  </data>
+  <data name="SectionSaved" xml:space="preserve">
+    <value>Configuración de {0} guardada para {1}</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>todos los proyectos</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="ApplyToAll" xml:space="preserve">
+    <value>Aplicar a todos los proyectos</value>
+  </data>
+  <data name="ProjectSettings" xml:space="preserve">
+    <value>Configuración del proyecto</value>
+  </data>
+  <data name="OverrideWarning" xml:space="preserve">
+    <value>Esto sobrescribirá la configuración existente.</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>Ninguno</value>
+  </data>
+</root>
