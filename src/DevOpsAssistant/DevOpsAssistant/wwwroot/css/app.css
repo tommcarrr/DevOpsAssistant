@@ -185,7 +185,7 @@ body {
     position: relative;
 }
 
-/* High contrast mode for users requesting extra contrast */
+/* Responsive chart container */
 .responsive-chart {
     width: 100%;
     height: auto;
