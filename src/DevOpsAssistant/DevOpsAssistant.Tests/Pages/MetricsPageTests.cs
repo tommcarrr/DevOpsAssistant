@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
+using MudBlazor;
 
 namespace DevOpsAssistant.Tests.Pages;
 
@@ -86,6 +87,26 @@ public class MetricsPageTests : ComponentTestBase
         var start = (DateTime)first.GetType().GetProperty("Start")!.GetValue(first)!;
         var end = (DateTime)first.GetType().GetProperty("End")!.GetValue(first)!;
         Assert.Equal(13, (end - start).TotalDays);
+    }
+
+    [Fact]
+    public void ComputeBurnUp_Produces_Data()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var seriesField = type.GetField("_burnSeries", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var list = (IList<ChartSeries>)seriesField.GetValue(metrics)!;
+        Assert.True(list.Count > 0);
     }
 
     private class TestMetrics : Metrics
