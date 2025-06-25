@@ -145,6 +145,20 @@
                           Height="100%"
                           AxisChartOptions="_axisOptions" />
             </MudPaper>
+            @if (_daysMin.HasValue && _daysMax.HasValue)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mt-2">@L["ProjectionHeading"]</MudText>
+                <MudTable Items="new[] { 0 }" Dense="true">
+                    <HeaderContent>
+                        <MudTh>@L["ProjectedDays"]</MudTh>
+                        <MudTh>@L["CompletionRange"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@(_daysMin == _daysMax ? _daysMin!.Value.ToString() : $"{_daysMin}-{_daysMax}")</MudTd>
+                        <MudTd>@($"{_dateMin?.ToLocalDateString()} - {_dateMax?.ToLocalDateString()}")</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
         </MudItem>
         <MudItem xs="12" md="6">
             <MudText Typo="Typo.h6" Class="mt-4">@L["Flow"]</MudText>
@@ -193,6 +207,10 @@
     private List<ChartSeries> _flowSeries = [];
     private List<ChartSeries> _wipSeries = [];
     private List<ChartSeries> _sprintSeries = [];
+    private int? _daysMin;
+    private int? _daysMax;
+    private DateTime? _dateMin;
+    private DateTime? _dateMax;
     private AxisChartOptions _axisOptions = new()
     {
         MatchBoundsToSize = true,
@@ -438,7 +456,10 @@
             maxProj[i] = Math.Min(sum + d * maxVel, finalTarget);
             done[i] = sum;
         }
-        _burnLabels = Enumerable.Range(0, projLen).Select(i => start.AddDays(i).ToLocalDateString()).ToArray();
+        int step = Math.Max(1, (int)Math.Ceiling(projLen / 10.0));
+        _burnLabels = Enumerable.Range(0, projLen)
+            .Select(i => i % step == 0 ? start.AddDays(i).ToLocalDateString() : string.Empty)
+            .ToArray();
         _burnSeries = new List<ChartSeries>
         {
             new ChartSeries { Name = "Complete", Data = done },
@@ -448,6 +469,17 @@
         {
             _burnSeries.Add(new ChartSeries { Name = "Projection Min", Data = minProj });
             _burnSeries.Add(new ChartSeries { Name = "Projection Max", Data = maxProj });
+            _daysMin = daysMin;
+            _daysMax = daysMax;
+            _dateMin = end.AddDays(daysMin);
+            _dateMax = end.AddDays(daysMax);
+        }
+        else
+        {
+            _daysMin = null;
+            _daysMax = null;
+            _dateMin = null;
+            _dateMax = null;
         }
     }
 
@@ -559,6 +591,10 @@
         _wipSeries.Clear();
         _sprintSeries.Clear();
         _flowSeries.Clear();
+        _daysMin = null;
+        _daysMax = null;
+        _dateMin = null;
+        _dateMax = null;
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
