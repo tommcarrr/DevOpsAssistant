@@ -13,5 +13,6 @@ public class DevOpsConfig
     public string ReleaseNotesPrompt { get; set; } = string.Empty;
     public string RequirementsPrompt { get; set; } = string.Empty;
     public int PromptCharacterLimit { get; set; }
+    public OutputFormat OutputFormat { get; set; }
     public ValidationRules Rules { get; set; } = new();
 }

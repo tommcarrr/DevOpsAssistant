@@ -302,6 +302,8 @@ else if (_promptParts != null)
         sb.AppendLine();
         sb.AppendLine("Work items:");
         sb.AppendLine(json);
+        sb.AppendLine();
+        sb.AppendLine($"After completing the analysis, convert the output to {config.OutputFormat} format and include that version.");
         return sb.ToString();
     }
 

@@ -22,6 +22,7 @@ public class DevOpsConfigServiceTests
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
             MainBranch = " main ",
+            OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = true },
@@ -53,6 +54,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", storedCfg.ReleaseNotesPrompt);
         Assert.Equal("RP", storedCfg.RequirementsPrompt);
         Assert.Equal("main", storedCfg.MainBranch);
+        Assert.Equal(OutputFormat.Pdf, storedCfg.OutputFormat);
         Assert.True(storedCfg.Rules.Epic.HasDescription);
     }
 
@@ -69,6 +71,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
+            OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = true },
@@ -97,6 +100,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
+        Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
         Assert.True(service.Config.Rules.Epic.HasDescription);
         Assert.Equal("proj", service.CurrentProject.Name);
     }
@@ -115,6 +119,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = " SQ ",
             ReleaseNotesPrompt = " RN ",
             RequirementsPrompt = " RP ",
+            OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules()
         };
         await storage.SetItemAsync("devops-config", stored);
@@ -130,6 +135,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
+        Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
         Assert.Equal("default", service.CurrentProject.Name);
     }
 

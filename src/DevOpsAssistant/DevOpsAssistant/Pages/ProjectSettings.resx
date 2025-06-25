@@ -27,6 +27,9 @@
   <data name="PromptLimit" xml:space="preserve">
     <value>Prompt Character Limit</value>
   </data>
+  <data name="OutputFormat" xml:space="preserve">
+    <value>Output Format</value>
+  </data>
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Has story points</value>
   </data>
