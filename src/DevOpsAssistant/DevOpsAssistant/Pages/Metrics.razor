@@ -108,7 +108,11 @@
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
-    private AxisChartOptions _axisOptions = new() { MatchBoundsToSize = true, XAxisLabelRotation = 45 };
+    private AxisChartOptions _axisOptions = new()
+    {
+        MatchBoundsToSize = true,
+        XAxisLabelRotation = 45
+    };
     private string? _error;
     private const string StateKey = "metrics";
 

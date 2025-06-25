@@ -191,6 +191,7 @@ body {
     height: auto;
     aspect-ratio: 2 / 1;
     max-height: 600px;
+    padding-bottom: 2rem;
 }
 
 /* utility spacing classes */
