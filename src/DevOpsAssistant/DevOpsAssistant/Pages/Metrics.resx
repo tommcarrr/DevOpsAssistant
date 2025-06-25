@@ -51,4 +51,13 @@
   <data name="Flow" xml:space="preserve">
     <value>Cumulative Flow</value>
   </data>
+  <data name="ProjectionHeading" xml:space="preserve">
+    <value>Projection</value>
+  </data>
+  <data name="ProjectedDays" xml:space="preserve">
+    <value>Days Remaining</value>
+  </data>
+  <data name="CompletionRange" xml:space="preserve">
+    <value>Completion Range</value>
+  </data>
 </root>
