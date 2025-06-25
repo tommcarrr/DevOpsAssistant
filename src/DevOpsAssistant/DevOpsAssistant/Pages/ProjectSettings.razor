@@ -64,12 +64,8 @@
                     <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
                     <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
                     <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
-                    <MudCheckBox T="bool" @bind-Value="_promptsAll" Label='@L["SaveForAll"]' />
-                    @if (_promptsAll)
-                    {
-                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
-                    }
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
+                    <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
@@ -98,12 +94,8 @@
                     <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeReproSteps" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeReproSteps = v)" Color="Color.Primary" Label="Include Repro Steps"/>
                     <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeSystemInfo" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeSystemInfo = v)" Color="Color.Primary" Label="Include System Info" />
                     <MudSwitch T="bool" Value="_model.Rules.Bug.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.HasStoryPoints = v)" Color="Color.Primary" Label='@L["BugHasStoryPoints"]' />
-                    <MudCheckBox T="bool" @bind-Value="_validationAll" Label='@L["SaveForAll"]' />
-                    @if (_validationAll)
-                    {
-                        <MudText Color="Color.Error" Typo="Typo.caption">@L["OverrideWarning"]</MudText>
-                    }
                     <MudButton OnClick="SaveValidation" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_validationDirty">@L["Save"]</MudButton>
+                    <MudButton OnClick="ApplyValidationToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
                 </MudStack>
             </MudTabPanel>
         </MudTabs>
@@ -131,8 +123,6 @@
     private bool _promptsDirty;
     private bool _validationDirty;
     private bool _generalDirty;
-    private bool _promptsAll;
-    private bool _validationAll;
     private int _activeTab;
 
     private bool HasChanges => _generalDirty || _qualityDirty || _promptsDirty || _validationDirty;
@@ -235,31 +225,8 @@
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
         await ConfigService.SaveCurrentAsync(_model.Project, cfg);
-        if (_promptsAll)
-        {
-            var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
-            var result = await dialog.Result;
-            if (result?.Canceled == false)
-            {
-                foreach (var p in ConfigService.Projects)
-                {
-                    if (p.Name == _model.Project) continue;
-                    var pcfg = p.Config;
-                    pcfg.StoryQualityPrompt = _model.StoryQualityPrompt;
-                    pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
-                    pcfg.RequirementsPrompt = _model.RequirementsPrompt;
-                    pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
-                    await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
         _promptsDirty = false;
-        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _promptsAll ? L["AllProjects"].Value : _model.Project), Severity.Success);
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _model.Project), Severity.Success);
     }
 
     private async Task SaveValidation()
@@ -267,28 +234,45 @@
         var vcfg = ConfigService.Config;
         vcfg.Rules = _model.Rules;
         await ConfigService.SaveCurrentAsync(_model.Project, vcfg);
-        if (_validationAll)
-        {
-            var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
-            var result = await dialog.Result;
-            if (result?.Canceled == false)
-            {
-                foreach (var p in ConfigService.Projects)
-                {
-                    if (p.Name == _model.Project) continue;
-                    var vc = p.Config;
-                    vc.Rules = _model.Rules;
-                    await ConfigService.UpdateProjectAsync(p.Name, p.Name, vc);
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
         _validationDirty = false;
-        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, _validationAll ? L["AllProjects"].Value : _model.Project), Severity.Success);
+        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, _model.Project), Severity.Success);
+    }
+
+    private async Task ApplyPromptsToAll()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled == false)
+        {
+            foreach (var p in ConfigService.Projects)
+            {
+                var pcfg = p.Config;
+                pcfg.StoryQualityPrompt = _model.StoryQualityPrompt;
+                pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
+                pcfg.RequirementsPrompt = _model.RequirementsPrompt;
+                pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+                await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
+            }
+            Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, L["AllProjects"].Value), Severity.Success);
+        }
+    }
+
+    private async Task ApplyValidationToAll()
+    {
+        var parameters = new DialogParameters { ["Message"] = L["ConfirmOverrideAll"] };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled == false)
+        {
+            foreach (var p in ConfigService.Projects)
+            {
+                var vc = p.Config;
+                vc.Rules = _model.Rules;
+                await ConfigService.UpdateProjectAsync(p.Name, p.Name, vc);
+            }
+            Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, L["AllProjects"].Value), Severity.Success);
+        }
     }
 
     private async Task Delete()

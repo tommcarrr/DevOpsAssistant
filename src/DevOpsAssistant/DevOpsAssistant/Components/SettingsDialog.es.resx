@@ -54,6 +54,12 @@
   <data name="NewProject" xml:space="preserve">
     <value>Nuevo Proyecto</value>
   </data>
+  <data name="CloneExisting" xml:space="preserve">
+    <value>Clonar de un proyecto existente</value>
+  </data>
+  <data name="CloneSource" xml:space="preserve">
+    <value>Proyecto a clonar</value>
+  </data>
   <data name="ImportFrom" xml:space="preserve">
     <value>Importar De</value>
   </data>
@@ -111,8 +117,8 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
-  <data name="SaveForAll" xml:space="preserve">
-    <value>Guardar para todos los proyectos</value>
+  <data name="ApplyToAll" xml:space="preserve">
+    <value>Aplicar a todos los proyectos</value>
   </data>
   <data name="OverrideWarning" xml:space="preserve">
     <value>Esto sobrescribirá la configuración existente.</value>
