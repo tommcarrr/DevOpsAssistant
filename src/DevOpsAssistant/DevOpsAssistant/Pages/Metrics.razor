@@ -1,5 +1,6 @@
 @page "/projects/{ProjectName}/metrics"
 @using System.Text
+@using System.Linq
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
@@ -43,6 +44,9 @@
                 <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
             </MudSelect>
         </MudTooltip>
+        <MudNumericField T="double" @bind-Value="_targetPoints" Label="Total Points" />
+        <MudNumericField T="double" @bind-Value="_efficiency" Label="Efficiency %" />
+        <MudNumericField T="double" @bind-Value="_errorRange" Label="Error %" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
         <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
@@ -62,6 +66,7 @@
             <MudTh>Avg Cycle Time (days)</MudTh>
             <MudTh>Throughput</MudTh>
             <MudTh>Velocity</MudTh>
+            <MudTh>@L["AvgWip"]</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Period">
@@ -71,6 +76,7 @@
             <MudTd DataLabel="Cycle">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="Throughput">@context.Throughput</MudTd>
             <MudTd DataLabel="Velocity">@context.Velocity.ToString("0.0")</MudTd>
+            <MudTd DataLabel="WIP">@context.AvgWip.ToString("0.0")</MudTd>
         </RowTemplate>
     </MudTable>
     <MudText Typo="Typo.h6" Class="mt-4">@L["ChartsHeading"]</MudText>
@@ -93,6 +99,26 @@
                   Height="100%"
                   AxisChartOptions="_axisOptions" />
     </MudPaper>
+    <MudText Typo="Typo.h6" Class="mt-4">@L["BurnUp"]</MudText>
+    <MudPaper Class="pa-2">
+        <MudChart ChartType="ChartType.Line"
+                  ChartSeries="_burnSeries"
+                  XAxisLabels="_burnLabels"
+                  Class="responsive-chart"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="_axisOptions" />
+    </MudPaper>
+    <MudText Typo="Typo.h6" Class="mt-4">@L["Flow"]</MudText>
+    <MudPaper Class="pa-2">
+        <MudChart ChartType="ChartType.Line"
+                  ChartSeries="_flowSeries"
+                  XAxisLabels="_flowLabels"
+                  Class="responsive-chart"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="_axisOptions" />
+    </MudPaper>
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.ContentCopy"
@@ -110,10 +136,19 @@
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
     private List<PeriodMetrics> _periods = new();
     private List<IterationInfo> _iterations = new();
+    private List<StoryMetric> _items = new();
+
+    private double _targetPoints = 100;
+    private double _efficiency = 80;
+    private double _errorRange = 10;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
+    private string[] _burnLabels = [];
+    private List<ChartSeries> _burnSeries = [];
+    private string[] _flowLabels = [];
+    private List<ChartSeries> _flowSeries = [];
     private AxisChartOptions _axisOptions = new()
     {
         MatchBoundsToSize = true,
@@ -144,6 +179,9 @@
                 _mode = state.Mode;
                 _velocityMode = state.VelocityMode;
                 _startDate = state.StartDate;
+                _targetPoints = state.TargetPoints > 0 ? state.TargetPoints : _targetPoints;
+                _efficiency = state.Efficiency > 0 ? state.Efficiency : _efficiency;
+                _errorRange = state.Error > 0 ? state.Error : _errorRange;
             }
 
             _error = null;
@@ -161,16 +199,22 @@
         try
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
+            _items = items;
             _iterations = _mode == AggregateMode.Iteration
                 ? await ApiService.GetIterationsAsync()
                 : [];
             ComputePeriods(items, _iterations);
+            ComputeBurnUp(items);
+            ComputeFlow(items);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Path = _path,
                 Mode = _mode,
                 VelocityMode = _velocityMode,
-                StartDate = _startDate
+                StartDate = _startDate,
+                TargetPoints = _targetPoints,
+                Efficiency = _efficiency,
+                Error = _errorRange
             });
             _error = null;
         }
@@ -204,6 +248,16 @@
                     AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
                     Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
                 };
+                var overlap = items.Where(w => w.ActivatedDate <= metrics.End && w.ClosedDate >= metrics.Start);
+                double active = 0;
+                foreach (var w in overlap)
+                {
+                    var s = w.ActivatedDate > metrics.Start ? w.ActivatedDate.Date : metrics.Start.Date;
+                    var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
+                    active += (e - s).TotalDays + 1;
+                }
+                var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
+                metrics.AvgWip = days > 0 ? active / days : 0;
                 _periods.Add(metrics);
             }
         }
@@ -231,6 +285,16 @@
                     AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
                     Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
                 };
+                var overlap = items.Where(w => w.ActivatedDate <= metrics.End && w.ClosedDate >= metrics.Start);
+                double active = 0;
+                foreach (var w in overlap)
+                {
+                    var s = w.ActivatedDate > metrics.Start ? w.ActivatedDate.Date : metrics.Start.Date;
+                    var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
+                    active += (e - s).TotalDays + 1;
+                }
+                var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
+                metrics.AvgWip = days > 0 ? active / days : 0;
                 _periods.Add(metrics);
                 start = next;
             }
@@ -252,6 +316,84 @@
         [
             new ChartSeries { Name = "Throughput", Data = throughput },
             new ChartSeries { Name = "Velocity", Data = velocity }
+        ];
+    }
+
+    private void ComputeBurnUp(List<StoryMetric> items)
+    {
+        _burnSeries.Clear();
+        if (items.Count == 0) { _burnLabels = []; return; }
+
+        var start = items.Min(i => i.ClosedDate).Date;
+        var end = items.Max(i => i.ClosedDate).Date;
+        var days = (end - start).Days + 1;
+        double[] daily = new double[days];
+        foreach (var it in items)
+        {
+            var idx = (it.ClosedDate.Date - start).Days;
+            var val = _velocityMode == VelocityMode.StoryPoints ? it.StoryPoints : it.OriginalEstimate;
+            daily[idx] += val;
+        }
+        double[] done = new double[days];
+        double sum = 0;
+        for (int i = 0; i < days; i++)
+        {
+            sum += daily[i];
+            done[i] = sum;
+        }
+        var avgVel = sum / Math.Max(1, days);
+        var effVel = avgVel * (_efficiency / 100.0);
+        var minVel = effVel * (1 - _errorRange / 100.0);
+        var maxVel = effVel * (1 + _errorRange / 100.0);
+        var remaining = Math.Max(0, _targetPoints - sum);
+        int daysMin = minVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
+        int daysMax = maxVel > 0 ? (int)Math.Ceiling(remaining / minVel) : 0;
+        int projLen = days + Math.Max(daysMin, daysMax);
+        Array.Resize(ref done, projLen);
+        double[] target = Enumerable.Repeat(_targetPoints, projLen).ToArray();
+        double[] minProj = new double[projLen];
+        double[] maxProj = new double[projLen];
+        for (int i = days; i < projLen; i++)
+        {
+            var d = i - days + 1;
+            minProj[i] = Math.Min(sum + d * minVel, _targetPoints);
+            maxProj[i] = Math.Min(sum + d * maxVel, _targetPoints);
+            done[i] = sum; // extend actual line
+        }
+        _burnLabels = Enumerable.Range(0, projLen).Select(i => start.AddDays(i).ToLocalDateString()).ToArray();
+        _burnSeries =
+        [
+            new ChartSeries { Name = "Complete", Data = done },
+            new ChartSeries { Name = "Projection Min", Data = minProj },
+            new ChartSeries { Name = "Projection Max", Data = maxProj },
+            new ChartSeries { Name = "Target", Data = target }
+        ];
+    }
+
+    private void ComputeFlow(List<StoryMetric> items)
+    {
+        _flowSeries.Clear();
+        if (items.Count == 0) { _flowLabels = []; return; }
+
+        var start = items.Min(i => i.CreatedDate).Date;
+        var end = items.Max(i => i.ClosedDate).Date;
+        var days = (end - start).Days + 1;
+        double[] backlog = new double[days];
+        double[] wip = new double[days];
+        double[] done = new double[days];
+        for (int i = 0; i < days; i++)
+        {
+            var day = start.AddDays(i);
+            backlog[i] = items.Count(it => it.CreatedDate.Date <= day && it.ActivatedDate.Date > day);
+            wip[i] = items.Count(it => it.ActivatedDate.Date <= day && it.ClosedDate.Date > day);
+            done[i] = items.Count(it => it.ClosedDate.Date <= day);
+        }
+        _flowLabels = Enumerable.Range(0, days).Select(i => start.AddDays(i).ToLocalDateString()).ToArray();
+        _flowSeries =
+        [
+            new ChartSeries { Name = "Backlog", Data = backlog },
+            new ChartSeries { Name = "Work In Progress", Data = wip },
+            new ChartSeries { Name = "Done", Data = done }
         ];
     }
 
@@ -298,8 +440,13 @@
         _mode = AggregateMode.Week;
         _velocityMode = VelocityMode.StoryPoints;
         _startDate = DateTime.Today.AddDays(-84);
+        _targetPoints = 100;
+        _efficiency = 80;
+        _errorRange = 10;
         _periods.Clear();
         _iterations.Clear();
+        _burnSeries.Clear();
+        _flowSeries.Clear();
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
@@ -319,6 +466,7 @@
         public double AvgCycleTime { get; set; }
         public int Throughput { get; set; }
         public double Velocity { get; set; }
+        public double AvgWip { get; set; }
     }
 
     private class PageState
@@ -327,6 +475,9 @@
         public AggregateMode Mode { get; set; }
         public VelocityMode VelocityMode { get; set; }
         public DateTime? StartDate { get; set; }
+        public double TargetPoints { get; set; }
+        public double Efficiency { get; set; }
+        public double Error { get; set; }
     }
 
     protected override Task OnProjectChangedAsync()
