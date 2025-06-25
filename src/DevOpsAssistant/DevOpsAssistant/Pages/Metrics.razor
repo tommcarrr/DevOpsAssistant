@@ -197,6 +197,12 @@
     private double? _errorRange;
     private string _nonSprintTag = string.Empty;
     private bool _useSprintEfficiency;
+    private RenderFragment BurnUpControls => @<MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Class="mb-2">
+        <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
+        <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
+        <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+    </MudStack>;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -605,23 +611,25 @@
         return dt.Date.AddDays(-diff);
     }
 
-    private async Task ShowLeadCycleChart() => await ShowChartDialog(ChartType.Line, _leadCycleSeries, _xAxisLabels);
-    private async Task ShowBarChart() => await ShowChartDialog(ChartType.Bar, _barSeries, _xAxisLabels);
-    private async Task ShowWipChart() => await ShowChartDialog(ChartType.Line, _wipSeries, _xAxisLabels);
-    private async Task ShowSprintChart() => await ShowChartDialog(ChartType.Line, _sprintSeries, _xAxisLabels);
-    private async Task ShowBurnChart() => await ShowChartDialog(ChartType.Line, _burnSeries, _burnLabels);
-    private async Task ShowFlowChart() => await ShowChartDialog(ChartType.StackedBar, _flowSeries, _flowLabels);
+    private async Task ShowLeadCycleChart() => await ShowChartDialog(ChartType.Line, _leadCycleSeries, _xAxisLabels, "Lead & Cycle Time");
+    private async Task ShowBarChart() => await ShowChartDialog(ChartType.Bar, _barSeries, _xAxisLabels, "Throughput & Velocity");
+    private async Task ShowWipChart() => await ShowChartDialog(ChartType.Line, _wipSeries, _xAxisLabels, "Avg WIP");
+    private async Task ShowSprintChart() => await ShowChartDialog(ChartType.Line, _sprintSeries, _xAxisLabels, "Sprint Efficiency");
+    private async Task ShowBurnChart() => await ShowChartDialog(ChartType.Line, _burnSeries, _burnLabels, L["BurnUp"], BurnUpControls);
+    private async Task ShowFlowChart() => await ShowChartDialog(ChartType.StackedBar, _flowSeries, _flowLabels, L["Flow"]);
 
-    private async Task ShowChartDialog(ChartType type, List<ChartSeries> series, string[] labels)
+    private async Task ShowChartDialog(ChartType type, List<ChartSeries> series, string[] labels, string title, RenderFragment? controls = null)
     {
         var parameters = new DialogParameters
         {
             [nameof(ChartDialog.ChartType)] = type,
             [nameof(ChartDialog.ChartSeries)] = series,
             [nameof(ChartDialog.XAxisLabels)] = labels,
-            [nameof(ChartDialog.AxisChartOptions)] = _axisOptions
+            [nameof(ChartDialog.AxisChartOptions)] = _axisOptions,
+            [nameof(ChartDialog.Title)] = title,
+            [nameof(ChartDialog.AdditionalControls)] = controls
         };
-        await DialogService.ShowAsync<ChartDialog>("", parameters, new DialogOptions { FullScreen = true });
+        await DialogService.ShowAsync<ChartDialog>(title, parameters, new DialogOptions { FullScreen = true });
     }
 
     private class PeriodMetrics
