@@ -62,9 +62,9 @@ public class MetricsPageTests : ComponentTestBase
 
         var prompt = (string)method.Invoke(null, new object?[] { array })!;
 
-        Assert.Contains("2024-01-01", prompt);
-        Assert.Contains("1.2", prompt);
-        Assert.Contains("4.5", prompt);
+        Assert.Contains("\"end\":\"2024-01-01\"", prompt);
+        Assert.Contains("\"leadTime\":1.2", prompt);
+        Assert.Contains("\"velocity\":4.5", prompt);
     }
 
     [Fact]
