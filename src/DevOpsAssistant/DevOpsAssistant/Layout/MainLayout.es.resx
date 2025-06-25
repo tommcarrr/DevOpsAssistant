@@ -60,6 +60,9 @@
   <data name="Settings" xml:space="preserve">
     <value>Configuración</value>
   </data>
+  <data name="ProjectSettings" xml:space="preserve">
+    <value>Configuración del proyecto</value>
+  </data>
   <data name="WorkItems" xml:space="preserve">
     <value>Elementos de trabajo</value>
   </data>
