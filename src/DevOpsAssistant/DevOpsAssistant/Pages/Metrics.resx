@@ -36,6 +36,15 @@
   <data name="AvgWip" xml:space="preserve">
     <value>Avg WIP</value>
   </data>
+  <data name="NonSprintTag" xml:space="preserve">
+    <value>Non-Sprint Tag</value>
+  </data>
+  <data name="UseSprintEff" xml:space="preserve">
+    <value>Use Sprint Efficiency</value>
+  </data>
+  <data name="SprintEff" xml:space="preserve">
+    <value>Sprint %</value>
+  </data>
   <data name="BurnUp" xml:space="preserve">
     <value>Burn Up</value>
   </data>

@@ -1,0 +1,18 @@
+<MudDialog ContentClass="pa-4">
+    <DialogContent>
+        <MudChart ChartType="@ChartType"
+                  ChartSeries="ChartSeries"
+                  XAxisLabels="XAxisLabels"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="AxisChartOptions" />
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public ChartType ChartType { get; set; }
+    [Parameter] public List<ChartSeries> ChartSeries { get; set; } = new();
+    [Parameter] public string[] XAxisLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public AxisChartOptions AxisChartOptions { get; set; } = new();
+}
