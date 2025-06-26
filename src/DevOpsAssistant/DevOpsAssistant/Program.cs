@@ -25,6 +25,7 @@ builder.Services.AddScoped<DevOpsApiService>();
 builder.Services.AddScoped<VersionService>();
 builder.Services.AddScoped<DeploymentConfigService>();
 builder.Services.AddLocalization();
+builder.Services.AddScoped<ThemeSessionService>();
 
 var host = builder.Build();
 var js = host.Services.GetRequiredService<IJSRuntime>();
@@ -37,5 +38,7 @@ if (!string.IsNullOrWhiteSpace(cultureName))
 }
 var labelLocalizer = host.Services.GetRequiredService<IStringLocalizer<ErrorUi>>();
 await js.InvokeVoidAsync("setErrorDismissLabel", labelLocalizer["DismissError"].Value);
+var themeService = host.Services.GetRequiredService<ThemeSessionService>();
+await themeService.InitializeAsync();
 await host.Services.GetRequiredService<DeploymentConfigService>().LoadAsync();
 await host.RunAsync();

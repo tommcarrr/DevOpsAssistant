@@ -1,13 +1,15 @@
 @using DevOpsAssistant.Components
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject IDialogService DialogService
 @inject DevOpsConfigService ConfigService
 @inject VersionService VersionService
 @using DevOpsAssistant.Utils
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<SimpleLayout> L
+@inject ThemeSessionService ThemeSession
 
-<MudThemeProvider Theme="@AzureDevOpsTheme.Theme" @bind-IsDarkMode="_isDarkMode"/>
+<MudThemeProvider Theme="@CurrentTheme" @bind-IsDarkMode="_isDarkMode"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
@@ -49,6 +51,12 @@
 
 @code {
     private bool _isDarkMode;
+    private MudTheme CurrentTheme => ThemeSession.IsDoom ? DoomTheme.Theme : AzureDevOpsTheme.Theme;
+
+    protected override void OnInitialized()
+    {
+        ThemeSession.ThemeChanged += OnThemeChanged;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,5 +114,15 @@
     private async Task OpenHelpDialog()
     {
         await DialogService.ShowAsync<HelpDialog>(L["Help"]);
+    }
+
+    private void OnThemeChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ThemeSession.ThemeChanged -= OnThemeChanged;
     }
 }
