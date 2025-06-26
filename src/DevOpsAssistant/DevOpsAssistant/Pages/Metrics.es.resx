@@ -37,7 +37,10 @@
     <value>WIP medio</value>
   </data>
   <data name="NonSprintTag" xml:space="preserve">
-    <value>Etiqueta no sprint</value>
+    <value>Etiqueta</value>
+  </data>
+  <data name="TagMarksSprint" xml:space="preserve">
+    <value>La etiqueta indica trabajo de sprint</value>
   </data>
   <data name="UseSprintEff" xml:space="preserve">
     <value>Usar eficiencia de sprint</value>
