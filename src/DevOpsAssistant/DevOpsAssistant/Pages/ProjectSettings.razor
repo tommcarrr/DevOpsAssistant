@@ -1,3 +1,4 @@
+#if !EXCLUDE_PAGE_PROJECTSETTINGS
 @page "/projects/{ProjectName}/settings"
 @inject DevOpsConfigService ConfigService
 @using DevOpsAssistant.Services.Models
@@ -416,3 +417,5 @@
             _errors.Add(L["MissingPat"]);
     }
 }
+
+#endif
