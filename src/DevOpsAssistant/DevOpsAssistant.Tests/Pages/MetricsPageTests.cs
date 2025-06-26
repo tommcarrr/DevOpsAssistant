@@ -62,6 +62,7 @@ public class MetricsPageTests : ComponentTestBase
 
         var prompt = (string)method.Invoke(null, new object?[] { array, OutputFormat.Markdown })!;
 
+        Assert.Contains("Agile Delivery Metrics Report Template", prompt);
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);
         Assert.Contains("\"leadTime\":1.2", prompt);
         Assert.Contains("\"velocity\":4.5", prompt);
