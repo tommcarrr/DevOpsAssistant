@@ -38,3 +38,26 @@ window.blazorCulture = {
     }
 };
 
+window.themeShortcut = {
+    init: function (dotnetHelper) {
+        let buffer = '';
+        document.addEventListener('keydown', function (e) {
+            if (e.key.length === 1) {
+                buffer += e.key.toLowerCase();
+                if (buffer.length > 5)
+                    buffer = buffer.slice(-5);
+                if (buffer === 'iddqd') {
+                    dotnetHelper.invokeMethodAsync('ToggleDoom');
+                    buffer = '';
+                }
+            }
+        });
+    },
+    setDoom: function (isDoom) {
+        if (isDoom)
+            document.body.classList.add('doom-theme');
+        else
+            document.body.classList.remove('doom-theme');
+    }
+};
+

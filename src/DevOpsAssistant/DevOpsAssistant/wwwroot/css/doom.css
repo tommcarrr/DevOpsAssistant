@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Doom';
+    src: url('../fonts/doom/amazdoomleft-epw3-webfont.woff2') format('woff2'),
+         url('../fonts/doom/amazdoomleft-epw3-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body.doom-theme {
+    font-family: 'Doom', sans-serif;
+    background-image: url('/images/doom/wall.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+body.doom-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center,
+                rgba(0,0,0,0) 60%,
+                rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+}
+
+body.doom-theme .mud-paper {
+    background-color: #2E2E2E !important;
+    background-image:
+        radial-gradient(circle at top left,
+                        rgba(255,0,0,0.1) 0%,
+                        transparent 70%),
+        url('/images/doom/stone.jpg');
+    background-size: contain;
+}
+
+body.doom-theme .mud-appbar {
+    background: linear-gradient(135deg,
+                #2f0f0f 0%,
+                #770000 70%);
+}
+
+body.doom-theme .mud-button-filled-primary {
+    background: linear-gradient(145deg,
+                #D32F2F,
+                #FF1744 70%);
+    box-shadow: inset 0 2px 2px rgba(0,0,0,0.5);
+}

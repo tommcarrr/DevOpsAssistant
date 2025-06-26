@@ -8,8 +8,9 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<MainLayout> L
 @using DevOpsAssistant.Utils
+@inject ThemeSessionService ThemeSession
 
-<MudThemeProvider Theme="@AzureDevOpsTheme.Theme" @bind-IsDarkMode="_isDarkMode"/>
+<MudThemeProvider Theme="@CurrentTheme" @bind-IsDarkMode="_isDarkMode"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
@@ -83,6 +84,7 @@
     private string _selectedProject = string.Empty;
     private bool _initialized;
     private bool _isDarkMode;
+    private MudTheme CurrentTheme => ThemeSession.IsDoom ? DoomTheme.Theme : AzureDevOpsTheme.Theme;
     
     private void HandleProjectChanged()
     {
@@ -93,6 +95,7 @@
     protected override void OnInitialized()
     {
         ConfigService.ProjectChanged += HandleProjectChanged;
+        ThemeSession.ThemeChanged += OnThemeChanged;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -155,6 +158,11 @@
 
         await ConfigService.RemoveGlobalOrganizationAsync();
         StateHasChanged();
+    }
+
+    private void OnThemeChanged()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task OpenOptionsDialog()
@@ -225,6 +233,7 @@
     public void Dispose()
     {
         ConfigService.ProjectChanged -= HandleProjectChanged;
+        ThemeSession.ThemeChanged -= OnThemeChanged;
     }
 
 }
