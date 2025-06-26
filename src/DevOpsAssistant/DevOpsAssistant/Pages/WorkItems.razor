@@ -1,3 +1,4 @@
+#if !EXCLUDE_PAGE_WORKITEMS
 @page "/projects/{ProjectName}/epics-features"
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
@@ -322,3 +323,4 @@ else if (_roots != null)
     }
 
 }
+#endif

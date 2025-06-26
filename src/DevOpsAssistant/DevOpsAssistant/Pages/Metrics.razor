@@ -1,3 +1,4 @@
+#if !EXCLUDE_PAGE_METRICS
 @page "/projects/{ProjectName}/metrics"
 @using System.Text
 @using System.Text.Json
@@ -901,3 +902,4 @@ else if (_periods.Any())
     }
 
 }
+#endif
