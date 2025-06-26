@@ -51,6 +51,9 @@
   <data name="Flow" xml:space="preserve">
     <value>Flujo acumulado</value>
   </data>
+  <data name="ExpandChart" xml:space="preserve">
+    <value>Ampliar gráfico</value>
+  </data>
   <data name="ProjectionHeading" xml:space="preserve">
     <value>Proyección</value>
   </data>
