@@ -58,6 +58,8 @@ public class MetricsPageTests : ComponentTestBase
         periodType.GetProperty("AvgCycleTime")!.SetValue(period, 2.3);
         periodType.GetProperty("Throughput")!.SetValue(period, 3);
         periodType.GetProperty("Velocity")!.SetValue(period, 4.5);
+        periodType.GetProperty("AvgWip")!.SetValue(period, 1.5);
+        periodType.GetProperty("SprintEfficiency")!.SetValue(period, 80.0);
         array.SetValue(period, 0);
 
         var prompt = (string)method.Invoke(null, new object?[] { array, OutputFormat.Markdown })!;
@@ -66,6 +68,8 @@ public class MetricsPageTests : ComponentTestBase
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);
         Assert.Contains("\"leadTime\":1.2", prompt);
         Assert.Contains("\"velocity\":4.5", prompt);
+        Assert.Contains("\"avgWip\":1.5", prompt);
+        Assert.Contains("\"sprintEfficiency\":80", prompt);
     }
 
     [Fact]

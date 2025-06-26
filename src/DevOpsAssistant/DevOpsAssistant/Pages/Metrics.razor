@@ -611,7 +611,9 @@ else if (_periods.Any())
             leadTime = p.AvgLeadTime,
             cycleTime = p.AvgCycleTime,
             throughput = p.Throughput,
-            velocity = p.Velocity
+            velocity = p.Velocity,
+            avgWip = p.AvgWip,
+            sprintEfficiency = p.SprintEfficiency
         });
 
         var summary = new
@@ -619,7 +621,9 @@ else if (_periods.Any())
             avgLeadTime = periods.Any() ? periods.Average(p => p.AvgLeadTime) : 0,
             avgCycleTime = periods.Any() ? periods.Average(p => p.AvgCycleTime) : 0,
             avgThroughput = periods.Any() ? periods.Average(p => p.Throughput) : 0,
-            avgVelocity = periods.Any() ? periods.Average(p => p.Velocity) : 0
+            avgVelocity = periods.Any() ? periods.Average(p => p.Velocity) : 0,
+            avgWip = periods.Any() ? periods.Average(p => p.AvgWip) : 0,
+            avgSprintEfficiency = periods.Any() ? periods.Average(p => p.SprintEfficiency) : 0
         };
 
         var payload = new { metrics, summary };
@@ -646,12 +650,14 @@ else if (_periods.Any())
         sb.AppendLine();
         sb.AppendLine("## 📈 Summary Statistics");
         sb.AppendLine();
-        sb.AppendLine("| Metric              | Average     |");
-        sb.AppendLine("|---------------------|-------------|");
-        sb.AppendLine("| Lead Time (days)    | {{avgLeadTime}} |");
-        sb.AppendLine("| Cycle Time (days)   | {{avgCycleTime}} |");
-        sb.AppendLine("| Throughput (items)  | {{avgThroughput}} |");
-        sb.AppendLine("| Velocity (points)   | {{avgVelocity}} |");
+        sb.AppendLine("| Metric                | Average             |");
+        sb.AppendLine("|-----------------------|---------------------|");
+        sb.AppendLine("| Lead Time (days)      | {{avgLeadTime}} |");
+        sb.AppendLine("| Cycle Time (days)     | {{avgCycleTime}} |");
+        sb.AppendLine("| Throughput (items)    | {{avgThroughput}} |");
+        sb.AppendLine("| Velocity (points)     | {{avgVelocity}} |");
+        sb.AppendLine("| Avg WIP               | {{avgWip}} |");
+        sb.AppendLine("| Sprint Efficiency (%) | {{avgSprintEfficiency}} |");
         sb.AppendLine();
         sb.AppendLine("> 📌 _Commentary: Summarise what these averages suggest about recent delivery performance._");
         sb.AppendLine();
@@ -673,11 +679,11 @@ else if (_periods.Any())
         sb.AppendLine();
         sb.AppendLine("> _Pick out 3–5 noteworthy sprints (by end date) and describe what happened. Reference spikes, drops, or zero activity._");
         sb.AppendLine();
-        sb.AppendLine("| Sprint End | Lead Time | Cycle Time | Throughput | Velocity | Observations |");
-        sb.AppendLine("|------------|-----------|------------|------------|----------|--------------|");
-        sb.AppendLine("|            |           |            |            |          |              |");
-        sb.AppendLine("|            |           |            |            |          |              |");
-        sb.AppendLine("|            |           |            |            |          |              |");
+        sb.AppendLine("| Sprint End | Lead Time | Cycle Time | Throughput | Velocity | Avg WIP | Sprint % | Observations |");
+        sb.AppendLine("|------------|-----------|------------|------------|----------|--------|----------|--------------|");
+        sb.AppendLine("|            |           |            |            |          |        |          |              |");
+        sb.AppendLine("|            |           |            |            |          |        |          |              |");
+        sb.AppendLine("|            |           |            |            |          |        |          |              |");
         sb.AppendLine();
         sb.AppendLine("---");
         sb.AppendLine();
