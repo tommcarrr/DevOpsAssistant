@@ -1,0 +1,20 @@
+@using ApexCharts
+@using DevOpsAssistant.Components.Apex
+
+<ApexChart TItem="ChartPoint" Options="Options" Height="300">
+@foreach (var series in Series)
+{
+    <ApexPointSeries TItem="ChartPoint"
+                     Items="series.Points"
+                     Name="@series.Name"
+                     SeriesType="@SeriesType"
+                     XValue="p => p.Label"
+                     YValue="p => p.Value" />
+}
+</ApexChart>
+
+@code {
+    [Parameter] public List<ApexSeries> Series { get; set; } = new();
+    [Parameter] public SeriesType SeriesType { get; set; } = SeriesType.Line;
+    [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
+}
