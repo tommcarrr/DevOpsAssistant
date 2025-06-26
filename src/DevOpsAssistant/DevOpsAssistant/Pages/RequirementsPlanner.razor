@@ -84,7 +84,7 @@
 
                 @foreach (var story in _plan.Stories)
                 {
-                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("User Story")}")">
+                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")">
                         <MudText Typo="Typo.subtitle2">Story</MudText>
                         @if (_previewHtml)
                         {
@@ -109,21 +109,21 @@
             {
                 @foreach (var epic in _plan.Epics)
                 {
-                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("Epic")}")">
+                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Epic")}")">
                         <MudText Typo="Typo.h6">Epic</MudText>
                         <MudTextField @bind-Value="epic.Title" Label="Title" />
                         <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" />
 
                         @foreach (var feature in epic.Features)
                         {
-                            <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("Feature")}")">
+                            <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Feature")}")">
                                 <MudText Typo="Typo.subtitle1">Feature</MudText>
                                 <MudTextField @bind-Value="feature.Title" Label="Title" />
                                 <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" />
 
                                 @foreach (var story in feature.Stories)
                                 {
-                                    <MudPaper Class="@($"pa-2 {WorkItemHelpers.GetItemClass("User Story")}")">
+                                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")">
                                         <MudText Typo="Typo.subtitle2">Story</MudText>
                                         @if (_previewHtml)
                                         {

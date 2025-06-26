@@ -84,7 +84,7 @@ else if (_results != null)
         <MudStack Row="true" Spacing="2">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All</MudButton>
         </MudStack>
-        <MudPaper Class="pa-2 work-item-container">
+        <MudPaper Class="pa-6 work-item-container">
             <MudList T="ResultItem" Dense="true" Class="work-item-tree">
                 @foreach (var r in _results)
                 {

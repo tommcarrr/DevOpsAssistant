@@ -1,0 +1,44 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ChartCard> L
+
+<MudPaper Class="pa-6" Style="height:100%">
+    <MudStack Spacing="1">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">@Title</MudText>
+            @if (OnExpand.HasDelegate)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.OpenInFull"
+                               Size="Size.Small"
+                               OnClick="OnExpand"
+                               title="@ExpandTitle" />
+            }
+        </MudStack>
+        @if (AdditionalControls != null)
+        {
+            @AdditionalControls
+        }
+        <MudChart ChartType="@ChartType"
+                  ChartSeries="ChartSeries"
+                  XAxisLabels="XAxisLabels"
+                  Class="responsive-chart"
+                  Width="100%"
+                  Height="100%"
+                  AxisChartOptions="AxisChartOptions" />
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public ChartType ChartType { get; set; }
+    [Parameter] public List<ChartSeries> ChartSeries { get; set; } = new();
+    [Parameter] public string[] XAxisLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public AxisChartOptions AxisChartOptions { get; set; } = new();
+    [Parameter] public EventCallback OnExpand { get; set; }
+    [Parameter] public string? ExpandTitle { get; set; }
+    [Parameter] public RenderFragment? AdditionalControls { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ExpandTitle ??= L["ExpandChart"];
+    }
+}
