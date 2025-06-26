@@ -28,7 +28,7 @@
     <value>Charts</value>
   </data>
   <data name="GeneratePrompt" xml:space="preserve">
-    <value>Generate Prompt</value>
+    <value>Generate Coaching Prompt</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copied to clipboard</value>

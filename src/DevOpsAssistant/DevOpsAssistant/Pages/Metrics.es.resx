@@ -28,7 +28,7 @@
     <value>Gráficos</value>
   </data>
   <data name="GeneratePrompt" xml:space="preserve">
-    <value>Generar prompt</value>
+    <value>Generar mensaje de coaching</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>

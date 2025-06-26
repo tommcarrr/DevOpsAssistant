@@ -32,33 +32,37 @@
                 {
                     <MudSelectItem Value="@b">@b</MudSelectItem>
                 }
-        </MudSelect>
-        <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
-            <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
-            <MudSelectItem Value="AggregateMode.Fortnight">Fortnight</MudSelectItem>
-            <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
-            <MudSelectItem Value="AggregateMode.Iteration">Iteration</MudSelectItem>
-        </MudSelect>
-        <MudDatePicker @bind-Date="_startDate" Label="Start Date" />
-        <MudTooltip Text='@L["VelocityTooltip"]'>
-            <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
-                <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
-                <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
             </MudSelect>
-        </MudTooltip>
-        <MudTextField T="string" Label="@L["NonSprintTag"]" Immediate="true" @bind-Value="_nonSprintTag" />
-        <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_nonSprintTag)" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+            <MudSelect T="AggregateMode" @bind-Value="_mode" Label="Aggregate By">
+                <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Fortnight">Fortnight</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Iteration">Iteration</MudSelectItem>
+            </MudSelect>
+            <MudDatePicker @bind-Date="_startDate" Label="Start Date"/>
+            <MudTooltip Text='@L["VelocityTooltip"]'>
+                <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
+                    <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
+                    <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
+                </MudSelect>
+            </MudTooltip>
+            <MudTextField T="string" Label="@L["NonSprintTag"]" Immediate="true" @bind-Value="_nonSprintTag"/>
+            <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_nonSprintTag)"/>
+        </MudStack>
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
     </MudStack>
 </MudPaper>
 
 @if (_loading)
 {
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-} else if (_periods.Any()) {
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+else if (_periods.Any())
+{
     <MudText Typo="Typo.h6" Class="mt-4">@L["TableHeading"]</MudText>
     <MudTable Items="_periods" Dense="true" Hover="true">
         <HeaderContent>
@@ -95,7 +99,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -109,7 +113,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -123,7 +127,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -137,7 +141,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -145,13 +149,15 @@
             <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowBurnChart">
                 <MudStack Spacing="1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                        <MudText Typo="Typo.h6">@L["BurnUp"]</MudText>
-                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                            <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
-                            <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
-                            <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
-                        </MudStack>
+                        <MudButton OnClick="ToggleBurnChartControls" EndIcon="@(_showBurnChartControls ? Icons.Material.Outlined.ArrowDropUp : Icons.Material.Outlined.ArrowDropDown)">@L["BurnUp"]</MudButton>
+                        <MudCollapse Expanded="_showBurnChartControls">
+                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                                <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points"/>
+                                <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %"/>
+                                <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %"/>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+                            </MudStack>
+                        </MudCollapse>
                     </MudStack>
                     <MudChart ChartType="ChartType.Line"
                               ChartSeries="_burnSeries"
@@ -159,7 +165,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                     @if (_daysMin.HasValue && _daysMax.HasValue)
                     {
                         <MudText Typo="Typo.subtitle1" Class="mt-2">@L["ProjectionHeading"]</MudText>
@@ -187,7 +193,7 @@
                               Class="responsive-chart"
                               Width="100%"
                               Height="100%"
-                              AxisChartOptions="_axisOptions" />
+                              AxisChartOptions="_axisOptions"/>
                 </MudStack>
             </MudPaper>
         </MudItem>
@@ -196,7 +202,9 @@
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.ContentCopy"
                Disabled="_periods.Count == 0"
-               OnClick="CopyPrompt">@L["GeneratePrompt"]</MudButton>
+               OnClick="CopyPrompt">
+        @L["GeneratePrompt"]
+    </MudButton>
 }
 
 @code {
@@ -216,12 +224,14 @@
     private double? _errorRange;
     private string _nonSprintTag = string.Empty;
     private bool _useSprintEfficiency;
+    private bool _showBurnChartControls;
+
     private RenderFragment BurnUpControls => @<MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Style="margin-bottom:16px">
-        <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points" />
-        <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %" />
-        <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
-    </MudStack>;
+                                                 <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points"/>
+                                                 <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %"/>
+                                                 <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %"/>
+                                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+                                             </MudStack>;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -236,11 +246,13 @@
     private int? _daysMax;
     private DateTime? _dateMin;
     private DateTime? _dateMax;
+
     private AxisChartOptions _axisOptions = new()
     {
         MatchBoundsToSize = true,
         XAxisLabelRotation = 45
     };
+
     private string? _error;
     private const string StateKey = "metrics";
 
@@ -252,6 +264,7 @@
         {
             await ConfigService.SelectProjectAsync(ProjectName);
         }
+
         try
         {
             _backlogs = await ApiService.GetBacklogsAsync();
@@ -349,6 +362,7 @@
                     var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
                     active += (e - s).TotalDays + 1;
                 }
+
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
                 if (!string.IsNullOrWhiteSpace(_nonSprintTag))
@@ -357,6 +371,7 @@
                         .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
                     metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
                 }
+
                 _periods.Add(metrics);
             }
         }
@@ -392,6 +407,7 @@
                     var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
                     active += (e - s).TotalDays + 1;
                 }
+
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
                 if (!string.IsNullOrWhiteSpace(_nonSprintTag))
@@ -400,14 +416,17 @@
                         .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
                     metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
                 }
+
                 _periods.Add(metrics);
                 start = next;
             }
         }
 
         _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Month
-                ? p.End.ToString("yyyy-MM")
-                : _mode == AggregateMode.Iteration ? p.Name : p.End.ToLocalDateString()).ToArray();
+            ? p.End.ToString("yyyy-MM")
+            : _mode == AggregateMode.Iteration
+                ? p.Name
+                : p.End.ToLocalDateString()).ToArray();
         var lead = _periods.Select(p => p.AvgLeadTime).ToArray();
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
@@ -423,11 +442,11 @@
             new ChartSeries { Name = "Velocity", Data = velocity }
         ];
         var wip = _periods.Select(p => p.AvgWip).ToArray();
-        _wipSeries = [ new ChartSeries { Name = "Avg WIP", Data = wip } ];
+        _wipSeries = [new ChartSeries { Name = "Avg WIP", Data = wip }];
         if (!string.IsNullOrWhiteSpace(_nonSprintTag))
         {
             var sprint = _periods.Select(p => p.SprintEfficiency).ToArray();
-            _sprintSeries = [ new ChartSeries { Name = "Sprint %", Data = sprint } ];
+            _sprintSeries = [new ChartSeries { Name = "Sprint %", Data = sprint }];
         }
     }
 
@@ -454,6 +473,7 @@
             var val = _velocityMode == VelocityMode.StoryPoints ? it.StoryPoints : it.OriginalEstimate;
             daily[idx] += val;
         }
+
         double[] done = new double[days];
         double sum = 0;
         for (int i = 0; i < days; i++)
@@ -461,6 +481,7 @@
             sum += daily[i];
             done[i] = sum;
         }
+
         var avgVel = sum / Math.Max(1, days);
         var effVel = avgVel * (efficiency.Value / 100.0);
         var minVel = effVel * (1 - _errorRange.Value / 100.0);
@@ -481,6 +502,7 @@
             maxProj[i] = Math.Min(sum + d * maxVel, finalTarget);
             done[i] = sum;
         }
+
         int step = Math.Max(1, (int)Math.Ceiling(projLen / 10.0));
         _burnLabels = Enumerable.Range(0, projLen)
             .Select(i => i % step == 0 ? start.AddDays(i).ToLocalDateString() : string.Empty)
@@ -511,7 +533,11 @@
     private void ComputeFlow(List<StoryMetric> items)
     {
         _flowSeries.Clear();
-        if (items.Count == 0) { _flowLabels = []; return; }
+        if (items.Count == 0)
+        {
+            _flowLabels = [];
+            return;
+        }
 
         var start = items.Min(i => i.CreatedDate).Date;
         var end = items.Max(i => i.ClosedDate).Date;
@@ -574,6 +600,11 @@
         foreach (var p in periods)
             sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
         return sb.ToString();
+    }
+
+    private void ToggleBurnChartControls()
+    {
+        _showBurnChartControls = !_showBurnChartControls;
     }
 
     private static string BuildPrompt(IEnumerable<PeriodMetrics> periods, OutputFormat format)
@@ -797,4 +828,5 @@
     {
         return OnInitializedAsync();
     }
+
 }
