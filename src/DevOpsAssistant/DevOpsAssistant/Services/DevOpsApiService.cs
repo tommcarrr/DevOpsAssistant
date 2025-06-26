@@ -366,14 +366,14 @@ public class DevOpsApiService
         return SearchWorkItemsAsync(wiql);
     }
 
-    public async Task<List<StoryHierarchyDetails>> GetStoriesAsync(string areaPath, IEnumerable<string> states)
+    public async Task<List<StoryHierarchyDetails>> GetStoriesAsync(string areaPath, IEnumerable<string> states, string? iterationPath = null)
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var baseUri = BuildBaseUri(config);
 
-        var wiql = BuildStoriesWiql(areaPath, states);
+        var wiql = BuildStoriesWiql(areaPath, states, iterationPath);
         var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
@@ -399,12 +399,14 @@ public class DevOpsApiService
     private static void ExtractIterations(JsonElement el, List<IterationInfo> list)
     {
         if (el.TryGetProperty("name", out var name) &&
+            el.TryGetProperty("path", out var path) &&
             el.TryGetProperty("attributes", out var attrs) &&
             attrs.TryGetProperty("startDate", out var start) && start.ValueKind == JsonValueKind.String &&
             attrs.TryGetProperty("finishDate", out var end) && end.ValueKind == JsonValueKind.String)
         {
             list.Add(new IterationInfo
             {
+                Path = NormalizeIterationPath(path.GetString() ?? string.Empty),
                 Name = name.GetString() ?? string.Empty,
                 StartDate = start.GetDateTime(),
                 EndDate = end.GetDateTime()
@@ -430,6 +432,15 @@ public class DevOpsApiService
         if (segments.Length >= 2 && segments[1].Equals("Area", StringComparison.OrdinalIgnoreCase))
             areaPath = string.Join('\\', new[] { segments[0] }.Concat(segments.Skip(2)));
         return areaPath;
+    }
+
+    private static string NormalizeIterationPath(string iterationPath)
+    {
+        iterationPath = iterationPath.TrimStart('\\', '/');
+        var segments = iterationPath.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length >= 2 && segments[1].Equals("Iteration", StringComparison.OrdinalIgnoreCase))
+            iterationPath = string.Join('\\', new[] { segments[0] }.Concat(segments.Skip(2)));
+        return iterationPath;
     }
 
     private static string BuildEpicsWiql(string areaPath)
@@ -489,13 +500,18 @@ public class DevOpsApiService
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{stateCondition} AND [System.WorkItemType] IN {typeCondition} ORDER BY [System.Id]";
     }
 
-    private static string BuildStoriesWiql(string areaPath, IEnumerable<string> states)
+    private static string BuildStoriesWiql(string areaPath, IEnumerable<string> states, string? iterationPath = null)
     {
         areaPath = NormalizeAreaPath(areaPath);
+        if (!string.IsNullOrWhiteSpace(iterationPath))
+            iterationPath = NormalizeIterationPath(iterationPath);
         var stateList = string.Join(", ", states.Select(s => $"'{s.Replace("'", "''")}'"));
         var stateCondition = string.IsNullOrWhiteSpace(stateList) ? string.Empty : $" AND [System.State] IN ({stateList})";
+        var iterationCondition = string.IsNullOrWhiteSpace(iterationPath)
+            ? string.Empty
+            : $" AND [System.IterationPath] UNDER '{iterationPath}'";
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story'{stateCondition} ORDER BY [System.Id]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{iterationCondition} AND [System.WorkItemType] = 'User Story'{stateCondition} ORDER BY [System.Id]";
     }
 
 
