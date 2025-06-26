@@ -46,8 +46,9 @@
                     <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
                 </MudSelect>
             </MudTooltip>
-            <MudTextField T="string" Label="@L["NonSprintTag"]" Immediate="true" @bind-Value="_nonSprintTag"/>
-            <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_nonSprintTag)"/>
+            <MudAutocomplete T="string" Label="@L["NonSprintTag"]" @bind-Value="_tag" SearchFunc="SearchTags" />
+            <MudSwitch T="bool" @bind-Value="_tagMarksSprint" Label="@L["TagMarksSprint"]" Disabled="string.IsNullOrWhiteSpace(_tag)" />
+            <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_tag)"/>
         </MudStack>
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
@@ -240,8 +241,10 @@ else if (_periods.Any())
     private double? _additionalPoints;
     private double? _efficiency;
     private double? _errorRange;
-    private string _nonSprintTag = string.Empty;
+    private string _tag = string.Empty;
+    private bool _tagMarksSprint;
     private bool _useSprintEfficiency;
+    private List<string> _tags = new();
     private bool _showBurnChartControls;
 
     private RenderFragment BurnUpControls => @<MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap" Style="margin-bottom:16px">
@@ -288,6 +291,7 @@ else if (_periods.Any())
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+            _tags = await ApiService.GetTagsAsync();
 
             var state = await StateService.LoadAsync<PageState>(StateKey);
             if (state != null)
@@ -300,7 +304,8 @@ else if (_periods.Any())
                 _additionalPoints = state.AdditionalPoints > 0 ? state.AdditionalPoints : null;
                 _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
                 _errorRange = state.Error > 0 ? state.Error : null;
-                _nonSprintTag = state.NonSprintTag ?? string.Empty;
+                _tag = state.Tag ?? string.Empty;
+                _tagMarksSprint = state.TagMarksSprint;
                 _useSprintEfficiency = state.UseSprintEfficiency;
             }
 
@@ -335,7 +340,8 @@ else if (_periods.Any())
                 AdditionalPoints = _additionalPoints ?? 0,
                 Efficiency = _efficiency ?? 0,
                 Error = _errorRange ?? 0,
-                NonSprintTag = _nonSprintTag,
+                Tag = _tag,
+                TagMarksSprint = _tagMarksSprint,
                 UseSprintEfficiency = _useSprintEfficiency
             });
             _error = null;
@@ -383,11 +389,15 @@ else if (_periods.Any())
 
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
-                if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+                if (!string.IsNullOrWhiteSpace(_tag))
                 {
-                    var nonSprint = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+                    var value = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_tag, StringComparison.OrdinalIgnoreCase)))
                         .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
-                    metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
+                    metrics.SprintEfficiency = metrics.Velocity > 0
+                        ? _tagMarksSprint
+                            ? 100.0 * value / metrics.Velocity
+                            : 100.0 * (metrics.Velocity - value) / metrics.Velocity
+                        : 0;
                 }
 
                 _periods.Add(metrics);
@@ -428,11 +438,15 @@ else if (_periods.Any())
 
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
-                if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+                if (!string.IsNullOrWhiteSpace(_tag))
                 {
-                    var nonSprint = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+                    var value = rangeItems.Where(w => w.Tags.Any(t => t.Equals(_tag, StringComparison.OrdinalIgnoreCase)))
                         .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
-                    metrics.SprintEfficiency = metrics.Velocity > 0 ? 100.0 * (metrics.Velocity - nonSprint) / metrics.Velocity : 0;
+                    metrics.SprintEfficiency = metrics.Velocity > 0
+                        ? _tagMarksSprint
+                            ? 100.0 * value / metrics.Velocity
+                            : 100.0 * (metrics.Velocity - value) / metrics.Velocity
+                        : 0;
                 }
 
                 _periods.Add(metrics);
@@ -461,7 +475,7 @@ else if (_periods.Any())
         ];
         var wip = _periods.Select(p => p.AvgWip).ToArray();
         _wipSeries = [new ChartSeries { Name = "Avg WIP", Data = wip }];
-        if (!string.IsNullOrWhiteSpace(_nonSprintTag))
+        if (!string.IsNullOrWhiteSpace(_tag))
         {
             var sprint = _periods.Select(p => p.SprintEfficiency).ToArray();
             _sprintSeries = [new ChartSeries { Name = "Sprint %", Data = sprint }];
@@ -471,7 +485,7 @@ else if (_periods.Any())
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnSeries.Clear();
-        var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_nonSprintTag)
+        var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_tag)
             ? ComputeOverallSprintEfficiency(items)
             : _efficiency;
         if (items.Count == 0 || efficiency is null || _errorRange is null)
@@ -606,9 +620,13 @@ else if (_periods.Any())
     private double ComputeOverallSprintEfficiency(List<StoryMetric> items)
     {
         double total = items.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
-        double nonSprint = items.Where(w => w.Tags.Any(t => t.Equals(_nonSprintTag, StringComparison.OrdinalIgnoreCase)))
+        double value = items.Where(w => w.Tags.Any(t => t.Equals(_tag, StringComparison.OrdinalIgnoreCase)))
             .Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate);
-        return total > 0 ? 100.0 * (total - nonSprint) / total : 0;
+        return total > 0
+            ? _tagMarksSprint
+                ? 100.0 * value / total
+                : 100.0 * (total - value) / total
+            : 0;
     }
 
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
@@ -757,7 +775,8 @@ else if (_periods.Any())
             AdditionalPoints = _additionalPoints ?? 0,
             Efficiency = _efficiency ?? 0,
             Error = _errorRange ?? 0,
-            NonSprintTag = _nonSprintTag,
+            Tag = _tag,
+            TagMarksSprint = _tagMarksSprint,
             UseSprintEfficiency = _useSprintEfficiency
         });
         StateHasChanged();
@@ -773,7 +792,8 @@ else if (_periods.Any())
         _additionalPoints = null;
         _efficiency = null;
         _errorRange = null;
-        _nonSprintTag = string.Empty;
+        _tag = string.Empty;
+        _tagMarksSprint = false;
         _useSprintEfficiency = false;
         _periods.Clear();
         _iterations.Clear();
@@ -787,6 +807,14 @@ else if (_periods.Any())
         _dateMax = null;
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
+    }
+
+    private Task<IEnumerable<string>> SearchTags(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _tags;
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(result);
     }
 
     private static DateTime StartOfWeek(DateTime dt)
@@ -838,7 +866,8 @@ else if (_periods.Any())
         public double AdditionalPoints { get; set; }
         public double Efficiency { get; set; }
         public double Error { get; set; }
-        public string? NonSprintTag { get; set; }
+        public string? Tag { get; set; }
+        public bool TagMarksSprint { get; set; }
         public bool UseSprintEfficiency { get; set; }
     }
 

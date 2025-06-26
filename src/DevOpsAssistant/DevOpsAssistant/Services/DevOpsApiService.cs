@@ -275,6 +275,26 @@ public class DevOpsApiService
         return list.ToArray();
     }
 
+    public async Task<List<string>> GetTagsAsync()
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var result =
+            await GetJsonAsync<JsonElement>($"{baseUri}/tags?api-version=7.1-preview.1");
+        List<string> list = [];
+        if (result.TryGetProperty("value", out var values))
+            foreach (var t in values.EnumerateArray())
+                if (t.TryGetProperty("name", out var name))
+                {
+                    var n = name.GetString();
+                    if (!string.IsNullOrWhiteSpace(n))
+                        list.Add(n);
+                }
+        return list;
+    }
+
     public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath, IEnumerable<string> states, IEnumerable<string> types)
     {
         var config = GetValidatedConfig();

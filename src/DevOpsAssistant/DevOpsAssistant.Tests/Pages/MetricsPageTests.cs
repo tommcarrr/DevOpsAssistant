@@ -136,6 +136,32 @@ public class MetricsPageTests : ComponentTestBase
         Assert.True(labels.Length > 0);
     }
 
+    [Fact]
+    public void ComputeOverallSprintEfficiency_Respects_Toggle()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        type.GetField("_tag", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, "Tech");
+        var compute = type.GetMethod("ComputeOverallSprintEfficiency", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var modeField = type.GetField("_velocityMode", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        modeField.SetValue(metrics, VelocityMode.StoryPoints);
+        var toggleField = type.GetField("_tagMarksSprint", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { StoryPoints = 5, Tags = new[] { "Tech" } },
+            new() { StoryPoints = 3, Tags = new[] { "Other" } }
+        };
+
+        var result = (double)compute.Invoke(metrics, new object?[] { items })!;
+        Assert.Equal(37.5, result);
+
+        toggleField.SetValue(metrics, true);
+        result = (double)compute.Invoke(metrics, new object?[] { items })!;
+        Assert.Equal(62.5, result);
+    }
+
     private class TestMetrics : Metrics
     {
         protected override Task OnInitializedAsync() => Task.CompletedTask;

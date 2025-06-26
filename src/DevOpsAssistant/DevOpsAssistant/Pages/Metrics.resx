@@ -37,7 +37,10 @@
     <value>Avg WIP</value>
   </data>
   <data name="NonSprintTag" xml:space="preserve">
-    <value>Non-Sprint Tag</value>
+    <value>Tag</value>
+  </data>
+  <data name="TagMarksSprint" xml:space="preserve">
+    <value>Tag Marks Sprint Work</value>
   </data>
   <data name="UseSprintEff" xml:space="preserve">
     <value>Use Sprint Efficiency</value>

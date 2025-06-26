@@ -739,6 +739,33 @@ public class DevOpsApiServiceTests
         Assert.Equal(2, results[0].Behind);
     }
 
+    [Fact]
+    public async Task GetTagsAsync_Uses_Api_Endpoint()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"value\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var results = await service.GetTagsAsync();
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Get, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/tags?api-version=7.1-preview.1", captured.RequestUri.ToString());
+        Assert.Empty(results);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.BadRequest, "Invalid request")]
     [InlineData(HttpStatusCode.TooManyRequests, "Rate limit exceeded")]
