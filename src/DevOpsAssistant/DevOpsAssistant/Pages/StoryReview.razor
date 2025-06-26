@@ -29,6 +29,13 @@
                         <MudSelectItem Value="@b">@b</MudSelectItem>
                     }
                 </MudSelect>
+                <MudSelect T="string" @bind-Value="_iteration" Label="Iteration" Clearable="true">
+                    <MudSelectItem Value="@(null as string)">All</MudSelectItem>
+                    @foreach (var it in _iterations)
+                    {
+                        <MudSelectItem Value="@it.Path">@it.Path</MudSelectItem>
+                    }
+                </MudSelect>
                 <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => OnStatesChanged(vals))" Label="States">
                     @foreach (var s in _states)
                     {
@@ -66,6 +73,8 @@ else if (_promptParts != null)
     [Parameter] public string ProjectName { get; set; } = string.Empty;
     private string _path = string.Empty;
     private string[] _backlogs = [];
+    private string? _iteration;
+    private List<IterationInfo> _iterations = new();
     private string[] _states = [];
     private HashSet<string> SelectedStates { get; set; } = new();
     private bool _loading;
@@ -89,9 +98,12 @@ else if (_promptParts != null)
             _backlogs = await ApiService.GetBacklogsAsync();
             if (_backlogs.Length > 0)
                 _path = _backlogs[0];
+            _iterations = await ApiService.GetIterationsAsync();
             var state = await StateService.LoadAsync<PageState>(StateKey);
             if (state != null && !string.IsNullOrWhiteSpace(state.Path))
                 _path = state.Path;
+            if (state != null && !string.IsNullOrWhiteSpace(state.Iteration))
+                _iteration = state.Iteration;
 
             _states = await ApiService.GetStatesAsync();
             SelectedStates = _states
@@ -114,14 +126,15 @@ else if (_promptParts != null)
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetStoriesAsync(_path, SelectedStates);
+            var items = await ApiService.GetStoriesAsync(_path, SelectedStates, _iteration);
             _prompt = BuildPrompt(items, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Path = _path,
-                States = SelectedStates.ToArray()
+                States = SelectedStates.ToArray(),
+                Iteration = _iteration
             });
             _error = null;
             await CopyPrompt();
@@ -177,6 +190,7 @@ else if (_promptParts != null)
             .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
                         s.Equals("Active", StringComparison.OrdinalIgnoreCase))
             .ToHashSet();
+        _iteration = null;
         _prompt = null;
         _promptParts = null;
         _partIndex = 0;
@@ -311,6 +325,7 @@ else if (_promptParts != null)
     {
         public string Path { get; set; } = string.Empty;
         public string[]? States { get; set; }
+        public string? Iteration { get; set; }
     }
 
     protected override Task OnProjectChangedAsync()

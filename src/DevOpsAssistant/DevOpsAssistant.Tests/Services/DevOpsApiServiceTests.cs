@@ -72,11 +72,18 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [area, start])!;
     }
 
-    private static string InvokeBuildStoriesWiql(string area, string[] states)
+    private static string InvokeBuildStoriesWiql(string area, string[] states, string? iteration = null)
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildStoriesWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, [area, states])!;
+        return (string)method.Invoke(null, new object?[] { area, states, iteration })!;
+    }
+
+    private static string InvokeNormalizeIterationPath(string path)
+    {
+        var method =
+            typeof(DevOpsApiService).GetMethod("NormalizeIterationPath", BindingFlags.NonPublic | BindingFlags.Static)!;
+        return (string)method.Invoke(null, [path])!;
     }
 
     private class TestLocalizer : IStringLocalizer<DevOpsApiService>
@@ -252,6 +259,16 @@ public class DevOpsApiServiceTests
         Assert.Equal(expected, normalized);
     }
 
+    [Theory]
+    [InlineData("\\Project\\Iteration\\Sprint 1", "Project\\Sprint 1")]
+    [InlineData("Project\\Sprint 1", "Project\\Sprint 1")]
+    public void NormalizeIterationPath_Returns_Expected(string input, string expected)
+    {
+        var normalized = InvokeNormalizeIterationPath(input);
+
+        Assert.Equal(expected, normalized);
+    }
+
     [Fact]
     public void ExtractPaths_Collects_All_Paths()
     {
@@ -273,7 +290,7 @@ public class DevOpsApiServiceTests
     public void ExtractIterations_Collects_All()
     {
         var json =
-            "{\"name\":\"Root\",\"children\":[{\"name\":\"Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
+            "{\"name\":\"Root\",\"children\":[{\"name\":\"Sprint 1\",\"path\":\"Project\\\\Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
         var doc = JsonDocument.Parse(json);
         List<IterationInfo> list = [];
 
@@ -281,6 +298,7 @@ public class DevOpsApiServiceTests
 
         Assert.Single(list);
         Assert.Equal("Sprint 1", list[0].Name);
+        Assert.Equal("Project\\Sprint 1", list[0].Path);
         Assert.Equal(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), list[0].StartDate);
     }
 
@@ -312,7 +330,7 @@ public class DevOpsApiServiceTests
     [Fact]
     public async Task GetIterationsAsync_Returns_Iterations()
     {
-        var json = "{\"children\":[{\"name\":\"Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
+        var json = "{\"children\":[{\"name\":\"Sprint 1\",\"path\":\"Project\\\\Sprint 1\",\"attributes\":{\"startDate\":\"2024-01-01T00:00:00Z\",\"finishDate\":\"2024-01-15T00:00:00Z\"}}]}";
         var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(json)
@@ -327,6 +345,7 @@ public class DevOpsApiServiceTests
 
         Assert.Single(result);
         Assert.Equal("Sprint 1", result[0].Name);
+        Assert.Equal("Project\\Sprint 1", result[0].Path);
     }
 
     [Fact]
@@ -493,7 +512,7 @@ public class DevOpsApiServiceTests
     [Fact]
     public void BuildStoriesWiql_Includes_States_When_Provided()
     {
-        var query = InvokeBuildStoriesWiql("Area", new[] { "New", "Active" });
+        var query = InvokeBuildStoriesWiql("Area", new[] { "New", "Active" }, null);
 
         Assert.Contains("'New'", query);
         Assert.Contains("'Active'", query);
@@ -503,9 +522,18 @@ public class DevOpsApiServiceTests
     [Fact]
     public void BuildStoriesWiql_Omits_State_Filter_When_None()
     {
-        var query = InvokeBuildStoriesWiql("Area", []);
+        var query = InvokeBuildStoriesWiql("Area", [], null);
 
         Assert.DoesNotContain("System.State", query);
+    }
+
+    [Fact]
+    public void BuildStoriesWiql_Includes_Iteration_When_Provided()
+    {
+        var query = InvokeBuildStoriesWiql("Area", [], "Project\\Sprint 1");
+
+        Assert.Contains("IterationPath", query);
+        Assert.Contains("Project\\Sprint 1", query);
     }
 
     [Fact]
