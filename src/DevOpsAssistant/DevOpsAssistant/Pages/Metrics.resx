@@ -51,6 +51,9 @@
   <data name="Flow" xml:space="preserve">
     <value>Cumulative Flow</value>
   </data>
+  <data name="ExpandChart" xml:space="preserve">
+    <value>Expand Chart</value>
+  </data>
   <data name="ProjectionHeading" xml:space="preserve">
     <value>Projection</value>
   </data>

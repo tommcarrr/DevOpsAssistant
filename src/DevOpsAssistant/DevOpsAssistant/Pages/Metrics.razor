@@ -90,9 +90,12 @@ else if (_periods.Any())
 
     <MudGrid>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowLeadCycleChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowLeadCycleChart" title='@L["ExpandChart"]'/>
+                    </MudStack>
                     <MudChart ChartType="ChartType.Line"
                               ChartSeries="_leadCycleSeries"
                               XAxisLabels="_xAxisLabels"
@@ -104,9 +107,12 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowBarChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowBarChart" title='@L["ExpandChart"]'/>
+                    </MudStack>
                     <MudChart ChartType="ChartType.Bar"
                               ChartSeries="_barSeries"
                               XAxisLabels="_xAxisLabels"
@@ -118,9 +124,12 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowWipChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowWipChart" title='@L["ExpandChart"]'/>
+                    </MudStack>
                     <MudChart ChartType="ChartType.Line"
                               ChartSeries="_wipSeries"
                               XAxisLabels="_xAxisLabels"
@@ -132,9 +141,12 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowSprintChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowSprintChart" title='@L["ExpandChart"]'/>
+                    </MudStack>
                     <MudChart ChartType="ChartType.Line"
                               ChartSeries="_sprintSeries"
                               XAxisLabels="_xAxisLabels"
@@ -146,19 +158,20 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowBurnChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                         <MudButton OnClick="ToggleBurnChartControls" EndIcon="@(_showBurnChartControls ? Icons.Material.Outlined.ArrowDropUp : Icons.Material.Outlined.ArrowDropDown)">@L["BurnUp"]</MudButton>
-                        <MudCollapse Expanded="_showBurnChartControls">
-                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                                <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points"/>
-                                <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %"/>
-                                <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %"/>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
-                            </MudStack>
-                        </MudCollapse>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowBurnChart" title='@L["ExpandChart"]'/>
                     </MudStack>
+                    <MudCollapse Expanded="_showBurnChartControls">
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                            <MudNumericField T="double?" @bind-Value="_additionalPoints" Label="Additional Points"/>
+                            <MudNumericField T="double?" @bind-Value="_efficiency" Label="Efficiency %"/>
+                            <MudNumericField T="double?" @bind-Value="_errorRange" Label="Error %"/>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateBurnUp">Update</MudButton>
+                        </MudStack>
+                    </MudCollapse>
                     <MudChart ChartType="ChartType.Line"
                               ChartSeries="_burnSeries"
                               XAxisLabels="_burnLabels"
@@ -184,9 +197,12 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
-            <MudPaper Class="pa-2 cursor-pointer" Style="height:100%" @onclick="ShowFlowChart">
+            <MudPaper Class="pa-2" Style="height:100%">
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">@L["Flow"]</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.h6">@L["Flow"]</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInFull" Size="Size.Small" OnClick="ShowFlowChart" title='@L["ExpandChart"]'/>
+                    </MudStack>
                     <MudChart ChartType="ChartType.StackedBar"
                               ChartSeries="_flowSeries"
                               XAxisLabels="_flowLabels"
