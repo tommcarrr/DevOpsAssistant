@@ -1,0 +1,43 @@
+@using ApexCharts
+@using DevOpsAssistant.Components.Apex
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ApexChartCard> L
+
+<MudPaper Class="pa-6" Style="height:100%">
+    <MudStack Spacing="1">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">@Title</MudText>
+            @if (OnExpand.HasDelegate)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.OpenInFull"
+                               Size="MudBlazor.Size.Small"
+                               OnClick="OnExpand"
+                               title="@ExpandTitle" />
+            }
+        </MudStack>
+        @if (AdditionalControls != null)
+        {
+            @AdditionalControls
+        }
+        <SimpleApexChart SeriesType="@SeriesType"
+                         Series="Series"
+                         Options="Options"
+                         FormatYAxisLabel="FormatYAxisLabel" />
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public SeriesType SeriesType { get; set; } = SeriesType.Line;
+    [Parameter] public List<ApexSeries> Series { get; set; } = new();
+    [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
+    [Parameter] public Func<decimal, string>? FormatYAxisLabel { get; set; }
+    [Parameter] public EventCallback OnExpand { get; set; }
+    [Parameter] public string? ExpandTitle { get; set; }
+    [Parameter] public RenderFragment? AdditionalControls { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ExpandTitle ??= L["ExpandChart"];
+    }
+}
