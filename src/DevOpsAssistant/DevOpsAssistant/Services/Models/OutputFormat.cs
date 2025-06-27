@@ -5,5 +5,6 @@ public enum OutputFormat
     Markdown,
     Pdf,
     Word,
-    Html
+    Html,
+    Inline
 }

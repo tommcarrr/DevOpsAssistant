@@ -807,7 +807,10 @@ else if (_periods.Any())
         sb.AppendLine();
         sb.AppendLine($"Data: {json}");
         sb.AppendLine();
-        sb.AppendLine($"Once you summarize the metrics, convert the output to {format} format and include it.");
+        if (format == OutputFormat.Inline)
+            sb.AppendLine("Reply inline with the final report.");
+        else
+            sb.AppendLine($"Once you summarize the metrics, convert the output to {format} format and include it.");
         return sb.ToString();
     }
 

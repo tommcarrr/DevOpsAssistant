@@ -249,7 +249,10 @@ else if (_promptParts != null)
 
         sb.AppendLine(json);
         sb.AppendLine();
-        sb.AppendLine($"After generating the notes, convert the content to {config.OutputFormat} format and include that version.");
+        if (config.OutputFormat == OutputFormat.Inline)
+            sb.AppendLine("Reply inline with the final notes.");
+        else
+            sb.AppendLine($"After generating the notes, convert the content to {config.OutputFormat} format and include that version.");
         return sb.ToString();
     }
 

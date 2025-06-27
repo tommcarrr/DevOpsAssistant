@@ -555,7 +555,10 @@ Define what success looks like — business or system-level outcomes.
             sb.AppendLine();
         }
         sb.AppendLine();
-        sb.AppendLine($"Once finished, convert the entire output to {config.OutputFormat} format and provide that version.");
+        if (config.OutputFormat == OutputFormat.Inline)
+            sb.AppendLine("Reply inline with the final requirements.");
+        else
+            sb.AppendLine($"Once finished, convert the entire output to {config.OutputFormat} format and provide that version.");
         return sb.ToString();
     }
 
