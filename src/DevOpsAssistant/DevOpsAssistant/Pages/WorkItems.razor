@@ -22,7 +22,6 @@
                     }
                 </MudSelect>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
             </MudStack>
         </MudPaper>
     </MudExpansionPanel>
@@ -300,15 +299,6 @@ else if (_roots != null)
         return false;
     }
 
-    private async Task Reset()
-    {
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
-        _issuesOnly = true;
-        _roots = null;
-        await StateService.ClearAsync(StateKey);
-        StateHasChanged();
-    }
 
     private class PageState
     {

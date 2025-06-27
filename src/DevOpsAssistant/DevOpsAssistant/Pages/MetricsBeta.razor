@@ -59,7 +59,6 @@
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudButton Variant="Variant.Filled" Color="Mud.Color.Primary" OnClick="Load">Load</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">Export CSV</MudButton>
-            <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
     </MudStack>
 </MudPaper>
@@ -849,34 +848,6 @@ else if (_periods.Any())
             TagMarksSprint = _tagMarksSprint,
             UseSprintEfficiency = _useSprintEfficiency
         });
-        StateHasChanged();
-    }
-
-    private async Task Reset()
-    {
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
-        _mode = AggregateMode.Week;
-        _velocityMode = VelocityMode.StoryPoints;
-        _startDate = DateTime.Today.AddDays(-84);
-        _endDate = DateTime.Today;
-        _additionalPoints = null;
-        _efficiency = null;
-        _errorRange = null;
-        _tag = string.Empty;
-        _tagMarksSprint = false;
-        _useSprintEfficiency = false;
-        _periods.Clear();
-        _iterations.Clear();
-        _wipSeries.Clear();
-        _sprintSeries.Clear();
-        _flowSeries.Clear();
-        _burnApex.Clear();
-        _daysMin = null;
-        _daysMax = null;
-        _dateMin = null;
-        _dateMax = null;
-        await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
 

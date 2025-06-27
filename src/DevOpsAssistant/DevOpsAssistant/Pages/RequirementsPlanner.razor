@@ -50,7 +50,6 @@
                 <MudSwitch T="bool" @bind-Value="_clarify" Color="Color.Primary" Label='@L["ClarifyLabel"]' />
             </MudTooltip>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
-            <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
         </MudStack>
     </MudStep>
     <MudStep Title="Import Response" Disabled="@string.IsNullOrWhiteSpace(_prompt)">
@@ -384,25 +383,6 @@ Define what success looks like — business or system-level outcomes.
         return Task.CompletedTask;
     }
 
-    private async Task Reset()
-    {
-        _selectedPages = null;
-        _file = null;
-        _useDocument = false;
-        _prompt = string.Empty;
-        _promptParts = null;
-        _partIndex = 0;
-        _responseText = string.Empty;
-        _plan = null;
-        _storiesOnly = false;
-        _clarify = false;
-        _previewHtml = false;
-        _feature = null;
-        if (_backlogs.Length > 0)
-            _backlog = _backlogs[0];
-        await StateService.ClearAsync(StateKey);
-        StateHasChanged();
-    }
 
     private void ImportPlan()
     {
