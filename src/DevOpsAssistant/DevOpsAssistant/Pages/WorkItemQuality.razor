@@ -75,6 +75,7 @@ else if (_promptParts != null)
 
     private async Task Generate()
     {
+        _filtersExpanded = false;
         _loading = true;
         StateHasChanged();
         try
