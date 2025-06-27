@@ -35,7 +35,7 @@
         {
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
             {
-                <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
+                <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" autocomplete="off" />
                 <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" Color="Color.Primary" />
             }
             else
@@ -48,7 +48,7 @@
             }
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
             {
-                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" />
+                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" autocomplete="off" />
                 <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" Color="Color.Primary" />
             }
             else
@@ -56,11 +56,11 @@
                 <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" Color="Color.Primary" />
                 @if (_overridePat)
                 {
-                    <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" />
+                    <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" autocomplete="off" />
                 }
             }
         }
-        <MudTextField T="string" Value="_project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true" />
+        <MudTextField T="string" Value="_project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true" autocomplete="off" />
         @if (_errors.Count > 0)
         {
             <MudAlert Severity="Severity.Error">

@@ -7,8 +7,8 @@
 <MudDialog ContentClass="pa-6" ActionsClass="pa-6">
     <DialogContent>
         <MudStack Spacing="2">
-            <MudTextField @bind-Value="_organization" Label='@L["Organization"]' />
-            <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" />
+            <MudTextField @bind-Value="_organization" Label='@L["Organization"]' autocomplete="off" />
+            <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" autocomplete="off" />
         </MudStack>
     </DialogContent>
     <DialogActions>

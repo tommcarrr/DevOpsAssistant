@@ -18,10 +18,10 @@
         <MudTabs @bind-ActivePanelIndex="_activeTab">
             <MudTabPanel Text='@L["GeneralTab"]'>
                 <MudStack Spacing="2">
-                    <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true"/>
+                    <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true" autocomplete="off"/>
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
                     {
-                        <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                        <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" autocomplete="off"/>
                         <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" Color="Color.Primary" />
                     }
                     else
@@ -29,12 +29,12 @@
                         <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" Color="Color.Primary" />
                         @if (_overrideOrg)
                         {
-                            <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true"/>
+                            <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" autocomplete="off"/>
                         }
                     }
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
                     {
-                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true"/>
+                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" autocomplete="off"/>
                         <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" Color="Color.Primary" />
                     }
                     else
@@ -42,7 +42,7 @@
                         <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" Color="Color.Primary" />
                         @if (_overridePat)
                         {
-                            <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" Immediate="true"/>
+                            <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" Immediate="true" autocomplete="off"/>
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
