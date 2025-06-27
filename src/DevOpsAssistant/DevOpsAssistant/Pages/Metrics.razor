@@ -233,6 +233,7 @@ else if (_periods.Any())
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
     private string[] _flowLabels = [];
+    private string[] _burnLabels = [];
     private List<ChartSeries> _flowSeries = [];
     private List<ChartSeries> _wipSeries = [];
     private List<ChartSeries> _sprintSeries = [];
@@ -501,9 +502,9 @@ else if (_periods.Any())
         }
 
         var avgVel = sum / Math.Max(1, daysActual);
-        var effVel = avgVel * (efficiency.Value / 100.0);
-        var minVel = effVel * (1 - _errorRange.Value / 100.0);
-        var maxVel = effVel * (1 + _errorRange.Value / 100.0);
+        var effVel = avgVel * (efficiency.GetValueOrDefault() / 100.0);
+        var minVel = effVel * (1 - (_errorRange ?? 0) / 100.0);
+        var maxVel = effVel * (1 + (_errorRange ?? 0) / 100.0);
         var finalTarget = sum + (_additionalPoints ?? 0);
         var remaining = Math.Max(0, finalTarget - sum);
         int daysMin = maxVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
@@ -511,6 +512,7 @@ else if (_periods.Any())
         int projLen = daysActual + Math.Max(daysMin, daysMax);
 
         string[] labels = new string[projLen];
+        _burnLabels = labels;
         List<ChartPoint> complete = new();
         List<ChartPoint> target = new();
         List<ChartPoint> minProj = new();
