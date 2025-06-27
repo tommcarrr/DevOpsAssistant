@@ -43,7 +43,7 @@ jobs:
           action: "upload"
           app_location: "src/DevOpsAssistant/DevOpsAssistant"
           skip_app_build: true
-          app_artifact_location: "publish/wwwroot"
+          app_artifact_location: "src/DevOpsAssistant/DevOpsAssistant/publish/wwwroot"
       - name: Export URL
         run: echo "STAGING_URL=${{ steps.staging.outputs.static_web_app_url }}" >> $GITHUB_ENV
 
