@@ -19,10 +19,10 @@
     <value>Release Notes</value>
   </data>
   <data name="Validation" xml:space="preserve">
-    <value>Story Validation</value>
+    <value>Work Item Validation</value>
   </data>
-  <data name="StoryReview" xml:space="preserve">
-    <value>Story Quality</value>
+  <data name="WorkItemQuality" xml:space="preserve">
+    <value>Work Item Quality</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Metrics</value>

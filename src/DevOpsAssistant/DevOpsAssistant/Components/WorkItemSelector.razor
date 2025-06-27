@@ -1,0 +1,218 @@
+@using DevOpsAssistant.Services.Models
+@using MudBlazor
+@inject DevOpsApiService ApiService
+
+<MudExpansionPanels>
+    <MudExpansionPanel Text="Work Item Selection" Expanded="@Expanded" ExpandedChanged="OnExpandedChanged">
+        <MudTabs>
+            <MudTabPanel Text="Backlog">
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                    <MudSelect T="string" @bind-Value="_path" Label="Backlog">
+                        @foreach (var b in _backlogs)
+                        {
+                            <MudSelectItem Value="@b">@b</MudSelectItem>
+                        }
+                    </MudSelect>
+                    @if (UseIteration)
+                    {
+                        <MudSelect T="string" @bind-Value="_iteration" Label="Iteration" Clearable="true">
+                            <MudSelectItem Value="@(null as string)">All</MudSelectItem>
+                            @foreach (var it in _iterations)
+                            {
+                                <MudSelectItem Value="@it.Path">@it.Path</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => SelectedStates = vals.ToHashSet())" Label="States">
+                        @foreach (var s in _states)
+                        {
+                            <MudSelectItem Value="@s">@s</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedTypes" SelectedValuesChanged="@(vals => SelectedTypes = vals.ToHashSet())" Label="Types">
+                        @foreach (var t in _types)
+                        {
+                            <MudSelectItem Value="@t">@t</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadList">Load</MudButton>
+                </MudStack>
+                @if (_listItems != null)
+                {
+                    <MudList T="SelectableItem" Dense="true">
+                        @foreach (var item in _listItems)
+                        {
+                            <MudListItem>
+                                <MudCheckBox T="bool" Value="@item.Selected" ValueChanged="val => { item.Selected = val; UpdateSelected(); }" />
+                                <MudText Class="ml-2">
+                                    <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
+                                </MudText>
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+            </MudTabPanel>
+            <MudTabPanel Text="Search">
+                <MudAutocomplete T="WorkItemInfo" Label="Search" SearchFunc="SearchItems" ToStringFunc="@(i => i == null ? string.Empty : $"{i.Id} - {i.Title}")" Value="_searchValue" ValueChanged="OnItemSelected" />
+                @if (_searchSelected.Any())
+                {
+                    <MudTable Items="_searchSelected" Dense="true">
+                        <HeaderContent>
+                            <MudTh>ID</MudTh>
+                            <MudTh>Title</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Id</MudTd>
+                            <MudTd DataLabel="Title">@context.Title</MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveSearch(context)" />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudTabPanel>
+            <MudTabPanel Text="Tree">
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+                    <MudSelect T="string" @bind-Value="_treePath" Label="Backlog">
+                        @foreach (var b in _backlogs)
+                        {
+                            <MudSelectItem Value="@b">@b</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadTree">Load</MudButton>
+                </MudStack>
+                @if (_treeItems != null)
+                {
+                    <MudTreeView T="WorkItemNode" Items="@_treeItems" SelectionMode="SelectionMode.MultiSelection" SelectedValues="@_selectedNodes" SelectedValuesChanged="OnTreeSelected" Class="scroll-300 work-item-tree">
+                        <ItemTemplate>
+                            <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@($"{context.Value!.Info.Id} - {context.Value!.Info.Title}")" @bind-Expanded="@context.Expanded" Class="@WorkItemHelpers.GetItemClass(context.Value!.Info.WorkItemType)" />
+                        </ItemTemplate>
+                    </MudTreeView>
+                }
+            </MudTabPanel>
+        </MudTabs>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    [Parameter] public bool Expanded { get; set; }
+    [Parameter] public EventCallback<bool> ExpandedChanged { get; set; }
+    [Parameter] public EventCallback<IReadOnlyCollection<WorkItemInfo>> SelectedChanged { get; set; }
+    [Parameter] public bool UseIteration { get; set; }
+
+    private string _path = string.Empty;
+    private string _treePath = string.Empty;
+    private string[] _backlogs = [];
+    private string[] _states = [];
+    private readonly string[] _types = ["Epic", "Feature", "User Story", "Bug"];
+    private HashSet<string> SelectedStates { get; set; } = new();
+    private HashSet<string> SelectedTypes { get; set; } = new();
+    private string? _iteration;
+    private List<IterationInfo> _iterations = new();
+
+    private List<SelectableItem>? _listItems;
+    private WorkItemInfo? _searchValue;
+    private readonly HashSet<WorkItemInfo> _searchSelected = [];
+    private List<TreeItemData<WorkItemNode>>? _treeItems;
+    private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _backlogs = await ApiService.GetBacklogsAsync();
+        if (_backlogs.Length > 0)
+        {
+            _path = _backlogs[0];
+            _treePath = _backlogs[0];
+        }
+        _states = await ApiService.GetStatesAsync();
+        SelectedStates = _states.Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) || s.Equals("Active", StringComparison.OrdinalIgnoreCase)).ToHashSet();
+        SelectedTypes = _types.ToHashSet();
+        if (UseIteration)
+            _iterations = await ApiService.GetIterationsAsync();
+    }
+
+    private async Task<IEnumerable<WorkItemInfo>> SearchItems(string value, CancellationToken _)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Array.Empty<WorkItemInfo>();
+        var result = await ApiService.SearchReleaseItemsAsync(value);
+        return result.Where(r => !_searchSelected.Contains(r));
+    }
+
+    private void OnItemSelected(WorkItemInfo? item)
+    {
+        if (item != null)
+            _searchSelected.Add(item);
+        _searchValue = null;
+        UpdateSelected();
+    }
+
+    private void RemoveSearch(WorkItemInfo info)
+    {
+        _searchSelected.Remove(info);
+        UpdateSelected();
+    }
+
+    private async Task LoadList()
+    {
+        var items = await ApiService.GetWorkItemInfosAsync(_path, SelectedStates, SelectedTypes, _iteration);
+        _listItems = items.Select(i => new SelectableItem(i, true)).ToList();
+        UpdateSelected();
+    }
+
+    private async Task LoadTree()
+    {
+        var roots = await ApiService.GetWorkItemHierarchyAsync(_treePath);
+        _treeItems = roots.Select(BuildTreeItem).ToList();
+    }
+
+    private static TreeItemData<WorkItemNode> BuildTreeItem(WorkItemNode node)
+    {
+        var item = new TreeItemData<WorkItemNode>
+        {
+            Value = node,
+            Text = $"{node.Info.Id} - {node.Info.Title}"
+        };
+        if (node.Children.Count > 0)
+            item.Children = node.Children.Select(BuildTreeItem).ToList();
+        return item;
+    }
+
+    private Task OnTreeSelected(IReadOnlyCollection<WorkItemNode> nodes)
+    {
+        _selectedNodes = nodes;
+        UpdateSelected();
+        return Task.CompletedTask;
+    }
+
+    private async void UpdateSelected()
+    {
+        HashSet<WorkItemInfo> set = new(_searchSelected);
+        if (_listItems != null)
+            foreach (var li in _listItems.Where(l => l.Selected))
+                set.Add(li.Info);
+        if (_selectedNodes != null)
+            foreach (var n in _selectedNodes)
+                set.Add(n.Info);
+        await SelectedChanged.InvokeAsync(set.ToList());
+    }
+
+    private Task OnExpandedChanged(bool value)
+    {
+        Expanded = value;
+        return ExpandedChanged.InvokeAsync(value);
+    }
+
+    private class SelectableItem
+    {
+        public WorkItemInfo Info { get; init; } = new();
+        public bool Selected { get; set; }
+
+        public SelectableItem(WorkItemInfo info, bool selected)
+        {
+            Info = info;
+            Selected = selected;
+        }
+    }
+}

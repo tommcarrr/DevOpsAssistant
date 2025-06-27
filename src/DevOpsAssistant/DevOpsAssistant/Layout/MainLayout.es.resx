@@ -19,10 +19,10 @@
     <value>Notas de lanzamiento</value>
   </data>
   <data name="Validation" xml:space="preserve">
-    <value>Validación de historias</value>
+    <value>Validación de elementos de trabajo</value>
   </data>
-  <data name="StoryReview" xml:space="preserve">
-    <value>Calidad de la historia</value>
+  <data name="WorkItemQuality" xml:space="preserve">
+    <value>Calidad de elemento de trabajo</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Métricas</value>

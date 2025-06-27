@@ -44,7 +44,7 @@ public class UiTests
     [InlineData("/projects/Proj/metrics", "weekly throughput")]
     [InlineData("/projects/Proj/release-notes", "release notes")]
     [InlineData("/projects/Proj/requirements-planner", "break requirements")]
-    [InlineData("/projects/Proj/story-review", "reviewing user stories")]
+    [InlineData("/projects/Proj/work-item-quality", "reviewing user stories")]
     [InlineData("/projects/Proj/validation", "validate work items")]
     [InlineData("/projects/Proj/epics-features", "epics and features")]
     [InlineData("/help", "Help & Instructions")]

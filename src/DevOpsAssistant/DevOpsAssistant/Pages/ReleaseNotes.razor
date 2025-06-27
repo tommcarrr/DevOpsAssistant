@@ -21,64 +21,11 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudExpansionPanels>
-    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => OnFilterPanelChanged(v))">
-        <MudPaper>
-            <MudStack Spacing="2">
-                <MudSwitch T="bool" Value="_treeView" ValueChanged="OnTreeViewChanged" Color="Color.Primary" Label="Tree View" />
-                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                    @if (_treeView)
-                    {
-                        <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-                            @foreach (var b in _backlogs)
-                            {
-                                <MudSelectItem Value="@b">@b</MudSelectItem>
-                            }
-                        </MudSelect>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Load">Load</MudButton>
-                    }
-                    else
-                    {
-                        <MudAutocomplete T="WorkItemInfo"
-                                         Label="Work Items"
-                                         Placeholder="@L["AutocompletePlaceholder"]"
-                                         SearchFunc="SearchItems"
-                                         ToStringFunc="@(s => $"{s.Id} - {s.Title}")"
-                                         Value="_searchValue"
-                                         ValueChanged="OnItemSelected" />
-                    }
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="Generate">Generate Prompt</MudButton>
-                    <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-                </MudStack>
-            </MudStack>
-        </MudPaper>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" SelectedChanged="OnWorkItemsSelected" />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading || !_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
+<MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
 
-@if (_treeView)
-{
-    <MudTextField T="string" Label="Filter" Value="_filter" Immediate="true" ValueChanged="OnFilterChanged" Class="mb-2" />
-}
-
-@if (_treeView && _displayTreeItems != null)
-{
-    <MudTreeView T="WorkItemNode"
-                 Items="@_displayTreeItems"
-                 SelectionMode="SelectionMode.MultiSelection"
-                 SelectedValues="@_selectedNodes"
-                 SelectedValuesChanged="OnNodesSelected"
-                 Class="scroll-300 work-item-tree">
-        <ItemTemplate>
-            <MudTreeViewItem Items="@context.Children"
-                             Value="@context.Value"
-                             Text="@($"{context.Value!.Info.Id} - {context.Value!.Info.Title}")"
-                             Class="@WorkItemHelpers.GetItemClass(context.Value!.Info.WorkItemType)"
-                             @bind-Expanded="@context.Expanded" />
-        </ItemTemplate>
-    </MudTreeView>
-}
-
-@if (_selectedItems.Any() && !_treeView)
+@if (_selectedItems.Any())
 {
     <MudTable Items="_selectedItems" Dense="true">
         <HeaderContent>
@@ -93,7 +40,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
                                Size="Size.Small"
-                               OnClick="() => Remove(context)"/>
+                               OnClick="() => RemoveSelected(context)"/>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -138,19 +85,11 @@ else if (_promptParts != null)
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
     private readonly HashSet<WorkItemInfo> _selectedItems = [];
-    private WorkItemInfo? _searchValue;
     private bool _loading;
     private string? _prompt;
     private List<string>? _promptParts;
     private int _partIndex;
     private string? _error;
-    private string _path = string.Empty;
-    private string[] _backlogs = [];
-    private List<TreeItemData<WorkItemNode>>? _treeItems;
-    private List<TreeItemData<WorkItemNode>>? _displayTreeItems;
-    private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
-    private bool _treeView;
-    private string _filter = string.Empty;
     private bool _filtersExpanded = true;
     private const string StateKey = "release-notes";
 
@@ -162,163 +101,7 @@ else if (_promptParts != null)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
         }
-        var state = await StateService.LoadAsync<PageState>(StateKey);
-        if (state != null)
-        {
-            if (!string.IsNullOrWhiteSpace(state.Path))
-                _path = state.Path;
-            _treeView = state.TreeView;
-        }
-        if (_treeView)
-        {
-            await LoadBacklogs();
-        }
-    }
-
-    private async Task LoadBacklogs()
-    {
-        try
-        {
-            _backlogs = await ApiService.GetBacklogsAsync();
-            if (_backlogs.Length > 0 && string.IsNullOrWhiteSpace(_path))
-                _path = _backlogs[0];
-            _error = null;
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-        }
-    }
-
-    private async Task OnTreeViewChanged(bool value)
-    {
-        _treeView = value;
-        if (_treeView && _backlogs.Length == 0)
-        {
-            await LoadBacklogs();
-        }
-        await StateService.SaveAsync(StateKey, new PageState { Path = _path, TreeView = _treeView });
-    }
-
-    private async Task Load()
-    {
-        _loading = true;
-        StateHasChanged();
-        try
-        {
-            var roots = await ApiService.GetWorkItemHierarchyAsync(_path);
-            _treeItems = roots.Select(BuildTreeItem).ToList();
-            ApplyFilter();
-            await StateService.SaveAsync(StateKey, new PageState { Path = _path, TreeView = _treeView });
-            _error = null;
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private Task OnNodesSelected(IReadOnlyCollection<WorkItemNode> nodes)
-    {
-        _selectedNodes = nodes;
-        _selectedItems.Clear();
-        foreach (var n in nodes)
-            _selectedItems.Add(n.Info);
-        return Task.CompletedTask;
-    }
-
-    private async Task<IEnumerable<WorkItemInfo>> SearchItems(string value, CancellationToken _)
-    {
-        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
-            return Array.Empty<WorkItemInfo>();
-        try
-        {
-            var result = await ApiService.SearchReleaseItemsAsync(value);
-            _error = null;
-            return result.Where(r => !_selectedItems.Contains(r));
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-            return Array.Empty<WorkItemInfo>();
-        }
-    }
-
-    private void OnItemSelected(WorkItemInfo? item)
-    {
-        if (item != null)
-            _selectedItems.Add(item);
-        _searchValue = null;
-        StateHasChanged();
-    }
-
-    private void Remove(WorkItemInfo story)
-    {
-        _selectedItems.Remove(story);
-        StateHasChanged();
-    }
-
-    private void OnFilterPanelChanged(bool expanded)
-    {
-        _filtersExpanded = expanded;
-    }
-
-    private void OnFilterChanged(string value)
-    {
-        _filter = value;
-        ApplyFilter();
-    }
-
-    private void ApplyFilter()
-    {
-        if (_treeItems == null)
-        {
-            _displayTreeItems = null;
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(_filter))
-        {
-            _displayTreeItems = _treeItems;
-            return;
-        }
-
-        _displayTreeItems = _treeItems
-            .Select(i => FilterNode(i, _filter))
-            .Where(i => i != null)
-            .ToList()!;
-    }
-
-    private static TreeItemData<WorkItemNode>? FilterNode(TreeItemData<WorkItemNode> item, string filter)
-    {
-        var match = item.Value!.Info.Id.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                    item.Value.Info.Title.Contains(filter, StringComparison.OrdinalIgnoreCase);
-        List<TreeItemData<WorkItemNode>>? children = null;
-        if (item.Children != null)
-        {
-            children = item.Children
-                .Select(c => FilterNode(c, filter))
-                .Where(c => c != null)
-                .ToList()!;
-        }
-
-        if (match || (children != null && children.Count > 0))
-        {
-            var copy = new TreeItemData<WorkItemNode>
-            {
-                Value = item.Value,
-                Text = item.Text,
-                Children = children
-            };
-            if (!string.IsNullOrWhiteSpace(filter) && children != null && children.Count > 0)
-                copy.Expanded = true;
-            return copy;
-        }
-        return null;
+        await StateService.LoadAsync<object>(StateKey);
     }
 
     private async Task Generate()
@@ -346,17 +129,6 @@ else if (_promptParts != null)
         }
     }
 
-    private static TreeItemData<WorkItemNode> BuildTreeItem(WorkItemNode node)
-    {
-        var item = new TreeItemData<WorkItemNode>
-        {
-            Value = node,
-            Text = $"{node.Info.Id} - {node.Info.Title}"
-        };
-        if (node.Children.Count > 0)
-            item.Children = node.Children.Select(BuildTreeItem).ToList();
-        return item;
-    }
 
     private async Task CopyPrompt()
     {
@@ -393,13 +165,7 @@ else if (_promptParts != null)
 
     private async Task Reset()
     {
-        if (_treeView && _backlogs.Length > 0)
-            _path = _backlogs[0];
         _selectedItems.Clear();
-        _treeItems = null;
-        _displayTreeItems = null;
-        _selectedNodes = null;
-        _filter = string.Empty;
         _filtersExpanded = true;
         _prompt = null;
         _promptParts = null;
@@ -408,11 +174,20 @@ else if (_promptParts != null)
         StateHasChanged();
     }
 
-    private class PageState
+    private void RemoveSelected(WorkItemInfo item)
     {
-        public string Path { get; set; } = string.Empty;
-        public bool TreeView { get; set; }
+        _selectedItems.Remove(item);
+        StateHasChanged();
     }
+
+    private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
+    {
+        _selectedItems.Clear();
+        foreach (var i in items)
+            _selectedItems.Add(i);
+        return Task.CompletedTask;
+    }
+
 
     private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)
     {

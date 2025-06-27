@@ -40,34 +40,9 @@
     </MudCollapse>
 }
 
-<MudExpansionPanels>
-    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
-        <MudPaper>
-            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-                    @foreach (var b in _backlogs)
-                    {
-                        <MudSelectItem Value="@b">@b</MudSelectItem>
-                    }
-                </MudSelect>
-        <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => OnStatesChanged(vals))" Label="States">
-            @foreach (var s in _states)
-            {
-                <MudSelectItem Value="@s">@s</MudSelectItem>
-            }
-        </MudSelect>
-        <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedTypes" SelectedValuesChanged="@(vals => OnTypesChanged(vals))" Label="Types">
-            @foreach (var t in _types)
-            {
-                <MudSelectItem Value="@t">@t</MudSelectItem>
-            }
-        </MudSelect>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules">Check</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-            </MudStack>
-        </MudPaper>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" SelectedChanged="OnWorkItemsSelected" />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
+<MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
 
 @if (_loading)
 {
@@ -118,12 +93,7 @@ else if (_results != null)
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
-    private string _path = string.Empty;
-    private string[] _backlogs = [];
-    private string[] _states = [];
-    private readonly string[] _types = ["Epic", "Feature", "User Story", "Bug"];
-    private HashSet<string> SelectedStates { get; set; } = new();
-    private HashSet<string> SelectedTypes { get; set; } = new();
+    private readonly HashSet<WorkItemInfo> _selectedItems = [];
     private bool _loading;
     private bool _hasRules;
     private string[] _activeRules = [];
@@ -143,25 +113,7 @@ else if (_results != null)
         }
         try
         {
-            _backlogs = await ApiService.GetBacklogsAsync();
-            if (_backlogs.Length > 0)
-                _path = _backlogs[0];
             var state = await StateService.LoadAsync<PageState>(StateKey);
-            if (state != null)
-            {
-                if (!string.IsNullOrWhiteSpace(state.Path))
-                    _path = state.Path;
-            }
-            _states = await ApiService.GetStatesAsync();
-            SelectedStates = _states
-                .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                            s.Equals("Active", StringComparison.OrdinalIgnoreCase))
-                .ToHashSet();
-            if (state?.States != null)
-                SelectedStates = state.States.ToHashSet();
-            SelectedTypes = _types.ToHashSet();
-            if (state?.Types != null)
-                SelectedTypes = state.Types.ToHashSet();
             _error = null;
         }
         catch (Exception ex)
@@ -179,14 +131,9 @@ else if (_results != null)
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetValidationItemsAsync(_path, SelectedStates, SelectedTypes);
-            _results = Validate(items);
-            await StateService.SaveAsync(StateKey, new PageState
-            {
-                Path = _path,
-                States = SelectedStates.ToArray(),
-                Types = SelectedTypes.ToArray()
-            });
+            var details = await ApiService.GetWorkItemDetailsAsync(_selectedItems.Select(i => i.Id));
+            _results = Validate(details);
+            await StateService.SaveAsync(StateKey, new PageState());
             _error = null;
         }
         catch (Exception ex)
@@ -242,17 +189,6 @@ else if (_results != null)
         return list;
     }
 
-    private Task OnStatesChanged(IEnumerable<string> values)
-    {
-        SelectedStates = new HashSet<string>(values);
-        return Task.CompletedTask;
-    }
-
-    private Task OnTypesChanged(IEnumerable<string> values)
-    {
-        SelectedTypes = new HashSet<string>(values);
-        return Task.CompletedTask;
-    }
 
     private void ComputeRules()
     {
@@ -326,16 +262,18 @@ else if (_results != null)
 
     private async Task Reset()
     {
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
-        SelectedStates = _states
-            .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                        s.Equals("Active", StringComparison.OrdinalIgnoreCase))
-            .ToHashSet();
-        SelectedTypes = _types.ToHashSet();
+        _selectedItems.Clear();
         _results = null;
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
+    }
+
+    private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
+    {
+        _selectedItems.Clear();
+        foreach (var i in items)
+            _selectedItems.Add(i);
+        return Task.CompletedTask;
     }
 
     private class ResultItem
