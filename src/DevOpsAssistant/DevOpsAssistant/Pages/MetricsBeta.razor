@@ -42,6 +42,7 @@
                 <MudSelectItem Value="AggregateMode.Iteration">Iteration</MudSelectItem>
             </MudSelect>
             <MudDatePicker @bind-Date="_startDate" Label="Start Date"/>
+            <MudDatePicker @bind-Date="_endDate" Label="End Date" MaxDate="@DateTime.Today"/>
             <MudTooltip Text='@L["VelocityTooltip"]'>
                 <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="Velocity By">
                     <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
@@ -102,7 +103,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_leadCycleExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleLeadCycle" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_leadCycleExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_barExpanded ? 12 : 6)">
@@ -112,7 +113,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_barExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleBar" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_barExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_wipExpanded ? 12 : 6)">
@@ -122,7 +123,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_wipExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleWip" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_wipExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_sprintExpanded ? 12 : 6)">
@@ -132,7 +133,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_sprintExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleSprint" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_sprintExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_burnExpanded ? 12 : 6)">
@@ -187,7 +188,7 @@ else if (_periods.Any())
                         </MudItem>
                     </MudGrid>
                 </MudCollapse>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_burnExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_flowExpanded ? 12 : 6)">
@@ -197,7 +198,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_flowExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleFlow" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatValue" />
+                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_flowExpanded)" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -218,6 +219,7 @@ else if (_periods.Any())
     private AggregateMode _mode = AggregateMode.Week;
     private VelocityMode _velocityMode = VelocityMode.StoryPoints;
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
+    private DateTime? _endDate = DateTime.Today;
     private List<PeriodMetrics> _periods = new();
     private List<IterationInfo> _iterations = new();
     private List<StoryMetric> _items = new();
@@ -281,7 +283,6 @@ else if (_periods.Any())
     private List<ChartSeries> _leadCycleSeries = [];
     private List<ChartSeries> _barSeries = [];
     private string[] _burnLabels = [];
-    private List<ChartSeries> _burnSeries = [];
     private string[] _flowLabels = [];
     private List<ChartSeries> _flowSeries = [];
     private List<ChartSeries> _wipSeries = [];
@@ -333,6 +334,7 @@ else if (_periods.Any())
                 _mode = state.Mode;
                 _velocityMode = state.VelocityMode;
                 _startDate = state.StartDate;
+                _endDate = state.EndDate ?? DateTime.Today;
                 _additionalPoints = state.AdditionalPoints > 0 ? state.AdditionalPoints : null;
                 _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
                 _errorRange = state.Error > 0 ? state.Error : null;
@@ -356,19 +358,21 @@ else if (_periods.Any())
         try
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
-            _items = items;
+            var endDate = _endDate ?? DateTime.Today;
+            _items = items.Where(i => i.ClosedDate.Date <= endDate).ToList();
             _iterations = _mode == AggregateMode.Iteration
                 ? await ApiService.GetIterationsAsync()
                 : [];
-            ComputePeriods(items, _iterations);
-            ComputeBurnUp(items);
-            ComputeFlow(items);
+            ComputePeriods(_items, _iterations);
+            ComputeBurnUp(_items);
+            ComputeFlow(_items);
             await StateService.SaveAsync(StateKey, new PageState
             {
                 Path = _path,
                 Mode = _mode,
                 VelocityMode = _velocityMode,
                 StartDate = _startDate,
+                EndDate = _endDate,
                 AdditionalPoints = _additionalPoints ?? 0,
                 Efficiency = _efficiency ?? 0,
                 Error = _errorRange ?? 0,
@@ -394,12 +398,13 @@ else if (_periods.Any())
         _wipSeries.Clear();
         _sprintSeries.Clear();
         var startDate = _startDate ?? DateTime.Today.AddDays(-84);
+        var endDate = _endDate ?? DateTime.Today;
 
         if (_mode == AggregateMode.Iteration && iterations != null)
         {
-            foreach (var it in iterations.Where(i => i.EndDate >= startDate))
+            foreach (var it in iterations.Where(i => i.EndDate >= startDate && i.EndDate <= endDate))
             {
-                var rangeItems = items.Where(x => x.ClosedDate >= it.StartDate && x.ClosedDate <= it.EndDate).ToList();
+                var rangeItems = items.Where(x => x.ClosedDate >= it.StartDate && x.ClosedDate <= it.EndDate && x.ClosedDate <= endDate).ToList();
                 var metrics = new PeriodMetrics
                 {
                     Name = it.Name,
@@ -440,7 +445,7 @@ else if (_periods.Any())
             DateTime start = _mode == AggregateMode.Month
                 ? new DateTime(startDate.Year, startDate.Month, 1)
                 : StartOfWeek(startDate);
-            var endBoundary = DateTime.Today;
+            var endBoundary = endDate;
             while (start <= endBoundary)
             {
                 DateTime next = _mode switch
@@ -449,7 +454,7 @@ else if (_periods.Any())
                     AggregateMode.Fortnight => start.AddDays(14),
                     _ => start.AddMonths(1)
                 };
-                var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next).ToList();
+                var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next && x.ClosedDate <= endDate).ToList();
                 var metrics = new PeriodMetrics
                 {
                     Start = start,
@@ -521,7 +526,7 @@ else if (_periods.Any())
 
     private void ComputeBurnUp(List<StoryMetric> items)
     {
-        _burnSeries.Clear();
+        _burnApex.Clear();
         var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_tag)
             ? ComputeOverallSprintEfficiency(items)
             : _efficiency;
@@ -532,9 +537,9 @@ else if (_periods.Any())
         }
 
         var start = items.Min(i => i.ClosedDate).Date;
-        var end = DateTime.Today;
-        var days = (end - start).Days + 1;
-        double[] daily = new double[days];
+        var end = _endDate ?? DateTime.Today;
+        var daysActual = (end - start).Days + 1;
+        double[] daily = new double[daysActual];
         foreach (var it in items)
         {
             if (it.ClosedDate.Date < start || it.ClosedDate.Date > end) continue;
@@ -543,15 +548,15 @@ else if (_periods.Any())
             daily[idx] += val;
         }
 
-        double[] done = new double[days];
+        double[] doneActual = new double[daysActual];
         double sum = 0;
-        for (int i = 0; i < days; i++)
+        for (int i = 0; i < daysActual; i++)
         {
             sum += daily[i];
-            done[i] = sum;
+            doneActual[i] = sum;
         }
 
-        var avgVel = sum / Math.Max(1, days);
+        var avgVel = sum / Math.Max(1, daysActual);
         var effVel = avgVel * (efficiency.Value / 100.0);
         var minVel = effVel * (1 - _errorRange.Value / 100.0);
         var maxVel = effVel * (1 + _errorRange.Value / 100.0);
@@ -559,31 +564,46 @@ else if (_periods.Any())
         var remaining = Math.Max(0, finalTarget - sum);
         int daysMin = maxVel > 0 ? (int)Math.Ceiling(remaining / maxVel) : 0;
         int daysMax = minVel > 0 ? (int)Math.Ceiling(remaining / minVel) : 0;
-        int projLen = days + Math.Max(daysMin, daysMax);
-        Array.Resize(ref done, projLen);
-        double[] target = Enumerable.Repeat(finalTarget, projLen).ToArray();
-        double[] minProj = new double[projLen];
-        double[] maxProj = new double[projLen];
-        for (int i = days; i < projLen; i++)
+        int projLen = daysActual + Math.Max(daysMin, daysMax);
+
+        string[] labels = new string[projLen];
+        List<ChartPoint> complete = new();
+        List<ChartPoint> target = new();
+        List<ChartPoint> minProj = new();
+        List<ChartPoint> maxProj = new();
+
+        for (int i = 0; i < projLen; i++)
         {
-            var d = i - days + 1;
-            minProj[i] = Math.Min(sum + d * minVel, finalTarget);
-            maxProj[i] = Math.Min(sum + d * maxVel, finalTarget);
-            done[i] = sum;
+            var date = start.AddDays(i);
+            labels[i] = date.ToLocalDateString();
+            if (i < daysActual)
+            {
+                complete.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(doneActual[i], 2) });
+                minProj.Add(new ChartPoint { Label = labels[i], Value = null });
+                maxProj.Add(new ChartPoint { Label = labels[i], Value = null });
+            }
+            else
+            {
+                complete.Add(new ChartPoint { Label = labels[i], Value = null });
+                var d = i - daysActual + 1;
+                var minVal = Math.Min(sum + d * minVel, finalTarget);
+                var maxVal = Math.Min(sum + d * maxVel, finalTarget);
+                minProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(minVal, 2) });
+                maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(maxVal, 2) });
+            }
+            target.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(finalTarget, 2) });
         }
 
-        _burnLabels = Enumerable.Range(0, projLen)
-            .Select(i => start.AddDays(i).ToLocalDateString())
-            .ToArray();
-        _burnSeries = new List<ChartSeries>
+        _burnLabels = labels;
+        _burnApex = new List<ApexSeries>
         {
-            new ChartSeries { Name = "Complete", Data = done },
-            new ChartSeries { Name = "Target", Data = target }
+            new ApexSeries { Name = "Complete", Points = complete },
+            new ApexSeries { Name = "Target", Points = target }
         };
         if (remaining > 0)
         {
-            _burnSeries.Add(new ChartSeries { Name = "Projection Min", Data = minProj });
-            _burnSeries.Add(new ChartSeries { Name = "Projection Max", Data = maxProj });
+            _burnApex.Add(new ApexSeries { Name = "Projection Min", Points = minProj });
+            _burnApex.Add(new ApexSeries { Name = "Projection Max", Points = maxProj });
             _daysMin = daysMin;
             _daysMax = daysMax;
             _dateMin = end.AddDays(daysMin);
@@ -596,8 +616,6 @@ else if (_periods.Any())
             _dateMin = null;
             _dateMax = null;
         }
-
-        _burnApex = ToApexSeries(_burnSeries, _burnLabels);
     }
 
     private void ComputeFlow(List<StoryMetric> items)
@@ -841,6 +859,7 @@ else if (_periods.Any())
         _mode = AggregateMode.Week;
         _velocityMode = VelocityMode.StoryPoints;
         _startDate = DateTime.Today.AddDays(-84);
+        _endDate = DateTime.Today;
         _additionalPoints = null;
         _efficiency = null;
         _errorRange = null;
@@ -849,10 +868,10 @@ else if (_periods.Any())
         _useSprintEfficiency = false;
         _periods.Clear();
         _iterations.Clear();
-        _burnSeries.Clear();
         _wipSeries.Clear();
         _sprintSeries.Clear();
         _flowSeries.Clear();
+        _burnApex.Clear();
         _daysMin = null;
         _daysMax = null;
         _dateMin = null;
@@ -867,6 +886,8 @@ else if (_periods.Any())
     private void ToggleSprint() => _sprintExpanded = !_sprintExpanded;
     private void ToggleBurn() => _burnExpanded = !_burnExpanded;
     private void ToggleFlow() => _flowExpanded = !_flowExpanded;
+
+    private static int ChartHeight(bool expanded) => expanded ? 600 : 300;
 
     private Task<IEnumerable<string>> SearchTags(string value, CancellationToken _)
     {
@@ -902,6 +923,7 @@ else if (_periods.Any())
         public AggregateMode Mode { get; set; }
         public VelocityMode VelocityMode { get; set; }
         public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public double AdditionalPoints { get; set; }
         public double Efficiency { get; set; }
         public double Error { get; set; }

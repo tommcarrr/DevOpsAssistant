@@ -3,7 +3,7 @@
 
 <ApexChart TItem="ChartPoint"
            Options="Options"
-           Height="300"
+           Height="@Height"
            FormatYAxisLabel="FormatYAxisLabel">
 @foreach (var series in Series)
 {
@@ -21,4 +21,5 @@
     [Parameter] public SeriesType SeriesType { get; set; } = SeriesType.Line;
     [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
     [Parameter] public Func<decimal, string>? FormatYAxisLabel { get; set; }
+    [Parameter] public int Height { get; set; } = 300;
 }
