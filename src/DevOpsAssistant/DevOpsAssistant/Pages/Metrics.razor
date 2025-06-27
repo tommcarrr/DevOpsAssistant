@@ -50,8 +50,8 @@
         <MudText Typo="Typo.h6">@L["SprintEfficiencyOptionsHeading"]</MudText>
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudAutocomplete T="string" Label="@L["NonSprintTag"]" @bind-Value="_tag" SearchFunc="SearchTags"/>
-            <MudSwitch T="bool" @bind-Value="_tagMarksSprint" Label="@L["TagMarksSprint"]" Disabled="string.IsNullOrWhiteSpace(_tag)"/>
-            <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_tag)"/>
+            <MudSwitch T="bool" @bind-Value="_tagMarksSprint" Label="@L["TagMarksSprint"]" Disabled="string.IsNullOrWhiteSpace(_tag)" Color="Color.Primary" />
+            <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_tag)" Color="Color.Primary" />
         </MudStack>
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load">Load</MudButton>

@@ -6,7 +6,7 @@ namespace DevOpsAssistant.Tests.Pages;
 
 public class WorkItemQualityPageTests : ComponentTestBase
 {
-    [Fact(Skip="Updated")]
+    [Fact(Skip = "Updated")]
     public void WorkItemQuality_Renders_With_PopoverProvider()
     {
         SetupServices(includeApi: true);

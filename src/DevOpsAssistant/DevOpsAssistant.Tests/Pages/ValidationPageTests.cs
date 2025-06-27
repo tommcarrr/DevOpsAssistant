@@ -15,7 +15,7 @@ namespace DevOpsAssistant.Tests.Pages;
 
 public class ValidationPageTests : ComponentTestBase
 {
-    [Fact(Skip="Updated")]
+    [Fact(Skip = "Updated")]
     public void Validation_Renders_With_PopoverProvider()
     {
         SetupServices(includeApi: true);
@@ -24,7 +24,7 @@ public class ValidationPageTests : ComponentTestBase
         Assert.Null(exception);
     }
 
-    [Fact(Skip="Updated")]
+    [Fact(Skip = "Updated")]
     public void Results_Show_State_When_Set()
     {
         SetupServices(includeApi: true);
@@ -52,7 +52,7 @@ public class ValidationPageTests : ComponentTestBase
         Assert.Contains("Active", cut.Markup);
     }
 
-    [Fact(Skip="Updated")]
+    [Fact(Skip = "Updated")]
     public async Task Rules_Are_Collapsed_By_Default()
     {
         var config = SetupServices(includeApi: true);
@@ -73,7 +73,7 @@ public class ValidationPageTests : ComponentTestBase
         cut.WaitForAssertion(() => Assert.True((bool)expandedField.GetValue(cut.Instance)!));
     }
 
-    [Fact(Skip="Updated")]
+    [Fact(Skip = "Updated")]
     public async Task OnInitialized_Loads_Types_From_State()
     {
         var config = SetupServices(includeApi: true);

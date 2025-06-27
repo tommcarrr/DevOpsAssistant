@@ -43,7 +43,7 @@
                         @foreach (var item in _listItems)
                         {
                             <MudListItem>
-                                <MudCheckBox T="bool" Value="@item.Selected" ValueChanged="val => { item.Selected = val; UpdateSelected(); }" />
+                                <MudCheckBox T="bool" Value="@item.Selected" ValueChanged="val => { item.Selected = val; UpdateSelected(); }" Color="Color.Primary" />
                                 <MudText Class="ml-2">
                                     <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
                                 </MudText>
