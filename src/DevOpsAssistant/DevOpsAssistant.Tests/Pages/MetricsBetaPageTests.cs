@@ -72,6 +72,49 @@ public class MetricsBetaPageTests : ComponentTestBase
         Assert.Contains("\"sprintEfficiency\":80", prompt);
     }
 
+    [Fact]
+    public void ComputeBurnUp_DoesNot_Aggregate_Labels()
+    {
+        SetupServices();
+
+        var metrics = new TestMetricsBeta();
+        var type = typeof(MetricsBeta);
+        type.GetField("_additionalPoints", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        type.GetField("_efficiency", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)80);
+        type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var labelsField = type.GetField("_burnLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var labels = (string[])labelsField.GetValue(metrics)!;
+        Assert.All(labels, l => Assert.False(string.IsNullOrEmpty(l)));
+    }
+
+    [Fact]
+    public void ComputeFlow_DoesNot_Aggregate_Labels()
+    {
+        SetupServices();
+
+        var metrics = new TestMetricsBeta();
+        var type = typeof(MetricsBeta);
+        var compute = type.GetMethod("ComputeFlow", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var labelsField = type.GetField("_flowLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1) },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var labels = (string[])labelsField.GetValue(metrics)!;
+        Assert.All(labels, l => Assert.False(string.IsNullOrEmpty(l)));
+    }
+
 
     private class TestMetricsBeta : MetricsBeta
     {
