@@ -221,7 +221,7 @@
                 await ConfigService.SaveGlobalPatAsync(_patToken);
         }
 
-        NavigationManager.NavigateTo($"/projects/{_project}/settings", forceLoad: true);
+        NavigationManager.NavigateTo($"/projects/{_project}/settings");
     }
 
     private void Back()

@@ -39,20 +39,22 @@
 
         if (!anyProjects)
         {
-            NavigationManager.NavigateTo("/projects/new", true);
+            NavigationManager.NavigateTo("/projects/new");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(ProjectName))
         {
-            NavigationManager.NavigateTo("/projects", true);
+            if (!string.IsNullOrWhiteSpace(ConfigService.CurrentProject.Name))
+                NavigationManager.NavigateTo($"/projects/{ConfigService.CurrentProject.Name}");
+            else
+                NavigationManager.NavigateTo("/projects");
             return;
         }
 
         if (ConfigService.CurrentProject.Name != ProjectName)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
-            NavigationManager.NavigateTo(NavigationManager.Uri.Replace($"/projects/{ProjectName}", "/"), forceLoad: true);
         }
     }
 }

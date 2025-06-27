@@ -100,6 +100,13 @@ public class MainLayoutTests : ComponentTestBase
         await config.AddProjectAsync("One");
         await config.AddProjectAsync("Two");
         await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
+        await config.SelectProjectAsync("One");
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
         var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
@@ -116,6 +123,7 @@ public class MainLayoutTests : ComponentTestBase
         var config = SetupServices();
         await config.AddProjectAsync("One");
         await config.AddProjectAsync("Two");
+        await config.SelectProjectAsync("One");
 
         var nav = Services.GetRequiredService<NavigationManager>() as FakeNavigationManager;
         nav!.NavigateTo("projects/new");
