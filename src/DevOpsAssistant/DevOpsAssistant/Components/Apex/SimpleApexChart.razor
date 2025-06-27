@@ -2,12 +2,12 @@
 @using DevOpsAssistant.Components.Apex
 @using DevOpsAssistant.Services
 
-<ApexChart TItem="ChartPoint"
-           Options="Options"
-           Height="@Height"
-           FormatYAxisLabel="FormatYAxisLabel"
-           Class="@Class"
-           @attributes="UserAttributes">
+<div class="@Class">
+    <ApexChart TItem="ChartPoint"
+               Options="Options"
+               Height="@Height"
+               FormatYAxisLabel="FormatYAxisLabel"
+               @attributes="UserAttributes">
 @foreach (var series in Series)
 {
     <ApexPointSeries TItem="ChartPoint"
@@ -17,7 +17,8 @@
                      XValue="p => p.Label"
                      YValue="p => p.Value" />
 }
-</ApexChart>
+    </ApexChart>
+</div>
 
 @code {
     [Inject] DevOpsConfigService ConfigService { get; set; } = default!;
