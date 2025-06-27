@@ -14,8 +14,9 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.16" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.16" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" Version="8.7.0" />
+        <PackageReference Include="Blazor-ApexCharts" Version="2.0.0" />
         <PackageReference Include="PdfPig" Version="0.1.10" />
-</ItemGroup>
+    </ItemGroup>
 
   <ItemGroup Condition="'$(IncludeMockData)' == 'true'">
     <Content Include="wwwroot/mock-data/**">
