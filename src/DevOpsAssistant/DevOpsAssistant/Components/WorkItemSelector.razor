@@ -15,13 +15,11 @@
                     </MudSelect>
                     @if (UseIteration)
                     {
-                        <MudSelect T="string" @bind-Value="_iteration" Label="Iteration" Clearable="true">
-                            <MudSelectItem Value="@(null as string)">All</MudSelectItem>
-                            @foreach (var it in _iterations)
-                            {
-                                <MudSelectItem Value="@it.Path">@it.Path</MudSelectItem>
-                            }
-                        </MudSelect>
+                        <MudAutocomplete T="string"
+                                         Label="Iteration"
+                                         @bind-Value="_iteration"
+                                         SearchFunc="SearchIterations"
+                                         Clearable="true" />
                     }
                     <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => SelectedStates = vals.ToHashSet())" Label="States">
                         @foreach (var s in _states)
@@ -138,6 +136,14 @@
             return Array.Empty<WorkItemInfo>();
         var result = await ApiService.SearchReleaseItemsAsync(value);
         return result.Where(r => !_searchSelected.Contains(r));
+    }
+
+    private Task<IEnumerable<string>> SearchIterations(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _iterations.Select(i => i.Path);
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(i => i.Contains(value, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(result);
     }
 
     private void OnItemSelected(WorkItemInfo? item)

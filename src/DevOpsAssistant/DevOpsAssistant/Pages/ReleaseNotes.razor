@@ -21,7 +21,7 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading || !_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
 <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
 
