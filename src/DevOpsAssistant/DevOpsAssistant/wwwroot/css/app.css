@@ -193,6 +193,12 @@ body {
     padding-bottom: 3rem;
 }
 
+/* Expanded charts take most of the viewport height */
+.expanded-chart {
+    height: 80vh !important;
+    aspect-ratio: auto;
+}
+
 .responsive-chart svg {
     overflow: visible;
 }

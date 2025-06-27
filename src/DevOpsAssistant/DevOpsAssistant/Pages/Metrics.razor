@@ -102,7 +102,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_leadCycleExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleLeadCycle" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_leadCycleExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_leadCycleExpanded)" Class="@ChartClass(_leadCycleExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_barExpanded ? 12 : 6)">
@@ -112,7 +112,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_barExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleBar" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_barExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_barExpanded)" Class="@ChartClass(_barExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_wipExpanded ? 12 : 6)">
@@ -122,7 +122,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_wipExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleWip" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_wipExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_wipExpanded)" Class="@ChartClass(_wipExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_sprintExpanded ? 12 : 6)">
@@ -132,7 +132,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_sprintExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleSprint" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_sprintExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_sprintExpanded)" Class="@ChartClass(_sprintExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_burnExpanded ? 12 : 6)">
@@ -187,7 +187,7 @@ else if (_periods.Any())
                         </MudItem>
                     </MudGrid>
                 </MudCollapse>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_burnExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_burnExpanded)" Class="@ChartClass(_burnExpanded)" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_flowExpanded ? 12 : 6)">
@@ -197,7 +197,7 @@ else if (_periods.Any())
                     <MudIconButton Icon="@(_flowExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleFlow" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_flowExpanded)" Class="responsive-chart" />
+                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatValue" Height="@ChartHeight(_flowExpanded)" Class="@ChartClass(_flowExpanded)" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -861,7 +861,10 @@ else if (_periods.Any())
     private void ToggleBurn() => _burnExpanded = !_burnExpanded;
     private void ToggleFlow() => _flowExpanded = !_flowExpanded;
 
-    private static int ChartHeight(bool expanded) => expanded ? 600 : 300;
+    private static int ChartHeight(bool expanded) => expanded ? 800 : 300;
+
+    private static string ChartClass(bool expanded) =>
+        expanded ? "responsive-chart expanded-chart" : "responsive-chart";
 
     private Task<IEnumerable<string>> SearchTags(string value, CancellationToken _)
     {
