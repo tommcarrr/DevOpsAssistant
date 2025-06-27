@@ -9,6 +9,7 @@ public class DevOpsConfigService
     private const string GlobalPatKey = "devops-pat";
     private const string GlobalDarkKey = "devops-dark";
     private const string GlobalOrgKey = "devops-org";
+    private const string CurrentKey = "devops-current";
     private readonly ILocalStorageService _localStorage;
 
     public event Action? ProjectChanged;
@@ -42,11 +43,22 @@ public class DevOpsConfigService
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
         GlobalOrganization = await _localStorage.GetItemAsync<string>(GlobalOrgKey) ?? string.Empty;
         GlobalDarkMode = await _localStorage.GetItemAsync<bool?>(GlobalDarkKey) ?? false;
+        var currentName = await _localStorage.GetItemAsync<string>(CurrentKey) ?? string.Empty;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
         if (projects != null && projects.Count > 0)
         {
             Projects = projects.Select(Normalize).ToList();
-            CurrentProject = Projects[0];
+            var proj = Projects.FirstOrDefault(p => p.Name == currentName);
+            if (proj != null)
+            {
+                Projects.Remove(proj);
+                Projects.Insert(0, proj);
+                CurrentProject = proj;
+            }
+            else
+            {
+                CurrentProject = Projects[0];
+            }
             return;
         }
 
@@ -228,6 +240,7 @@ public class DevOpsConfigService
         await _localStorage.RemoveItemAsync(GlobalPatKey);
         await _localStorage.RemoveItemAsync(GlobalOrgKey);
         await _localStorage.RemoveItemAsync(GlobalDarkKey);
+        await _localStorage.RemoveItemAsync(CurrentKey);
         OnProjectChanged();
     }
 
@@ -246,5 +259,6 @@ public class DevOpsConfigService
     private async Task SaveProjectsAsync()
     {
         await _localStorage.SetItemAsync(StorageKey, Projects);
+        await _localStorage.SetItemAsync(CurrentKey, CurrentProject.Name);
     }
 }
