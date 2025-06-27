@@ -12,7 +12,12 @@
 }
 else if (WikiItems != null)
 {
-    <MudTreeView T="WikiPageNode" Items="@WikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="SelectedPages" Class="scroll-300">
+    <MudTreeView T="WikiPageNode"
+                 Items="@WikiItems"
+                 SelectionMode="SelectionMode.MultiSelection"
+                 SelectedValues="@SelectedPages"
+                 SelectedValuesChanged="@(pages => OnSelectedPagesChanged(pages))"
+                 Class="scroll-300">
         <ItemTemplate>
             <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
         </ItemTemplate>
@@ -32,5 +37,11 @@ else if (WikiItems != null)
     {
         File = e.File;
         return FileChanged.InvokeAsync(File);
+    }
+
+    private Task OnSelectedPagesChanged(IReadOnlyCollection<WikiPageNode> pages)
+    {
+        SelectedPages = pages;
+        return SelectedPagesChanged.InvokeAsync(SelectedPages);
     }
 }
