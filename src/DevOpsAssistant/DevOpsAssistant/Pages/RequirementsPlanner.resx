@@ -28,7 +28,7 @@
     <value>Copy starter prompt</value>
   </data>
   <data name="CopyPromptMessage" xml:space="preserve">
-    <value>If you need help capturing requirements, paste this starter prompt into your LLM. This step is optional.</value>
+    <value>If you need help capturing requirements, expand to generate a starter prompt and optionally include a specification document or wiki pages.</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copied to clipboard</value>

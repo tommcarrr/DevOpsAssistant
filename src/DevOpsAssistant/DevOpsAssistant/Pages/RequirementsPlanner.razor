@@ -6,6 +6,7 @@
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
 @using Microsoft.AspNetCore.Components.Forms
+@using DevOpsAssistant.Components
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
@@ -16,10 +17,20 @@
 
 <PageTitle>DevOpsAssistant - Requirement Planner</PageTitle>
 
-<MudAlert Severity="Severity.Info">
-    @L["CopyPromptMessage"]
-    <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
-</MudAlert>
+<MudExpansionPanels>
+    <MudExpansionPanel Text="@L["CopyPromptMessage"]">
+        <MudStack Spacing="2">
+            <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
+            <WikiDocumentSelector UseDocument="@_promptUseDocument"
+                                   UseDocumentChanged="@(v => _promptUseDocument = v)"
+                                   File="@_promptFile"
+                                   FileChanged="@(f => _promptFile = f)"
+                                   WikiItems="@_wikiItems"
+                                   SelectedPages="@_promptSelectedPages"
+                                   SelectedPagesChanged="@(p => _promptSelectedPages = p)" />
+        </MudStack>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
@@ -28,21 +39,13 @@
 <MudStepper @ref="_stepper" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
     <MudStep Title="Select Requirements">
         <MudStack Spacing="2">
-            <MudTooltip Text='@L["UseDocumentTooltip"]'>
-                <MudSwitch T="bool" @bind-Value="_useDocument" Color="Color.Primary" Label="Use Document" />
-            </MudTooltip>
-            @if (_useDocument)
-            {
-                <InputFile OnChange="OnFileSelected" accept=".pdf,.docx,.pptx,.md" />
-            }
-            else if (_wikiItems != null)
-            {
-                <MudTreeView T="WikiPageNode" Items="@_wikiItems" SelectionMode="SelectionMode.MultiSelection" @bind-SelectedValues="_selectedPages" Class="scroll-300">
-                    <ItemTemplate>
-                        <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
-                    </ItemTemplate>
-                </MudTreeView>
-            }
+            <WikiDocumentSelector UseDocument="@_useDocument"
+                                   UseDocumentChanged="@(v => _useDocument = v)"
+                                   File="@_file"
+                                   FileChanged="@(f => _file = f)"
+                                   WikiItems="@_wikiItems"
+                                   SelectedPages="@_selectedPages"
+                                   SelectedPagesChanged="@(p => _selectedPages = p)" />
             <MudTooltip Text='@L["StoriesOnlyTooltip"]'>
                 <MudSwitch T="bool" @bind-Value="_storiesOnly" Color="Color.Primary" Label="Stories Only" />
             </MudTooltip>
@@ -173,6 +176,9 @@
     private IReadOnlyCollection<WikiPageNode>? _selectedPages;
     private IBrowserFile? _file;
     private bool _useDocument;
+    private IReadOnlyCollection<WikiPageNode>? _promptSelectedPages;
+    private IBrowserFile? _promptFile;
+    private bool _promptUseDocument;
     private string _wikiId = string.Empty;
     private string _prompt = string.Empty;
     private List<string>? _promptParts;
@@ -349,7 +355,8 @@ Define what success looks like — business or system-level outcomes.
 
     private async Task CopyInitialPrompt()
     {
-        await JS.InvokeVoidAsync("copyText", InitialPrompt);
+        var prompt = await BuildInitialPrompt();
+        await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
@@ -381,6 +388,41 @@ Define what success looks like — business or system-level outcomes.
     {
         _file = e.File;
         return Task.CompletedTask;
+    }
+
+    private async Task<string> BuildInitialPrompt()
+    {
+        var sb = new System.Text.StringBuilder(InitialPrompt);
+        List<(string Name, string Text)> pages = [];
+        if (_promptUseDocument)
+        {
+            if (_promptFile != null)
+            {
+                using var stream = _promptFile.OpenReadStream(MaxFileSize);
+                var text = DocumentHelpers.ExtractText(stream, _promptFile.Name);
+                pages.Add((_promptFile.Name, text));
+            }
+        }
+        else if (_promptSelectedPages != null)
+        {
+            foreach (var p in _promptSelectedPages)
+            {
+                var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                pages.Add((p.Name, text));
+            }
+        }
+        if (pages.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("Document:");
+            foreach (var page in pages)
+            {
+                sb.AppendLine($"## {page.Name}");
+                sb.AppendLine(page.Text);
+                sb.AppendLine();
+            }
+        }
+        return sb.ToString();
     }
 
 
