@@ -36,4 +36,12 @@
     </Content>
   </ItemGroup>
 
+  <!-- Ensure Azure Static Web Apps configuration is included -->
+  <ItemGroup>
+    <Content Update="staticwebapp.config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
