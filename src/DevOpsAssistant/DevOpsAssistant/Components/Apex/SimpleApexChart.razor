@@ -4,7 +4,9 @@
 <ApexChart TItem="ChartPoint"
            Options="Options"
            Height="@Height"
-           FormatYAxisLabel="FormatYAxisLabel">
+           FormatYAxisLabel="FormatYAxisLabel"
+           class="@Class"
+           @attributes="UserAttributes">
 @foreach (var series in Series)
 {
     <ApexPointSeries TItem="ChartPoint"
@@ -22,4 +24,7 @@
     [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
     [Parameter] public Func<decimal, string>? FormatYAxisLabel { get; set; }
     [Parameter] public int Height { get; set; } = 300;
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> UserAttributes { get; set; } = new();
 }

@@ -27,9 +27,6 @@
   <data name="Metrics" xml:space="preserve">
     <value>Métricas</value>
   </data>
-  <data name="MetricsBeta" xml:space="preserve">
-    <value>Métricas (beta)</value>
-  </data>
   <data name="RequirementPlanner" xml:space="preserve">
     <value>Planificador de requisitos</value>
   </data>
