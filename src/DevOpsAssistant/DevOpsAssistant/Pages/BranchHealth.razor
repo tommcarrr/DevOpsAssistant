@@ -29,7 +29,6 @@
                     <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
                 </MudTooltip>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
             </MudStack>
         </MudPaper>
     </MudExpansionPanel>
@@ -176,18 +175,6 @@ else if (_branches != null)
         return branch.CommitDate < DateTime.UtcNow.AddDays(-30);
     }
 
-    private async Task Reset()
-    {
-        if (_repos.Count > 0)
-        {
-            _repo = _repos[0];
-            await LoadBranchList();
-        }
-        _baseBranch = ConfigService.Config.MainBranch;
-        _branches = null;
-        await StateService.ClearAsync(StateKey);
-        StateHasChanged();
-    }
 
     private class PageState
     {

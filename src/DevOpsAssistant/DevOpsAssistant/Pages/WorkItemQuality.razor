@@ -20,8 +20,7 @@
 }
 
 <WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="!_selectedItems.Any()" OnClick="Generate">Generate</MudButton>
-<MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="!_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
 
 @if (_loading)
 {
@@ -131,15 +130,6 @@ else if (_promptParts != null)
             await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
     }
 
-    private async Task Reset()
-    {
-        _selectedItems.Clear();
-        _prompt = null;
-        _promptParts = null;
-        _partIndex = 0;
-        await StateService.ClearAsync(StateKey);
-        StateHasChanged();
-    }
 
     private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
     {

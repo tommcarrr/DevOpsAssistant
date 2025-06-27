@@ -41,8 +41,10 @@
 }
 
 <WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
-<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
-<MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+<MudStack Row="true" Spacing="2" Class="mb-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
+    <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+</MudStack>
 
 @if (_loading)
 {
@@ -56,8 +58,8 @@ else if (_results != null)
     }
     else
     {
-        <MudStack Row="true" Spacing="2">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All</MudButton>
+        <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd" Class="mb-2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All Invalid</MudButton>
         </MudStack>
         <MudPaper Class="pa-6 work-item-container">
             <MudList T="ResultItem" Dense="true" Class="work-item-tree">
