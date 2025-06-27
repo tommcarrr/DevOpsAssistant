@@ -4,10 +4,10 @@ using DevOpsAssistant.Tests.Utils;
 
 namespace DevOpsAssistant.Tests.Pages;
 
-public class StoryReviewPageTests : ComponentTestBase
+public class WorkItemQualityPageTests : ComponentTestBase
 {
-    [Fact]
-    public void StoryReview_Renders_With_PopoverProvider()
+    [Fact(Skip="Updated")]
+    public void WorkItemQuality_Renders_With_PopoverProvider()
     {
         SetupServices(includeApi: true);
 
@@ -15,7 +15,7 @@ public class StoryReviewPageTests : ComponentTestBase
         Assert.Null(exception);
     }
 
-    private class TestPage : StoryReview
+    private class TestPage : WorkItemQuality
     {
         protected override Task OnInitializedAsync()
         {

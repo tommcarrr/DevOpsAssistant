@@ -1,4 +1,4 @@
-@page "/projects/{ProjectName}/story-review"
+@page "/projects/{ProjectName}/work-item-quality"
 @using System.Text
 @using System.Text.Json
 @using DevOpsAssistant.Services
@@ -9,45 +9,19 @@
 @inject PageStateService StateService
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
-@inject IStringLocalizer<StoryReview> L
+@inject IStringLocalizer<WorkItemQuality> L
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Story Quality</PageTitle>
+<PageTitle>DevOpsAssistant - Work Item Quality</PageTitle>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudExpansionPanels>
-    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
-        <MudPaper>
-            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                <MudSelect T="string" @bind-Value="_path" Label="Backlog">
-                    @foreach (var b in _backlogs)
-                    {
-                        <MudSelectItem Value="@b">@b</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudSelect T="string" @bind-Value="_iteration" Label="Iteration" Clearable="true">
-                    <MudSelectItem Value="@(null as string)">All</MudSelectItem>
-                    @foreach (var it in _iterations)
-                    {
-                        <MudSelectItem Value="@it.Path">@it.Path</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudSelect T="string" MultiSelection="true" SelectedValues="SelectedStates" SelectedValuesChanged="@(vals => OnStatesChanged(vals))" Label="States">
-                    @foreach (var s in _states)
-                    {
-                        <MudSelectItem Value="@s">@s</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Generate">Generate</MudButton>
-                <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-            </MudStack>
-        </MudPaper>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="!_selectedItems.Any()" OnClick="Generate">Generate</MudButton>
+<MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
 
 @if (_loading)
 {
@@ -71,19 +45,14 @@ else if (_promptParts != null)
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
-    private string _path = string.Empty;
-    private string[] _backlogs = [];
-    private string? _iteration;
-    private List<IterationInfo> _iterations = new();
-    private string[] _states = [];
-    private HashSet<string> SelectedStates { get; set; } = new();
+    private readonly HashSet<WorkItemInfo> _selectedItems = [];
     private bool _loading;
     private string? _prompt;
     private List<string>? _promptParts;
     private int _partIndex;
     private string? _error;
     private bool _filtersExpanded = true;
-    private const string StateKey = "story-review";
+    private const string StateKey = "work-item-quality";
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,23 +64,7 @@ else if (_promptParts != null)
         }
         try
         {
-            _backlogs = await ApiService.GetBacklogsAsync();
-            if (_backlogs.Length > 0)
-                _path = _backlogs[0];
-            _iterations = await ApiService.GetIterationsAsync();
-            var state = await StateService.LoadAsync<PageState>(StateKey);
-            if (state != null && !string.IsNullOrWhiteSpace(state.Path))
-                _path = state.Path;
-            if (state != null && !string.IsNullOrWhiteSpace(state.Iteration))
-                _iteration = state.Iteration;
-
-            _states = await ApiService.GetStatesAsync();
-            SelectedStates = _states
-                .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                            s.Equals("Active", StringComparison.OrdinalIgnoreCase))
-                .ToHashSet();
-            if (state?.States != null)
-                SelectedStates = state.States.ToHashSet();
+            await StateService.LoadAsync<PageState>(StateKey);
             _error = null;
         }
         catch (Exception ex)
@@ -126,16 +79,11 @@ else if (_promptParts != null)
         StateHasChanged();
         try
         {
-            var items = await ApiService.GetStoriesAsync(_path, SelectedStates, _iteration);
-            _prompt = BuildPrompt(items, ConfigService.Config);
+            var details = await ApiService.GetStoryHierarchyDetailsAsync(_selectedItems.Select(i => i.Id));
+            _prompt = BuildPrompt(details, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
-            await StateService.SaveAsync(StateKey, new PageState
-            {
-                Path = _path,
-                States = SelectedStates.ToArray(),
-                Iteration = _iteration
-            });
+            await StateService.SaveAsync(StateKey, new PageState());
             _error = null;
             await CopyPrompt();
         }
@@ -184,13 +132,7 @@ else if (_promptParts != null)
 
     private async Task Reset()
     {
-        if (_backlogs.Length > 0)
-            _path = _backlogs[0];
-        SelectedStates = _states
-            .Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                        s.Equals("Active", StringComparison.OrdinalIgnoreCase))
-            .ToHashSet();
-        _iteration = null;
+        _selectedItems.Clear();
         _prompt = null;
         _promptParts = null;
         _partIndex = 0;
@@ -198,9 +140,11 @@ else if (_promptParts != null)
         StateHasChanged();
     }
 
-    private Task OnStatesChanged(IEnumerable<string> values)
+    private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
     {
-        SelectedStates = new HashSet<string>(values);
+        _selectedItems.Clear();
+        foreach (var i in items)
+            _selectedItems.Add(i);
         return Task.CompletedTask;
     }
 
@@ -222,13 +166,20 @@ else if (_promptParts != null)
                     d.Feature.Title,
                     Description = TextHelpers.Sanitize(d.FeatureDescription)
                 },
-            Story = new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description) }
+            Story = d.Story.WorkItemType.Equals("User Story", StringComparison.OrdinalIgnoreCase)
+                ? new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description) }
+                : null,
+            Bug = d.Story.WorkItemType.Equals("Bug", StringComparison.OrdinalIgnoreCase)
+                ? new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description), ReproSteps = TextHelpers.Sanitize(d.ReproSteps), SystemInfo = TextHelpers.Sanitize(d.SystemInfo) }
+                : null
         });
         var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
         {
-            sb.AppendLine("You are an expert Agile coach reviewing user stories for adherence to the INVEST principles:");
+            sb.AppendLine("You are an expert Agile coach reviewing user stories and bugs for quality.");
+            sb.AppendLine();
+            sb.AppendLine("For stories, assess adherence to the INVEST principles:");
         sb.AppendLine();
         sb.AppendLine("**Independent, Negotiable, Valuable, Estimable, Small, Testable**");
         sb.AppendLine();
@@ -302,6 +253,8 @@ else if (_promptParts != null)
         sb.AppendLine("  **Then** a reset link is emailed and a confirmation message is shown.");
         sb.AppendLine();
         sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("For bugs, check that the reproduction steps and system information are clear and complete.");
         if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
         {
             sb.AppendLine();

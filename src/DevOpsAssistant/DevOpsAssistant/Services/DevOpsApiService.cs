@@ -323,7 +323,37 @@ public class DevOpsApiService
                 workItems.AddRange(itemsResult.Value);
         if (!workItems.Any())
             return [];
+        return BuildWorkItemDetails(workItems, itemUrlBase);
+    }
 
+    public async Task<List<WorkItemDetails>> GetWorkItemDetailsAsync(IEnumerable<int> ids)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        List<WorkItem> workItems = [];
+        var fetchTasks = ids.Distinct().Chunk(200).Select(chunk =>
+        {
+            var idList = string.Join(',', chunk);
+            return GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+        }).ToArray();
+
+        var results = await Task.WhenAll(fetchTasks);
+        foreach (var itemsResult in results)
+            if (itemsResult?.Value != null)
+                workItems.AddRange(itemsResult.Value);
+
+        if (workItems.Count == 0)
+            return [];
+
+        return BuildWorkItemDetails(workItems, itemUrlBase);
+    }
+
+    private static List<WorkItemDetails> BuildWorkItemDetails(IEnumerable<WorkItem> workItems, string itemUrlBase)
+    {
         List<WorkItemDetails> list = [];
         foreach (var w in workItems)
         {
@@ -356,7 +386,6 @@ public class DevOpsApiService
             };
             list.Add(details);
         }
-
         return list;
     }
 
@@ -514,6 +543,24 @@ public class DevOpsApiService
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{iterationCondition} AND [System.WorkItemType] = 'User Story'{stateCondition} ORDER BY [System.Id]";
     }
 
+    private static string BuildWorkItemsWiql(string areaPath, IEnumerable<string> states, IEnumerable<string> types, string? iterationPath = null)
+    {
+        areaPath = NormalizeAreaPath(areaPath);
+        if (!string.IsNullOrWhiteSpace(iterationPath))
+            iterationPath = NormalizeIterationPath(iterationPath);
+        var stateList = string.Join(", ", states.Select(s => $"'{s.Replace("'", "''")}'"));
+        var stateCondition = string.IsNullOrWhiteSpace(stateList) ? string.Empty : $" AND [System.State] IN ({stateList})";
+        var typeList = string.Join(", ", types.Select(t => $"'{t.Replace("'", "''")}'"));
+        var typeCondition = string.IsNullOrWhiteSpace(typeList)
+            ? "('Epic','Feature','User Story','Bug')"
+            : $"({typeList})";
+        var iterationCondition = string.IsNullOrWhiteSpace(iterationPath)
+            ? string.Empty
+            : $" AND [System.IterationPath] UNDER '{iterationPath}'";
+        return
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}'{iterationCondition}{stateCondition} AND [System.WorkItemType] IN {typeCondition} ORDER BY [System.Id]";
+    }
+
 
     public async Task UpdateWorkItemStateAsync(int id, string state)
     {
@@ -579,6 +626,46 @@ public class DevOpsApiService
     {
         var wiql = BuildReleaseSearchWiql(term);
         return SearchWorkItemsAsync(wiql);
+    }
+
+    public async Task<List<WorkItemInfo>> GetWorkItemInfosAsync(
+        string areaPath,
+        IEnumerable<string> states,
+        IEnumerable<string> types,
+        string? iterationPath = null)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        var wiql = BuildWorkItemsWiql(areaPath, states, types, iterationPath);
+        var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
+        if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
+            return [];
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
+        List<WorkItemInfo> list = [];
+        foreach (var chunk in ids.Chunk(200))
+        {
+            var idList = string.Join(',', chunk);
+            var itemsResult = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
+            if (itemsResult?.Value == null) continue;
+            foreach (var w in itemsResult.Value)
+            {
+                list.Add(new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = w.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{w.Id}"
+                });
+            }
+        }
+
+        return list;
     }
 
     public async Task<List<StoryHierarchyDetails>> GetStoryHierarchyDetailsAsync(IEnumerable<int> storyIds)
