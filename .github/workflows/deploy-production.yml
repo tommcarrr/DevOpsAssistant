@@ -26,6 +26,8 @@ jobs:
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln -c Release --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
+      - name: Publish
+        run: dotnet publish src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj -c Release -o src/DevOpsAssistant/DevOpsAssistant/publish --no-restore -warnaserror
       - name: Deploy to Staging
         id: staging
         uses: Azure/static-web-apps-deploy@v1
@@ -36,7 +38,8 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "src/DevOpsAssistant/DevOpsAssistant"
-          output_location: "wwwroot"
+          skip_app_build: true
+          app_artifact_location: "publish/wwwroot"
       - name: Export URL
         run: echo "STAGING_URL=${{ steps.staging.outputs.static_web_app_url }}" >> $GITHUB_ENV
 
@@ -87,6 +90,8 @@ jobs:
         run: dotnet test src/DevOpsAssistant/DevOpsAssistant.sln -c Release --no-build --no-restore --verbosity normal
       - name: Set version
         run: echo "1.0.${{ github.run_number }}" > src/DevOpsAssistant/DevOpsAssistant/wwwroot/version.txt
+      - name: Publish
+        run: dotnet publish src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj -c Release -o src/DevOpsAssistant/DevOpsAssistant/publish --no-restore -warnaserror
       - name: Deploy to Production
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -94,4 +99,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "src/DevOpsAssistant/DevOpsAssistant"
-          output_location: "wwwroot"
+          skip_app_build: true
+          app_artifact_location: "publish/wwwroot"
