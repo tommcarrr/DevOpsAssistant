@@ -188,7 +188,7 @@ body {
 /* Responsive chart container */
 .responsive-chart {
     width: 100%;
-    height: auto !important;
+    height: auto;
     aspect-ratio: 2 / 1;
     padding-bottom: 3rem;
 }
