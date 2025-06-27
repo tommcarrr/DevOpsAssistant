@@ -5,6 +5,7 @@
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
+@using DevOpsAssistant.Components.Apex
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
@@ -187,13 +188,13 @@ else if (_periods.Any())
             </ChartCard>
         </MudItem>
         <MudItem xs="12" md="6">
-            <ChartCard Title="@L["Flow"]"
-                       ChartType="ChartType.StackedBar"
-                       ChartSeries="_flowSeries"
-                       XAxisLabels="_flowLabels"
-                       AxisChartOptions="_axisOptions"
-                       OnExpand="ShowFlowChart"
-                       ExpandTitle="@L["ExpandChart"]"/>
+            <ApexChartCard Title="@L["Flow"]"
+                           SeriesType="ApexCharts.SeriesType.Area"
+                           Series="_flowApex"
+                           Options="_flowOptions"
+                           FormatYAxisLabel="FormatValue"
+                           OnExpand="ShowFlowChart"
+                           ExpandTitle="@L["ExpandChart"]"/>
         </MudItem>
     </MudGrid>
     <MudButton Variant="Variant.Filled"
@@ -279,6 +280,8 @@ else if (_periods.Any())
     private List<ChartSeries> _burnSeries = [];
     private string[] _flowLabels = [];
     private List<ChartSeries> _flowSeries = [];
+    private List<ApexSeries> _flowApex = [];
+    private ApexCharts.ApexChartOptions<ChartPoint> _flowOptions = new() { Chart = new ApexCharts.Chart { Stacked = true } };
     private List<ChartSeries> _wipSeries = [];
     private List<ChartSeries> _sprintSeries = [];
     private int? _daysMin;
@@ -633,6 +636,7 @@ else if (_periods.Any())
             new ChartSeries { Name = "Work In Progress", Data = aggWip },
             new ChartSeries { Name = "Done", Data = aggDone }
         ];
+        _flowApex = ToApexSeries(_flowSeries, _flowLabels);
     }
 
     private double ComputeOverallSprintEfficiency(List<StoryMetric> items)
@@ -645,6 +649,24 @@ else if (_periods.Any())
                 ? 100.0 * value / total
                 : 100.0 * (total - value) / total
             : 0;
+    }
+
+    private static List<ApexSeries> ToApexSeries(List<ChartSeries> series, string[] labels)
+    {
+        var result = new List<ApexSeries>();
+        foreach (var s in series)
+        {
+            var converted = new ApexSeries { Name = s.Name };
+            for (int i = 0; i < s.Data.Length && i < labels.Length; i++)
+            {
+                var val = (decimal?)s.Data[i];
+                if (val.HasValue)
+                    val = Math.Round(val.Value, 2);
+                converted.Points.Add(new ChartPoint { Label = labels[i], Value = val });
+            }
+            result.Add(converted);
+        }
+        return result;
     }
 
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
@@ -786,6 +808,11 @@ else if (_periods.Any())
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
+    private string FormatValue(decimal value)
+    {
+        return value.ToString("0.##");
+    }
+
     private async Task UpdateBurnUp()
     {
         if (_items.Count == 0) return;
@@ -852,7 +879,18 @@ else if (_periods.Any())
     private async Task ShowWipChart() => await ShowChartDialog(ChartType.Line, _wipSeries, _xAxisLabels, "Avg WIP");
     private async Task ShowSprintChart() => await ShowChartDialog(ChartType.Line, _sprintSeries, _xAxisLabels, "Sprint Efficiency");
     private async Task ShowBurnChart() => await ShowChartDialog(ChartType.Line, _burnSeries, _burnLabels, L["BurnUp"], BurnUpControls);
-    private async Task ShowFlowChart() => await ShowChartDialog(ChartType.StackedBar, _flowSeries, _flowLabels, L["Flow"]);
+    private async Task ShowFlowChart()
+    {
+        var parameters = new DialogParameters
+        {
+            [nameof(ApexChartDialog.SeriesType)] = ApexCharts.SeriesType.Area,
+            [nameof(ApexChartDialog.Series)] = _flowApex,
+            [nameof(ApexChartDialog.Options)] = _flowOptions,
+            [nameof(ApexChartDialog.FormatYAxisLabel)] = (Func<decimal, string>)FormatValue,
+            [nameof(ApexChartDialog.Title)] = L["Flow"]
+        };
+        await DialogService.ShowAsync<ApexChartDialog>(L["Flow"], parameters, new DialogOptions { FullScreen = true });
+    }
 
     private async Task ShowChartDialog(ChartType type, List<ChartSeries> series, string[] labels, string title, RenderFragment? controls = null)
     {
