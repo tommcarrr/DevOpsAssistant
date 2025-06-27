@@ -98,25 +98,25 @@ else if (_periods.Any())
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-6">
                 <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-6">
                 <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" />
+                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-6">
                 <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-6">
                 <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
@@ -167,13 +167,13 @@ else if (_periods.Any())
                         </MudItem>
                     </MudGrid>
                 </MudCollapse>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-6">
                 <MudText Typo="Typo.h6">@L["Flow"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" />
+                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatNumber" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -498,6 +498,7 @@ else if (_periods.Any())
         if (items.Count == 0 || efficiency is null || _errorRange is null)
         {
             _burnLabels = [];
+            _burnApex.Clear();
             return;
         }
 
@@ -577,6 +578,7 @@ else if (_periods.Any())
         if (items.Count == 0)
         {
             _flowLabels = [];
+            _flowApex.Clear();
             return;
         }
 
@@ -653,6 +655,11 @@ else if (_periods.Any())
             result.Add(converted);
         }
         return result;
+    }
+
+    private static string FormatNumber(decimal value)
+    {
+        return value.ToString("0.0");
     }
 
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
