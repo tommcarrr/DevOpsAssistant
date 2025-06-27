@@ -35,19 +35,22 @@
                     </MudSelect>
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadList">Load</MudButton>
                 </MudStack>
-                @if (_listItems != null)
+                @if (_listSelected.Any())
                 {
-                    <MudList T="SelectableItem" Dense="true">
-                        @foreach (var item in _listItems)
-                        {
-                            <MudListItem>
-                                <MudCheckBox T="bool" Value="@item.Selected" ValueChanged="val => { item.Selected = val; UpdateSelected(); }" Color="Color.Primary" />
-                                <MudText Class="ml-2">
-                                    <MudLink Href="@item.Info.Url" Target="_blank">@item.Info.Title</MudLink> - @item.Info.WorkItemType (@item.Info.State)
-                                </MudText>
-                            </MudListItem>
-                        }
-                    </MudList>
+                    <MudTable Items="_listSelected" Dense="true" Class="scroll-300">
+                        <HeaderContent>
+                            <MudTh>ID</MudTh>
+                            <MudTh>Title</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Id</MudTd>
+                            <MudTd DataLabel="Title">@context.Title</MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveList(context)" />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
                 }
             </MudTabPanel>
             <MudTabPanel Text="Search">
@@ -109,7 +112,7 @@
     private string? _iteration;
     private List<IterationInfo> _iterations = new();
 
-    private List<SelectableItem>? _listItems;
+    private readonly HashSet<WorkItemInfo> _listSelected = [];
     private WorkItemInfo? _searchValue;
     private readonly HashSet<WorkItemInfo> _searchSelected = [];
     private List<TreeItemData<WorkItemNode>>? _treeItems;
@@ -160,10 +163,18 @@
         UpdateSelected();
     }
 
+    private void RemoveList(WorkItemInfo info)
+    {
+        _listSelected.Remove(info);
+        UpdateSelected();
+    }
+
     private async Task LoadList()
     {
         var items = await ApiService.GetWorkItemInfosAsync(_path, SelectedStates, SelectedTypes, _iteration);
-        _listItems = items.Select(i => new SelectableItem(i, true)).ToList();
+        _listSelected.Clear();
+        foreach (var i in items)
+            _listSelected.Add(i);
         UpdateSelected();
     }
 
@@ -195,9 +206,8 @@
     private async void UpdateSelected()
     {
         HashSet<WorkItemInfo> set = new(_searchSelected);
-        if (_listItems != null)
-            foreach (var li in _listItems.Where(l => l.Selected))
-                set.Add(li.Info);
+        foreach (var li in _listSelected)
+            set.Add(li);
         if (_selectedNodes != null)
             foreach (var n in _selectedNodes)
                 set.Add(n.Info);
@@ -210,15 +220,4 @@
         return ExpandedChanged.InvokeAsync(value);
     }
 
-    private class SelectableItem
-    {
-        public WorkItemInfo Info { get; init; } = new();
-        public bool Selected { get; set; }
-
-        public SelectableItem(WorkItemInfo info, bool selected)
-        {
-            Info = info;
-            Selected = selected;
-        }
-    }
 }
