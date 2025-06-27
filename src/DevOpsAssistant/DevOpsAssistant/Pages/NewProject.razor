@@ -20,7 +20,7 @@
         </MudText>
         @if (ConfigService.Projects.Any())
         {
-            <MudCheckBox T="bool" Value="_cloneExisting" ValueChanged="OnCloneExistingChanged" Label='@L["CloneExisting"]' />
+            <MudCheckBox T="bool" Value="_cloneExisting" ValueChanged="OnCloneExistingChanged" Label='@L["CloneExisting"]' Color="Color.Primary" />
             @if (_cloneExisting)
             {
                 <MudSelect T="string" Value="_cloneProjectName" ValueChanged="OnCloneProjectChanged" Label='@L["CloneSource"]'>
@@ -36,11 +36,11 @@
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
             {
                 <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
-                <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" />
+                <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" Color="Color.Primary" />
             }
             else
             {
-                <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" />
+                <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" Color="Color.Primary" />
                 @if (_overrideOrg)
                 {
                     <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
@@ -49,11 +49,11 @@
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
             {
                 <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" />
-                <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" />
+                <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" Color="Color.Primary" />
             }
             else
             {
-                <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" />
+                <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" Color="Color.Primary" />
                 @if (_overridePat)
                 {
                     <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" />
