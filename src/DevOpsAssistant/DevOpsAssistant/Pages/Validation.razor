@@ -40,7 +40,7 @@
     </MudCollapse>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
 <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
 
