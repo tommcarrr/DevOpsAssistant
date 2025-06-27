@@ -12,7 +12,8 @@ public static class AzureDevOpsTheme
             Secondary = "#005A9E",
             Success = "#107C10",
             Warning = "#FFD400",
-            Error = "#D13438"
+            Error = "#D13438",
+            AppbarText = Colors.Shades.White
         },
         PaletteDark = new PaletteDark
         {
@@ -21,7 +22,9 @@ public static class AzureDevOpsTheme
             Background = "#1F1F1F",
             Surface = "#252526",
             AppbarBackground = "#333333",
-            TextPrimary = Colors.Shades.White
+            TextPrimary = Colors.Shades.White,
+            DrawerText = Colors.Shades.White,
+            DrawerIcon = Colors.Shades.White
         }
     };
 }

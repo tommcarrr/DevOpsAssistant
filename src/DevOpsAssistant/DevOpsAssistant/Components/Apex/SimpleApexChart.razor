@@ -1,5 +1,6 @@
 @using ApexCharts
 @using DevOpsAssistant.Components.Apex
+@using DevOpsAssistant.Services
 
 <ApexChart TItem="ChartPoint"
            Options="Options"
@@ -19,12 +20,21 @@
 </ApexChart>
 
 @code {
+    [Inject] DevOpsConfigService ConfigService { get; set; } = default!;
+
     [Parameter] public List<ApexSeries> Series { get; set; } = new();
     [Parameter] public SeriesType SeriesType { get; set; } = SeriesType.Line;
     [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
     [Parameter] public Func<decimal, string>? FormatYAxisLabel { get; set; }
-    [Parameter] public int Height { get; set; } = 300;
+    [Parameter] public int Height { get; set; } = 300
     [Parameter] public string? Class { get; set; }
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> UserAttributes { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        Options ??= new ApexChartOptions<ChartPoint>();
+        Options.Theme ??= new Theme();
+        Options.Theme.Mode = ConfigService.GlobalDarkMode ? Mode.Dark : Mode.Light;
+    }
 }
