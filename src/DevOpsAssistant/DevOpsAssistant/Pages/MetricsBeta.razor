@@ -572,9 +572,8 @@ else if (_periods.Any())
             done[i] = sum;
         }
 
-        int step = Math.Max(1, (int)Math.Ceiling(projLen / 10.0));
         _burnLabels = Enumerable.Range(0, projLen)
-            .Select(i => i % step == 0 ? start.AddDays(i).ToLocalDateString() : string.Empty)
+            .Select(i => start.AddDays(i).ToLocalDateString())
             .ToArray();
         _burnSeries = new List<ChartSeries>
         {
@@ -624,35 +623,18 @@ else if (_periods.Any())
             done[i] = items.Count(it => it.ClosedDate.Date <= day);
         }
 
-        const int maxPoints = 30;
-        int step = Math.Max(1, (int)Math.Ceiling(days / (double)maxPoints));
-        int len = (int)Math.Ceiling(days / (double)step);
-        double[] aggBacklog = new double[len];
-        double[] aggWip = new double[len];
-        double[] aggDone = new double[len];
-        string[] labels = new string[len];
-        for (int i = 0; i < len; i++)
+        string[] labels = new string[days];
+        for (int i = 0; i < days; i++)
         {
-            int idx = Math.Min(days - 1, (i + 1) * step - 1);
-            aggBacklog[i] = backlog[idx];
-            aggWip[i] = wip[idx];
-            aggDone[i] = done[idx];
-            labels[i] = start.AddDays(idx).ToLocalDateString();
-        }
-
-        int labelStep = Math.Max(1, (int)Math.Ceiling(len / 10.0));
-        for (int i = 0; i < len; i++)
-        {
-            if (i % labelStep != 0)
-                labels[i] = string.Empty;
+            labels[i] = start.AddDays(i).ToLocalDateString();
         }
 
         _flowLabels = labels;
         _flowSeries =
         [
-            new ChartSeries { Name = "Backlog", Data = aggBacklog },
-            new ChartSeries { Name = "Work In Progress", Data = aggWip },
-            new ChartSeries { Name = "Done", Data = aggDone }
+            new ChartSeries { Name = "Backlog", Data = backlog },
+            new ChartSeries { Name = "Work In Progress", Data = wip },
+            new ChartSeries { Name = "Done", Data = done }
         ];
 
         _flowApex = ToApexSeries(_flowSeries, _flowLabels);
