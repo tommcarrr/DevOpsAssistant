@@ -21,6 +21,9 @@
   <data name="OptionsHeading" xml:space="preserve">
     <value>Options</value>
   </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
   <data name="TableHeading" xml:space="preserve">
     <value>Throughput and Lead Times</value>
   </data>
