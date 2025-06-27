@@ -95,33 +95,53 @@ else if (_periods.Any())
     <MudText Typo="Typo.h6" Class="mt-4">@L["ChartsHeading"]</MudText>
 
     <MudGrid>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_leadCycleExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" />
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
+                    <MudIconButton Icon="@(_leadCycleExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleLeadCycle" />
+                </MudStack>
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_barExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" />
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
+                    <MudIconButton Icon="@(_barExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleBar" />
+                </MudStack>
+                <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_wipExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" />
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
+                    <MudIconButton Icon="@(_wipExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleWip" />
+                </MudStack>
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_sprintExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" />
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
+                    <MudIconButton Icon="@(_sprintExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleSprint" />
+                </MudStack>
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_burnExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">@L["BurnUp"]</MudText>
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">@L["BurnUp"]</MudText>
+                    <MudIconButton Icon="@(_burnExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleBurn" />
+                </MudStack>
                 <MudButton OnClick="ToggleBurnChartControls"
                            EndIcon="@(_showBurnChartControls ? Icons.Material.Outlined.ArrowDropUp : Icons.Material.Outlined.ArrowDropDown)"
                            Class="mb-2">
@@ -167,13 +187,17 @@ else if (_periods.Any())
                         </MudItem>
                     </MudGrid>
                 </MudCollapse>
-                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" />
+                <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="6">
+        <MudItem xs="12" md="@(_flowExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
-                <MudText Typo="Typo.h6">@L["Flow"]</MudText>
-                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" />
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h6">@L["Flow"]</MudText>
+                    <MudIconButton Icon="@(_flowExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
+                                   Size="Mud.Size.Small" OnClick="ToggleFlow" />
+                </MudStack>
+                <SimpleApexChart SeriesType="SeriesType.Area" Options="_flowOptions" Series="_flowApex" FormatYAxisLabel="FormatValue" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -270,6 +294,12 @@ else if (_periods.Any())
     private List<ApexSeries> _burnApex = [];
     private List<ApexSeries> _flowApex = [];
     private ApexChartOptions<ChartPoint> _flowOptions = new() { Chart = new Chart { Stacked = true } };
+    private bool _leadCycleExpanded;
+    private bool _barExpanded;
+    private bool _wipExpanded;
+    private bool _sprintExpanded;
+    private bool _burnExpanded;
+    private bool _flowExpanded;
     private int? _daysMin;
     private int? _daysMax;
     private DateTime? _dateMin;
@@ -648,7 +678,10 @@ else if (_periods.Any())
             var converted = new ApexSeries { Name = s.Name };
             for (int i = 0; i < s.Data.Length && i < labels.Length; i++)
             {
-                converted.Points.Add(new ChartPoint { Label = labels[i], Value = (decimal?)s.Data[i] });
+                var val = (decimal?)s.Data[i];
+                if (val.HasValue)
+                    val = Math.Round(val.Value, 2);
+                converted.Points.Add(new ChartPoint { Label = labels[i], Value = val });
             }
             result.Add(converted);
         }
@@ -794,6 +827,11 @@ else if (_periods.Any())
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
 
+    private string FormatValue(decimal value)
+    {
+        return value.ToString("0.##");
+    }
+
     private async Task UpdateBurnUp()
     {
         if (_items.Count == 0) return;
@@ -840,6 +878,13 @@ else if (_periods.Any())
         await StateService.ClearAsync(StateKey);
         StateHasChanged();
     }
+
+    private void ToggleLeadCycle() => _leadCycleExpanded = !_leadCycleExpanded;
+    private void ToggleBar() => _barExpanded = !_barExpanded;
+    private void ToggleWip() => _wipExpanded = !_wipExpanded;
+    private void ToggleSprint() => _sprintExpanded = !_sprintExpanded;
+    private void ToggleBurn() => _burnExpanded = !_burnExpanded;
+    private void ToggleFlow() => _flowExpanded = !_flowExpanded;
 
     private Task<IEnumerable<string>> SearchTags(string value, CancellationToken _)
     {

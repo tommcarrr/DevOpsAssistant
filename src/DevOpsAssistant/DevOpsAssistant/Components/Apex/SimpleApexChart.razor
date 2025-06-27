@@ -1,7 +1,10 @@
 @using ApexCharts
 @using DevOpsAssistant.Components.Apex
 
-<ApexChart TItem="ChartPoint" Options="Options" Height="300">
+<ApexChart TItem="ChartPoint"
+           Options="Options"
+           Height="300"
+           FormatYAxisLabel="FormatYAxisLabel">
 @foreach (var series in Series)
 {
     <ApexPointSeries TItem="ChartPoint"
@@ -17,4 +20,5 @@
     [Parameter] public List<ApexSeries> Series { get; set; } = new();
     [Parameter] public SeriesType SeriesType { get; set; } = SeriesType.Line;
     [Parameter] public ApexChartOptions<ChartPoint>? Options { get; set; }
+    [Parameter] public Func<decimal, string>? FormatYAxisLabel { get; set; }
 }
