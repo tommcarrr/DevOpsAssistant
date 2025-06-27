@@ -191,6 +191,18 @@ public class ReleaseNotesPageTests : ComponentTestBase
         Assert.DoesNotContain("SystemInfo", result);
     }
 
+    [Fact]
+    public void BuildPrompt_Inline_Format_Does_Not_Request_Conversion()
+    {
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var cfg = new DevOpsConfig { OutputFormat = OutputFormat.Inline };
+
+        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), cfg])!;
+
+        Assert.DoesNotContain("convert the content", result);
+        Assert.Contains("Reply inline", result);
+    }
+
     [Fact(Skip = "Updated")]
     public void ReleaseNotes_Uses_TreeView_When_Configured()
     {
