@@ -577,8 +577,8 @@ else if (_periods.Any())
             return;
         }
 
-        var start = items.Min(i => i.CreatedDate).Date;
-        var end = items.Max(i => i.ClosedDate).Date;
+        var start = (_startDate ?? items.Min(i => i.CreatedDate)).Date;
+        var end = (_endDate ?? items.Max(i => i.ClosedDate)).Date;
         var days = (end - start).Days + 1;
         double[] backlog = new double[days];
         double[] wip = new double[days];
