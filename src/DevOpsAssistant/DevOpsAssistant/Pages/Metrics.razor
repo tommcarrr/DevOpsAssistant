@@ -100,7 +100,8 @@ else if (_periods.Any())
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
                     <MudIconButton Icon="@(_leadCycleExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
-                                   Size="Mud.Size.Small" OnClick="ToggleLeadCycle" />
+                                   Size="Mud.Size.Small" OnClick="ToggleLeadCycle"
+                                   title="@(_leadCycleExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
                 <SimpleApexChart SeriesType="SeriesType.Line" Series="_leadCycleApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_leadCycleExpanded)" />
             </MudPaper>
@@ -110,7 +111,8 @@ else if (_periods.Any())
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
                     <MudIconButton Icon="@(_barExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
-                                   Size="Mud.Size.Small" OnClick="ToggleBar" />
+                                   Size="Mud.Size.Small" OnClick="ToggleBar"
+                                   title="@(_barExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
                 <SimpleApexChart SeriesType="SeriesType.Bar" Series="_barApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_barExpanded)" />
             </MudPaper>
@@ -120,7 +122,8 @@ else if (_periods.Any())
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">@L["AvgWip"]</MudText>
                     <MudIconButton Icon="@(_wipExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
-                                   Size="Mud.Size.Small" OnClick="ToggleWip" />
+                                   Size="Mud.Size.Small" OnClick="ToggleWip"
+                                   title="@(_wipExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
                 <SimpleApexChart SeriesType="SeriesType.Line" Series="_wipApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_wipExpanded)" />
             </MudPaper>
@@ -130,7 +133,8 @@ else if (_periods.Any())
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">@L["SprintEff"]</MudText>
                     <MudIconButton Icon="@(_sprintExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
-                                   Size="Mud.Size.Small" OnClick="ToggleSprint" />
+                                   Size="Mud.Size.Small" OnClick="ToggleSprint"
+                                   title="@(_sprintExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
                 <SimpleApexChart SeriesType="SeriesType.Line" Series="_sprintApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_sprintExpanded)" />
             </MudPaper>
@@ -140,7 +144,8 @@ else if (_periods.Any())
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">@L["BurnUp"]</MudText>
                     <MudIconButton Icon="@(_burnExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
-                                   Size="Mud.Size.Small" OnClick="ToggleBurn" />
+                                   Size="Mud.Size.Small" OnClick="ToggleBurn"
+                                   title="@(_burnExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
                 <SimpleApexChart SeriesType="SeriesType.Line" Series="_burnApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_burnExpanded)" />
                 <MudButton OnClick="ToggleBurnChartControls"

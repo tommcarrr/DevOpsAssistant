@@ -12,10 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ExpandChart" xml:space="preserve">
-    <value>Ampliar gráfico</value>
-  </data>
-  <data name="CollapseChart" xml:space="preserve">
-    <value>Contraer gráfico</value>
+  <data name="DeleteTooltip" xml:space="preserve">
+    <value>Remove item</value>
   </data>
 </root>

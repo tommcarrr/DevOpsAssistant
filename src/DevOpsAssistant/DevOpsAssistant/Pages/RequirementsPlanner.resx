@@ -24,6 +24,12 @@
   <data name="ClarifyTooltip" xml:space="preserve">
     <value>Push back on unclear requirements and request clarification</value>
   </data>
+  <data name="PrevPartTooltip" xml:space="preserve">
+    <value>Previous part</value>
+  </data>
+  <data name="NextPartTooltip" xml:space="preserve">
+    <value>Next part</value>
+  </data>
   <data name="CopyPromptLink" xml:space="preserve">
     <value>Copy starter prompt</value>
   </data>

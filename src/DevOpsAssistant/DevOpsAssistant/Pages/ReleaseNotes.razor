@@ -36,10 +36,12 @@
             <MudTd DataLabel="ID">@context.Id</MudTd>
             <MudTd DataLabel="Title">@context.Title</MudTd>
             <MudTd>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                               Color="Color.Error"
-                               Size="Size.Small"
-                               OnClick="() => RemoveSelected(context)"/>
+                <MudTooltip Text='@L["DeleteTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   Size="Size.Small"
+                                   OnClick="() => RemoveSelected(context)" />
+                </MudTooltip>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -64,13 +66,17 @@ else if (_promptParts != null)
                           ReadOnly="true"
                           />
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
-                               Disabled="_partIndex == 0"
-                               OnClick="PrevPart" />
+                <MudTooltip Text='@L["PrevPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                                   Disabled="_partIndex == 0"
+                                   OnClick="PrevPart" />
+                </MudTooltip>
                 <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
-                <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
-                               Disabled="_partIndex == _promptParts.Count - 1"
-                               OnClick="NextPart" />
+                <MudTooltip Text='@L["NextPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                                   Disabled="_partIndex == _promptParts.Count - 1"
+                                   OnClick="NextPart" />
+                </MudTooltip>
                 <MudButton Variant="Variant.Text"
                            StartIcon="@Icons.Material.Filled.ContentCopy"
                            OnClick="() => CopyPart(_promptParts[_partIndex])">

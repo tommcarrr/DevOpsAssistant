@@ -1,6 +1,8 @@
 @using DevOpsAssistant.Services.Models
 @using MudBlazor
+@using Microsoft.Extensions.Localization
 @inject DevOpsApiService ApiService
+@inject IStringLocalizer<WorkItemSelector> L
 
 <MudExpansionPanels>
     <MudExpansionPanel Text="Work Item Selection" Expanded="@Expanded" ExpandedChanged="OnExpandedChanged">
@@ -51,7 +53,9 @@
                             <MudTd DataLabel="ID">@context.Id</MudTd>
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveList(context)" />
+                                <MudTooltip Text='@L["DeleteTooltip"]'>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveList(context)" />
+                                </MudTooltip>
                             </MudTd>
                         </RowTemplate>
                     </MudTable>
@@ -71,7 +75,9 @@
                             <MudTd DataLabel="ID">@context.Id</MudTd>
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveSearch(context)" />
+                                <MudTooltip Text='@L["DeleteTooltip"]'>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveSearch(context)" />
+                                </MudTooltip>
                             </MudTd>
                         </RowTemplate>
                     </MudTable>

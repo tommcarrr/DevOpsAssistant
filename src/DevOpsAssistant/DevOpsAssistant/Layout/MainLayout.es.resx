@@ -54,6 +54,9 @@
   <data name="GlobalSettings" xml:space="preserve">
     <value>Configuración global</value>
   </data>
+  <data name="ToggleTheme" xml:space="preserve">
+    <value>Cambiar tema claro/oscuro</value>
+  </data>
   <data name="PatToken" xml:space="preserve">
     <value>Token PAT</value>
   </data>
