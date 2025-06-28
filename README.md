@@ -77,7 +77,3 @@ The UI tests use Playwright to exercise the deployed staging site. Set
 where to connect.
 
 ## Accessibility
-
-## Doom Theme
-
-Type `iddqd` anywhere on the page to toggle a special Doom-inspired theme. Typing it again reverts to the default look. The choice is not saved between sessions.

@@ -20,7 +20,7 @@
             <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style">DevOpsAssistant</MudNavLink>
         </MudText>
         <MudSpacer/>
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode"/>
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode" title='@L["ToggleTheme"]'/>
         <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="OpenOptionsDialog" title='@L["GlobalSettings"]'/>
         <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Inherit" OnClick="OpenHelpDialog" aria-label="@L["Help"]" title='@L["Help"]'/>
         <MudMenu Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Dense="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" title='@L["SignOut"]'>

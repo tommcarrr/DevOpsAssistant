@@ -15,4 +15,10 @@
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>
   </data>
+  <data name="PrevPartTooltip" xml:space="preserve">
+    <value>Parte anterior</value>
+  </data>
+  <data name="NextPartTooltip" xml:space="preserve">
+    <value>Siguiente parte</value>
+  </data>
 </root>

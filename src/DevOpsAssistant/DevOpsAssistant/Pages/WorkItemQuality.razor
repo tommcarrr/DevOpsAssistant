@@ -33,9 +33,13 @@ else if (_promptParts != null)
             <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadPrompt">Download</MudButton>
             <MudTextField T="string" Text="@_promptParts[_partIndex]" Lines="10" ReadOnly="true" />
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="_partIndex == 0" OnClick="PrevPart" />
+                <MudTooltip Text='@L["PrevPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="_partIndex == 0" OnClick="PrevPart" />
+                </MudTooltip>
                 <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
-                <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="_partIndex == _promptParts.Count - 1" OnClick="NextPart" />
+                <MudTooltip Text='@L["NextPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="_partIndex == _promptParts.Count - 1" OnClick="NextPart" />
+                </MudTooltip>
                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">Copy</MudButton>
             </MudStack>
         </MudStack>

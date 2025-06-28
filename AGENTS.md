@@ -47,6 +47,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 
 - Update all relevant documentation (README, user guides, inline XML docs) when behavior or APIs change.
 - Keep in-app help files and localized `.resx` resources up to date.
+- Do not mention the hidden Doom theme in any documentation or help files.
 
 ### Version Control
 
