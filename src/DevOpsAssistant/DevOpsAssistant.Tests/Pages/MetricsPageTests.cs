@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
+using DevOpsAssistant.Utils;
 using MudBlazor;
 
 namespace DevOpsAssistant.Tests.Pages;
@@ -113,6 +114,30 @@ public class MetricsPageTests : ComponentTestBase
 
         var labels = (string[])labelsField.GetValue(metrics)!;
         Assert.All(labels, l => Assert.False(string.IsNullOrEmpty(l)));
+    }
+
+    [Fact]
+    public void ComputeFlow_Respects_DateRange()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        var compute = type.GetMethod("ComputeFlow", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var labelsField = type.GetField("_flowLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today.AddDays(-5));
+        type.GetField("_endDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today);
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-7), ActivatedDate = DateTime.Today.AddDays(-5), ClosedDate = DateTime.Today.AddDays(-3) },
+            new() { CreatedDate = DateTime.Today.AddDays(-4), ActivatedDate = DateTime.Today.AddDays(-4), ClosedDate = DateTime.Today.AddDays(-1) }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var labels = (string[])labelsField.GetValue(metrics)!;
+        Assert.Equal(6, labels.Length);
+        Assert.Equal(DateTime.Today.AddDays(-5).ToLocalDateString(), labels[0]);
+        Assert.Equal(DateTime.Today.ToLocalDateString(), labels[^1]);
     }
 
 
