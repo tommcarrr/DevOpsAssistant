@@ -206,7 +206,7 @@
         var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave);
         if (!saved)
         {
-            _errors = new List<string> { L["DuplicateName"] };
+            _errors = [ L["DuplicateName"] ];
             return;
         }
         if (_useOrgAsGlobal && !string.IsNullOrWhiteSpace(_model.Organization))

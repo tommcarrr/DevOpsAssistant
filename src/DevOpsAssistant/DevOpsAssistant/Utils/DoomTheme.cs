@@ -47,12 +47,11 @@ public static class DoomTheme
         },
         Shadows = new Shadow
         {
-            Elevation = new[]
-            {
+            Elevation = [
                 "none",
                 "0px 4px 2px -2px rgba(0,0,0,0.5)",
                 "0px 6px 3px -3px rgba(0,0,0,0.5)",
-            }
+            ]
         }
     };
 }

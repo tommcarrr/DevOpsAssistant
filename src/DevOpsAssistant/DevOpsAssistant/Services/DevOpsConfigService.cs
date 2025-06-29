@@ -66,7 +66,7 @@ public class DevOpsConfigService
         if (legacy != null)
         {
             var project = new DevOpsProject { Name = "default", Config = Normalize(legacy) };
-            Projects = new List<DevOpsProject> { project };
+            Projects = [ project ];
             CurrentProject = project;
             await SaveProjectsAsync();
             await _localStorage.RemoveItemAsync(LegacyStorageKey);
@@ -230,7 +230,7 @@ public class DevOpsConfigService
 
     public async Task ClearAsync()
     {
-        Projects = new List<DevOpsProject>();
+        Projects = [];
         CurrentProject = new DevOpsProject();
         GlobalPatToken = string.Empty;
         GlobalOrganization = string.Empty;

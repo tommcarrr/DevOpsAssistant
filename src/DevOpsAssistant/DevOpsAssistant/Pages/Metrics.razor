@@ -169,7 +169,7 @@ else if (_periods.Any())
                             @if (_daysMin.HasValue && _daysMax.HasValue)
                             {
                             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                                <MudTable Items="new[] { 0 }" Dense="true">
+                                <MudTable Items="[0]" Dense="true">
                                     <HeaderContent>
                                         <MudTh>@L["ProjectedDays"]</MudTh>
                                         <MudTh>@L["CompletionRange"]</MudTh>
@@ -571,12 +571,11 @@ else if (_periods.Any())
             }
         }
 
-        _burnApex = new List<ApexSeries>
-        {
+        _burnApex = [
             new ApexSeries { Name = "Complete", Points = complete },
             new ApexSeries { Name = "Trend", Points = trend },
             new ApexSeries { Name = "Target", Points = target }
-        };
+        ];
         if (remaining > 0)
         {
             _burnApex.Add(new ApexSeries { Name = "Projection Min", Points = minProj });
@@ -594,7 +593,7 @@ else if (_periods.Any())
             _dateMax = null;
         }
 
-        var dash = new List<double>();
+        List<double> dash = [];
         foreach (var s in _burnApex)
         {
             dash.Add(s.Name == "Trend" ? 5d : 0d);
@@ -656,7 +655,7 @@ else if (_periods.Any())
 
     private static List<ApexSeries> ToApexSeries(List<ChartSeries> series, string[] labels)
     {
-        var result = new List<ApexSeries>();
+        List<ApexSeries> result = [];
         foreach (var s in series)
         {
             var converted = new ApexSeries { Name = s.Name };

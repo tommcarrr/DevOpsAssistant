@@ -485,7 +485,7 @@ Define what success looks like — business or system-level outcomes.
                 var parentId = _feature?.Id;
                 foreach (var story in _plan.Stories)
                 {
-                    var tags = story.Tags.Concat(new[] { "AI Generated" }).ToArray();
+                    var tags = story.Tags.Concat(["AI Generated"]).ToArray();
                     story.Id = await ApiService.CreateWorkItemAsync(
                         "User Story",
                         story.Title,
@@ -501,13 +501,13 @@ Define what success looks like — business or system-level outcomes.
             {
                 foreach (var epic in _plan.Epics)
                 {
-                    epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, new[] { "AI Generated" });
+                    epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, ["AI Generated"]);
                     foreach (var feature in epic.Features)
                     {
-                        feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, new[] { "AI Generated" });
+                        feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, ["AI Generated"]);
                         foreach (var story in feature.Stories)
                             {
-                                var tags2 = story.Tags.Concat(new[] { "AI Generated" }).ToArray();
+                                var tags2 = story.Tags.Concat(["AI Generated"]).ToArray();
                                 story.Id = await ApiService.CreateWorkItemAsync(
                                     "User Story",
                                     story.Title,
