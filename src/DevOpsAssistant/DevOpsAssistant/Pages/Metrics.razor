@@ -140,7 +140,7 @@ else if (_periods.Any())
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="@(_burnExpanded ? 12 : 6)">
-            <MudPaper Class="pa-6">
+            <MudPaper Class="pa-6" Style="overflow:visible">
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                     <MudText Typo="Typo.h6">@L["BurnUp"]</MudText>
                     <MudIconButton Icon="@(_burnExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
