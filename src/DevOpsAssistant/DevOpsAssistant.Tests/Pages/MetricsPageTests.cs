@@ -7,6 +7,8 @@ using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Utils;
 using MudBlazor;
+using DevOpsAssistant.Components.Apex;
+using ApexCharts;
 
 namespace DevOpsAssistant.Tests.Pages;
 
@@ -94,6 +96,33 @@ public class MetricsPageTests : ComponentTestBase
 
         var labels = (string[])labelsField.GetValue(metrics)!;
         Assert.All(labels, l => Assert.False(string.IsNullOrEmpty(l)));
+    }
+
+    [Fact]
+    public void ComputeBurnUp_Adds_Trendline()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        type.GetField("_additionalPoints", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        type.GetField("_efficiency", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)80);
+        type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var optionsField = type.GetField("_burnOptions", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
+        Assert.Contains(series, s => s.Name == "Trend");
+        var options = (ApexChartOptions<ChartPoint>)optionsField.GetValue(metrics)!;
+        var dashes = (List<double>)options.Stroke!.DashArray!;
+        Assert.True(dashes[series.FindIndex(s => s.Name == "Trend")] > 0);
     }
 
     [Fact]
