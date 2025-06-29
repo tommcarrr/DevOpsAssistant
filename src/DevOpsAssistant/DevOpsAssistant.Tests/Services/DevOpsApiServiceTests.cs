@@ -246,7 +246,7 @@ public class DevOpsApiServiceTests
         var configService = new DevOpsConfigService(new FakeLocalStorageService());
         var service = CreateService(new HttpClient(), configService);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area", new[] { "New" }, ["User Story"]));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GetValidationItemsAsync("Area", ["New"], ["User Story"]));
     }
 
     [Theory]
@@ -456,7 +456,7 @@ public class DevOpsApiServiceTests
         await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
         var service = CreateService(client, configService);
 
-        var result = await service.GetValidationItemsAsync("Area", new[] { "New" }, ["User Story"]);
+        var result = await service.GetValidationItemsAsync("Area", ["New"], ["User Story"]);
 
         Assert.Single(result);
         Assert.Equal(1, result[0].Info.Id);
@@ -512,7 +512,7 @@ public class DevOpsApiServiceTests
     [Fact]
     public void BuildStoriesWiql_Includes_States_When_Provided()
     {
-        var query = InvokeBuildStoriesWiql("Area", new[] { "New", "Active" }, null);
+        var query = InvokeBuildStoriesWiql("Area", ["New", "Active"], null);
 
         Assert.Contains("'New'", query);
         Assert.Contains("'Active'", query);

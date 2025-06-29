@@ -7,12 +7,12 @@ public static class PromptHelpers
     public static IReadOnlyList<string> SplitPrompt(string text, int limit)
     {
         if (string.IsNullOrWhiteSpace(text))
-            return new[] { text };
+            return [ text ];
 
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');
 
         if (limit <= 0 || AdjustedLength(text) <= limit)
-            return new[] { text.Replace("\n", NewLine) };
+            return [ text.Replace("\n", NewLine) ];
 
         var adjustedLimit = limit;
         var parts = SplitInternal(text, adjustedLimit);
@@ -39,12 +39,12 @@ public static class PromptHelpers
 
     private static List<string> SplitInternal(string text, int limit)
     {
-        var parts = new List<string>();
+        List<string> parts = [];
         var remaining = text.Trim();
 
         while (remaining.Length > limit)
         {
-            var splitPos = remaining.LastIndexOfAny(new[] { ' ', '\n' }, limit);
+            var splitPos = remaining.LastIndexOfAny([' ', '\n'], limit);
             if (splitPos <= 0)
                 splitPos = limit;
 

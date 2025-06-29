@@ -87,11 +87,10 @@ public class MetricsPageTests : ComponentTestBase
         type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
         var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var labelsField = type.GetField("_burnLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var items = new List<StoryMetric>
-        {
+        List<StoryMetric> items = [
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
-        };
+        ];
         compute.Invoke(metrics, new object?[] { items });
 
         var labels = (string[])labelsField.GetValue(metrics)!;
@@ -111,11 +110,10 @@ public class MetricsPageTests : ComponentTestBase
         var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var optionsField = type.GetField("_burnOptions", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var items = new List<StoryMetric>
-        {
+        List<StoryMetric> items = [
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
-        };
+        ];
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
@@ -137,11 +135,10 @@ public class MetricsPageTests : ComponentTestBase
         type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
         var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var items = new List<StoryMetric>
-        {
+        List<StoryMetric> items = [
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
-        };
+        ];
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
@@ -160,11 +157,10 @@ public class MetricsPageTests : ComponentTestBase
         var type = typeof(Metrics);
         var compute = type.GetMethod("ComputeFlow", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var labelsField = type.GetField("_flowLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var items = new List<StoryMetric>
-        {
+        List<StoryMetric> items = [
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1) },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today }
-        };
+        ];
         compute.Invoke(metrics, new object?[] { items });
 
         var labels = (string[])labelsField.GetValue(metrics)!;
@@ -182,11 +178,10 @@ public class MetricsPageTests : ComponentTestBase
         var labelsField = type.GetField("_flowLabels", BindingFlags.NonPublic | BindingFlags.Instance)!;
         type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today.AddDays(-5));
         type.GetField("_endDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, DateTime.Today);
-        var items = new List<StoryMetric>
-        {
+        List<StoryMetric> items = [
             new() { CreatedDate = DateTime.Today.AddDays(-7), ActivatedDate = DateTime.Today.AddDays(-5), ClosedDate = DateTime.Today.AddDays(-3) },
             new() { CreatedDate = DateTime.Today.AddDays(-4), ActivatedDate = DateTime.Today.AddDays(-4), ClosedDate = DateTime.Today.AddDays(-1) }
-        };
+        ];
         compute.Invoke(metrics, new object?[] { items });
 
         var labels = (string[])labelsField.GetValue(metrics)!;

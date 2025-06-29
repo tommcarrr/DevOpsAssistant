@@ -202,7 +202,7 @@
         var added = await ConfigService.AddProjectAsync(_project, source);
         if (!added)
         {
-            _errors = new List<string> { L["DuplicateName"] };
+            _errors = [ L["DuplicateName"] ];
             return;
         }
 

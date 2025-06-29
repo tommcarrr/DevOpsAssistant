@@ -12,10 +12,9 @@ public class SimpleApexChartTests : ComponentTestBase
     public void Wrapper_Renders_Class()
     {
         SetupServices();
-        var series = new List<ApexSeries>
-        {
-            new() { Name = "Test", Points = new List<ChartPoint> { new() { Label = "A", Value = 1 } } }
-        };
+        List<ApexSeries> series = [
+            new() { Name = "Test", Points = [ new() { Label = "A", Value = 1 } ] }
+        ];
 
         var cut = RenderComponent<SimpleApexChart>(p => p
             .Add(c => c.Series, series)

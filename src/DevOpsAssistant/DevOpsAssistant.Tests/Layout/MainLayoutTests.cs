@@ -109,7 +109,7 @@ public class MainLayoutTests : ComponentTestBase
         await config.SelectProjectAsync("One");
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, ["Two"])!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
         await task;
@@ -130,7 +130,7 @@ public class MainLayoutTests : ComponentTestBase
 
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, new object[] { "Two" })!);
+        var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, ["Two"])!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
         await task;
