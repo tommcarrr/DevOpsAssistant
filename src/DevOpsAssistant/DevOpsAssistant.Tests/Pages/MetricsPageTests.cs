@@ -126,6 +126,32 @@ public class MetricsPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void ComputeBurnUp_Trendline_Stops_With_Actual_Data()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        type.GetField("_additionalPoints", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        type.GetField("_efficiency", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)80);
+        type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var items = new List<StoryMetric>
+        {
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
+        };
+        compute.Invoke(metrics, new object?[] { items });
+
+        var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
+        var trend = series.First(s => s.Name == "Trend").Points;
+
+        Assert.Equal(2, trend.Take(2).Count(p => p.Value.HasValue));
+        Assert.All(trend.Skip(2), p => Assert.Null(p.Value));
+    }
+
+    [Fact]
     public void ComputeFlow_DoesNot_Aggregate_Labels()
     {
         SetupServices();

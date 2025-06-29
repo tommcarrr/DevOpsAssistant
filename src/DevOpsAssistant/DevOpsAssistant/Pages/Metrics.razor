@@ -560,8 +560,15 @@ else if (_periods.Any())
         double intercept = (sumY - slope * sumX) / daysActual;
         for (int i = 0; i < projLen; i++)
         {
-            var val = intercept + slope * i;
-            trend.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(val, 2) });
+            if (i < daysActual)
+            {
+                var val = intercept + slope * i;
+                trend.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(val, 2) });
+            }
+            else
+            {
+                trend.Add(new ChartPoint { Label = labels[i], Value = null });
+            }
         }
 
         _burnApex = new List<ApexSeries>
