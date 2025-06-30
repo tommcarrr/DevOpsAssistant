@@ -126,4 +126,40 @@
   <data name="CompletionRange" xml:space="preserve">
     <value>Completion Range</value>
   </data>
+  <data name="AggregateWeek" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="AggregateFortnight" xml:space="preserve">
+    <value>Fortnight</value>
+  </data>
+  <data name="AggregateMonth" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="AggregateIteration" xml:space="preserve">
+    <value>Iteration</value>
+  </data>
+  <data name="VelocityStoryPoints" xml:space="preserve">
+    <value>Story Points</value>
+  </data>
+  <data name="VelocityOriginalEstimate" xml:space="preserve">
+    <value>Original Estimate</value>
+  </data>
+  <data name="PeriodEnding" xml:space="preserve">
+    <value>Period Ending</value>
+  </data>
+  <data name="AvgLeadTimeDays" xml:space="preserve">
+    <value>Avg Lead Time (days)</value>
+  </data>
+  <data name="AvgCycleTimeDays" xml:space="preserve">
+    <value>Avg Cycle Time (days)</value>
+  </data>
+  <data name="LeadCycleTitle" xml:space="preserve">
+    <value>Lead &amp; Cycle Time</value>
+  </data>
+  <data name="ThroughputVelocityTitle" xml:space="preserve">
+    <value>Throughput &amp; Velocity</value>
+  </data>
+  <data name="CsvHeader" xml:space="preserve">
+    <value>Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity</value>
+  </data>
 </root>

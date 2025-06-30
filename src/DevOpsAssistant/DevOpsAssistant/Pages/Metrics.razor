@@ -2,6 +2,7 @@
 @using System.Text
 @using System.Text.Json
 @using System.Linq
+@using System.Resources
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Components.Apex
 @using ApexCharts
@@ -38,15 +39,15 @@
             </MudStack>
             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudSelect T="AggregateMode" @bind-Value="_mode" Label="@L["AggregateBy"]">
-                <MudSelectItem Value="AggregateMode.Week">Week</MudSelectItem>
-                <MudSelectItem Value="AggregateMode.Fortnight">Fortnight</MudSelectItem>
-                <MudSelectItem Value="AggregateMode.Month">Month</MudSelectItem>
-                <MudSelectItem Value="AggregateMode.Iteration">Iteration</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Week">@L["AggregateWeek"]</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Fortnight">@L["AggregateFortnight"]</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Month">@L["AggregateMonth"]</MudSelectItem>
+                <MudSelectItem Value="AggregateMode.Iteration">@L["AggregateIteration"]</MudSelectItem>
             </MudSelect>
             <MudTooltip Text='@L["VelocityTooltip"]'>
                 <MudSelect T="VelocityMode" @bind-Value="_velocityMode" Label="@L["VelocityBy"]">
-                    <MudSelectItem Value="VelocityMode.StoryPoints">Story Points</MudSelectItem>
-                    <MudSelectItem Value="VelocityMode.OriginalEstimate">Original Estimate</MudSelectItem>
+                    <MudSelectItem Value="VelocityMode.StoryPoints">@L["VelocityStoryPoints"]</MudSelectItem>
+                    <MudSelectItem Value="VelocityMode.OriginalEstimate">@L["VelocityOriginalEstimate"]</MudSelectItem>
                 </MudSelect>
             </MudTooltip>
         </MudStack>
@@ -72,11 +73,11 @@ else if (_periods.Any())
     <MudText Typo="Typo.h6" Class="mt-4">@L["TableHeading"]</MudText>
     <MudTable Items="_periods" Dense="true" Hover="true">
         <HeaderContent>
-            <MudTh>Period Ending</MudTh>
-            <MudTh>Avg Lead Time (days)</MudTh>
-            <MudTh>Avg Cycle Time (days)</MudTh>
-            <MudTh>Throughput</MudTh>
-            <MudTh>Velocity</MudTh>
+            <MudTh>@L["PeriodEnding"]</MudTh>
+            <MudTh>@L["AvgLeadTimeDays"]</MudTh>
+            <MudTh>@L["AvgCycleTimeDays"]</MudTh>
+            <MudTh>@L["Throughput"]</MudTh>
+            <MudTh>@L["Velocity"]</MudTh>
             <MudTh>@L["AvgWip"]</MudTh>
             <MudTh>@L["SprintEff"]</MudTh>
         </HeaderContent>
@@ -98,7 +99,7 @@ else if (_periods.Any())
         <MudItem xs="12" md="@(_leadCycleExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                    <MudText Typo="Typo.h6">Lead &amp; Cycle Time</MudText>
+                    <MudText Typo="Typo.h6">@L["LeadCycleTitle"]</MudText>
                     <MudIconButton Icon="@(_leadCycleExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleLeadCycle"
                                    title="@(_leadCycleExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
@@ -109,7 +110,7 @@ else if (_periods.Any())
         <MudItem xs="12" md="@(_barExpanded ? 12 : 6)">
             <MudPaper Class="pa-6">
                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                    <MudText Typo="Typo.h6">Throughput &amp; Velocity</MudText>
+                    <MudText Typo="Typo.h6">@L["ThroughputVelocityTitle"]</MudText>
                     <MudIconButton Icon="@(_barExpanded ? Icons.Material.Filled.CloseFullscreen : Icons.Material.Filled.OpenInFull)"
                                    Size="Mud.Size.Small" OnClick="ToggleBar"
                                    title="@(_barExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
@@ -681,7 +682,8 @@ else if (_periods.Any())
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity");
+        var rm = new ResourceManager("DevOpsAssistant.Pages.Metrics", typeof(Metrics).Assembly);
+        sb.AppendLine(rm.GetString("CsvHeader") ?? "CsvHeader");
         foreach (var p in periods)
             sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
         return sb.ToString();
