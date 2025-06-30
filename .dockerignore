@@ -1,0 +1,19 @@
+# Ignore Git repository
+.git/
+
+# Ignore build output directories
+src/**/bin/
+src/**/obj/
+
+# Ignore test projects
+src/**/DevOpsAssistant.Tests/
+src/**/DevOpsAssistant.UiTests/
+**/*Test*/
+**/tests/
+
+# Ignore CI artifacts
+artifacts/
+TestResults/
+coverage*/
+*.codecov
+
