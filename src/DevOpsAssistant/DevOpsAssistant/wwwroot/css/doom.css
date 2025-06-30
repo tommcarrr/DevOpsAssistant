@@ -62,3 +62,28 @@ body.doom-theme .app-logo {
     color: transparent;
     text-transform: uppercase;
 }
+
+/* Doom style navigation */
+body.doom-theme .mud-drawer {
+    background: radial-gradient(circle at center, #660000 0%, #000000 100%);
+}
+
+body.doom-theme .mud-nav-link,
+body.doom-theme .mud-nav-group-text {
+    font-family: 'Doom', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ff0000;
+    text-shadow:
+        1px 1px 0 #330000,
+        2px 2px 0 #000000,
+        0 0 5px #ff0000;
+}
+
+body.doom-theme .mud-nav-link:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+body.doom-theme .mud-nav-link.mud-nav-link-active {
+    background-color: rgba(255, 0, 0, 0.4);
+}
