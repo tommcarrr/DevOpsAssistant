@@ -274,6 +274,19 @@ public class DevOpsConfigServiceTests
     }
 
     [Fact]
+    public async Task SaveGlobalCultureAsync_Persists_Value()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+
+        await service.SaveGlobalCultureAsync("es");
+
+        Assert.Equal("es", service.GlobalCulture);
+        var stored = await storage.GetItemAsync<string>("BlazorCulture");
+        Assert.Equal("es", stored);
+    }
+
+    [Fact]
     public async Task SaveCurrentAsync_Raises_Event_When_Validity_Changes()
     {
         var storage = new FakeLocalStorageService();

@@ -18,6 +18,15 @@
   <data name="Organization" xml:space="preserve">
     <value>DevOps Organization</value>
   </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>Spanish</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>

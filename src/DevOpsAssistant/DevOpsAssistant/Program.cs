@@ -29,13 +29,29 @@ builder.Services.AddScoped<ThemeSessionService>();
 
 var host = builder.Build();
 var js = host.Services.GetRequiredService<IJSRuntime>();
-var cultureName = await js.InvokeAsync<string>("blazorCulture.get");
-if (!string.IsNullOrWhiteSpace(cultureName))
+string cultureName = "en";
+try
 {
-    var culture = new CultureInfo(cultureName);
-    CultureInfo.DefaultThreadCurrentCulture = culture;
-    CultureInfo.DefaultThreadCurrentUICulture = culture;
+    var stored = await js.InvokeAsync<string>("blazorCulture.get");
+    if (!string.IsNullOrWhiteSpace(stored))
+        cultureName = stored;
 }
+catch
+{
+    cultureName = "en";
+}
+
+CultureInfo culture;
+try
+{
+    culture = new CultureInfo(cultureName);
+}
+catch (CultureNotFoundException)
+{
+    culture = new CultureInfo("en");
+}
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 var labelLocalizer = host.Services.GetRequiredService<IStringLocalizer<ErrorUi>>();
 await js.InvokeVoidAsync("setErrorDismissLabel", labelLocalizer["DismissError"].Value);
 var themeService = host.Services.GetRequiredService<ThemeSessionService>();
