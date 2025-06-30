@@ -1,7 +1,6 @@
 @page "/projects/{ProjectName}/bulk-tag"
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
-@inject PageStateService StateService
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<BulkTag> L
@@ -14,7 +13,7 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Class="mb-4">
     <MudAutocomplete T="string" @bind-Value="_tag" Label="@L["TagLabel"]" SearchFunc="SearchTags" Class="min-w-200" />
     <MudButton Variant="Variant.Text" OnClick="AddTag" Disabled="string.IsNullOrWhiteSpace(_tag)">@L["AddTag"]</MudButton>
@@ -77,7 +76,6 @@
         try
         {
             _tags = (await ApiService.GetTagsAsync()).ToArray();
-            await StateService.LoadAsync<object>(StateKey);
             _error = null;
         }
         catch (Exception ex)
@@ -132,8 +130,8 @@
             foreach (var item in _selectedItems)
                 foreach (var tag in _selectedTags)
                     await ApiService.AddTagAsync(item.Id, tag);
-            Snackbar.Add(L["AddedMessage"].Value, Severity.Success);
             await StateService.SaveAsync(StateKey, new object());
+            Snackbar.Add("Tags added", Severity.Success);
             _error = null;
         }
         catch (Exception ex)

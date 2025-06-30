@@ -40,7 +40,7 @@
     </MudCollapse>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudStack Row="true" Spacing="2" Class="mb-4">
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
     <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
@@ -115,7 +115,6 @@ else if (_results != null)
         }
         try
         {
-            var state = await StateService.LoadAsync<PageState>(StateKey);
             _error = null;
         }
         catch (Exception ex)
@@ -136,7 +135,6 @@ else if (_results != null)
         {
             var details = await ApiService.GetWorkItemDetailsAsync(_selectedItems.Select(i => i.Id));
             _results = Validate(details);
-            await StateService.SaveAsync(StateKey, new PageState());
             _error = null;
         }
         catch (Exception ex)
@@ -286,12 +284,6 @@ else if (_results != null)
         public bool NeedsAttention { get; set; }
     }
 
-    private class PageState
-    {
-        public string Path { get; set; } = string.Empty;
-        public string[]? States { get; set; }
-        public string[]? Types { get; set; }
-    }
 
     protected override Task OnProjectChangedAsync()
     {
