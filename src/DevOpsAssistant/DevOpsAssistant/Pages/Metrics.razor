@@ -484,11 +484,16 @@ else if (_periods.Any())
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnApex.Clear();
+        if (items.Count == 0)
+        {
+            _burnLabels = [];
+            return;
+        }
         var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_tag)
             ? ComputeOverallSprintEfficiency(items)
             : _efficiency;
 
-        var start = items.Min(i => i.ClosedDate).Date;
+        var start = (_startDate ?? items.Min(i => i.ClosedDate)).Date;
         var end = _endDate ?? DateTime.Today;
         var daysActual = (end - start).Days + 1;
         double[] daily = new double[daysActual];

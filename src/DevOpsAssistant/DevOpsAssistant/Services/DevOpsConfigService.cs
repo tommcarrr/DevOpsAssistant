@@ -28,7 +28,7 @@ public class DevOpsConfigService
     public string GlobalPatToken { get; private set; } = string.Empty;
     public string GlobalOrganization { get; private set; } = string.Empty;
     public bool GlobalDarkMode { get; private set; }
-    public string GlobalCulture { get; private set; } = "en";
+    public string GlobalCulture { get; private set; } = "en-GB";
 
     public DevOpsConfig Config => CurrentProject.Config;
 
@@ -45,7 +45,7 @@ public class DevOpsConfigService
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
         GlobalOrganization = await _localStorage.GetItemAsync<string>(GlobalOrgKey) ?? string.Empty;
         GlobalDarkMode = await _localStorage.GetItemAsync<bool?>(GlobalDarkKey) ?? false;
-        GlobalCulture = await _localStorage.GetItemAsync<string>(GlobalCultureKey) ?? "en";
+        GlobalCulture = await _localStorage.GetItemAsync<string>(GlobalCultureKey) ?? "en-GB";
         var currentName = await _localStorage.GetItemAsync<string>(CurrentKey) ?? string.Empty;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
         if (projects != null && projects.Count > 0)
@@ -120,7 +120,7 @@ public class DevOpsConfigService
 
     public async Task SaveGlobalCultureAsync(string culture)
     {
-        culture = string.IsNullOrWhiteSpace(culture) ? "en" : culture;
+        culture = string.IsNullOrWhiteSpace(culture) ? "en-GB" : culture;
         GlobalCulture = culture;
         await _localStorage.SetItemAsync(GlobalCultureKey, GlobalCulture);
     }
@@ -245,7 +245,7 @@ public class DevOpsConfigService
         GlobalPatToken = string.Empty;
         GlobalOrganization = string.Empty;
         GlobalDarkMode = false;
-        GlobalCulture = "en";
+        GlobalCulture = "en-GB";
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
         await _localStorage.RemoveItemAsync(GlobalPatKey);
@@ -270,7 +270,7 @@ public class DevOpsConfigService
 
     public async Task RemoveGlobalCultureAsync()
     {
-        GlobalCulture = "en";
+        GlobalCulture = "en-GB";
         await _localStorage.RemoveItemAsync(GlobalCultureKey);
     }
 

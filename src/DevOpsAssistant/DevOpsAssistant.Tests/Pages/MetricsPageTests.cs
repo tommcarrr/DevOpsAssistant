@@ -91,6 +91,7 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
         ];
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, items.Min(i => i.ClosedDate));
         compute.Invoke(metrics, new object?[] { items });
 
         var labels = (string[])labelsField.GetValue(metrics)!;
@@ -114,6 +115,7 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
         ];
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, items.Min(i => i.ClosedDate));
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
@@ -140,6 +142,7 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
         ];
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, items.Min(i => i.ClosedDate));
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
@@ -170,6 +173,7 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
         ];
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, items.Min(i => i.ClosedDate));
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
@@ -192,6 +196,7 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
             new() { CreatedDate = DateTime.Today.AddDays(-1), ActivatedDate = DateTime.Today, ClosedDate = DateTime.Today, StoryPoints = 2 }
         ];
+        type.GetField("_startDate", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, items.Min(i => i.ClosedDate));
         compute.Invoke(metrics, new object?[] { items });
 
         var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
