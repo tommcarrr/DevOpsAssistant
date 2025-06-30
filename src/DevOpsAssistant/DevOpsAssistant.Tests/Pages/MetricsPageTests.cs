@@ -149,6 +149,28 @@ public class MetricsPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void ComputeBurnUp_Trendline_Starts_At_Zero_And_Ends_With_Total()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        List<StoryMetric> items = [
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-1), ActivatedDate = DateTime.Today, ClosedDate = DateTime.Today, StoryPoints = 2 }
+        ];
+        compute.Invoke(metrics, new object?[] { items });
+
+        var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
+        var trend = series.First(s => s.Name == "Trend").Points;
+
+        Assert.Equal(0, trend[0].Value);
+        Assert.Equal(5, trend[1].Value);
+    }
+
+    [Fact]
     public void ComputeFlow_DoesNot_Aggregate_Labels()
     {
         SetupServices();
