@@ -77,3 +77,9 @@ The UI tests use Playwright to exercise the deployed staging site. Set
 where to connect.
 
 ## Accessibility
+
+DevOpsAssistant uses MudBlazor components which emit semantic HTML and ARIA
+attributes for assistive technologies. All dialogs and menus can be navigated
+entirely with the keyboard, and focus moves automatically to active form
+elements. Data grids and other interactive controls support arrow-key
+navigation so the application remains usable without a mouse.
