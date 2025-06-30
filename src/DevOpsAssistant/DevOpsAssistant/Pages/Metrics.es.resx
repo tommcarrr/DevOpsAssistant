@@ -126,4 +126,40 @@
   <data name="CompletionRange" xml:space="preserve">
     <value>Rango de finalización</value>
   </data>
+  <data name="AggregateWeek" xml:space="preserve">
+    <value>Semana</value>
+  </data>
+  <data name="AggregateFortnight" xml:space="preserve">
+    <value>Quincena</value>
+  </data>
+  <data name="AggregateMonth" xml:space="preserve">
+    <value>Mes</value>
+  </data>
+  <data name="AggregateIteration" xml:space="preserve">
+    <value>Iteración</value>
+  </data>
+  <data name="VelocityStoryPoints" xml:space="preserve">
+    <value>Puntos de historia</value>
+  </data>
+  <data name="VelocityOriginalEstimate" xml:space="preserve">
+    <value>Estimación original</value>
+  </data>
+  <data name="PeriodEnding" xml:space="preserve">
+    <value>Fin de período</value>
+  </data>
+  <data name="AvgLeadTimeDays" xml:space="preserve">
+    <value>Prom. Lead Time (días)</value>
+  </data>
+  <data name="AvgCycleTimeDays" xml:space="preserve">
+    <value>Prom. Cycle Time (días)</value>
+  </data>
+  <data name="LeadCycleTitle" xml:space="preserve">
+    <value>Lead y Cycle Time</value>
+  </data>
+  <data name="ThroughputVelocityTitle" xml:space="preserve">
+    <value>Rendimiento y Velocidad</value>
+  </data>
+  <data name="CsvHeader" xml:space="preserve">
+    <value>Fin de período,Prom. Lead Time,Prom. Cycle Time,Rendimiento,Velocidad</value>
+  </data>
 </root>
