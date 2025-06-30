@@ -147,7 +147,7 @@ else if (_periods.Any())
                                    Size="Mud.Size.Small" OnClick="ToggleBurn"
                                    title="@(_burnExpanded ? L["CollapseChart"] : L["ExpandChart"])" />
                 </MudStack>
-                <SimpleApexChart SeriesType="SeriesType.Line" Options="_burnOptions" Series="_burnApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_burnExpanded)" />
+                <SimpleApexChart @key="_burnApex" SeriesType="SeriesType.Line" Options="_burnOptions" Series="_burnApex" FormatYAxisLabel="FormatValue" Class="@ChartClass(_burnExpanded)" />
                 <MudButton OnClick="ToggleBurnChartControls"
                            EndIcon="@(_showBurnChartControls ? Icons.Material.Outlined.ArrowDropUp : Icons.Material.Outlined.ArrowDropDown)"
                            Class="mb-2">
