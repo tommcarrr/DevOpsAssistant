@@ -436,6 +436,33 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task DeleteWorkItemAsync_Sends_Delete_Request()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        await service.DeleteWorkItemAsync(42);
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Delete, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/42?api-version=7.0",
+            captured.RequestUri.ToString());
+    }
+
+    [Fact]
     public async Task GetValidationItemsAsync_Returns_Work_Items()
     {
         var wiqlJson = "{\"workItems\":[{\"id\":1}]}";

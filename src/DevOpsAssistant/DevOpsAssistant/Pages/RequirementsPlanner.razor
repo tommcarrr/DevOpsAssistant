@@ -14,6 +14,7 @@
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<RequirementsPlanner> L
+@inject IDialogService DialogService
 
 <PageTitle>DevOpsAssistant - Requirement Planner</PageTitle>
 
@@ -163,6 +164,7 @@
                     }
                 </MudSelect>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="CreateItems">Create Work Items</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" Disabled="_loading || _createdItems.Count == 0" OnClick="UndoCreatedItems">@L["Undo"]</MudButton>
             </MudStack>
         }
     </MudStep>
@@ -197,6 +199,7 @@
     private bool _previewHtml;
     private WorkItemInfo? _feature;
     private Plan? _plan;
+    private readonly List<int> _createdItems = new();
     private const string StateKey = "requirements-planner";
     private const long MaxFileSize = 10 * 1024 * 1024;
 
@@ -348,6 +351,38 @@ Define what success looks like — business or system-level outcomes.
         }
     }
 
+    private async Task UndoCreatedItems()
+    {
+        if (_createdItems.Count == 0) return;
+        var parameters = new DialogParameters { ["Message"] = L["UndoWarning"].Value };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(L["Confirm"], parameters);
+        var result = await dialog.Result;
+        if (result?.Canceled != false) return;
+
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            await DeleteCreatedItems();
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task DeleteCreatedItems()
+    {
+        for (var i = _createdItems.Count - 1; i >= 0; i--)
+            await ApiService.DeleteWorkItemAsync(_createdItems[i]);
+        _createdItems.Clear();
+    }
+
     private async Task CopyPrompt()
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
@@ -495,6 +530,7 @@ Define what success looks like — business or system-level outcomes.
                         story.AcceptanceCriteria,
                         tags
                     );
+                    _createdItems.Add(story.Id);
                 }
             }
             else
@@ -502,22 +538,25 @@ Define what success looks like — business or system-level outcomes.
                 foreach (var epic in _plan.Epics)
                 {
                     epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, ["AI Generated"]);
+                    _createdItems.Add(epic.Id);
                     foreach (var feature in epic.Features)
                     {
                         feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, ["AI Generated"]);
+                        _createdItems.Add(feature.Id);
                         foreach (var story in feature.Stories)
-                            {
-                                var tags2 = story.Tags.Concat(["AI Generated"]).ToArray();
-                                story.Id = await ApiService.CreateWorkItemAsync(
-                                    "User Story",
-                                    story.Title,
-                                    story.Description,
-                                    _backlog,
-                                    feature.Id,
-                                    story.AcceptanceCriteria,
-                                    tags2
-                                );
-                            }
+                        {
+                            var tags2 = story.Tags.Concat(["AI Generated"]).ToArray();
+                            story.Id = await ApiService.CreateWorkItemAsync(
+                                "User Story",
+                                story.Title,
+                                story.Description,
+                                _backlog,
+                                feature.Id,
+                                story.AcceptanceCriteria,
+                                tags2
+                            );
+                            _createdItems.Add(story.Id);
+                        }
                     }
                 }
             }
