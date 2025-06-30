@@ -130,8 +130,7 @@
             foreach (var item in _selectedItems)
                 foreach (var tag in _selectedTags)
                     await ApiService.AddTagAsync(item.Id, tag);
-            await StateService.SaveAsync(StateKey, new object());
-            Snackbar.Add("Tags added", Severity.Success);
+                    Snackbar.Add(L["AddedMessage"].Value, Severity.Success);
             _error = null;
         }
         catch (Exception ex)
