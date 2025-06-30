@@ -134,4 +134,40 @@ public class WorkItemSelectorTests : ComponentTestBase
         Assert.Single(selected);
         Assert.Equal(5, selected.First().Id);
     }
+
+    [Fact]
+    public async Task Shows_Loading_Indicator_When_Loading()
+    {
+        var config = SetupServices(includeApi: true);
+        await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+
+        var backlogJson = "{\"path\":\"Area\"}";
+        var statesJson = "{\"value\":[{\"name\":\"New\"}]}";
+        var tagsJson = "{\"value\":[{\"name\":\"UI\"}]}";
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            var url = req.RequestUri!.AbsoluteUri;
+            if (url.Contains("classificationnodes/areas"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(backlogJson) };
+            if (url.Contains("states"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(statesJson) };
+            if (url.Contains("tags"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(tagsJson) };
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") };
+        });
+        var client = new HttpClient(handler);
+        Services.AddSingleton(new DeploymentConfigService(new HttpClient()));
+        Services.AddSingleton(sp => new DevOpsApiService(
+            client,
+            config,
+            sp.GetRequiredService<DeploymentConfigService>(),
+            sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
+
+        var cut = RenderWithProvider<WorkItemSelector>();
+        var loadingField = cut.Instance.GetType().GetField("_loading", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        loadingField!.SetValue(cut.Instance, true);
+        cut.Render();
+
+        Assert.Contains("mud-progress-circular", cut.Markup);
+    }
 }
