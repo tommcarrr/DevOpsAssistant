@@ -15,4 +15,31 @@
   <data name="BaseBranchTooltip" xml:space="preserve">
     <value>Compare against this branch for ahead/behind counts</value>
   </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Repository" xml:space="preserve">
+    <value>Repository</value>
+  </data>
+  <data name="BaseBranch" xml:space="preserve">
+    <value>Base Branch</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>Sort by</value>
+  </data>
+  <data name="Branch" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Ahead" xml:space="preserve">
+    <value>Ahead</value>
+  </data>
+  <data name="Behind" xml:space="preserve">
+    <value>Behind</value>
+  </data>
 </root>
