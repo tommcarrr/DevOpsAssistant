@@ -880,7 +880,7 @@ public class DevOpsApiService
         areaPath = NormalizeAreaPath(areaPath);
         var start = startDate.ToString("yyyy-MM-dd");
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND [Microsoft.VSTS.Common.ClosedDate] >= '{start}' ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND ([Microsoft.VSTS.Common.ClosedDate] >= '{start}' OR [System.State] <> 'Closed') ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
     }
 
     private static string BuildStorySearchWiql(string term)
