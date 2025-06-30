@@ -587,7 +587,7 @@ else if (_periods.Any())
         List<double> dash = [];
         foreach (var s in _burnApex)
         {
-            dash.Add(s.Name == "Trend" ? 5d : 0d);
+            dash.Add(s.Name is "Trend" or "Projection Min" or "Projection Max" ? 5d : 0d);
         }
         _burnOptions.Stroke = new Stroke { DashArray = new ApexCharts.Size(dash) };
     }
