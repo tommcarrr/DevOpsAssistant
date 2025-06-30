@@ -45,13 +45,6 @@ public static class DoomTheme
             DrawerText = "#E0E0E0",
             DrawerIcon = "#9E9E9E"
         },
-        Shadows = new Shadow
-        {
-            Elevation = [
-                "none",
-                "0px 4px 2px -2px rgba(0,0,0,0.5)",
-                "0px 6px 3px -3px rgba(0,0,0,0.5)",
-            ]
-        }
+        Shadows = new Shadow()
     };
 }
