@@ -21,6 +21,9 @@
   <data name="Validation" xml:space="preserve">
     <value>Validación de elementos de trabajo</value>
   </data>
+  <data name="BulkTag" xml:space="preserve">
+    <value>Etiquetado masivo</value>
+  </data>
   <data name="WorkItemQuality" xml:space="preserve">
     <value>Calidad de elemento de trabajo</value>
   </data>
