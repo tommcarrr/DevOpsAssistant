@@ -49,3 +49,16 @@ body.doom-theme .mud-button-filled-primary {
                 #FF1744 70%);
     box-shadow: inset 0 2px 2px rgba(0,0,0,0.5);
 }
+body.doom-theme .app-logo {
+    font-family: 'Doom', sans-serif;
+    background: linear-gradient(180deg,
+        #375a7f 0%,
+        #375a7f 30%,
+        #ff851b 60%,
+        #ff4136 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-transform: uppercase;
+}
