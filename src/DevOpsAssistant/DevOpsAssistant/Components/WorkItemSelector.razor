@@ -130,6 +130,10 @@
                 }
             </MudTabPanel>
         </MudTabs>
+        @if (_loading)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        }
     </MudExpansionPanel>
 </MudExpansionPanels>
 
@@ -158,6 +162,7 @@
     private readonly HashSet<WorkItemInfo> _tagSelected = [];
     private List<TreeItemData<WorkItemNode>>? _treeItems;
     private IReadOnlyCollection<WorkItemNode>? _selectedNodes;
+    private bool _loading;
 
     protected override async Task OnInitializedAsync()
     {
@@ -195,8 +200,17 @@
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
             return Array.Empty<WorkItemInfo>();
-        var result = await ApiService.SearchReleaseItemsAsync(value);
-        return result.Where(r => !_searchSelected.Contains(r));
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var result = await ApiService.SearchReleaseItemsAsync(value);
+            return result.Where(r => !_searchSelected.Contains(r));
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private Task<IEnumerable<string>> SearchIterations(string value, CancellationToken _)
@@ -243,28 +257,55 @@
 
     private async Task LoadList()
     {
-        var items = await ApiService.GetWorkItemInfosAsync(_path, SelectedStates, SelectedTypes, _iteration);
-        _listSelected.Clear();
-        foreach (var i in items)
-            _listSelected.Add(i);
-        UpdateSelected();
-        await SaveState();
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var items = await ApiService.GetWorkItemInfosAsync(_path, SelectedStates, SelectedTypes, _iteration);
+            _listSelected.Clear();
+            foreach (var i in items)
+                _listSelected.Add(i);
+            UpdateSelected();
+            await SaveState();
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private async Task LoadTag()
     {
-        var items = await ApiService.SearchItemsByTagAsync(_tag);
-        _tagSelected.Clear();
-        foreach (var i in items)
-            _tagSelected.Add(i);
-        UpdateSelected();
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var items = await ApiService.SearchItemsByTagAsync(_tag);
+            _tagSelected.Clear();
+            foreach (var i in items)
+                _tagSelected.Add(i);
+            UpdateSelected();
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private async Task LoadTree()
     {
-        var roots = await ApiService.GetWorkItemHierarchyAsync(_treePath);
-        _treeItems = roots.Select(BuildTreeItem).ToList();
-        await SaveState();
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var roots = await ApiService.GetWorkItemHierarchyAsync(_treePath);
+            _treeItems = roots.Select(BuildTreeItem).ToList();
+            await SaveState();
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private static TreeItemData<WorkItemNode> BuildTreeItem(WorkItemNode node)
