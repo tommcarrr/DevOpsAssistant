@@ -8,7 +8,6 @@
 @using MudBlazor
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
-@inject PageStateService StateService
 @inherits ProjectComponentBase
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
@@ -21,7 +20,7 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading || !_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
 
 @if (_selectedItems.Any())
@@ -106,7 +105,6 @@ else if (_promptParts != null)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
         }
-        await StateService.LoadAsync<object>(StateKey);
     }
 
     private async Task Generate()

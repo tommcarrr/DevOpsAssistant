@@ -7,12 +7,12 @@ public static class PromptHelpers
     public static IReadOnlyList<string> SplitPrompt(string text, int limit)
     {
         if (string.IsNullOrWhiteSpace(text))
-            return [ text ];
+            return [text];
 
         text = text.Replace("\r\n", "\n").Replace('\r', '\n');
 
         if (limit <= 0 || AdjustedLength(text) <= limit)
-            return [ text.Replace("\n", NewLine) ];
+            return [text.Replace("\n", NewLine)];
 
         var adjustedLimit = limit;
         var parts = SplitInternal(text, adjustedLimit);

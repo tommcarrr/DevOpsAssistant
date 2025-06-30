@@ -1,8 +1,10 @@
 @using DevOpsAssistant.Services.Models
+@using DevOpsAssistant.Services
 @using MudBlazor
 @using Microsoft.Extensions.Localization
 @inject DevOpsApiService ApiService
 @inject IStringLocalizer<WorkItemSelector> L
+@inject PageStateService StateService
 
 <MudExpansionPanels>
     <MudExpansionPanel Text="Work Item Selection" Expanded="@Expanded" ExpandedChanged="OnExpandedChanged">
@@ -111,6 +113,7 @@
     [Parameter] public EventCallback<bool> ExpandedChanged { get; set; }
     [Parameter] public EventCallback<IReadOnlyCollection<WorkItemInfo>> SelectedChanged { get; set; }
     [Parameter] public bool UseIteration { get; set; }
+    [Parameter] public string? StateKey { get; set; }
 
     private string _path = string.Empty;
     private string _treePath = string.Empty;
@@ -141,6 +144,22 @@
         SelectedTypes = _types.ToHashSet();
         if (UseIteration)
             _iterations = await ApiService.GetIterationsAsync();
+        if (!string.IsNullOrWhiteSpace(StateKey))
+        {
+            var state = await StateService.LoadAsync<SelectorState>(StateKey);
+            if (state != null)
+            {
+                if (!string.IsNullOrWhiteSpace(state.Path))
+                    _path = state.Path;
+                if (!string.IsNullOrWhiteSpace(state.TreePath))
+                    _treePath = state.TreePath;
+                if (state.States != null)
+                    SelectedStates = state.States.ToHashSet();
+                if (state.Types != null)
+                    SelectedTypes = state.Types.ToHashSet();
+                _iteration = state.Iteration;
+            }
+        }
     }
 
     private async Task<IEnumerable<WorkItemInfo>> SearchItems(string value, CancellationToken _)
@@ -186,12 +205,14 @@
         foreach (var i in items)
             _listSelected.Add(i);
         UpdateSelected();
+        await SaveState();
     }
 
     private async Task LoadTree()
     {
         var roots = await ApiService.GetWorkItemHierarchyAsync(_treePath);
         _treeItems = roots.Select(BuildTreeItem).ToList();
+        await SaveState();
     }
 
     private static TreeItemData<WorkItemNode> BuildTreeItem(WorkItemNode node)
@@ -222,6 +243,7 @@
             foreach (var n in _selectedNodes)
                 set.Add(n.Info);
         await SelectedChanged.InvokeAsync(set.ToList());
+        await SaveState();
     }
 
     private Task OnExpandedChanged(bool value)
@@ -230,4 +252,27 @@
         return ExpandedChanged.InvokeAsync(value);
     }
 
+    private async Task SaveState()
+    {
+        if (string.IsNullOrWhiteSpace(StateKey))
+            return;
+        var state = new SelectorState
+        {
+            Path = _path,
+            TreePath = _treePath,
+            States = SelectedStates.ToArray(),
+            Types = SelectedTypes.ToArray(),
+            Iteration = _iteration
+        };
+        await StateService.SaveAsync(StateKey, state);
+    }
+
+    private class SelectorState
+    {
+        public string Path { get; set; } = string.Empty;
+        public string TreePath { get; set; } = string.Empty;
+        public string[]? States { get; set; }
+        public string[]? Types { get; set; }
+        public string? Iteration { get; set; }
+    }
 }

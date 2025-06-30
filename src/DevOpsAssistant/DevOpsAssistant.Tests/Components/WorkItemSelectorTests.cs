@@ -42,7 +42,8 @@ public class WorkItemSelectorTests : ComponentTestBase
             sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var cut = RenderWithProvider<WorkItemSelector>();
-        cut.SetParametersAndRender(parameters => parameters.Add(c => c.UseIteration, true));
+        cut.SetParametersAndRender(parameters => parameters.Add(c => c.UseIteration, true)
+                                                 .Add(c => c.StateKey, "test"));
         cut.WaitForAssertion(() => Assert.Contains("Iteration", cut.Markup));
     }
 
@@ -79,6 +80,7 @@ public class WorkItemSelectorTests : ComponentTestBase
             sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var cut = RenderWithProvider<WorkItemSelector>();
+        cut.SetParametersAndRender(p => p.Add(c => c.StateKey, "test"));
         var loadButton = cut.FindAll("button").First(b => b.TextContent.Contains("Load"));
         loadButton.Click();
 

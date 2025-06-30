@@ -6,7 +6,6 @@
 @using DevOpsAssistant.Utils
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
-@inject PageStateService StateService
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<WorkItemQuality> L
@@ -19,7 +18,7 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="!_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
 
 @if (_loading)
@@ -67,7 +66,6 @@ else if (_promptParts != null)
         }
         try
         {
-            await StateService.LoadAsync<PageState>(StateKey);
             _error = null;
         }
         catch (Exception ex)
@@ -87,7 +85,6 @@ else if (_promptParts != null)
             _prompt = BuildPrompt(details, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
-            await StateService.SaveAsync(StateKey, new PageState());
             _error = null;
             await CopyPrompt();
         }
@@ -272,12 +269,6 @@ else if (_promptParts != null)
         return sb.ToString();
     }
 
-    private class PageState
-    {
-        public string Path { get; set; } = string.Empty;
-        public string[]? States { get; set; }
-        public string? Iteration { get; set; }
-    }
 
     protected override Task OnProjectChangedAsync()
     {
