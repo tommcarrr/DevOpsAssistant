@@ -39,4 +39,13 @@
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="UndoWarning" xml:space="preserve">
+    <value>Esto eliminará los elementos creados recientemente. ¿Continuar?</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
 </root>

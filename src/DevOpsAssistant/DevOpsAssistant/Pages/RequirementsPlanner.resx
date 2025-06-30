@@ -39,4 +39,13 @@
   <data name="CopyToast" xml:space="preserve">
     <value>Copied to clipboard</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="UndoWarning" xml:space="preserve">
+    <value>This will delete the newly created work items. Continue?</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
 </root>
