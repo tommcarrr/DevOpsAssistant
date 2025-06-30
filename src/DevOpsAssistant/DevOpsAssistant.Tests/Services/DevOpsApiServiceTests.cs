@@ -537,6 +537,15 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public void BuildMetricsWiql_Includes_Open_Items()
+    {
+        var query = InvokeBuildMetricsWiql("Area", DateTime.Today);
+
+        Assert.Contains("System.State", query);
+        Assert.Contains("<> 'Closed'", query);
+    }
+
+    [Fact]
     public void BuildStoriesWiql_Includes_States_When_Provided()
     {
         var query = InvokeBuildStoriesWiql("Area", ["New", "Active"], null);
