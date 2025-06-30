@@ -15,14 +15,19 @@
 
 <WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Class="mb-4">
-    <MudSelect T="string" MultiSelection="true" SelectedValues="_selectedTags" SelectedValuesChanged="@(v => _selectedTags = v.ToHashSet())" Label="Tags">
-        @foreach (var t in _tags)
-        {
-            <MudSelectItem Value="@t">@t</MudSelectItem>
-        }
-    </MudSelect>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ApplyTags" Disabled="!_selectedItems.Any() || !_selectedTags.Any() || _loading">Add Tags</MudButton>
+    <MudAutocomplete T="string" @bind-Value="_tag" Label="@L["TagLabel"]" SearchFunc="SearchTags" Class="min-w-200" />
+    <MudButton Variant="Variant.Text" OnClick="AddTag" Disabled="string.IsNullOrWhiteSpace(_tag)">@L["AddTag"]</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ApplyTags" Disabled="!_selectedItems.Any() || !_selectedTags.Any() || _loading">@L["AddTags"]</MudButton>
 </MudStack>
+@if (_selectedTags.Any())
+{
+    <MudChipSet T="string" Class="mb-2">
+        @foreach (var t in _selectedTags)
+        {
+            <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveTag(t)" Closeable="true">@t</MudChip>
+        }
+    </MudChipSet>
+}
 
 @if (_loading)
 {
@@ -55,6 +60,7 @@
     private readonly HashSet<WorkItemInfo> _selectedItems = [];
     private HashSet<string> _selectedTags = new();
     private string[] _tags = [];
+    private string _tag = string.Empty;
     private bool _loading;
     private string? _error;
     private bool _filtersExpanded = true;
@@ -91,6 +97,29 @@
         _selectedItems.Remove(item);
     }
 
+    private Task<IEnumerable<string>> SearchTags(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _tags;
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
+        result = result.Where(t => !_selectedTags.Contains(t));
+        return Task.FromResult(result);
+    }
+
+    private void AddTag()
+    {
+        if (string.IsNullOrWhiteSpace(_tag))
+            return;
+        _selectedTags.Add(_tag);
+        _tag = string.Empty;
+    }
+
+    private void RemoveTag(string tag)
+    {
+        _selectedTags.Remove(tag);
+    }
+
+
     private async Task ApplyTags()
     {
         if (_selectedItems.Count == 0 || _selectedTags.Count == 0) return;
@@ -101,6 +130,7 @@
             foreach (var item in _selectedItems)
                 foreach (var tag in _selectedTags)
                     await ApiService.AddTagAsync(item.Id, tag);
+            await StateService.SaveAsync(StateKey, new object());
             Snackbar.Add("Tags added", Severity.Success);
             _error = null;
         }

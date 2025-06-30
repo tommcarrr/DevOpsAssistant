@@ -15,4 +15,13 @@
   <data name="DeleteTooltip" xml:space="preserve">
     <value>Remove item</value>
   </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddTags" xml:space="preserve">
+    <value>Add Tags</value>
+  </data>
+  <data name="AddedMessage" xml:space="preserve">
+    <value>Tags added</value>
+  </data>
 </root>
