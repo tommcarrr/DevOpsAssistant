@@ -616,6 +616,17 @@ public class DevOpsApiService
         await SendAsync(request);
     }
 
+    public async Task DeleteWorkItemAsync(int id)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var request = new HttpRequestMessage(HttpMethod.Delete,
+            $"{baseUri}/workitems/{id}?api-version={ApiVersion}");
+        await SendAsync(request);
+    }
+
     public Task<List<WorkItemInfo>> SearchUserStoriesAsync(string term)
     {
         var wiql = BuildStorySearchWiql(term);
