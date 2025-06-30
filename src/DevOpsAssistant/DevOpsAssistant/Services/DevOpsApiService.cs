@@ -628,6 +628,12 @@ public class DevOpsApiService
         return SearchWorkItemsAsync(wiql);
     }
 
+    public Task<List<WorkItemInfo>> SearchItemsByTagAsync(string tag)
+    {
+        var wiql = BuildTagSearchWiql(tag);
+        return SearchWorkItemsAsync(wiql);
+    }
+
     public async Task<List<WorkItemInfo>> GetWorkItemInfosAsync(
         string areaPath,
         IEnumerable<string> states,
@@ -889,6 +895,13 @@ public class DevOpsApiService
         return
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] IN ('User Story','Bug') AND (" +
             $"{idFilter}[System.Title] CONTAINS '{term}') ORDER BY [System.ChangedDate] DESC";
+    }
+
+    private static string BuildTagSearchWiql(string tag)
+    {
+        tag = tag.Replace("'", "''");
+        return
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.Tags] CONTAINS '{tag}' ORDER BY [System.ChangedDate] DESC";
     }
 
     private async Task<List<WorkItemInfo>> SearchWorkItemsAsync(string wiql)

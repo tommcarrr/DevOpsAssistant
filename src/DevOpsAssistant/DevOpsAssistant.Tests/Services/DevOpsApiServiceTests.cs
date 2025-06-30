@@ -589,6 +589,32 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task SearchItemsByTagAsync_Returns_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":3}]}";
+        var itemsJson = "{\"value\":[{\"id\":3,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"Active\",\"System.WorkItemType\":\"User Story\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.SearchItemsByTagAsync("UI");
+
+        Assert.Single(result);
+        Assert.Equal(3, result[0].Id);
+    }
+
+    [Fact]
     public async Task GetStoryMetricsAsync_Returns_Metrics()
     {
         var wiqlJson = "{\"workItems\":[{\"id\":1}]}";
