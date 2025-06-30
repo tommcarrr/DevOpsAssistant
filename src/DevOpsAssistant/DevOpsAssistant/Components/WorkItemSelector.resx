@@ -15,4 +15,10 @@
   <data name="DeleteTooltip" xml:space="preserve">
     <value>Remove item</value>
   </data>
+  <data name="TagTab" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="TagLabel" xml:space="preserve">
+    <value>Tag</value>
+  </data>
 </root>

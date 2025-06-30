@@ -66,7 +66,7 @@ public class DevOpsConfigService
         if (legacy != null)
         {
             var project = new DevOpsProject { Name = "default", Config = Normalize(legacy) };
-            Projects = [ project ];
+            Projects = [project];
             CurrentProject = project;
             await SaveProjectsAsync();
             await _localStorage.RemoveItemAsync(LegacyStorageKey);
