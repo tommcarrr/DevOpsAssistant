@@ -105,4 +105,7 @@
   <data name="FooterCopyright" xml:space="preserve">
     <value>© {0} TommCarrr industries</value>
   </data>
+  <data name="FooterDisclaimer" xml:space="preserve">
+    <value>This is a prototype. All data should be checked.</value>
+  </data>
 </root>

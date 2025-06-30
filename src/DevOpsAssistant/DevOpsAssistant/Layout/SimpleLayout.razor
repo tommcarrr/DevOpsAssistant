@@ -38,12 +38,15 @@
         </div>
         <footer class="app-footer">
             <MudContainer MaxWidth="MaxWidth.Large" Class="footer-content">
-                <MudText Typo="Typo.body2" Align="Align.Left" Inline="true">
-                    @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
-                </MudText>
-                <MudText Typo="Typo.caption" Class="float-right" Inline="true">
-                    Version @VersionService.Version
-                </MudText>
+            <MudText Typo="Typo.body2" Align="Align.Left" Inline="true">
+                @string.Format(L["FooterCopyright"], System.DateTime.Now.Year)
+            </MudText>
+            <MudText Typo="Typo.caption" Align="Align.Left" Inline="true">
+                @L["FooterDisclaimer"]
+            </MudText>
+            <MudText Typo="Typo.caption" Class="float-right" Inline="true">
+                Version @VersionService.Version
+            </MudText>
             </MudContainer>
         </footer>
     </MudMainContent>
