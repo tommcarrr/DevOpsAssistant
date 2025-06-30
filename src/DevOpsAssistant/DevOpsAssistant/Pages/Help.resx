@@ -33,6 +33,9 @@
   <data name="ReleaseNotes" xml:space="preserve">
     <value>&lt;p&gt;Select stories and build a prompt that summarizes them for release notes.&lt;/p&gt;&lt;p&gt;Prompts can be copied or downloaded, splitting into parts with arrows to navigate.&lt;/p&gt;</value>
   </data>
+  <data name="BulkTag" xml:space="preserve">
+    <value>&lt;p&gt;Choose multiple stories, pick one or more tags, and apply them all at once.&lt;/p&gt;</value>
+  </data>
   <data name="Metrics" xml:space="preserve">
     <value>&lt;p&gt;Display throughput, lead time, cycle time, velocity, burn up and flow charts for the chosen backlog.&lt;/p&gt;&lt;p&gt;Throughput counts the work items closed in each period. Lead time is the number of days from Created Date to Closed Date. Cycle time measures Activated Date to Closed Date. Velocity sums Story Points or Original Estimate for completed stories. The burn up forecast uses additional points, efficiency and error range, while cumulative flow tracks backlog, work in progress and done items each day.&lt;/p&gt;&lt;p&gt;Use these charts to spot trends and plan future iterations.&lt;/p&gt;</value>
   </data>

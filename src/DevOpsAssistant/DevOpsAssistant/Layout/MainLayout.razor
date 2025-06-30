@@ -45,6 +45,7 @@
                 <MudNavGroup Title="@L["WorkItems"]" Expanded="true">
                         <MudNavLink Href="@($"projects/{_selectedProject}/epics-features")" Icon="@Icons.Material.Filled.List" Disabled="@IsProjectInvalid">@L["Epics"]</MudNavLink>
                         <MudNavLink Href="@($"projects/{_selectedProject}/validation")" Icon="@Icons.Material.Filled.Rule" Disabled="@IsProjectInvalid">@L["Validation"]</MudNavLink>
+                        <MudNavLink Href="@($"projects/{_selectedProject}/bulk-tag")" Icon="@Icons.Material.Filled.Label" Disabled="@IsProjectInvalid">@L["BulkTag"]</MudNavLink>
                 </MudNavGroup>
                 <MudNavGroup Title="@L["AIHelpers"]" Expanded="true">
                         <MudNavLink Href="@($"projects/{_selectedProject}/work-item-quality")" Icon="@Icons.Material.Filled.Check" Disabled="@IsProjectInvalid">@L["WorkItemQuality"]</MudNavLink>

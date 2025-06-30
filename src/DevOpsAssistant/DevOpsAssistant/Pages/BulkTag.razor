@@ -1,0 +1,124 @@
+@page "/projects/{ProjectName}/bulk-tag"
+@using DevOpsAssistant.Services.Models
+@inject DevOpsApiService ApiService
+@inject PageStateService StateService
+@inject ISnackbar Snackbar
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<BulkTag> L
+@inherits ProjectComponentBase
+
+<PageTitle>DevOpsAssistant - Bulk Tag</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error">@_error</MudAlert>
+}
+
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+<MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Class="mb-4">
+    <MudSelect T="string" MultiSelection="true" SelectedValues="_selectedTags" SelectedValuesChanged="@(v => _selectedTags = v.ToHashSet())" Label="Tags">
+        @foreach (var t in _tags)
+        {
+            <MudSelectItem Value="@t">@t</MudSelectItem>
+        }
+    </MudSelect>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ApplyTags" Disabled="!_selectedItems.Any() || !_selectedTags.Any() || _loading">Add Tags</MudButton>
+</MudStack>
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+
+@if (_selectedItems.Any())
+{
+    <MudTable Items="_selectedItems" Dense="true">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.Id</MudTd>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd>
+                <MudTooltip Text='@L["DeleteTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveItem(context)" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+@code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
+
+    private readonly HashSet<WorkItemInfo> _selectedItems = [];
+    private HashSet<string> _selectedTags = new();
+    private string[] _tags = [];
+    private bool _loading;
+    private string? _error;
+    private bool _filtersExpanded = true;
+    private const string StateKey = "bulk-tag";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) && ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
+        try
+        {
+            _tags = (await ApiService.GetTagsAsync()).ToArray();
+            await StateService.LoadAsync<object>(StateKey);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
+    {
+        _selectedItems.Clear();
+        foreach (var i in items)
+            _selectedItems.Add(i);
+        return Task.CompletedTask;
+    }
+
+    private void RemoveItem(WorkItemInfo item)
+    {
+        _selectedItems.Remove(item);
+    }
+
+    private async Task ApplyTags()
+    {
+        if (_selectedItems.Count == 0 || _selectedTags.Count == 0) return;
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            foreach (var item in _selectedItems)
+                foreach (var tag in _selectedTags)
+                    await ApiService.AddTagAsync(item.Id, tag);
+            Snackbar.Add("Tags added", Severity.Success);
+            await StateService.SaveAsync(StateKey, new object());
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
+    }
+}

@@ -21,6 +21,9 @@
   <data name="Validation" xml:space="preserve">
     <value>Work Item Validation</value>
   </data>
+  <data name="BulkTag" xml:space="preserve">
+    <value>Bulk Tag</value>
+  </data>
   <data name="WorkItemQuality" xml:space="preserve">
     <value>Work Item Quality</value>
   </data>
