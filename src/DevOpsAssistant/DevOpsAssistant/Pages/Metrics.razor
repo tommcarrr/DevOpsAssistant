@@ -525,6 +525,7 @@ else if (_periods.Any())
         List<ChartPoint> minProj = new();
         List<ChartPoint> maxProj = new();
 
+        bool maxReached = false;
         for (int i = 0; i < projLen; i++)
         {
             var date = start.AddDays(i);
@@ -540,9 +541,24 @@ else if (_periods.Any())
                 complete.Add(new ChartPoint { Label = labels[i], Value = null });
                 var d = i - daysActual + 1;
                 var minVal = Math.Min(sum + d * minVel, finalTarget);
-                var maxVal = Math.Min(sum + d * maxVel, finalTarget);
+                var maxVal = sum + d * maxVel;
                 minProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(minVal, 2) });
-                maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(maxVal, 2) });
+                if (!maxReached)
+                {
+                    if (maxVal >= finalTarget)
+                    {
+                        maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(finalTarget, 2) });
+                        maxReached = true;
+                    }
+                    else
+                    {
+                        maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(maxVal, 2) });
+                    }
+                }
+                else
+                {
+                    maxProj.Add(new ChartPoint { Label = labels[i], Value = null });
+                }
             }
             target.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(finalTarget, 2) });
         }
