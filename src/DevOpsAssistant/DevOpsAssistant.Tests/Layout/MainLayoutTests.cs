@@ -75,6 +75,16 @@ public class MainLayoutTests : ComponentTestBase
     }
 
     [Fact]
+    public void Footer_Displays_Disclaimer()
+    {
+        SetupServices();
+
+        var cut = RenderComponent<MainLayout>();
+
+        cut.WaitForAssertion(() => Assert.Contains("This is a prototype", cut.Markup));
+    }
+
+    [Fact]
     public void Footer_Uses_Sticky_Flexbox_Css()
     {
         var cssPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
