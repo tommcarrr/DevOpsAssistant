@@ -1,6 +1,8 @@
 @inject DevOpsConfigService ConfigService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<GlobalOptionsDialog> L
 
@@ -9,6 +11,10 @@
         <MudStack Spacing="2">
             <MudTextField @bind-Value="_organization" Label='@L["Organization"]' autocomplete="off" />
             <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" autocomplete="off" />
+            <MudSelect @bind-Value="_culture" Label='@L["Language"]'>
+                <MudSelectItem Value="@("en")">@L["English"]</MudSelectItem>
+                <MudSelectItem Value="@("es")">@L["Spanish"]</MudSelectItem>
+            </MudSelect>
         </MudStack>
     </DialogContent>
     <DialogActions>
@@ -21,6 +27,7 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     private string _organization = string.Empty;
     private string _token = string.Empty;
+    private string _culture = "en";
     
 
     protected override async Task OnInitializedAsync()
@@ -28,12 +35,33 @@
         await ConfigService.LoadAsync();
         _organization = ConfigService.GlobalOrganization;
         _token = ConfigService.GlobalPatToken;
+        _culture = ConfigService.GlobalCulture;
+        try
+        {
+            var stored = await JSRuntime.InvokeAsync<string>("blazorCulture.get");
+            if (!string.IsNullOrWhiteSpace(stored))
+                _culture = stored;
+        }
+        catch
+        {
+            _culture = "en";
+        }
     }
 
     private async Task Save()
     {
         await ConfigService.SaveGlobalOrganizationAsync(_organization);
         await ConfigService.SaveGlobalPatAsync(_token);
+        await ConfigService.SaveGlobalCultureAsync(_culture);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("blazorCulture.set", _culture);
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
+        catch
+        {
+            await JSRuntime.InvokeVoidAsync("blazorCulture.set", "en");
+        }
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
