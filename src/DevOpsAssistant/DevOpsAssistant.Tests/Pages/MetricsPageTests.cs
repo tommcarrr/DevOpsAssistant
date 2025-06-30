@@ -124,6 +124,37 @@ public class MetricsPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void ComputeBurnUp_ProjectionLines_Are_Dashed()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        type.GetField("_additionalPoints", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        type.GetField("_efficiency", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)80);
+        type.GetField("_errorRange", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(metrics, (double?)10);
+        var compute = type.GetMethod("ComputeBurnUp", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var seriesField = type.GetField("_burnApex", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var optionsField = type.GetField("_burnOptions", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        List<StoryMetric> items = [
+            new() { CreatedDate = DateTime.Today.AddDays(-3), ActivatedDate = DateTime.Today.AddDays(-2), ClosedDate = DateTime.Today.AddDays(-1), StoryPoints = 3 },
+            new() { CreatedDate = DateTime.Today.AddDays(-2), ActivatedDate = DateTime.Today.AddDays(-1), ClosedDate = DateTime.Today, StoryPoints = 2 }
+        ];
+        compute.Invoke(metrics, new object?[] { items });
+
+        var series = (List<ApexSeries>)seriesField.GetValue(metrics)!;
+        var options = (ApexChartOptions<ChartPoint>)optionsField.GetValue(metrics)!;
+        var dashes = (List<double>)options.Stroke!.DashArray!;
+
+        foreach (var name in new[] { "Projection Min", "Projection Max" })
+        {
+            var idx = series.FindIndex(s => s.Name == name);
+            Assert.True(idx >= 0);
+            Assert.True(dashes[idx] > 0);
+        }
+    }
+
+    [Fact]
     public void ComputeBurnUp_Trendline_Stops_With_Actual_Data()
     {
         SetupServices();
