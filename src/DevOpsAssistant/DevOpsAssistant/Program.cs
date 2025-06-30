@@ -29,7 +29,7 @@ builder.Services.AddScoped<ThemeSessionService>();
 
 var host = builder.Build();
 var js = host.Services.GetRequiredService<IJSRuntime>();
-string cultureName = "en";
+string cultureName = "en-GB";
 try
 {
     var stored = await js.InvokeAsync<string>("blazorCulture.get");
@@ -38,7 +38,7 @@ try
 }
 catch
 {
-    cultureName = "en";
+    cultureName = "en-GB";
 }
 
 CultureInfo culture;
@@ -48,7 +48,7 @@ try
 }
 catch (CultureNotFoundException)
 {
-    culture = new CultureInfo("en");
+    culture = new CultureInfo("en-GB");
 }
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;

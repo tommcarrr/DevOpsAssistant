@@ -12,7 +12,7 @@
             <MudTextField @bind-Value="_organization" Label='@L["Organization"]' autocomplete="off" />
             <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" autocomplete="off" />
             <MudSelect @bind-Value="_culture" Label='@L["Language"]'>
-                <MudSelectItem Value="@("en")">@L["English"]</MudSelectItem>
+                <MudSelectItem Value="@("en-GB")">@L["English"]</MudSelectItem>
                 <MudSelectItem Value="@("es")">@L["Spanish"]</MudSelectItem>
             </MudSelect>
         </MudStack>
@@ -27,7 +27,7 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     private string _organization = string.Empty;
     private string _token = string.Empty;
-    private string _culture = "en";
+    private string _culture = "en-GB";
     
 
     protected override async Task OnInitializedAsync()
@@ -44,7 +44,7 @@
         }
         catch
         {
-            _culture = "en";
+            _culture = "en-GB";
         }
     }
 
@@ -60,7 +60,7 @@
         }
         catch
         {
-            await JSRuntime.InvokeVoidAsync("blazorCulture.set", "en");
+            await JSRuntime.InvokeVoidAsync("blazorCulture.set", "en-GB");
         }
         Snackbar.Add(L["SavedMessage"].Value, Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
