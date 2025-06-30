@@ -24,7 +24,7 @@
     <MudChipSet T="string" Class="mb-2">
         @foreach (var t in _selectedTags)
         {
-            <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveTag(t)" Closeable="true">@t</MudChip>
+            <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveTag(t)">@t</MudChip>
         }
     </MudChipSet>
 }
