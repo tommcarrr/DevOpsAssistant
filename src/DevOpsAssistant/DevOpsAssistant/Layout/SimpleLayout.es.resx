@@ -39,6 +39,12 @@
   <data name="ToggleTheme" xml:space="preserve">
     <value>Cambiar tema claro/oscuro</value>
   </data>
+  <data name="Help" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
   <data name="PatToken" xml:space="preserve">
     <value>Token PAT</value>
   </data>

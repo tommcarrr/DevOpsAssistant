@@ -75,6 +75,9 @@
   <data name="ExpandChart" xml:space="preserve">
     <value>Expand Chart</value>
   </data>
+  <data name="CollapseChart" xml:space="preserve">
+    <value>Collapse Chart</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Load</value>
   </data>

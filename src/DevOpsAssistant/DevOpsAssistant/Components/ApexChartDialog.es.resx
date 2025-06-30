@@ -12,19 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DeleteTooltip" xml:space="preserve">
-    <value>Remove item</value>
-  </data>
-  <data name="AddTag" xml:space="preserve">
-    <value>Add</value>
-  </data>
-  <data name="TagLabel" xml:space="preserve">
-    <value>Tag</value>
-  </data>
-  <data name="AddTags" xml:space="preserve">
-    <value>Add Tags</value>
-  </data>
-  <data name="AddedMessage" xml:space="preserve">
-    <value>Tags added</value>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
   </data>
 </root>
