@@ -16,19 +16,19 @@
 }
 
 <MudExpansionPanels>
-    <MudExpansionPanel Text="Options" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
+    <MudExpansionPanel Text="@L["Options"]" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
         <MudPaper>
             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
-                <MudSelect T="RepositoryInfo" Value="_repo" ValueChanged="OnRepoChanged" Label="Repository" ToStringFunc="r => r.Name">
+                <MudSelect T="RepositoryInfo" Value="_repo" ValueChanged="OnRepoChanged" Label="@L["Repository"]" ToStringFunc="r => r.Name">
                     @foreach (var r in _repos)
                     {
                         <MudSelectItem Value="@r">@r.Name</MudSelectItem>
                     }
                 </MudSelect>
                 <MudTooltip Text='@L["BaseBranchTooltip"]'>
-                    <MudAutocomplete T="string" Label="Base Branch" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
+                    <MudAutocomplete T="string" Label="@L["BaseBranch"]" @bind-Value="_baseBranch" SearchFunc="SearchBranches" Disabled="_repo == null" />
                 </MudTooltip>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">Load</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_repo == null" OnClick="Load">@L["Load"]</MudButton>
             </MudStack>
         </MudPaper>
     </MudExpansionPanel>
@@ -40,7 +40,7 @@
 }
 else if (_branches != null)
 {
-    <MudTable Items="_branches" Dense="true" Hover="true" SortLabel="Sort by">
+    <MudTable Items="_branches" Dense="true" Hover="true" SortLabel="@L["SortBy"]">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Name)">Branch</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.CommitDate)" InitialDirection="SortDirection.Ascending">Last Commit</MudTableSortLabel></MudTh>
@@ -51,8 +51,8 @@ else if (_branches != null)
             }
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Branch">@context.Name</MudTd>
-            <MudTd DataLabel="Date">
+            <MudTd DataLabel="@L["Branch"]">@context.Name</MudTd>
+            <MudTd DataLabel="@L["Date"]">
                 @context.CommitDate.ToLocalDateString()
                 @if (IsStale(context))
                 {
@@ -61,8 +61,8 @@ else if (_branches != null)
             </MudTd>
             @if (ShowAheadBehind)
             {
-                <MudTd DataLabel="Ahead">@context.Ahead</MudTd>
-                <MudTd DataLabel="Behind">@context.Behind</MudTd>
+                <MudTd DataLabel="@L["Ahead"]">@context.Ahead</MudTd>
+                <MudTd DataLabel="@L["Behind"]">@context.Behind</MudTd>
             }
         </RowTemplate>
     </MudTable>

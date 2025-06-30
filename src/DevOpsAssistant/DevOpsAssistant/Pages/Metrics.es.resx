@@ -21,8 +21,23 @@
   <data name="OptionsHeading" xml:space="preserve">
     <value>Opciones</value>
   </data>
+  <data name="Backlog" xml:space="preserve">
+    <value>Backlog</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Fecha inicial</value>
+  </data>
   <data name="TableHeading" xml:space="preserve">
     <value>Rendimiento y tiempos</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Fecha final</value>
+  </data>
+  <data name="AggregateBy" xml:space="preserve">
+    <value>Agrupar por</value>
+  </data>
+  <data name="VelocityBy" xml:space="preserve">
+    <value>Velocidad por</value>
   </data>
   <data name="ChartsHeading" xml:space="preserve">
     <value>Gráficos</value>
@@ -59,6 +74,45 @@
   </data>
   <data name="ExpandChart" xml:space="preserve">
     <value>Ampliar gráfico</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Cargar</value>
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>Exportar CSV</value>
+  </data>
+  <data name="AdditionalPoints" xml:space="preserve">
+    <value>Puntos adicionales</value>
+  </data>
+  <data name="EfficiencyPercent" xml:space="preserve">
+    <value>% Eficiencia</value>
+  </data>
+  <data name="ErrorPercent" xml:space="preserve">
+    <value>% Error</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Período</value>
+  </data>
+  <data name="Lead" xml:space="preserve">
+    <value>Lead</value>
+  </data>
+  <data name="Cycle" xml:space="preserve">
+    <value>Ciclo</value>
+  </data>
+  <data name="Throughput" xml:space="preserve">
+    <value>Rendimiento</value>
+  </data>
+  <data name="Velocity" xml:space="preserve">
+    <value>Velocidad</value>
+  </data>
+  <data name="Wip" xml:space="preserve">
+    <value>WIP</value>
+  </data>
+  <data name="Sprint" xml:space="preserve">
+    <value>Sprint</value>
   </data>
   <data name="ProjectionOptions" xml:space="preserve">
     <value>Opciones de proyección</value>

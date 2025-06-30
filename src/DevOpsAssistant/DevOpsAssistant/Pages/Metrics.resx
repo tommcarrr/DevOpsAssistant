@@ -21,8 +21,20 @@
   <data name="OptionsHeading" xml:space="preserve">
     <value>Options</value>
   </data>
+  <data name="Backlog" xml:space="preserve">
+    <value>Backlog</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
   <data name="EndDate" xml:space="preserve">
     <value>End Date</value>
+  </data>
+  <data name="AggregateBy" xml:space="preserve">
+    <value>Aggregate By</value>
+  </data>
+  <data name="VelocityBy" xml:space="preserve">
+    <value>Velocity By</value>
   </data>
   <data name="TableHeading" xml:space="preserve">
     <value>Throughput and Lead Times</value>
@@ -62,6 +74,45 @@
   </data>
   <data name="ExpandChart" xml:space="preserve">
     <value>Expand Chart</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="AdditionalPoints" xml:space="preserve">
+    <value>Additional Points</value>
+  </data>
+  <data name="EfficiencyPercent" xml:space="preserve">
+    <value>Efficiency %</value>
+  </data>
+  <data name="ErrorPercent" xml:space="preserve">
+    <value>Error %</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Lead" xml:space="preserve">
+    <value>Lead</value>
+  </data>
+  <data name="Cycle" xml:space="preserve">
+    <value>Cycle</value>
+  </data>
+  <data name="Throughput" xml:space="preserve">
+    <value>Throughput</value>
+  </data>
+  <data name="Velocity" xml:space="preserve">
+    <value>Velocity</value>
+  </data>
+  <data name="Wip" xml:space="preserve">
+    <value>WIP</value>
+  </data>
+  <data name="Sprint" xml:space="preserve">
+    <value>Sprint</value>
   </data>
   <data name="ProjectionOptions" xml:space="preserve">
     <value>Projection Options</value>
