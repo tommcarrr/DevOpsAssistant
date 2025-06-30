@@ -18,9 +18,6 @@
   <data name="AutocompletePlaceholder" xml:space="preserve">
     <value>Start typing to see results</value>
   </data>
-  <data name="DeleteTooltip" xml:space="preserve">
-    <value>Remove item</value>
-  </data>
   <data name="PrevPartTooltip" xml:space="preserve">
     <value>Previous part</value>
   </data>
