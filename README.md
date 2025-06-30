@@ -20,7 +20,15 @@ update it without rebuilding.
 
 ### Using the `dotnet` CLI
 
-If you prefer to run the site without Docker you can use the .NET SDK. A helper script `dotnet-install.sh` is provided for installing the SDK on Linux. After installing, execute:
+If you prefer to run the site without Docker you can use the .NET SDK. A helper script `dotnet-install.sh` is provided for installing the SDK on Linux. Run it and add the installed tools to your `PATH` with:
+
+```bash
+./dotnet-install.sh --channel 8.0
+export DOTNET_ROOT="$HOME/.dotnet"
+export PATH="$HOME/.dotnet:$PATH"
+```
+
+After installing, execute:
 
 ```bash
 dotnet run --project src/DevOpsAssistant/DevOpsAssistant/DevOpsAssistant.csproj
