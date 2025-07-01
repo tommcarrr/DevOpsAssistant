@@ -4,10 +4,12 @@
 @inject IStringLocalizer<WikiDocumentSelector> L
 
 <MudTooltip Text='@L["SourceTooltip"]'>
-    <MudRadioGroup T="DocumentSource" @bind-SelectedOption="Source" Row="true">
-        <MudRadio T="DocumentSource" Option="DocumentSource.Wiki">@L["WikiLabel"]</MudRadio>
-        <MudRadio T="DocumentSource" Option="DocumentSource.Document">@L["DocumentLabel"]</MudRadio>
-        <MudRadio T="DocumentSource" Option="DocumentSource.Text">@L["TextLabel"]</MudRadio>
+    <MudRadioGroup T="DocumentSource"
+                   SelectedOption="@Source"
+                   SelectedOptionChanged="SourceChanged">
+        <MudRadio T="DocumentSource" Option="@DocumentSource.Wiki">@L["WikiLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Option="@DocumentSource.Document">@L["DocumentLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Option="@DocumentSource.Text">@L["TextLabel"]</MudRadio>
     </MudRadioGroup>
 </MudTooltip>
 @if (Source == DocumentSource.Document)
