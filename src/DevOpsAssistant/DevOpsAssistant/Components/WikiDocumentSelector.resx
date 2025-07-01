@@ -12,7 +12,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="UseDocumentTooltip" xml:space="preserve">
-    <value>Upload a document instead of selecting wiki pages</value>
+  <data name="SourceTooltip" xml:space="preserve">
+    <value>Select where the document content comes from</value>
+  </data>
+  <data name="WikiLabel" xml:space="preserve">
+    <value>Wiki</value>
+  </data>
+  <data name="DocumentLabel" xml:space="preserve">
+    <value>Upload</value>
+  </data>
+  <data name="TextLabel" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="TextPlaceholder" xml:space="preserve">
+    <value>Paste text or Markdown</value>
   </data>
 </root>

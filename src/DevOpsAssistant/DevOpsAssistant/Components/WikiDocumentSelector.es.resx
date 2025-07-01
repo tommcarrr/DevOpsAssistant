@@ -12,7 +12,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="UseDocumentTooltip" xml:space="preserve">
-    <value>Cargue un documento en lugar de seleccionar páginas wiki</value>
+  <data name="SourceTooltip" xml:space="preserve">
+    <value>Elija de dónde proviene el contenido</value>
+  </data>
+  <data name="WikiLabel" xml:space="preserve">
+    <value>Wiki</value>
+  </data>
+  <data name="DocumentLabel" xml:space="preserve">
+    <value>Cargar</value>
+  </data>
+  <data name="TextLabel" xml:space="preserve">
+    <value>Pegar</value>
+  </data>
+  <data name="TextPlaceholder" xml:space="preserve">
+    <value>Pega texto o Markdown</value>
   </data>
 </root>

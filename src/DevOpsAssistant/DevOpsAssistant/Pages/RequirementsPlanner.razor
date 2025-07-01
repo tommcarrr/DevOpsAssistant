@@ -22,10 +22,12 @@
     <MudExpansionPanel Text="@L["CopyPromptMessage"]">
         <MudStack Spacing="2">
             <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
-            <WikiDocumentSelector UseDocument="@_promptUseDocument"
-                                   UseDocumentChanged="@(v => _promptUseDocument = v)"
+            <WikiDocumentSelector Source="@_promptSource"
+                                   SourceChanged="@(v => _promptSource = v)"
                                    File="@_promptFile"
                                    FileChanged="@(f => _promptFile = f)"
+                                   Text="@_promptText"
+                                   TextChanged="@(t => _promptText = t)"
                                    WikiItems="@_wikiItems"
                                    SelectedPages="@_promptSelectedPages"
                                    SelectedPagesChanged="@(p => _promptSelectedPages = p)" />
@@ -40,10 +42,12 @@
 <MudStepper @ref="_stepper" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
     <MudStep Title="Select Requirements">
         <MudStack Spacing="2">
-            <WikiDocumentSelector UseDocument="@_useDocument"
-                                   UseDocumentChanged="@(v => _useDocument = v)"
+            <WikiDocumentSelector Source="@_source"
+                                   SourceChanged="@(v => _source = v)"
                                    File="@_file"
                                    FileChanged="@(f => _file = f)"
+                                   Text="@_text"
+                                   TextChanged="@(t => _text = t)"
                                    WikiItems="@_wikiItems"
                                    SelectedPages="@_selectedPages"
                                    SelectedPagesChanged="@(p => _selectedPages = p)" />
@@ -181,10 +185,12 @@
     private List<TreeItemData<WikiPageNode>>? _wikiItems;
     private IReadOnlyCollection<WikiPageNode>? _selectedPages;
     private IBrowserFile? _file;
-    private bool _useDocument;
+    private string _text = string.Empty;
+    private DocumentSource _source;
     private IReadOnlyCollection<WikiPageNode>? _promptSelectedPages;
     private IBrowserFile? _promptFile;
-    private bool _promptUseDocument;
+    private string _promptText = string.Empty;
+    private DocumentSource _promptSource;
     private string _wikiId = string.Empty;
     private string _prompt = string.Empty;
     private List<string>? _promptParts;
@@ -259,9 +265,12 @@ Define what success looks like — business or system-level outcomes.
 ## Notes
 - [Any background info, URLs, legacy behavior, etc.]
 ```";
-    private bool GenerateDisabled =>
-        _loading ||
-        (_useDocument ? _file == null : _selectedPages == null || _selectedPages.Count == 0);
+    private bool GenerateDisabled => _loading || _source switch
+        {
+            DocumentSource.Document => _file == null,
+            DocumentSource.Text => string.IsNullOrWhiteSpace(_text),
+            _ => _selectedPages == null || _selectedPages.Count == 0
+        };
 
     protected override async Task OnInitializedAsync()
     {
@@ -312,22 +321,30 @@ Define what success looks like — business or system-level outcomes.
         try
         {
             List<(string Name, string Text)> pages = [];
-            if (_useDocument)
+            switch (_source)
             {
-                if (_file != null)
-                {
-                    using var stream = _file.OpenReadStream(MaxFileSize);
-                    var text = DocumentHelpers.ExtractText(stream, _file.Name);
-                    pages.Add((_file.Name, text));
-                }
-            }
-            else if (_selectedPages != null)
-            {
-                foreach (var p in _selectedPages)
-                {
-                    var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
-                    pages.Add((p.Name, text));
-                }
+                case DocumentSource.Document:
+                    if (_file != null)
+                    {
+                        using var stream = _file.OpenReadStream(MaxFileSize);
+                        var text = DocumentHelpers.ExtractText(stream, _file.Name);
+                        pages.Add((_file.Name, text));
+                    }
+                    break;
+                case DocumentSource.Text:
+                    if (!string.IsNullOrWhiteSpace(_text))
+                        pages.Add(("Pasted", _text));
+                    break;
+                default:
+                    if (_selectedPages != null)
+                    {
+                        foreach (var p in _selectedPages)
+                        {
+                            var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                            pages.Add((p.Name, text));
+                        }
+                    }
+                    break;
             }
             _prompt = BuildPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
@@ -433,22 +450,30 @@ Define what success looks like — business or system-level outcomes.
     {
         var sb = new System.Text.StringBuilder(InitialPrompt);
         List<(string Name, string Text)> pages = [];
-        if (_promptUseDocument)
+        switch (_promptSource)
         {
-            if (_promptFile != null)
-            {
-                using var stream = _promptFile.OpenReadStream(MaxFileSize);
-                var text = DocumentHelpers.ExtractText(stream, _promptFile.Name);
-                pages.Add((_promptFile.Name, text));
-            }
-        }
-        else if (_promptSelectedPages != null)
-        {
-            foreach (var p in _promptSelectedPages)
-            {
-                var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
-                pages.Add((p.Name, text));
-            }
+            case DocumentSource.Document:
+                if (_promptFile != null)
+                {
+                    using var stream = _promptFile.OpenReadStream(MaxFileSize);
+                    var text = DocumentHelpers.ExtractText(stream, _promptFile.Name);
+                    pages.Add((_promptFile.Name, text));
+                }
+                break;
+            case DocumentSource.Text:
+                if (!string.IsNullOrWhiteSpace(_promptText))
+                    pages.Add(("Pasted", _promptText));
+                break;
+            default:
+                if (_promptSelectedPages != null)
+                {
+                    foreach (var p in _promptSelectedPages)
+                    {
+                        var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                        pages.Add((p.Name, text));
+                    }
+                }
+                break;
         }
         if (pages.Count > 0)
         {
