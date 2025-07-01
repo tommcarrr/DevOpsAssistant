@@ -63,6 +63,12 @@
   <data name="UseSprintEff" xml:space="preserve">
     <value>Use Sprint Efficiency</value>
   </data>
+  <data name="IgnoreTagsHeading" xml:space="preserve">
+    <value>Ignore Tags</value>
+  </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>Add</value>
+  </data>
   <data name="SprintEff" xml:space="preserve">
     <value>Sprint %</value>
   </data>
