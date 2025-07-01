@@ -5,11 +5,11 @@
 
 <MudTooltip Text='@L["SourceTooltip"]'>
     <MudRadioGroup T="DocumentSource"
-                   SelectedOption="@Source"
-                   SelectedOptionChanged="SourceChanged">
-        <MudRadio T="DocumentSource" Option="@DocumentSource.Wiki">@L["WikiLabel"]</MudRadio>
-        <MudRadio T="DocumentSource" Option="@DocumentSource.Document">@L["DocumentLabel"]</MudRadio>
-        <MudRadio T="DocumentSource" Option="@DocumentSource.Text">@L["TextLabel"]</MudRadio>
+                   Value="@Source"
+                   ValueChanged="OnSourceChanged">
+        <MudRadio T="DocumentSource" Value="@DocumentSource.Wiki">@L["WikiLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Value="@DocumentSource.Document">@L["DocumentLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Value="@DocumentSource.Text">@L["TextLabel"]</MudRadio>
     </MudRadioGroup>
 </MudTooltip>
 @if (Source == DocumentSource.Document)
@@ -49,6 +49,12 @@ else if (WikiItems != null)
     {
         File = e.File;
         return FileChanged.InvokeAsync(File);
+    }
+
+    private Task OnSourceChanged(DocumentSource source)
+    {
+        Source = source;
+        return SourceChanged.InvokeAsync(Source);
     }
 
     private Task OnSelectedPagesChanged(IReadOnlyCollection<WikiPageNode> pages)
