@@ -3,12 +3,20 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<WikiDocumentSelector> L
 
-<MudTooltip Text='@L["UseDocumentTooltip"]'>
-    <MudSwitch T="bool" @bind-Value="UseDocument" Color="Color.Primary" Label="Use Document" />
+<MudTooltip Text='@L["SourceTooltip"]'>
+    <MudRadioGroup T="DocumentSource" @bind-SelectedOption="Source" Row="true">
+        <MudRadio T="DocumentSource" Option="DocumentSource.Wiki">@L["WikiLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Option="DocumentSource.Document">@L["DocumentLabel"]</MudRadio>
+        <MudRadio T="DocumentSource" Option="DocumentSource.Text">@L["TextLabel"]</MudRadio>
+    </MudRadioGroup>
 </MudTooltip>
-@if (UseDocument)
+@if (Source == DocumentSource.Document)
 {
     <InputFile OnChange="OnFileSelected" accept=".pdf,.docx,.pptx,.md" />
+}
+else if (Source == DocumentSource.Text)
+{
+    <MudTextField T="string" @bind-Value="Text" Lines="4" Placeholder="@L["TextPlaceholder"]" />
 }
 else if (WikiItems != null)
 {
@@ -25,10 +33,12 @@ else if (WikiItems != null)
 }
 
 @code {
-    [Parameter] public bool UseDocument { get; set; }
-    [Parameter] public EventCallback<bool> UseDocumentChanged { get; set; }
+    [Parameter] public DocumentSource Source { get; set; }
+    [Parameter] public EventCallback<DocumentSource> SourceChanged { get; set; }
     [Parameter] public IBrowserFile? File { get; set; }
     [Parameter] public EventCallback<IBrowserFile?> FileChanged { get; set; }
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public EventCallback<string?> TextChanged { get; set; }
     [Parameter] public List<TreeItemData<WikiPageNode>>? WikiItems { get; set; }
     [Parameter] public IReadOnlyCollection<WikiPageNode>? SelectedPages { get; set; }
     [Parameter] public EventCallback<IReadOnlyCollection<WikiPageNode>?> SelectedPagesChanged { get; set; }
