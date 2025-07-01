@@ -57,6 +57,20 @@
             <MudSwitch T="bool" @bind-Value="_tagMarksSprint" Label="@L["TagMarksSprint"]" Disabled="string.IsNullOrWhiteSpace(_tag)" Color="Mud.Color.Primary" />
             <MudSwitch T="bool" @bind-Value="_useSprintEfficiency" Label="@L["UseSprintEff"]" Disabled="string.IsNullOrWhiteSpace(_tag)" Color="Mud.Color.Primary" />
         </MudStack>
+        <MudText Typo="Typo.h6">@L["IgnoreTagsHeading"]</MudText>
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+            <MudAutocomplete T="string" Label="@L["NonSprintTag"]" @bind-Value="_ignoreTag" SearchFunc="SearchIgnoreTags" />
+            <MudButton Variant="Variant.Text" OnClick="AddIgnoreTag" Disabled="string.IsNullOrWhiteSpace(_ignoreTag)">@L["AddTag"]</MudButton>
+        </MudStack>
+        @if (_ignoredTags.Any())
+        {
+            <MudChipSet T="string" Class="mb-2">
+                @foreach (var t in _ignoredTags)
+                {
+                    <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveIgnoreTag(t)">@t</MudChip>
+                }
+            </MudChipSet>
+        }
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudButton Variant="Variant.Filled" Color="Mud.Color.Primary" OnClick="Load">@L["Load"]</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">@L["ExportCsv"]</MudButton>
@@ -232,6 +246,8 @@ else if (_periods.Any())
     private string _tag = string.Empty;
     private bool _tagMarksSprint;
     private bool _useSprintEfficiency;
+    private HashSet<string> _ignoredTags = new();
+    private string _ignoreTag = string.Empty;
     private List<string> _tags = [];
     private bool _showBurnChartControls;
 
@@ -283,6 +299,8 @@ else if (_periods.Any())
                 _path = _backlogs[0];
             _tags = await ApiService.GetTagsAsync();
 
+            _ignoredTags.Clear();
+
             var state = await StateService.LoadAsync<PageState>(StateKey);
             if (state != null)
             {
@@ -298,6 +316,9 @@ else if (_periods.Any())
                 _tag = state.Tag ?? string.Empty;
                 _tagMarksSprint = state.TagMarksSprint;
                 _useSprintEfficiency = state.UseSprintEfficiency;
+                if (state.IgnoredTags != null)
+                    foreach (var t in state.IgnoredTags)
+                        _ignoredTags.Add(t);
             }
 
             _error = null;
@@ -316,7 +337,9 @@ else if (_periods.Any())
         {
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
             var endDate = _endDate ?? DateTime.Today;
-            _items = items.Where(i => i.ClosedDate.Date <= endDate).ToList();
+            _items = FilterItems(items)
+                .Where(i => i.ClosedDate.Date <= endDate)
+                .ToList();
             _iterations = _mode == AggregateMode.Iteration
                 ? await ApiService.GetIterationsAsync()
                 : [];
@@ -335,7 +358,8 @@ else if (_periods.Any())
                 Error = _errorRange ?? 0,
                 Tag = _tag,
                 TagMarksSprint = _tagMarksSprint,
-                UseSprintEfficiency = _useSprintEfficiency
+                UseSprintEfficiency = _useSprintEfficiency,
+                IgnoredTags = _ignoredTags.ToList()
             });
             _error = null;
         }
@@ -847,7 +871,8 @@ else if (_periods.Any())
             Error = _errorRange ?? 0,
             Tag = _tag,
             TagMarksSprint = _tagMarksSprint,
-            UseSprintEfficiency = _useSprintEfficiency
+            UseSprintEfficiency = _useSprintEfficiency,
+            IgnoredTags = _ignoredTags.ToList()
         });
         StateHasChanged();
     }
@@ -870,6 +895,35 @@ else if (_periods.Any())
         if (!string.IsNullOrWhiteSpace(value))
             result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchIgnoreTags(string value, CancellationToken _)
+    {
+        IEnumerable<string> result = _tags;
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
+        result = result.Where(t => !_ignoredTags.Contains(t));
+        return Task.FromResult(result);
+    }
+
+    private IEnumerable<StoryMetric> FilterItems(IEnumerable<StoryMetric> items)
+    {
+        if (_ignoredTags.Count == 0)
+            return items;
+        return items.Where(i => !i.Tags.Any(t => _ignoredTags.Contains(t)));
+    }
+
+    private void AddIgnoreTag()
+    {
+        if (string.IsNullOrWhiteSpace(_ignoreTag))
+            return;
+        _ignoredTags.Add(_ignoreTag);
+        _ignoreTag = string.Empty;
+    }
+
+    private void RemoveIgnoreTag(string tag)
+    {
+        _ignoredTags.Remove(tag);
     }
 
     private static DateTime StartOfWeek(DateTime dt)
@@ -905,6 +959,7 @@ else if (_periods.Any())
         public string? Tag { get; set; }
         public bool TagMarksSprint { get; set; }
         public bool UseSprintEfficiency { get; set; }
+        public List<string>? IgnoredTags { get; set; }
     }
 
     protected override Task OnProjectChangedAsync()

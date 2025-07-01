@@ -2,6 +2,7 @@ using Bunit;
 using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
@@ -273,6 +274,26 @@ public class MetricsPageTests : ComponentTestBase
         Assert.Equal(6, labels.Length);
         Assert.Equal(DateTime.Today.AddDays(-5).ToLocalDateString(), labels[0]);
         Assert.Equal(DateTime.Today.ToLocalDateString(), labels[^1]);
+    }
+
+    [Fact]
+    public void FilterItems_Removes_Ignored_Tags()
+    {
+        SetupServices();
+
+        var metrics = new TestMetrics();
+        var type = typeof(Metrics);
+        type.GetField("_ignoredTags", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(metrics, new HashSet<string> { "Skip" });
+        var filter = type.GetMethod("FilterItems", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        List<StoryMetric> items = [
+            new() { CreatedDate = DateTime.Today, ActivatedDate = DateTime.Today, ClosedDate = DateTime.Today, Tags = ["Skip"] },
+            new() { CreatedDate = DateTime.Today, ActivatedDate = DateTime.Today, ClosedDate = DateTime.Today, Tags = ["Keep"] }
+        ];
+        var result = (IEnumerable<StoryMetric>)filter.Invoke(metrics, new object?[] { items })!;
+
+        Assert.Single(result);
+        Assert.Contains("Keep", result.First().Tags);
     }
 
 
