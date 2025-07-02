@@ -1,3 +1,4 @@
+@using System
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Services
 @using MudBlazor
@@ -5,6 +6,8 @@
 @inject DevOpsApiService ApiService
 @inject IStringLocalizer<WorkItemSelector> L
 @inject PageStateService StateService
+@inject DevOpsConfigService ConfigService
+@implements IDisposable
 
 <MudExpansionPanels>
     <MudExpansionPanel Text="Work Item Selection" Expanded="@Expanded" ExpandedChanged="OnExpandedChanged">
@@ -166,6 +169,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ConfigService.ProjectChanged += HandleProjectChanged;
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
         _backlogs = await ApiService.GetBacklogsAsync();
         if (_backlogs.Length > 0)
         {
@@ -194,6 +203,15 @@
                 _iteration = state.Iteration;
             }
         }
+    }
+
+    private void HandleProjectChanged()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadDataAsync();
+            StateHasChanged();
+        });
     }
 
     private async Task<IEnumerable<WorkItemInfo>> SearchItems(string value, CancellationToken _)
@@ -360,6 +378,11 @@
             Iteration = _iteration
         };
         await StateService.SaveAsync(StateKey, state);
+    }
+
+    public void Dispose()
+    {
+        ConfigService.ProjectChanged -= HandleProjectChanged;
     }
 
     private class SelectorState
