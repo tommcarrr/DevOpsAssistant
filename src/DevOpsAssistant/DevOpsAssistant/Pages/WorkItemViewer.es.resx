@@ -27,4 +27,7 @@
   <data name="RelationshipsHeading" xml:space="preserve">
     <value>Relaciones</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
 </root>
