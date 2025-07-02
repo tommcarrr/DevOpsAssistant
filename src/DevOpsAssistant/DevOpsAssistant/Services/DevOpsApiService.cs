@@ -68,12 +68,16 @@ public class DevOpsApiService
 
     private string BuildBaseUri(DevOpsConfig config)
     {
-        return $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_apis/wit";
+        var organization = Uri.EscapeDataString(config.Organization);
+        var project = Uri.EscapeDataString(config.Project);
+        return $"{ApiBaseUrl}/{organization}/{project}/_apis/wit";
     }
 
     private string BuildItemUrlBase(DevOpsConfig config)
     {
-        return $"{ApiBaseUrl}/{config.Organization}/{config.Project}/_workitems/edit/";
+        var organization = Uri.EscapeDataString(config.Organization);
+        var project = Uri.EscapeDataString(config.Project);
+        return $"{ApiBaseUrl}/{organization}/{project}/_workitems/edit/";
     }
 
     private async Task<T?> GetJsonAsync<T>(string url)
@@ -1131,7 +1135,7 @@ public class DevOpsApiService
         var content = new StringContent(JsonSerializer.Serialize(patches));
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json-patch+json");
         var request = new HttpRequestMessage(HttpMethod.Post,
-            $"{baseUri}/workitems/{Uri.EscapeDataString(type)}?api-version={ApiVersion}")
+            $"{baseUri}/workitems/${Uri.EscapeDataString(type)}?api-version={ApiVersion}")
         {
             Content = content
         };
