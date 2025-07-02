@@ -48,4 +48,7 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="DeleteTooltip" xml:space="preserve">
+    <value>Remove item</value>
+  </data>
 </root>

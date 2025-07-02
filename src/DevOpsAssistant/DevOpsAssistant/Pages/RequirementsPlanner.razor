@@ -95,8 +95,17 @@
 
                 @foreach (var story in _plan.Stories)
                 {
-                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")">
-                        <MudText Typo="Typo.subtitle2">Story</MudText>
+                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")"
+                              draggable="true"
+                              @ondragstart="() => OnDragStart(story)"
+                              @ondrop="() => OnDropOnStoryList(story)"
+                              @ondragover:preventDefault>
+                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.subtitle2">Story</MudText>
+                            <MudTooltip Text='@L["DeleteTooltip"]'>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveStory(story)" />
+                            </MudTooltip>
+                        </MudStack>
                         @if (_previewHtml)
                         {
                             <MudText Typo="Typo.subtitle2">Description</MudText>
@@ -120,22 +129,49 @@
             {
                 @foreach (var epic in _plan.Epics)
                 {
-                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Epic")}")">
-                        <MudText Typo="Typo.h6">Epic</MudText>
+                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Epic")}")"
+                              draggable="true"
+                              @ondragstart="() => OnDragStart(epic)"
+                              @ondrop="() => OnDropOnPlan(epic)"
+                              @ondragover:preventDefault>
+                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.h6">Epic</MudText>
+                            <MudTooltip Text='@L["DeleteTooltip"]'>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveEpic(epic)" />
+                            </MudTooltip>
+                        </MudStack>
                         <MudTextField @bind-Value="epic.Title" Label="Title" />
                         <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" />
 
                         @foreach (var feature in epic.Features)
                         {
-                            <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Feature")}")">
-                                <MudText Typo="Typo.subtitle1">Feature</MudText>
+                            <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Feature")}")"
+                                      draggable="true"
+                                      @ondragstart="() => OnDragStart(feature)"
+                                      @ondrop="() => OnDropOnEpic(epic)"
+                                      @ondragover:preventDefault>
+                                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.subtitle1">Feature</MudText>
+                                    <MudTooltip Text='@L["DeleteTooltip"]'>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveFeature(feature)" />
+                                    </MudTooltip>
+                                </MudStack>
                                 <MudTextField @bind-Value="feature.Title" Label="Title" />
                                 <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" />
 
                                 @foreach (var story in feature.Stories)
                                 {
-                                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")">
-                                        <MudText Typo="Typo.subtitle2">Story</MudText>
+                                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")"
+                                              draggable="true"
+                                              @ondragstart="() => OnDragStart(story)"
+                                              @ondrop="() => OnDropOnFeature(feature)"
+                                              @ondragover:preventDefault>
+                                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                            <MudText Typo="Typo.subtitle2">Story</MudText>
+                                            <MudTooltip Text='@L["DeleteTooltip"]'>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveStory(story)" />
+                                            </MudTooltip>
+                                        </MudStack>
                                         @if (_previewHtml)
                                         {
                                             <MudText Typo="Typo.subtitle2">Description</MudText>
@@ -685,6 +721,86 @@ Define what success looks like — business or system-level outcomes.
             _error = ex.Message;
             return Array.Empty<WorkItemInfo>();
         }
+    }
+
+    private object? _dragItem;
+
+    private void OnDragStart(object item)
+    {
+        _dragItem = item;
+    }
+
+
+    private void OnDropOnPlan(Epic target)
+    {
+        if (_dragItem is not Epic epic || _plan == null || epic == target)
+            return;
+        _plan.Epics.Remove(epic);
+        var index = _plan.Epics.IndexOf(target);
+        _plan.Epics.Insert(index + 1, epic);
+        _dragItem = null;
+    }
+
+    private void OnDropOnEpic(Epic epic)
+    {
+        if (_dragItem is not Feature feature || _plan == null)
+            return;
+        var parent = _plan.Epics.FirstOrDefault(e => e.Features.Remove(feature));
+        if (parent != null && !epic.Features.Contains(feature))
+            epic.Features.Add(feature);
+        _dragItem = null;
+    }
+
+    private void OnDropOnFeature(Feature feature)
+    {
+        if (_dragItem is not Story story || _plan == null)
+            return;
+        foreach (var e in _plan.Epics)
+            foreach (var f in e.Features)
+                f.Stories.Remove(story);
+        if (!feature.Stories.Contains(story))
+            feature.Stories.Add(story);
+        _dragItem = null;
+    }
+
+    private void OnDropOnStoryList(Story target)
+    {
+        if (_dragItem is not Story story || _plan == null || story == target)
+            return;
+        var list = _plan.Stories;
+        list.Remove(story);
+        var index = list.IndexOf(target);
+        list.Insert(index + 1, story);
+        _dragItem = null;
+    }
+
+    private void RemoveEpic(Epic epic)
+    {
+        _plan?.Epics.Remove(epic);
+    }
+
+    private void RemoveFeature(Feature feature)
+    {
+        if (_plan == null)
+            return;
+        foreach (var e in _plan.Epics)
+            if (e.Features.Remove(feature))
+                break;
+    }
+
+    private void RemoveStory(Story story)
+    {
+        if (_plan == null)
+            return;
+        if (_storiesOnly)
+        {
+            _plan.Stories.Remove(story);
+            return;
+        }
+        foreach (var e in _plan.Epics)
+            foreach (var f in e.Features)
+                if (f.Stories.Remove(story))
+                    return;
     }
 
     private class Plan
