@@ -259,14 +259,14 @@ else if (_promptParts != null)
         {
             sb.AppendLine(config.StoryQualityPrompt.Trim());
         }
-        sb.AppendLine();
-        sb.AppendLine("Work items:");
-        sb.AppendLine(json);
-        sb.AppendLine();
         if (config.OutputFormat == OutputFormat.Inline)
             sb.AppendLine("Reply inline with the analysis results.");
         else
             sb.AppendLine($"After completing the analysis, convert the output to {config.OutputFormat} format and include that version.");
+        sb.AppendLine();
+        sb.AppendLine("Work items:");
+        sb.AppendLine(json);
+        sb.AppendLine();
         return sb.ToString();
     }
 
