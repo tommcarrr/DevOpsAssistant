@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Linq;
 using System.Text.Json;
+using System.Collections.Generic;
 using DevOpsAssistant.Services.Models;
 
 namespace DevOpsAssistant.Services;
@@ -620,6 +621,26 @@ public class DevOpsApiService
         await SendAsync(request);
     }
 
+    public async Task<List<string>> GetCommentsAsync(int id)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var result = await GetJsonAsync<JsonElement>(
+            $"{baseUri}/workitems/{id}/comments?api-version=7.1-preview.3");
+        List<string> list = [];
+        if (result.TryGetProperty("comments", out var comments))
+            foreach (var c in comments.EnumerateArray())
+                if (c.TryGetProperty("text", out var txt))
+                {
+                    var t = txt.GetString();
+                    if (!string.IsNullOrWhiteSpace(t))
+                        list.Add(t);
+                }
+        return list;
+    }
+
     public async Task DeleteWorkItemAsync(int id)
     {
         var config = GetValidatedConfig();
@@ -740,6 +761,12 @@ public class DevOpsApiService
             string repro = string.Empty;
             string sysInfo = string.Empty;
             string acceptance = string.Empty;
+            var tags = story.Fields.TryGetValue("System.Tags", out var tg) && tg.ValueKind == JsonValueKind.String
+                ? tg.GetString()?.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? []
+                : Array.Empty<string>();
+            var storyPoints = story.Fields.TryGetValue("Microsoft.VSTS.Scheduling.StoryPoints", out var sp) && sp.ValueKind == JsonValueKind.Number
+                ? sp.GetDouble()
+                : 0;
             if (type.Equals("Bug", StringComparison.OrdinalIgnoreCase))
             {
                 repro = story.Fields.TryGetValue("Microsoft.VSTS.TCM.ReproSteps", out var rs)
@@ -796,6 +823,14 @@ public class DevOpsApiService
                 }
             }
 
+            var relations = story.Relations == null
+                ? new List<WorkItemRelation>()
+                : story.Relations.Select(r => new WorkItemRelation
+                {
+                    Rel = r.Rel,
+                    TargetId = int.TryParse(r.Url.Split('/').Last(), out var rid) ? rid : 0
+                }).ToList();
+
             list.Add(new StoryHierarchyDetails
             {
                 Story = storyInfo,
@@ -806,7 +841,10 @@ public class DevOpsApiService
                 Feature = featureInfo,
                 Epic = epicInfo,
                 FeatureDescription = featureDesc,
-                EpicDescription = epicDesc
+                EpicDescription = epicDesc,
+                StoryPoints = storyPoints,
+                Tags = tags,
+                Relations = relations
             });
         }
 

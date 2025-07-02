@@ -1,0 +1,197 @@
+@page "/projects/{ProjectName}/work-item-viewer"
+@using DevOpsAssistant.Services.Models
+@inject DevOpsApiService ApiService
+@inject PageStateService StateService
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<WorkItemViewer> L
+@inherits ProjectComponentBase
+
+<PageTitle>DevOpsAssistant - Work Item Viewer</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error">@_error</MudAlert>
+}
+
+<WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" />
+
+<MudPaper Class="viewer-layout">
+    <div class="viewer-list">
+        <MudExpansionPanels>
+            <MudExpansionPanel Text="@L["SelectedItems"]" Expanded="@_listExpanded" ExpandedChanged="@(v => _listExpanded = v)">
+                <MudList T="WorkItemInfo" Dense="true">
+                    @foreach (var item in _selectedItems)
+                    {
+                        <MudListItem T="WorkItemInfo" Class="cursor-pointer" OnClick="() => LoadDetails(item.Id)">
+                            @item.Id - @item.Title
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </div>
+    <div class="viewer-details">
+        @if (_loading)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        }
+        else if (_details != null)
+        {
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.h5">@_details.Story.Title (@_details.Story.Id)</MudText>
+                <MudText Typo="Typo.subtitle2">@(_details.Story.WorkItemType) - @_details.Story.State</MudText>
+                <MudLink Href="@_details.Story.Url" Target="_blank">Open in DevOps</MudLink>
+                @if (!string.IsNullOrWhiteSpace(_details.Description))
+                {
+                    <MudText Typo="Typo.h6">Description</MudText>
+                    <MudPaper Class="pa-2" Style="overflow:auto">
+                        @((MarkupString)_details.Description)
+                    </MudPaper>
+                }
+                @if (!string.IsNullOrWhiteSpace(_details.AcceptanceCriteria))
+                {
+                    <MudText Typo="Typo.h6">Acceptance Criteria</MudText>
+                    <MudPaper Class="pa-2" Style="overflow:auto">
+                        @((MarkupString)_details.AcceptanceCriteria)
+                    </MudPaper>
+                }
+                @if (_details.StoryPoints > 0)
+                {
+                    <MudText Typo="Typo.h6">@L["StoryPointsLabel"]: @_details.StoryPoints</MudText>
+                }
+                @if (_details.Tags.Length > 0)
+                {
+                    <MudText Typo="Typo.h6">@L["TagsHeading"]</MudText>
+                    <MudChipSet T="string">
+                        @foreach (var t in _details.Tags)
+                        {
+                            <MudChip T="string">@t</MudChip>
+                        }
+                    </MudChipSet>
+                }
+                @if (!string.IsNullOrWhiteSpace(_details.ReproSteps))
+                {
+                    <MudText Typo="Typo.h6">Repro Steps</MudText>
+                    <MudPaper Class="pa-2" Style="overflow:auto">
+                        @((MarkupString)_details.ReproSteps)
+                    </MudPaper>
+                }
+                @if (!string.IsNullOrWhiteSpace(_details.SystemInfo))
+                {
+                    <MudText Typo="Typo.h6">System Info</MudText>
+                    <MudPaper Class="pa-2" Style="overflow:auto">
+                        @((MarkupString)_details.SystemInfo)
+                    </MudPaper>
+                }
+                @if (_details.Feature != null)
+                {
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.subtitle1">Feature: @_details.Feature.Title (@_details.Feature.State)</MudText>
+                    @if (!string.IsNullOrWhiteSpace(_details.FeatureDescription))
+                    {
+                        <MudPaper Class="pa-2" Style="overflow:auto">
+                            @((MarkupString)_details.FeatureDescription)
+                        </MudPaper>
+                    }
+                }
+                @if (_details.Epic != null)
+                {
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.subtitle1">Epic: @_details.Epic.Title (@_details.Epic.State)</MudText>
+                    @if (!string.IsNullOrWhiteSpace(_details.EpicDescription))
+                    {
+                        <MudPaper Class="pa-2" Style="overflow:auto">
+                            @((MarkupString)_details.EpicDescription)
+                        </MudPaper>
+                    }
+                }
+                @if (_details.Relations.Count > 0)
+                {
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.h6">@L["RelationshipsHeading"]</MudText>
+                    <MudList T="WorkItemRelation">
+                        @foreach (var r in _details.Relations)
+                        {
+                            <MudListItem T="WorkItemRelation">@r.Rel - @r.TargetId</MudListItem>
+                        }
+                    </MudList>
+                }
+                @if (_details.Comments.Count > 0)
+                {
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.h6">@L["CommentsHeading"]</MudText>
+                    <MudList T="string" Dense="true">
+                        @foreach (var c in _details.Comments)
+                        {
+                            <MudListItem T="string">@c</MudListItem>
+                        }
+                    </MudList>
+                }
+            </MudStack>
+        }
+        else
+        {
+            <MudText>Select an item to view details.</MudText>
+        }
+    </div>
+</MudPaper>
+
+@code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
+
+    private readonly HashSet<WorkItemInfo> _selectedItems = [];
+    private bool _loading;
+    private bool _filtersExpanded = true;
+    private bool _listExpanded = true;
+    private StoryHierarchyDetails? _details;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) && ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
+    }
+
+    private Task OnWorkItemsSelected(IReadOnlyCollection<WorkItemInfo> items)
+    {
+        _selectedItems.Clear();
+        foreach (var i in items)
+            _selectedItems.Add(i);
+        var first = _selectedItems.FirstOrDefault();
+        if (first != null)
+            _ = LoadDetails(first.Id);
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadDetails(int id)
+    {
+        _loading = true;
+        _details = null;
+        StateHasChanged();
+        try
+        {
+            var result = await ApiService.GetStoryHierarchyDetailsAsync(new[] { id });
+            _details = result.FirstOrDefault();
+            if (_details != null)
+                _details.Comments = await ApiService.GetCommentsAsync(id);
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+        StateHasChanged();
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
+    }
+}

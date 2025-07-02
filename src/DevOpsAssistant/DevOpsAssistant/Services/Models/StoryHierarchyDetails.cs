@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace DevOpsAssistant.Services.Models;
 
 public class StoryHierarchyDetails
@@ -11,4 +14,8 @@ public class StoryHierarchyDetails
     public WorkItemInfo? Epic { get; set; }
     public string FeatureDescription { get; set; } = string.Empty;
     public string EpicDescription { get; set; } = string.Empty;
+    public double StoryPoints { get; set; }
+    public string[] Tags { get; set; } = Array.Empty<string>();
+    public List<WorkItemRelation> Relations { get; set; } = [];
+    public List<string> Comments { get; set; } = [];
 }

@@ -24,6 +24,9 @@
   <data name="BulkTag" xml:space="preserve">
     <value>Bulk Tag</value>
   </data>
+  <data name="WorkItemViewer" xml:space="preserve">
+    <value>Work Item Viewer</value>
+  </data>
   <data name="WorkItemQuality" xml:space="preserve">
     <value>Work Item Quality</value>
   </data>
