@@ -83,6 +83,8 @@
                         <MudSelectItem Value="OutputFormat.Html">HTML</MudSelectItem>
                         <MudSelectItem Value="OutputFormat.Inline">Inline</MudSelectItem>
                     </MudSelect>
+                    <MudCheckBox T="bool" Value="_model.UseGherkinSyntax" ValueChanged="v => OnPromptsChanged(() => _model.UseGherkinSyntax = v)" Color="Color.Primary" Label='@L["UseGherkin"]' />
+                    <MudCheckBox T="bool" Value="_model.UseAsAFormat" ValueChanged="v => OnPromptsChanged(() => _model.UseAsAFormat = v)" Color="Color.Primary" Label='@L["UseAsAFormat"]' />
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                     <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
                 </MudStack>
@@ -167,6 +169,8 @@
             RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
             OutputFormat = cfg.OutputFormat,
+            UseGherkinSyntax = cfg.UseGherkinSyntax,
+            UseAsAFormat = cfg.UseAsAFormat,
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = cfg.Rules.Epic.HasDescription },
@@ -219,6 +223,8 @@
             RequirementsPromptMode = _model.RequirementsPromptMode,
             PromptCharacterLimit = _model.PromptCharacterLimit,
             OutputFormat = _model.OutputFormat,
+            UseGherkinSyntax = _model.UseGherkinSyntax,
+            UseAsAFormat = _model.UseAsAFormat,
             Rules = _model.Rules
         };
         var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave);
@@ -255,6 +261,8 @@
         cfg.RequirementsPromptMode = _model.RequirementsPromptMode;
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
         cfg.OutputFormat = _model.OutputFormat;
+        cfg.UseGherkinSyntax = _model.UseGherkinSyntax;
+        cfg.UseAsAFormat = _model.UseAsAFormat;
         await ConfigService.SaveCurrentAsync(_model.Project, cfg);
         _promptsDirty = false;
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _model.Project), Severity.Success);
@@ -287,6 +295,8 @@
                 pcfg.RequirementsPromptMode = _model.RequirementsPromptMode;
                 pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
                 pcfg.OutputFormat = _model.OutputFormat;
+                pcfg.UseGherkinSyntax = _model.UseGherkinSyntax;
+                pcfg.UseAsAFormat = _model.UseAsAFormat;
                 await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
             }
             Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, L["AllProjects"].Value), Severity.Success);

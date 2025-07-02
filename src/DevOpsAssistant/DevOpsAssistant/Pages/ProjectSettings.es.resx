@@ -36,6 +36,12 @@
   <data name="OutputFormat" xml:space="preserve">
     <value>Formato de salida</value>
   </data>
+  <data name="UseGherkin" xml:space="preserve">
+    <value>Usar sintaxis Gherkin</value>
+  </data>
+  <data name="UseAsAFormat" xml:space="preserve">
+    <value>Usar formato "Como"</value>
+  </data>
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Tiene story points</value>
   </data>

@@ -618,8 +618,14 @@ Define what success looks like — business or system-level outcomes.
                 sb.AppendLine("You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.");
             }
             sb.AppendLine("Each story must include:");
-            sb.AppendLine("- A clear, user-centric title and description");
-            sb.AppendLine("- Acceptance criteria in Gherkin-style format");
+            if (config.UseAsAFormat)
+                sb.AppendLine("- Description in 'As a <persona>, I want to <goal> so that <benefit>' format");
+            else
+                sb.AppendLine("- A clear, user-centric title and description");
+            if (config.UseGherkinSyntax)
+                sb.AppendLine("- Acceptance criteria in Gherkin-style format using <pre><code class=\"language-gherkin\"></code></pre> (no markdown)");
+            else
+                sb.AppendLine("- Acceptance criteria as bullet points");
             sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
             sb.AppendLine("Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.");
 
