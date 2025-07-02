@@ -52,6 +52,11 @@
             </MudStack>
         </MudStack>
     }
+
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </MudPaper>
 
 @code {
@@ -70,6 +75,7 @@
     [Parameter] public EventCallback<string?> AcceptanceCriteriaChanged { get; set; }
     [Parameter] public List<string> Tags { get; set; } = new();
     [Parameter] public EventCallback<List<string>> TagsChanged { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private string _newTag = string.Empty;
 
