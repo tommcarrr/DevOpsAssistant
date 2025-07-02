@@ -1,0 +1,102 @@
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
+@using DevOpsAssistant.Utils
+
+<MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass(Type)}")" draggable="@Draggable" @ondragstart="DragStart" @ondrop="Drop" @ondragover:preventDefault>
+    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+        <MudText Typo="@HeaderTypo">@Type</MudText>
+        @if (OnDelete.HasDelegate)
+        {
+            <MudTooltip Text="@DeleteTooltip">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="OnDelete" />
+            </MudTooltip>
+        }
+    </MudStack>
+    @if (Preview)
+    {
+        <MudText Typo="Typo.subtitle2">Description</MudText>
+        <div class="preview-box">@((MarkupString)Description)</div>
+        @if (AcceptanceCriteria != null)
+        {
+            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
+            <div class="preview-box">@((MarkupString)AcceptanceCriteria)</div>
+        }
+        <MudText Typo="Typo.subtitle2">Tags</MudText>
+        <div>@string.Join(", ", Tags)</div>
+    }
+    else
+    {
+        <MudTextField @bind-Value="Title" Label="Title" />
+        <MudTextField @bind-Value="Description" Label="Description" Lines="3" />
+        @if (AcceptanceCriteria != null)
+        {
+            <MudTextField @bind-Value="AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" />
+        }
+        <MudStack Spacing="1">
+            <MudChipSet T="string">
+                @foreach (var t in Tags)
+                {
+                    if (IsProtected(t))
+                    {
+                        <MudChip Value="@t">@t</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveTag(t)">@t</MudChip>
+                    }
+                }
+            </MudChipSet>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.End">
+                <MudTextField T="string" @bind-Value="_newTag" Label="Tag" />
+                <MudButton Variant="Variant.Text" OnClick="AddTag" Disabled="string.IsNullOrWhiteSpace(_newTag)">Add</MudButton>
+            </MudStack>
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public string Type { get; set; } = string.Empty;
+    [Parameter] public bool Preview { get; set; }
+    [Parameter] public bool Draggable { get; set; }
+    [Parameter] public EventCallback DragStart { get; set; }
+    [Parameter] public EventCallback Drop { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public string DeleteTooltip { get; set; } = "Delete";
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> TitleChanged { get; set; }
+    [Parameter] public string Description { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> DescriptionChanged { get; set; }
+    [Parameter] public string? AcceptanceCriteria { get; set; }
+    [Parameter] public EventCallback<string?> AcceptanceCriteriaChanged { get; set; }
+    [Parameter] public List<string> Tags { get; set; } = new();
+    [Parameter] public EventCallback<List<string>> TagsChanged { get; set; }
+
+    private string _newTag = string.Empty;
+
+    private Typo HeaderTypo => Type switch
+    {
+        "Epic" => Typo.h6,
+        "Feature" => Typo.subtitle1,
+        _ => Typo.subtitle2
+    };
+
+    private void AddTag()
+    {
+        if (!string.IsNullOrWhiteSpace(_newTag))
+        {
+            Tags.Add(_newTag.Trim());
+            _newTag = string.Empty;
+            TagsChanged.InvokeAsync(Tags);
+        }
+    }
+
+    private bool IsProtected(string tag) => string.Equals(tag, "AI Generated", StringComparison.OrdinalIgnoreCase);
+
+    private void RemoveTag(string tag)
+    {
+        if (IsProtected(tag))
+            return;
+        Tags.Remove(tag);
+        TagsChanged.InvokeAsync(Tags);
+    }
+}
