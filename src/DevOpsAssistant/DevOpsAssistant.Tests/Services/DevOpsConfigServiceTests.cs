@@ -21,6 +21,9 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
+            StoryQualityPromptMode = PromptMode.Append,
+            ReleaseNotesPromptMode = PromptMode.Append,
+            RequirementsPromptMode = PromptMode.Append,
             MainBranch = " main ",
             OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules
@@ -71,6 +74,9 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
+            StoryQualityPromptMode = PromptMode.Append,
+            ReleaseNotesPromptMode = PromptMode.Append,
+            RequirementsPromptMode = PromptMode.Append,
             OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules
             {
@@ -119,6 +125,9 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = " SQ ",
             ReleaseNotesPrompt = " RN ",
             RequirementsPrompt = " RP ",
+            StoryQualityPromptMode = PromptMode.Append,
+            ReleaseNotesPromptMode = PromptMode.Append,
+            RequirementsPromptMode = PromptMode.Append,
             OutputFormat = OutputFormat.Pdf,
             Rules = new ValidationRules()
         };
