@@ -97,6 +97,7 @@
                 {
                     <PlanItemEditor Type="User Story"
                                     Draggable="true"
+                                    Droppable="true"
                                     Preview="_previewHtml"
                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnStoryList(story))"
@@ -114,6 +115,7 @@
                 {
                     <PlanItemEditor Type="Epic"
                                     Draggable="true"
+                                    Droppable="true"
                                     Preview="_previewHtml"
                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(epic))"
                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnPlan(epic))"
@@ -125,6 +127,7 @@
                         {
                             <PlanItemEditor Type="Feature"
                                             Draggable="true"
+                                            Droppable="true"
                                             Preview="_previewHtml"
                                             DragStart="EventCallback.Factory.Create(this, () => OnDragStart(feature))"
                                             Drop="EventCallback.Factory.Create(this, () => OnDropOnEpic(epic))"
@@ -136,6 +139,7 @@
                                 {
                                     <PlanItemEditor Type="User Story"
                                                     Draggable="true"
+                                                    Droppable="true"
                                                     Preview="_previewHtml"
                                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
                                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnFeature(feature))"
