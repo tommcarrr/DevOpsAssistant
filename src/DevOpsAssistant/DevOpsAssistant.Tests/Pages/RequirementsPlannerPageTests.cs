@@ -94,6 +94,63 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         Assert.Equal(new[] { 3, 2, 1 }, deleted);
     }
 
+    [Fact]
+    public void RemoveEpic_Removes_From_List()
+    {
+        SetupServices(includeApi: true);
+        var cut = RenderWithProvider<TestPage>();
+        var planType = typeof(RequirementsPlanner).GetNestedType("Plan", BindingFlags.NonPublic)!;
+        var epicType = typeof(RequirementsPlanner).GetNestedType("Epic", BindingFlags.NonPublic)!;
+        var epic = Activator.CreateInstance(epicType)!;
+        var plan = Activator.CreateInstance(planType)!;
+        var epicsProp = planType.GetProperty("Epics")!;
+        var list = (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(epicType))!;
+        list.Add(epic);
+        epicsProp.SetValue(plan, list);
+        var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        planField.SetValue(cut.Instance, plan);
+
+        var remove = typeof(RequirementsPlanner).GetMethod("RemoveEpic", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => remove.Invoke(cut.Instance, new[] { epic }));
+
+        Assert.Empty((System.Collections.IList)epicsProp.GetValue(plan)!);
+    }
+
+    [Fact]
+    public void OnDropOnEpic_Moves_Feature()
+    {
+        SetupServices(includeApi: true);
+        var cut = RenderWithProvider<TestPage>();
+        var planType = typeof(RequirementsPlanner).GetNestedType("Plan", BindingFlags.NonPublic)!;
+        var epicType = typeof(RequirementsPlanner).GetNestedType("Epic", BindingFlags.NonPublic)!;
+        var featureType = typeof(RequirementsPlanner).GetNestedType("Feature", BindingFlags.NonPublic)!;
+        var epic1 = Activator.CreateInstance(epicType)!;
+        var epic2 = Activator.CreateInstance(epicType)!;
+        var feature = Activator.CreateInstance(featureType)!;
+        var featuresProp = epicType.GetProperty("Features")!;
+        var list1 = (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(featureType))!;
+        list1.Add(feature);
+        featuresProp.SetValue(epic1, list1);
+        var list2 = (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(featureType))!;
+        featuresProp.SetValue(epic2, list2);
+        var plan = Activator.CreateInstance(planType)!;
+        var epicsProp = planType.GetProperty("Epics")!;
+        var epics = (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(epicType))!;
+        epics.Add(epic1);
+        epics.Add(epic2);
+        epicsProp.SetValue(plan, epics);
+        var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        planField.SetValue(cut.Instance, plan);
+
+        var drag = typeof(RequirementsPlanner).GetMethod("OnDragStart", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var drop = typeof(RequirementsPlanner).GetMethod("OnDropOnEpic", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => drag.Invoke(cut.Instance, new[] { feature }));
+        cut.InvokeAsync(() => drop.Invoke(cut.Instance, new[] { epic2 }));
+
+        Assert.Empty((System.Collections.IList)featuresProp.GetValue(epic1)!);
+        Assert.Single((System.Collections.IList)featuresProp.GetValue(epic2)!);
+    }
+
 
     private class TestPage : RequirementsPlanner
     {
