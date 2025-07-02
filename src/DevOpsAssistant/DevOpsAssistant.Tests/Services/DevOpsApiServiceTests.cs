@@ -436,6 +436,36 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task CreateWorkItemAsync_Uses_Correct_Url()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"id\":1}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "My Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var id = await service.CreateWorkItemAsync("User Story", "Title", "Desc", "Area");
+
+        Assert.Equal(1, id);
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Post, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/My%20Proj/_apis/wit/workitems/$User%20Story?api-version=7.0",
+            captured.RequestUri!.OriginalString);
+        var body = await captured.Content!.ReadAsStringAsync();
+        Assert.Contains("System.Title", body);
+    }
+
+    [Fact]
     public async Task DeleteWorkItemAsync_Sends_Delete_Request()
     {
         HttpRequestMessage? captured = null;
