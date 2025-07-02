@@ -39,8 +39,8 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudStepper @ref="_stepper" ActionContent="@(_ => (RenderFragment)(builder => { }) )">
-    <MudStep Title="Select Requirements">
+<MudStepper @ref="_stepper" NonLinear="true">
+    <MudStep Title="Select Requirements" Skippable="true">
         <MudStack Spacing="2">
             <WikiDocumentSelector Source="@_source"
                                    SourceChanged="@(v => _source = v)"
@@ -60,7 +60,7 @@
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
         </MudStack>
     </MudStep>
-    <MudStep Title="Import Response" Disabled="@string.IsNullOrWhiteSpace(_prompt)">
+    <MudStep Title="Import Response" Skippable="true">
         <MudStack Spacing="2">
             @if (_promptParts != null)
             {
