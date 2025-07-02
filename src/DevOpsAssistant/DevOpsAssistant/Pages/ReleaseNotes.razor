@@ -196,7 +196,8 @@ else if (_promptParts != null)
 
         var sb = new StringBuilder();
 
-        if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
+        if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) ||
+            config.ReleaseNotesPromptMode == PromptMode.Append)
         {
             sb.AppendLine("You are a meticulous Delivery Manager preparing release notes for a software update.");
             sb.AppendLine("Write in clear, plain language so non-technical stakeholders can understand the changes.");
@@ -310,7 +311,7 @@ else if (_promptParts != null)
             sb.AppendLine("[Other notes.]");
             sb.AppendLine("```");
         }
-        else
+        if (!string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
         {
             sb.AppendLine(config.ReleaseNotesPrompt.Trim());
         }

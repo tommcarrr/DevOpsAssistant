@@ -606,7 +606,8 @@ Define what success looks like — business or system-level outcomes.
         private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify, DevOpsConfig config)
     {
         var sb = new System.Text.StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.RequirementsPrompt))
+        if (string.IsNullOrWhiteSpace(config.RequirementsPrompt) ||
+            config.RequirementsPromptMode == PromptMode.Append)
         {
             if (storiesOnly)
             {
@@ -651,7 +652,7 @@ Define what success looks like — business or system-level outcomes.
                 sb.AppendLine("If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.");
             }
         }
-        else
+        if (!string.IsNullOrWhiteSpace(config.RequirementsPrompt))
         {
             sb.AppendLine(config.RequirementsPrompt.Trim());
         }

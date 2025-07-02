@@ -12,6 +12,9 @@ public class DevOpsConfig
     public string StoryQualityPrompt { get; set; } = string.Empty;
     public string ReleaseNotesPrompt { get; set; } = string.Empty;
     public string RequirementsPrompt { get; set; } = string.Empty;
+    public PromptMode StoryQualityPromptMode { get; set; }
+    public PromptMode ReleaseNotesPromptMode { get; set; }
+    public PromptMode RequirementsPromptMode { get; set; }
     public int PromptCharacterLimit { get; set; }
     public OutputFormat OutputFormat { get; set; }
     public ValidationRules Rules { get; set; } = new();

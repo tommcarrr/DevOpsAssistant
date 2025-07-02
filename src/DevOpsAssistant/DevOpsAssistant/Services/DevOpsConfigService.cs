@@ -197,6 +197,9 @@ public class DevOpsConfigService
             StoryQualityPrompt = config.StoryQualityPrompt.Trim(),
             ReleaseNotesPrompt = config.ReleaseNotesPrompt.Trim(),
             RequirementsPrompt = config.RequirementsPrompt.Trim(),
+            StoryQualityPromptMode = config.StoryQualityPromptMode,
+            ReleaseNotesPromptMode = config.ReleaseNotesPromptMode,
+            RequirementsPromptMode = config.RequirementsPromptMode,
             PromptCharacterLimit = config.PromptCharacterLimit,
             OutputFormat = config.OutputFormat,
             Rules = config.Rules
@@ -222,6 +225,9 @@ public class DevOpsConfigService
             StoryQualityPrompt = cfg.StoryQualityPrompt,
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
+            StoryQualityPromptMode = cfg.StoryQualityPromptMode,
+            ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
+            RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
             OutputFormat = cfg.OutputFormat,
             Rules = cfg.Rules

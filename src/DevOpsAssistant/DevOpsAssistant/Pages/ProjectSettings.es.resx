@@ -24,6 +24,12 @@
   <data name="RequirementsPrompt" xml:space="preserve">
     <value>Prompt de Requerimientos</value>
   </data>
+  <data name="PromptReplace" xml:space="preserve">
+    <value>Reemplazar el prompt predeterminado</value>
+  </data>
+  <data name="PromptAppend" xml:space="preserve">
+    <value>Agregar al prompt predeterminado</value>
+  </data>
   <data name="PromptLimit" xml:space="preserve">
     <value>Límite de caracteres del prompt</value>
   </data>

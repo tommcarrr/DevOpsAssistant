@@ -61,8 +61,20 @@
             <MudTabPanel Text='@L["PromptsTab"]'>
                 <MudStack Spacing="2">
                     <MudTextField T="string" Value="_model.StoryQualityPrompt" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPrompt = v)" Label='@L["StoryQualityPrompt"]' Lines="3"/>
+                    <MudRadioGroup T="PromptMode" Value="_model.StoryQualityPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPromptMode = v)">
+                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                    </MudRadioGroup>
                     <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
+                    <MudRadioGroup T="PromptMode" Value="_model.ReleaseNotesPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPromptMode = v)">
+                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                    </MudRadioGroup>
                     <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
+                    <MudRadioGroup T="PromptMode" Value="_model.RequirementsPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPromptMode = v)">
+                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                    </MudRadioGroup>
                     <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
                     <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
                         <MudSelectItem Value="OutputFormat.Markdown">Markdown</MudSelectItem>
@@ -150,6 +162,9 @@
             StoryQualityPrompt = cfg.StoryQualityPrompt,
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
+            StoryQualityPromptMode = cfg.StoryQualityPromptMode,
+            ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
+            RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
             OutputFormat = cfg.OutputFormat,
             Rules = new ValidationRules
@@ -199,6 +214,9 @@
             StoryQualityPrompt = _model.StoryQualityPrompt,
             ReleaseNotesPrompt = _model.ReleaseNotesPrompt,
             RequirementsPrompt = _model.RequirementsPrompt,
+            StoryQualityPromptMode = _model.StoryQualityPromptMode,
+            ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode,
+            RequirementsPromptMode = _model.RequirementsPromptMode,
             PromptCharacterLimit = _model.PromptCharacterLimit,
             OutputFormat = _model.OutputFormat,
             Rules = _model.Rules
@@ -232,6 +250,9 @@
         cfg.StoryQualityPrompt = _model.StoryQualityPrompt;
         cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
+        cfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
+        cfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
+        cfg.RequirementsPromptMode = _model.RequirementsPromptMode;
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
         cfg.OutputFormat = _model.OutputFormat;
         await ConfigService.SaveCurrentAsync(_model.Project, cfg);
@@ -261,6 +282,9 @@
                 pcfg.StoryQualityPrompt = _model.StoryQualityPrompt;
                 pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
                 pcfg.RequirementsPrompt = _model.RequirementsPrompt;
+                pcfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
+                pcfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
+                pcfg.RequirementsPromptMode = _model.RequirementsPromptMode;
                 pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
                 pcfg.OutputFormat = _model.OutputFormat;
                 await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);

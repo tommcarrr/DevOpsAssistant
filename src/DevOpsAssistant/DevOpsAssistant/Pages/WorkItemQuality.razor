@@ -167,7 +167,8 @@ else if (_promptParts != null)
         });
         var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
         var sb = new StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
+        if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) ||
+            config.StoryQualityPromptMode == PromptMode.Append)
         {
             sb.AppendLine("You are an expert Agile coach reviewing user stories and bugs for quality.");
             sb.AppendLine();
@@ -254,7 +255,7 @@ else if (_promptParts != null)
             sb.AppendLine(config.DefinitionOfReady);
         }
         }
-        else
+        if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
         {
             sb.AppendLine(config.StoryQualityPrompt.Trim());
         }
