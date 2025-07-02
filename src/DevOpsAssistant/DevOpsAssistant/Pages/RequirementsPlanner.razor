@@ -95,105 +95,63 @@
 
                 @foreach (var story in _plan.Stories)
                 {
-                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")"
-                              draggable="true"
-                              @ondragstart="() => OnDragStart(story)"
-                              @ondrop="() => OnDropOnStoryList(story)"
-                              @ondragover:preventDefault>
-                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                            <MudText Typo="Typo.subtitle2">Story</MudText>
-                            <MudTooltip Text='@L["DeleteTooltip"]'>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveStory(story)" />
-                            </MudTooltip>
-                        </MudStack>
-                        @if (_previewHtml)
-                        {
-                            <MudText Typo="Typo.subtitle2">Description</MudText>
-                            <div class="preview-box">@((MarkupString)story.Description)</div>
-                            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
-                            <div class="preview-box">@((MarkupString)story.AcceptanceCriteria)</div>
-                            <MudText Typo="Typo.subtitle2">Tags</MudText>
-                            <div>@string.Join(", ", story.Tags)</div>
-                        }
-                        else
-                        {
-                            <MudTextField @bind-Value="story.Title" Label="Title" />
-                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" />
-                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" />
-                            <MudTextField @bind-Value="story.TagString" Label="Tags" />
-                        }
-                    </MudPaper>
+                    <PlanItemEditor Type="User Story"
+                                    Draggable="true"
+                                    Preview="_previewHtml"
+                                    DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
+                                    Drop="EventCallback.Factory.Create(this, () => OnDropOnStoryList(story))"
+                                    OnDelete="EventCallback.Factory.Create(this, () => RemoveStory(story))"
+                                    @bind-Title="story.Title"
+                                    @bind-Description="story.Description"
+                                    @bind-AcceptanceCriteria="story.AcceptanceCriteria"
+                                    @bind-Tags="story.Tags" />
                 }
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="AddStory">Add Story</MudButton>
             }
             else
             {
                 @foreach (var epic in _plan.Epics)
                 {
-                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Epic")}")"
-                              draggable="true"
-                              @ondragstart="() => OnDragStart(epic)"
-                              @ondrop="() => OnDropOnPlan(epic)"
-                              @ondragover:preventDefault>
-                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                            <MudText Typo="Typo.h6">Epic</MudText>
-                            <MudTooltip Text='@L["DeleteTooltip"]'>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveEpic(epic)" />
-                            </MudTooltip>
-                        </MudStack>
-                        <MudTextField @bind-Value="epic.Title" Label="Title" />
-                        <MudTextField @bind-Value="epic.Description" Label="Description" Lines="3" />
-
+                    <PlanItemEditor Type="Epic"
+                                    Draggable="true"
+                                    Preview="_previewHtml"
+                                    DragStart="EventCallback.Factory.Create(this, () => OnDragStart(epic))"
+                                    Drop="EventCallback.Factory.Create(this, () => OnDropOnPlan(epic))"
+                                    OnDelete="EventCallback.Factory.Create(this, () => RemoveEpic(epic))"
+                                    @bind-Title="epic.Title"
+                                    @bind-Description="epic.Description"
+                                    @bind-Tags="epic.Tags" >
                         @foreach (var feature in epic.Features)
                         {
-                            <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("Feature")}")"
-                                      draggable="true"
-                                      @ondragstart="() => OnDragStart(feature)"
-                                      @ondrop="() => OnDropOnEpic(epic)"
-                                      @ondragover:preventDefault>
-                                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                                    <MudText Typo="Typo.subtitle1">Feature</MudText>
-                                    <MudTooltip Text='@L["DeleteTooltip"]'>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveFeature(feature)" />
-                                    </MudTooltip>
-                                </MudStack>
-                                <MudTextField @bind-Value="feature.Title" Label="Title" />
-                                <MudTextField @bind-Value="feature.Description" Label="Description" Lines="3" />
-
+                            <PlanItemEditor Type="Feature"
+                                            Draggable="true"
+                                            Preview="_previewHtml"
+                                            DragStart="EventCallback.Factory.Create(this, () => OnDragStart(feature))"
+                                            Drop="EventCallback.Factory.Create(this, () => OnDropOnEpic(epic))"
+                                            OnDelete="EventCallback.Factory.Create(this, () => RemoveFeature(feature))"
+                                            @bind-Title="feature.Title"
+                                            @bind-Description="feature.Description"
+                                            @bind-Tags="feature.Tags" >
                                 @foreach (var story in feature.Stories)
                                 {
-                                    <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass("User Story")}")"
-                                              draggable="true"
-                                              @ondragstart="() => OnDragStart(story)"
-                                              @ondrop="() => OnDropOnFeature(feature)"
-                                              @ondragover:preventDefault>
-                                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                                            <MudText Typo="Typo.subtitle2">Story</MudText>
-                                            <MudTooltip Text='@L["DeleteTooltip"]'>
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveStory(story)" />
-                                            </MudTooltip>
-                                        </MudStack>
-                                        @if (_previewHtml)
-                                        {
-                                            <MudText Typo="Typo.subtitle2">Description</MudText>
-                                            <div class="preview-box">@((MarkupString)story.Description)</div>
-                                            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
-                                            <div class="preview-box">@((MarkupString)story.AcceptanceCriteria)</div>
-                                            <MudText Typo="Typo.subtitle2">Tags</MudText>
-                                            <div>@string.Join(", ", story.Tags)</div>
-                                        }
-                                        else
-                                        {
-                                            <MudTextField @bind-Value="story.Title" Label="Title" />
-                                            <MudTextField @bind-Value="story.Description" Label="Description" Lines="3" />
-                                            <MudTextField @bind-Value="story.AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" />
-                                            <MudTextField @bind-Value="story.TagString" Label="Tags" />
-                                        }
-                                    </MudPaper>
+                                    <PlanItemEditor Type="User Story"
+                                                    Draggable="true"
+                                                    Preview="_previewHtml"
+                                                    DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
+                                                    Drop="EventCallback.Factory.Create(this, () => OnDropOnFeature(feature))"
+                                                    OnDelete="EventCallback.Factory.Create(this, () => RemoveStory(story))"
+                                                    @bind-Title="story.Title"
+                                                    @bind-Description="story.Description"
+                                                    @bind-AcceptanceCriteria="story.AcceptanceCriteria"
+                                                    @bind-Tags="story.Tags" />
                                 }
-                            </MudPaper>
+                                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddStory(feature)">Add Story</MudButton>
+                            </PlanItemEditor>
                         }
-                    </MudPaper>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddFeature(epic)">Add Feature</MudButton>
+                    </PlanItemEditor>
                 }
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="AddEpic">Add Epic</MudButton>
             }
 
             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
@@ -561,8 +519,10 @@ Define what success looks like — business or system-level outcomes.
             story.TagString = string.Join(", ", story.Tags);
         foreach (var epic in plan.Epics)
         {
+            epic.TagString = string.Join(", ", epic.Tags);
             foreach (var feature in epic.Features)
             {
+                feature.TagString = string.Join(", ", feature.Tags);
                 foreach (var story in feature.Stories)
                     story.TagString = string.Join(", ", story.Tags);
             }
@@ -598,11 +558,13 @@ Define what success looks like — business or system-level outcomes.
             {
                 foreach (var epic in _plan.Epics)
                 {
-                    epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, ["AI Generated"]);
+                    var epicTags = epic.Tags.Concat(["AI Generated"]).ToArray();
+                    epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, epicTags);
                     _createdItems.Add(epic.Id);
                     foreach (var feature in epic.Features)
                     {
-                        feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, ["AI Generated"]);
+                        var featureTags = feature.Tags.Concat(["AI Generated"]).ToArray();
+                        feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, featureTags);
                         _createdItems.Add(feature.Id);
                         foreach (var story in feature.Stories)
                         {
@@ -803,6 +765,26 @@ Define what success looks like — business or system-level outcomes.
                     return;
     }
 
+    private void AddEpic()
+    {
+        _plan?.Epics.Add(new Epic());
+    }
+
+    private void AddFeature(Epic epic)
+    {
+        epic.Features.Add(new Feature());
+    }
+
+    private void AddStory(Feature feature)
+    {
+        feature.Stories.Add(new Story());
+    }
+
+    private void AddStory()
+    {
+        _plan?.Stories.Add(new Story());
+    }
+
     private class Plan
     {
         public List<Epic> Epics { get; set; } = new();
@@ -814,6 +796,16 @@ Define what success looks like — business or system-level outcomes.
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public List<string> Tags { get; set; } = new();
+
+        [JsonIgnore]
+        public string TagString
+        {
+            get => string.Join(", ", Tags);
+            set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(t => t.Trim())
+                                .ToList();
+        }
         public List<Feature> Features { get; set; } = new();
     }
 
@@ -822,6 +814,16 @@ Define what success looks like — business or system-level outcomes.
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public List<string> Tags { get; set; } = new();
+
+        [JsonIgnore]
+        public string TagString
+        {
+            get => string.Join(", ", Tags);
+            set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(t => t.Trim())
+                                .ToList();
+        }
         public List<Story> Stories { get; set; } = new();
     }
 
