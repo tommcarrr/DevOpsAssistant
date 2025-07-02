@@ -2,8 +2,12 @@
 @using MudBlazor
 @using DevOpsAssistant.Utils
 
-<MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass(Type)}")" draggable="@Draggable" @ondragstart="DragStart" @ondrop="Drop" @ondragover:preventDefault>
+<MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass(Type)}")" @ondrop="OnDropInternal" @ondragover:preventDefault="Droppable">
     <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+        @if (Draggable)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.DragIndicator" Class="drag-handle" draggable="true" @ondragstart="DragStart" Size="Size.Small" />
+        }
         <MudText Typo="@HeaderTypo">@Type</MudText>
         @if (OnDelete.HasDelegate)
         {
@@ -63,6 +67,7 @@
     [Parameter] public string Type { get; set; } = string.Empty;
     [Parameter] public bool Preview { get; set; }
     [Parameter] public bool Draggable { get; set; }
+    [Parameter] public bool Droppable { get; set; }
     [Parameter] public EventCallback DragStart { get; set; }
     [Parameter] public EventCallback Drop { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
@@ -104,5 +109,12 @@
             return;
         Tags.Remove(tag);
         TagsChanged.InvokeAsync(Tags);
+    }
+
+    private Task OnDropInternal()
+    {
+        if (Droppable && Drop.HasDelegate)
+            return Drop.InvokeAsync();
+        return Task.CompletedTask;
     }
 }

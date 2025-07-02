@@ -207,6 +207,7 @@ body {
 .scroll-300 { max-height: 300px; overflow: auto; width: 100%; }
 .float-right { float: right; }
 .cursor-pointer { cursor: pointer; }
+.drag-handle { cursor: move; }
 .no-link-style { color: inherit; text-decoration: none; }
 .preview-box { margin-bottom: 0.5rem; border: 1px solid #ccc; padding: 4px; }
 
