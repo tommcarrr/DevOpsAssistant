@@ -122,5 +122,17 @@ public class ReleaseNotesPageTests : ComponentTestBase
         Assert.Contains("Reply inline", result);
     }
 
+    [Fact]
+    public void BuildPrompt_Includes_Templates()
+    {
+        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+
+        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), new DevOpsConfig()])!;
+
+        Assert.Contains("# Release Notes", result);
+        Assert.Contains("# Change Control Ticket", result);
+        Assert.Contains("clarifying questions", result);
+    }
+
     // Rendering uses ComponentTestBase.RenderWithProvider
 }
