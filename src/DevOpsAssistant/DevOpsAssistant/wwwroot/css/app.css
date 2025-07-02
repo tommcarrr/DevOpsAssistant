@@ -209,3 +209,21 @@ body {
 .cursor-pointer { cursor: pointer; }
 .no-link-style { color: inherit; text-decoration: none; }
 .preview-box { margin-bottom: 0.5rem; border: 1px solid #ccc; padding: 4px; }
+
+.viewer-layout {
+    display: flex;
+    height: 80vh;
+}
+
+.viewer-list {
+    resize: horizontal;
+    overflow: auto;
+    min-width: 200px;
+    max-width: 400px;
+    margin-right: 1rem;
+}
+
+.viewer-details {
+    flex: 1;
+    overflow: auto;
+}

@@ -436,6 +436,35 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task GetCommentsAsync_Returns_Text()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"comments\":[{\"text\":\"One\"},{\"text\":\"Two\"}]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.GetCommentsAsync(5);
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Get, captured!.Method);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/5/comments?api-version=7.1-preview.3",
+            captured.RequestUri!.ToString());
+        Assert.Equal(2, result.Count);
+        Assert.Contains("One", result);
+        Assert.Contains("Two", result);
+    }
+
+    [Fact]
     public async Task CreateWorkItemAsync_Uses_Correct_Url()
     {
         HttpRequestMessage? captured = null;
@@ -710,6 +739,32 @@ public class DevOpsApiServiceTests
         Assert.Equal(5, result[0].StoryPoints);
         Assert.Equal(8, result[0].OriginalEstimate);
         Assert.Contains("Tech Debt", result[0].Tags);
+    }
+
+    [Fact]
+    public async Task GetStoryHierarchyDetailsAsync_Returns_Extra_Fields()
+    {
+        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\",\"System.Tags\":\"A;B\",\"Microsoft.VSTS.Scheduling.StoryPoints\":3},\"relations\":[{\"rel\":\"System.LinkTypes.Dependency-Forward\",\"url\":\"https://dev.azure.com/Org/Proj/_apis/wit/workItems/2\"}]}]}";
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(itemsJson)
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.GetStoryHierarchyDetailsAsync([1]);
+
+        Assert.Single(result);
+        var detail = result[0];
+        Assert.Equal(3, detail.StoryPoints);
+        Assert.Contains("A", detail.Tags);
+        Assert.Contains("B", detail.Tags);
+        Assert.Single(detail.Relations);
+        Assert.Equal("System.LinkTypes.Dependency-Forward", detail.Relations[0].Rel);
+        Assert.Equal(2, detail.Relations[0].TargetId);
     }
 
     [Fact]
