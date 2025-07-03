@@ -144,4 +144,10 @@
   <data name="ProjectSettings" xml:space="preserve">
     <value>Configuración del proyecto</value>
   </data>
+  <data name="StandardsHeader" xml:space="preserve">
+    <value>Estándares de elementos de trabajo</value>
+  </data>
+  <data name="IncompatibleWith" xml:space="preserve">
+    <value>Incompatible con {0}</value>
+  </data>
 </root>
