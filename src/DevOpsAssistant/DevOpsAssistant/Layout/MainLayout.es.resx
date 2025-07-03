@@ -36,6 +36,9 @@
   <data name="RequirementPlanner" xml:space="preserve">
     <value>Planificador de requisitos</value>
   </data>
+  <data name="RequirementQuality" xml:space="preserve">
+    <value>Calidad de requisitos</value>
+  </data>
   <data name="SignOut" xml:space="preserve">
     <value>Cerrar sesión</value>
   </data>

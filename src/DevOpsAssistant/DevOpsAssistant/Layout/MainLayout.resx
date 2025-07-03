@@ -36,6 +36,9 @@
   <data name="RequirementPlanner" xml:space="preserve">
     <value>Requirement Planner</value>
   </data>
+  <data name="RequirementQuality" xml:space="preserve">
+    <value>Requirement Quality</value>
+  </data>
   <data name="SignOut" xml:space="preserve">
     <value>Sign Out</value>
   </data>

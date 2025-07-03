@@ -1,0 +1,214 @@
+@page "/projects/{ProjectName}/requirements-quality"
+@using System.Text
+@using DevOpsAssistant.Services
+@using DevOpsAssistant.Services.Models
+@using DevOpsAssistant.Utils
+@inject DevOpsApiService ApiService
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<RequirementsQuality> L
+@inherits ProjectComponentBase
+
+<PageTitle>DevOpsAssistant - Requirements Quality</PageTitle>
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <MudAlert Severity="Severity.Error">@_error</MudAlert>
+}
+
+<WikiDocumentSelector Source="@_source"
+                       SourceChanged="@(v => _source = v)"
+                       File="@_file"
+                       FileChanged="@(f => _file = f)"
+                       Text="@_text"
+                       TextChanged="@(t => _text = t)"
+                       WikiItems="@_wikiItems"
+                       SelectedPages="@_selectedPages"
+                       SelectedPagesChanged="@(p => _selectedPages = p)" />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
+
+@if (_loading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_promptParts != null)
+{
+    <MudPaper Class="pa-6">
+        <MudStack Spacing="2">
+            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadPrompt">Download</MudButton>
+            <MudTextField T="string" Text="@_promptParts[_partIndex]" Lines="10" ReadOnly="true" />
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                <MudTooltip Text='@L["PrevPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="_partIndex == 0" OnClick="PrevPart" />
+                </MudTooltip>
+                <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
+                <MudTooltip Text='@L["NextPartTooltip"]'>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="_partIndex == _promptParts.Count - 1" OnClick="NextPart" />
+                </MudTooltip>
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">Copy</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+}
+
+@code {
+    [Parameter] public string ProjectName { get; set; } = string.Empty;
+    private List<TreeItemData<WikiPageNode>>? _wikiItems;
+    private IReadOnlyCollection<WikiPageNode>? _selectedPages;
+    private IBrowserFile? _file;
+    private string _text = string.Empty;
+    private DocumentSource _source;
+    private bool _loading;
+    private string? _prompt;
+    private List<string>? _promptParts;
+    private int _partIndex;
+    private string? _error;
+    private string _wikiId = string.Empty;
+    private const string StateKey = "requirements-quality";
+    private const long MaxFileSize = 10 * 1024 * 1024;
+
+    private bool GenerateDisabled => _loading || _source switch
+        {
+            DocumentSource.Document => _file == null,
+            DocumentSource.Text => string.IsNullOrWhiteSpace(_text),
+            _ => _selectedPages == null || _selectedPages.Count == 0
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(ProjectName) &&
+            ConfigService.CurrentProject.Name != ProjectName)
+        {
+            await ConfigService.SelectProjectAsync(ProjectName);
+        }
+        try
+        {
+            var wikis = await ApiService.GetWikisAsync();
+            if (wikis.Count > 0)
+            {
+                _wikiId = wikis[0].Id;
+                var root = await ApiService.GetWikiPageTreeAsync(_wikiId);
+                if (root != null)
+                    _wikiItems = [BuildTreeItem(root)];
+            }
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task Generate()
+    {
+        if (GenerateDisabled) return;
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            List<(string Name, string Text)> pages = [];
+            switch (_source)
+            {
+                case DocumentSource.Document:
+                    if (_file != null)
+                    {
+                        using var stream = _file.OpenReadStream(MaxFileSize);
+                        var text = DocumentHelpers.ExtractText(stream, _file.Name);
+                        pages.Add((_file.Name, text));
+                    }
+                    break;
+                case DocumentSource.Text:
+                    if (!string.IsNullOrWhiteSpace(_text))
+                        pages.Add(("Pasted", _text));
+                    break;
+                default:
+                    if (_selectedPages != null)
+                    {
+                        foreach (var p in _selectedPages)
+                        {
+                            var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                            pages.Add((p.Name, text));
+                        }
+                    }
+                    break;
+            }
+            _prompt = BuildPrompt(pages);
+            _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
+            _partIndex = 0;
+            _error = null;
+            await CopyPrompt();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task CopyPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(_prompt))
+        {
+            await JS.InvokeVoidAsync("copyText", _prompt);
+            Snackbar.Add(L["CopyToast"].Value, Severity.Success);
+        }
+    }
+
+    private async Task CopyPart(string text)
+    {
+        await JS.InvokeVoidAsync("copyText", text);
+        Snackbar.Add(L["CopyToast"].Value, Severity.Success);
+    }
+
+    private void PrevPart()
+    {
+        if (_partIndex > 0)
+            _partIndex--;
+    }
+
+    private void NextPart()
+    {
+        if (_promptParts != null && _partIndex < _promptParts.Count - 1)
+            _partIndex++;
+    }
+
+    private async Task DownloadPrompt()
+    {
+        if (!string.IsNullOrWhiteSpace(_prompt))
+            await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
+    }
+
+    private static TreeItemData<WikiPageNode> BuildTreeItem(WikiPageNode node)
+    {
+        var item = new TreeItemData<WikiPageNode> { Value = node, Text = node.Name };
+        if (node.Children.Count > 0)
+            item.Children = node.Children.Select(BuildTreeItem).ToList();
+        return item;
+    }
+
+    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("You are an expert requirements analyst reviewing the following document.");
+        sb.AppendLine("Assess whether the requirements are clear, complete, and testable. Identify ambiguities, missing information, or conflicts and provide improvement suggestions.");
+        sb.AppendLine();
+        sb.AppendLine("Document:");
+        foreach (var page in pages)
+        {
+            sb.AppendLine($"## {page.Name}");
+            sb.AppendLine(page.Text);
+            sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
+    protected override Task OnProjectChangedAsync()
+    {
+        return OnInitializedAsync();
+    }
+}
