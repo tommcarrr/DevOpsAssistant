@@ -1,0 +1,28 @@
+==== Standard_ISO29148 ====
+Formal SRS requirements standard including characteristics like complete, unambiguous, verifiable.
+==== Standard_Volere ====
+Practical requirements template with detailed sections for functional, non-functional, constraints, priorities.
+==== Standard_BABOK ====
+Guide for good practices in writing requirements including clarity, conciseness, and testability.
+==== Standard_ISO25010 ====
+Defines software quality attributes (for non-functional requirements).
+==== Standard_ScrumUserStory ====
+Use "As a [role] I want [goal] so that [benefit]" format.
+==== Standard_JobStory ====
+Use "When [situation] I want to [motivation] so I can [expected outcome]" format.
+==== Standard_Gherkin ====
+Write acceptance criteria in Given-When-Then format for automation.
+==== Standard_BulletPoints ====
+Write acceptance criteria as plain bullet points.
+==== Standard_SAFeStyle ====
+Write clear, unambiguous, testable acceptance criteria in any structured format (often bullet or Gherkin).
+==== Standard_INVEST ====
+Ensure story is Independent, Negotiable, Valuable, Estimable, Small, Testable.
+==== Standard_SAFe ====
+Ensure story has clear description, AC, estimate, and alignment to feature/epic.
+==== Standard_AgileAlliance ====
+Ensure story focuses on business value, small enough for iteration, clear goal.
+==== Standard_AzureDevOpsBug ====
+Include title, repro steps, expected result, actual result, severity, environment.
+==== Standard_ISTQBDefect ====
+Include ID, title, description, steps to reproduce, expected vs actual, severity, priority, status, environment.

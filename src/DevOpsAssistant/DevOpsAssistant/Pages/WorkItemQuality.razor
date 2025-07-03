@@ -200,9 +200,9 @@ else if (_promptParts != null)
             sb.AppendLine(config.StoryQualityPrompt.Trim());
         }
         if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine("Reply inline with the analysis results.");
+            sb.AppendLine(GeneratedPrompts.FormatInstructions_WorkItemAnalysisInlinePrompt.Value);
         else
-            sb.AppendLine($"After completing the analysis, convert the output to {config.OutputFormat} format and include that version.");
+            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
         sb.AppendLine();
         sb.AppendLine("Work items:");
         sb.AppendLine(json);
