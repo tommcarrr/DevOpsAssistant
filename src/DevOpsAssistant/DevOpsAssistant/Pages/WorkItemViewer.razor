@@ -20,26 +20,22 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConfirmSelection" Disabled="@(!_pendingItems.Any())">@L["Confirm"]</MudButton>
 }
 
-<MudDrawerContainer Style="height:80vh;">
-<MudDrawer @bind-Open="_listOpen" Anchor="Anchor.Left" Variant="DrawerVariant.Responsive" Elevation="1" Style="width:300px;">
-        <MudStack Spacing="1" Class="pa-2">
-            <MudIconButton Icon="@(_listOpen ? Icons.Material.Filled.ChevronLeft : Icons.Material.Filled.ChevronRight)" OnClick="ToggleList" />
-            <MudExpansionPanels>
-                <MudExpansionPanel Text="@L["SelectedItems"]" Expanded="@_listExpanded" ExpandedChanged="@(v => _listExpanded = v)">
-                    <MudList T="WorkItemInfo" Dense="true">
-                        @foreach (var item in _selectedItems)
-                        {
-                            <MudListItem T="WorkItemInfo" Class="cursor-pointer" OnClick="() => LoadDetails(item.Id)">
-                                @item.Id - @item.Title
-                            </MudListItem>
-                        }
-                    </MudList>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </MudStack>
-    </MudDrawer>
-    <MudMainContent>
-        <div style="overflow:auto;height:80vh;">
+<MudGrid Class="mt-4">
+    <MudItem xs="12" md="4" lg="3">
+        <MudPaper Class="pa-2" Style="height:80vh; overflow:auto;">
+            <MudText Typo="Typo.h6">@L["SelectedItems"]</MudText>
+            <MudList T="WorkItemInfo" Dense="true">
+                @foreach (var item in _selectedItems)
+                {
+                    <MudListItem T="WorkItemInfo" Class="cursor-pointer" OnClick="() => LoadDetails(item.Id)">
+                        @item.Id - @item.Title
+                    </MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" md="8" lg="9">
+        <MudPaper Class="pa-2" Style="height:80vh; overflow:auto;">
             @if (_loading)
             {
                 <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
@@ -59,9 +55,9 @@
             {
                 <MudText>Select an item to view details.</MudText>
             }
-        </div>
-    </MudMainContent>
-</MudDrawerContainer>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
@@ -70,8 +66,6 @@
     private IReadOnlyCollection<WorkItemInfo> _pendingItems = Array.Empty<WorkItemInfo>();
     private bool _loading;
     private bool _filtersExpanded = true;
-    private bool _listExpanded = true;
-    private bool _listOpen = true;
     private StoryHierarchyDetails? _details;
     private string? _error;
 
@@ -102,7 +96,6 @@
         return Task.CompletedTask;
     }
 
-    private void ToggleList() => _listOpen = !_listOpen;
 
     private async Task LoadDetails(int id)
     {

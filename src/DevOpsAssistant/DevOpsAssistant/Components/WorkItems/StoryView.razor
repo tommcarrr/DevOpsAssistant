@@ -8,37 +8,31 @@
         <MudText Typo="Typo.subtitle2">@Details.Story.WorkItemType - @Details.Story.State</MudText>
         <MudLink Href="@Details.Story.Url" Target="_blank">@L["OpenLink"]</MudLink>
 
-        <MudExpansionPanels>
-            @if (!string.IsNullOrWhiteSpace(Details.Description))
-            {
-                <MudExpansionPanel Text="@L["DescriptionHeading"]">
-                    <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.Description)</MudPaper>
-                </MudExpansionPanel>
-            }
-            @if (!string.IsNullOrWhiteSpace(Details.AcceptanceCriteria))
-            {
-                <MudExpansionPanel Text="@L["AcceptanceCriteriaHeading"]">
-                    <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.AcceptanceCriteria)</MudPaper>
-                </MudExpansionPanel>
-            }
-            @if (Details.StoryPoints > 0)
-            {
-                <MudExpansionPanel Text="@L["StoryPointsHeading"]">
-                    <MudText>@Details.StoryPoints</MudText>
-                </MudExpansionPanel>
-            }
-            @if (Details.Tags.Length > 0)
-            {
-                <MudExpansionPanel Text="@L["TagsHeading"]">
-                    <MudChipSet T="string">
-                        @foreach (var t in Details.Tags)
-                        {
-                            <MudChip T="string">@t</MudChip>
-                        }
-                    </MudChipSet>
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
+        @if (!string.IsNullOrWhiteSpace(Details.Description))
+        {
+            <MudText Typo="Typo.subtitle1">@L["DescriptionHeading"]</MudText>
+            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.Description)</MudPaper>
+        }
+        @if (!string.IsNullOrWhiteSpace(Details.AcceptanceCriteria))
+        {
+            <MudText Typo="Typo.subtitle1">@L["AcceptanceCriteriaHeading"]</MudText>
+            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.AcceptanceCriteria)</MudPaper>
+        }
+        @if (Details.StoryPoints > 0)
+        {
+            <MudText Typo="Typo.subtitle1">@L["StoryPointsHeading"]</MudText>
+            <MudText>@Details.StoryPoints</MudText>
+        }
+        @if (Details.Tags.Length > 0)
+        {
+            <MudText Typo="Typo.subtitle1">@L["TagsHeading"]</MudText>
+            <MudChipSet T="string">
+                @foreach (var t in Details.Tags)
+                {
+                    <MudChip T="string">@t</MudChip>
+                }
+            </MudChipSet>
+        }
 
         @if (Details.Feature != null)
         {

@@ -8,31 +8,26 @@
         <MudText Typo="Typo.subtitle2">@Details.Story.WorkItemType - @Details.Story.State</MudText>
         <MudLink Href="@Details.Story.Url" Target="_blank">@L["OpenLink"]</MudLink>
 
-        <MudExpansionPanels>
-            @if (!string.IsNullOrWhiteSpace(Details.ReproSteps))
-            {
-                <MudExpansionPanel Text="@L["ReproStepsHeading"]">
-                    <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.ReproSteps)</MudPaper>
-                </MudExpansionPanel>
-            }
-            @if (!string.IsNullOrWhiteSpace(Details.SystemInfo))
-            {
-                <MudExpansionPanel Text="@L["SystemInfoHeading"]">
-                    <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.SystemInfo)</MudPaper>
-                </MudExpansionPanel>
-            }
-            @if (Details.Tags.Length > 0)
-            {
-                <MudExpansionPanel Text="@L["TagsHeading"]">
-                    <MudChipSet T="string">
-                        @foreach (var t in Details.Tags)
-                        {
-                            <MudChip T="string">@t</MudChip>
-                        }
-                    </MudChipSet>
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
+        @if (!string.IsNullOrWhiteSpace(Details.ReproSteps))
+        {
+            <MudText Typo="Typo.subtitle1">@L["ReproStepsHeading"]</MudText>
+            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.ReproSteps)</MudPaper>
+        }
+        @if (!string.IsNullOrWhiteSpace(Details.SystemInfo))
+        {
+            <MudText Typo="Typo.subtitle1">@L["SystemInfoHeading"]</MudText>
+            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.SystemInfo)</MudPaper>
+        }
+        @if (Details.Tags.Length > 0)
+        {
+            <MudText Typo="Typo.subtitle1">@L["TagsHeading"]</MudText>
+            <MudChipSet T="string">
+                @foreach (var t in Details.Tags)
+                {
+                    <MudChip T="string">@t</MudChip>
+                }
+            </MudChipSet>
+        }
 
         @if (Details.Feature != null)
         {
