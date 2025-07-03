@@ -86,12 +86,13 @@
                         <MudSelectItem Value="OutputFormat.Html">HTML</MudSelectItem>
                         <MudSelectItem Value="OutputFormat.Inline">Inline</MudSelectItem>
                     </MudSelect>
+                    <MudText Typo="Typo.h6">@L["StandardsHeader"]</MudText>
                     <MudTabs @bind-ActivePanelIndex="_standardsTab">
                         <MudTabPanel Text='@L["RequirementsDocumentationGroup"]'>
                             <MudStack Spacing="1">
                                 @foreach (var opt in StandardOptions.Where(o => o.Group == "requirements_documentation"))
                                 {
-                                    <MudTooltip Text="@opt.Description">
+                                    <MudTooltip Text="@GetStandardTooltip(opt)">
                                         <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
                                     </MudTooltip>
                                 }
@@ -101,7 +102,7 @@
                             <MudStack Spacing="1">
                                 @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_description"))
                                 {
-                                    <MudTooltip Text="@opt.Description">
+                                    <MudTooltip Text="@GetStandardTooltip(opt)">
                                         <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
                                     </MudTooltip>
                                 }
@@ -111,7 +112,7 @@
                             <MudStack Spacing="1">
                                 @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_acceptance_criteria"))
                                 {
-                                    <MudTooltip Text="@opt.Description">
+                                    <MudTooltip Text="@GetStandardTooltip(opt)">
                                         <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
                                     </MudTooltip>
                                 }
@@ -121,7 +122,7 @@
                             <MudStack Spacing="1">
                                 @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_quality"))
                                 {
-                                    <MudTooltip Text="@opt.Description">
+                                    <MudTooltip Text="@GetStandardTooltip(opt)">
                                         <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
                                     </MudTooltip>
                                 }
@@ -131,7 +132,7 @@
                             <MudStack Spacing="1">
                                 @foreach (var opt in StandardOptions.Where(o => o.Group == "bug_reporting"))
                                 {
-                                    <MudTooltip Text="@opt.Description">
+                                    <MudTooltip Text="@GetStandardTooltip(opt)">
                                         <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
                                     </MudTooltip>
                                 }
@@ -532,6 +533,19 @@
         if (!StandardsCatalog.Incompatibilities.TryGetValue(option.Id, out var inc))
             return false;
         return inc.Any(i => _selectedStandards.Contains(i));
+    }
+
+    private string GetStandardTooltip(StandardOption option)
+    {
+        var text = option.Description;
+        if (IsStandardDisabled(option) && StandardsCatalog.Incompatibilities.TryGetValue(option.Id, out var inc))
+        {
+            var names = inc.Where(i => _selectedStandards.Contains(i))
+                .Select(StandardsCatalog.GetName);
+            if (names.Any())
+                text += " " + string.Format(L["IncompatibleWith"].Value, string.Join(", ", names));
+        }
+        return text;
     }
 
     private void OnStandardChanged(StandardOption option, bool value)
