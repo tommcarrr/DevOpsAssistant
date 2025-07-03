@@ -7,6 +7,9 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@using System.Text
+@using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Components.Routing
 
 <PageTitle>DevOpsAssistant - Settings</PageTitle>
@@ -83,47 +86,59 @@
                         <MudSelectItem Value="OutputFormat.Html">HTML</MudSelectItem>
                         <MudSelectItem Value="OutputFormat.Inline">Inline</MudSelectItem>
                     </MudSelect>
-                    <MudStack Spacing="1">
-                        <MudText Typo="Typo.h6">@L["RequirementsDocumentationGroup"]</MudText>
-                        @foreach (var opt in StandardOptions.Where(o => o.Group == "requirements_documentation"))
-                        {
-                            <MudTooltip Text="@opt.Description">
-                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                            </MudTooltip>
-                        }
-
-                        <MudText Typo="Typo.h6">@L["UserStoryDescriptionGroup"]</MudText>
-                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_description"))
-                        {
-                            <MudTooltip Text="@opt.Description">
-                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                            </MudTooltip>
-                        }
-
-                        <MudText Typo="Typo.h6">@L["UserStoryAcceptanceCriteriaGroup"]</MudText>
-                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_acceptance_criteria"))
-                        {
-                            <MudTooltip Text="@opt.Description">
-                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                            </MudTooltip>
-                        }
-
-                        <MudText Typo="Typo.h6">@L["UserStoryQualityGroup"]</MudText>
-                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_quality"))
-                        {
-                            <MudTooltip Text="@opt.Description">
-                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                            </MudTooltip>
-                        }
-
-                        <MudText Typo="Typo.h6">@L["BugReportingGroup"]</MudText>
-                        @foreach (var opt in StandardOptions.Where(o => o.Group == "bug_reporting"))
-                        {
-                            <MudTooltip Text="@opt.Description">
-                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                            </MudTooltip>
-                        }
-                    </MudStack>
+                    <MudTabs @bind-ActivePanelIndex="_standardsTab">
+                        <MudTabPanel Text='@L["RequirementsDocumentationGroup"]'>
+                            <MudStack Spacing="1">
+                                @foreach (var opt in StandardOptions.Where(o => o.Group == "requirements_documentation"))
+                                {
+                                    <MudTooltip Text="@opt.Description">
+                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTabPanel>
+                        <MudTabPanel Text='@L["UserStoryDescriptionGroup"]'>
+                            <MudStack Spacing="1">
+                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_description"))
+                                {
+                                    <MudTooltip Text="@opt.Description">
+                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTabPanel>
+                        <MudTabPanel Text='@L["UserStoryAcceptanceCriteriaGroup"]'>
+                            <MudStack Spacing="1">
+                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_acceptance_criteria"))
+                                {
+                                    <MudTooltip Text="@opt.Description">
+                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTabPanel>
+                        <MudTabPanel Text='@L["UserStoryQualityGroup"]'>
+                            <MudStack Spacing="1">
+                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_quality"))
+                                {
+                                    <MudTooltip Text="@opt.Description">
+                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTabPanel>
+                        <MudTabPanel Text='@L["BugReportingGroup"]'>
+                            <MudStack Spacing="1">
+                                @foreach (var opt in StandardOptions.Where(o => o.Group == "bug_reporting"))
+                                {
+                                    <MudTooltip Text="@opt.Description">
+                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                    </MudTooltip>
+                                }
+                            </MudStack>
+                        </MudTabPanel>
+                    </MudTabs>
+                    <MudButton OnClick="CopyAllPrompts" Variant="Variant.Outlined" Color="Color.Primary">@L["CopyPrompts"]</MudButton>
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                     <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
                 </MudStack>
@@ -184,6 +199,7 @@
     private bool _validationDirty;
     private bool _generalDirty;
     private int _activeTab;
+    private int _standardsTab;
     private static readonly StandardOption[] StandardOptions = StandardsCatalog.Options;
     private HashSet<string> _selectedStandards = new();
 
@@ -339,6 +355,31 @@
             }
             Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, L["AllProjects"].Value), Severity.Success);
         }
+    }
+
+    private async Task CopyAllPrompts()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"### {L["StoryQualityPrompt"].Value}");
+        sb.AppendLine(WithDummyData(_model.StoryQualityPrompt));
+        sb.AppendLine("---");
+        sb.AppendLine($"### {L["ReleaseNotesPrompt"].Value}");
+        sb.AppendLine(WithDummyData(_model.ReleaseNotesPrompt));
+        sb.AppendLine("---");
+        sb.AppendLine($"### {L["RequirementsPrompt"].Value}");
+        sb.AppendLine(WithDummyData(_model.RequirementsPrompt));
+        await JS.InvokeVoidAsync("copyText", sb.ToString());
+        Snackbar.Add(L["PromptsCopied"].Value, Severity.Success);
+    }
+
+    private static readonly Regex Curly = new("\\{\\{.*?\\}}", RegexOptions.Compiled);
+    private static readonly Regex Brackets = new("\\[.*?\\]", RegexOptions.Compiled);
+
+    private static string WithDummyData(string text)
+    {
+        var result = Curly.Replace(text, "dummy");
+        result = Brackets.Replace(result, "sample");
+        return result;
     }
 
     private async Task ApplyValidationToAll()
