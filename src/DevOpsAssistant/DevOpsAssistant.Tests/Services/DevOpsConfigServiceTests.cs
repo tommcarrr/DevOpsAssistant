@@ -26,8 +26,11 @@ public class DevOpsConfigServiceTests
             RequirementsPromptMode = PromptMode.Append,
             MainBranch = " main ",
             OutputFormat = OutputFormat.Pdf,
-            UseGherkinSyntax = true,
-            UseAsAFormat = true,
+            Standards = new PromptStandards
+            {
+                UserStoryAcceptanceCriteria = ["Gherkin"],
+                UserStoryDescription = ["ScrumUserStory"]
+            },
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = true },
@@ -60,8 +63,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RP", storedCfg.RequirementsPrompt);
         Assert.Equal("main", storedCfg.MainBranch);
         Assert.Equal(OutputFormat.Pdf, storedCfg.OutputFormat);
-        Assert.True(storedCfg.UseGherkinSyntax);
-        Assert.True(storedCfg.UseAsAFormat);
+        Assert.Contains("Gherkin", storedCfg.Standards.UserStoryAcceptanceCriteria);
+        Assert.Contains("ScrumUserStory", storedCfg.Standards.UserStoryDescription);
         Assert.True(storedCfg.Rules.Epic.HasDescription);
     }
 
@@ -82,8 +85,11 @@ public class DevOpsConfigServiceTests
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
             OutputFormat = OutputFormat.Pdf,
-            UseGherkinSyntax = true,
-            UseAsAFormat = true,
+            Standards = new PromptStandards
+            {
+                UserStoryAcceptanceCriteria = ["Gherkin"],
+                UserStoryDescription = ["ScrumUserStory"]
+            },
             Rules = new ValidationRules
             {
                 Epic = new EpicRules { HasDescription = true },
@@ -113,8 +119,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
-        Assert.True(service.Config.UseGherkinSyntax);
-        Assert.True(service.Config.UseAsAFormat);
+        Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
+        Assert.Contains("ScrumUserStory", service.Config.Standards.UserStoryDescription);
         Assert.True(service.Config.Rules.Epic.HasDescription);
         Assert.Equal("proj", service.CurrentProject.Name);
     }
@@ -137,8 +143,11 @@ public class DevOpsConfigServiceTests
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
             OutputFormat = OutputFormat.Pdf,
-            UseGherkinSyntax = true,
-            UseAsAFormat = false,
+            Standards = new PromptStandards
+            {
+                UserStoryAcceptanceCriteria = ["Gherkin"],
+                UserStoryDescription = []
+            },
             Rules = new ValidationRules()
         };
         await storage.SetItemAsync("devops-config", stored);
@@ -155,8 +164,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
-        Assert.True(service.Config.UseGherkinSyntax);
-        Assert.False(service.Config.UseAsAFormat);
+        Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
+        Assert.Empty(service.Config.Standards.UserStoryDescription);
         Assert.Equal("default", service.CurrentProject.Name);
     }
 

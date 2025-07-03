@@ -622,16 +622,36 @@ Define what success looks like — business or system-level outcomes.
                 sb.AppendLine("You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.");
             }
             sb.AppendLine("Each story must include:");
-            if (config.UseAsAFormat)
-                sb.AppendLine("- Description in 'As a <persona>, I want to <goal> so that <benefit>' format");
+            if (config.Standards.UserStoryDescription.Contains("ScrumUserStory"))
+                sb.AppendLine("- Description in 'As a <role>, I want <goal> so that <benefit>' format");
+            else if (config.Standards.UserStoryDescription.Contains("JobStory"))
+                sb.AppendLine("- Description in 'When <situation> I want to <motivation> so I can <expected outcome>' format");
             else
                 sb.AppendLine("- A clear, user-centric title and description");
-            if (config.UseGherkinSyntax)
+            if (config.Standards.UserStoryAcceptanceCriteria.Contains("Gherkin"))
                 sb.AppendLine("- Acceptance criteria in Gherkin-style format using <pre><code class=\"language-gherkin\"></code></pre> (no markdown)");
-            else
+            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("BulletPoints"))
                 sb.AppendLine("- Acceptance criteria as bullet points");
+            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
+                sb.AppendLine("- Acceptance criteria that are clear, unambiguous and testable");
             sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
             sb.AppendLine("Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.");
+
+            if (config.Standards.UserStoryQuality.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("Ensure stories follow these quality standards:");
+                foreach (var s in config.Standards.UserStoryQuality)
+                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+            }
+
+            if (config.Standards.RequirementsDocumentation.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("Apply these requirements documentation standards:");
+                foreach (var s in config.Standards.RequirementsDocumentation)
+                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+            }
 
             if (storiesOnly)
             {

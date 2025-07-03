@@ -202,8 +202,7 @@ public class DevOpsConfigService
             RequirementsPromptMode = config.RequirementsPromptMode,
             PromptCharacterLimit = config.PromptCharacterLimit,
             OutputFormat = config.OutputFormat,
-            UseGherkinSyntax = config.UseGherkinSyntax,
-            UseAsAFormat = config.UseAsAFormat,
+            Standards = config.Standards,
             Rules = config.Rules
         };
     }
@@ -232,8 +231,7 @@ public class DevOpsConfigService
             RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
             OutputFormat = cfg.OutputFormat,
-            UseGherkinSyntax = cfg.UseGherkinSyntax,
-            UseAsAFormat = cfg.UseAsAFormat,
+            Standards = cfg.Standards,
             Rules = cfg.Rules
         };
     }
