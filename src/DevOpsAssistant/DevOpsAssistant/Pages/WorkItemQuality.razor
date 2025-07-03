@@ -4,6 +4,7 @@
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
+@using GeneratedPrompts
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
@@ -174,97 +175,23 @@ else if (_promptParts != null)
             sb.AppendLine();
             if (config.Standards.UserStoryQuality.Count > 0)
             {
-                sb.AppendLine("Apply these story quality standards:");
+                sb.AppendLine(GeneratedPrompts.WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
                 foreach (var s in config.Standards.UserStoryQuality)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
                 sb.AppendLine();
             }
-            sb.AppendLine("For stories, assess adherence to the INVEST principles:");
-        sb.AppendLine();
-        sb.AppendLine("**Independent, Negotiable, Valuable, Estimable, Small, Testable**");
-        sb.AppendLine();
-        sb.AppendLine("Each story will be provided in JSON format with fields like `title`, `description`, and optionally `acceptanceCriteria`.");
-        sb.AppendLine();
-        sb.AppendLine("Generate a full report for every work item. Do not summarize or respond with only a limited sample.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("For every story:");
-        sb.AppendLine();
-        sb.AppendLine("1. **Evaluate each INVEST principle** and determine whether it is Met or Not Met.");
-        sb.AppendLine("2. Provide your reasoning in a **Markdown table** using pipe (`|`) delimiters and a header row.");
-        sb.AppendLine("3. Display the **INVEST Score as X/6** at the end of the table.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("### Coaching Guidelines");
-        sb.AppendLine();
-        sb.AppendLine("Tailor your coaching based on the score:");
-        sb.AppendLine();
-        sb.AppendLine("- **6/6**: No coaching needed.");
-        sb.AppendLine("- **5/6**: Brief coaching (≤75 words) for the failing principle(s).");
-        sb.AppendLine("- **3–4/6**: Coaching for each ❌ principle (≤150 words).");
-        sb.AppendLine("- **0–2/6**: Full coaching response, including:");
-        sb.AppendLine("  - A rewritten story that aligns with INVEST.");
-        sb.AppendLine("  - Story **must reflect a real user or business goal**, not a technical task or internal role like \u201cdeveloper,\u201d \u201cengineer,\u201d or \u201csystem administrator.\u201d");
-        sb.AppendLine("  - Valid examples include: \u201cAs a group admin\u2026\u201d, \u201cAs a learner\u2026\u201d, \u201cAs a reporting manager\u2026\u201d");
-        sb.AppendLine("  - Provide acceptance criteria in **`Given / When / Then` format**, using testable, clear language.");
-        sb.AppendLine("  - Use firm, measurable phrasing in acceptance criteria (e.g., \u201cis confirmed via audit\u201d, \u201cis verified with sample data\u201d).");
-        sb.AppendLine("  - Coaching + rewrite + AC must be within **300 words**.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("### Format your output in Markdown, using this structure:");
-        sb.AppendLine();
-        sb.AppendLine("**Story:** [Title here]");
-        sb.AppendLine();
-        sb.AppendLine("| INVEST Principle | Met? | Explanation |");
-        sb.AppendLine("|------------------|------|-------------|");
-        sb.AppendLine("| Independent      | ✅/❌ | ...         |");
-        sb.AppendLine("| Negotiable       | ✅/❌ | ...         |");
-        sb.AppendLine("| Valuable         | ✅/❌ | ...         |");
-        sb.AppendLine("| Estimable        | ✅/❌ | ...         |");
-        sb.AppendLine("| Small            | ✅/❌ | ...         |");
-        sb.AppendLine("| Testable         | ✅/❌ | ...         |");
-        sb.AppendLine();
-        sb.AppendLine("**INVEST Score: X/6**");
-        sb.AppendLine();
-        sb.AppendLine("### Coaching Suggestions");
-        sb.AppendLine("- **[Principle]**: [Advice]");
-        sb.AppendLine();
-        sb.AppendLine("### Rewritten Story (only if score ≤ 3/6)");
-        sb.AppendLine("> [Rewrite using a non-technical user persona and clear outcome]");
-        sb.AppendLine();
-        sb.AppendLine("### Example Acceptance Criteria (Generic `Given / When / Then`)");
-        sb.AppendLine("- **Given** a user enters valid login credentials,  ");
-        sb.AppendLine("  **When** they submit the login form,  ");
-        sb.AppendLine("  **Then** they are redirected to their dashboard.");
-        sb.AppendLine();
-        sb.AppendLine("- **Given** a user provides incorrect login details,  ");
-        sb.AppendLine("  **When** they attempt to sign in,  ");
-        sb.AppendLine("  **Then** an error message is displayed.");
-        sb.AppendLine();
-        sb.AppendLine("- **Given** the user submits the form with missing fields,  ");
-        sb.AppendLine("  **When** validation is triggered,  ");
-        sb.AppendLine("  **Then** relevant error messages guide them to complete the form.");
-        sb.AppendLine();
-        sb.AppendLine("- **Given** the user requests a password reset,  ");
-        sb.AppendLine("  **When** they submit their email address,  ");
-        sb.AppendLine("  **Then** a reset link is emailed and a confirmation message is shown.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("For bugs, check that the reproduction steps and system information are clear and complete.");
+            sb.AppendLine(GeneratedPrompts.WorkItemQuality_MainPrompt.Value);
+            sb.AppendLine("For bugs, check that the reproduction steps and system information are clear and complete.");
         if (config.Standards.BugReporting.Count > 0)
         {
-            sb.AppendLine("Ensure bug reports follow these standards:");
+            sb.AppendLine(GeneratedPrompts.WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
             foreach (var s in config.Standards.BugReporting)
                 sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
         }
         if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
         {
             sb.AppendLine();
-            sb.AppendLine("Also confirm each story meets this Definition of Ready:");
+            sb.AppendLine(GeneratedPrompts.WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
             sb.AppendLine(config.DefinitionOfReady);
         }
         }
