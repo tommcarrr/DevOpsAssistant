@@ -27,7 +27,9 @@
             <MudList T="WorkItemInfo" Dense="true">
                 @foreach (var item in _selectedItems)
                 {
-                    <MudListItem T="WorkItemInfo" Class="cursor-pointer" OnClick="() => LoadDetails(item.Id)">
+                    <MudListItem T="WorkItemInfo"
+                                 Class="@($"cursor-pointer {WorkItemHelpers.GetItemClass(item.WorkItemType)}")"
+                                 OnClick="() => LoadDetails(item.Id)">
                         @item.Id - @item.Title
                     </MudListItem>
                 }

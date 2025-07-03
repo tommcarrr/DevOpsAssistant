@@ -1,74 +1,84 @@
 @using DevOpsAssistant.Services.Models
+@using DevOpsAssistant.Services
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<BugView> L
 
-<div class="work-item-view">
+<div class="@($"work-item-view {WorkItemHelpers.GetItemClass(Details.Story.WorkItemType)}")">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@Details.Story.Title (@Details.Story.Id)</MudText>
         <MudText Typo="Typo.subtitle2">@Details.Story.WorkItemType - @Details.Story.State</MudText>
         <MudLink Href="@Details.Story.Url" Target="_blank">@L["OpenLink"]</MudLink>
-
-        @if (!string.IsNullOrWhiteSpace(Details.ReproSteps))
-        {
-            <MudText Typo="Typo.subtitle1">@L["ReproStepsHeading"]</MudText>
-            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.ReproSteps)</MudPaper>
-        }
-        @if (!string.IsNullOrWhiteSpace(Details.SystemInfo))
-        {
-            <MudText Typo="Typo.subtitle1">@L["SystemInfoHeading"]</MudText>
-            <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.SystemInfo)</MudPaper>
-        }
-        @if (Details.Tags.Length > 0)
-        {
-            <MudText Typo="Typo.subtitle1">@L["TagsHeading"]</MudText>
-            <MudChipSet T="string">
-                @foreach (var t in Details.Tags)
-                {
-                    <MudChip T="string">@t</MudChip>
-                }
-            </MudChipSet>
-        }
-
-        @if (Details.Feature != null)
-        {
-            <MudDivider Class="my-2" />
-            <MudText Typo="Typo.subtitle1">@L["FeatureHeading"]: @Details.Feature.Title (@Details.Feature.State)</MudText>
-            @if (!string.IsNullOrWhiteSpace(Details.FeatureDescription))
+        <MudTabs>
+            <MudTabPanel Text="@L["DetailsTab"]">
+                <MudStack Spacing="2">
+                    @if (!string.IsNullOrWhiteSpace(Details.ReproSteps))
+                    {
+                        <MudText Typo="Typo.subtitle1">@L["ReproStepsHeading"]</MudText>
+                        <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.ReproSteps)</MudPaper>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Details.SystemInfo))
+                    {
+                        <MudText Typo="Typo.subtitle1">@L["SystemInfoHeading"]</MudText>
+                        <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.SystemInfo)</MudPaper>
+                    }
+                    @if (Details.Tags.Length > 0)
+                    {
+                        <MudText Typo="Typo.subtitle1">@L["TagsHeading"]</MudText>
+                        <MudChipSet T="string">
+                            @foreach (var t in Details.Tags)
+                            {
+                                <MudChip T="string">@t</MudChip>
+                            }
+                        </MudChipSet>
+                    }
+                </MudStack>
+            </MudTabPanel>
+            @if (Details.Feature != null || Details.Epic != null)
             {
-                <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.FeatureDescription)</MudPaper>
+                <MudTabPanel Text="@L["HierarchyTab"]">
+                    <MudStack Spacing="2">
+                        @if (Details.Feature != null)
+                        {
+                            <MudText Typo="Typo.subtitle1">@L["FeatureHeading"]: @Details.Feature.Title (@Details.Feature.State)</MudText>
+                            @if (!string.IsNullOrWhiteSpace(Details.FeatureDescription))
+                            {
+                                <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.FeatureDescription)</MudPaper>
+                            }
+                        }
+                        @if (Details.Epic != null)
+                        {
+                            <MudText Typo="Typo.subtitle1">@L["EpicHeading"]: @Details.Epic.Title (@Details.Epic.State)</MudText>
+                            @if (!string.IsNullOrWhiteSpace(Details.EpicDescription))
+                            {
+                                <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.EpicDescription)</MudPaper>
+                            }
+                        }
+                    </MudStack>
+                </MudTabPanel>
             }
-        }
-        @if (Details.Epic != null)
-        {
-            <MudDivider Class="my-2" />
-            <MudText Typo="Typo.subtitle1">@L["EpicHeading"]: @Details.Epic.Title (@Details.Epic.State)</MudText>
-            @if (!string.IsNullOrWhiteSpace(Details.EpicDescription))
+            @if (Details.Relations.Count > 0)
             {
-                <MudPaper Class="pa-2 scroll-300">@((MarkupString)Details.EpicDescription)</MudPaper>
+                <MudTabPanel Text="@L["RelationshipsHeading"]">
+                    <MudList T="WorkItemRelation">
+                        @foreach (var r in Details.Relations)
+                        {
+                            <MudListItem T="WorkItemRelation">@r.Rel - @r.TargetId</MudListItem>
+                        }
+                    </MudList>
+                </MudTabPanel>
             }
-        }
-        @if (Details.Relations.Count > 0)
-        {
-            <MudDivider Class="my-2" />
-            <MudText Typo="Typo.h6">@L["RelationshipsHeading"]</MudText>
-            <MudList T="WorkItemRelation">
-                @foreach (var r in Details.Relations)
-                {
-                    <MudListItem T="WorkItemRelation">@r.Rel - @r.TargetId</MudListItem>
-                }
-            </MudList>
-        }
-        @if (Details.Comments.Count > 0)
-        {
-            <MudDivider Class="my-2" />
-            <MudText Typo="Typo.h6">@L["CommentsHeading"]</MudText>
-            <MudList T="string" Dense="true">
-                @foreach (var c in Details.Comments)
-                {
-                    <MudListItem T="string">@c</MudListItem>
-                }
-            </MudList>
-        }
+            @if (Details.Comments.Count > 0)
+            {
+                <MudTabPanel Text="@L["CommentsHeading"]">
+                    <MudList T="string" Dense="true">
+                        @foreach (var c in Details.Comments)
+                        {
+                            <MudListItem T="string">@c</MudListItem>
+                        }
+                    </MudList>
+                </MudTabPanel>
+            }
+        </MudTabs>
     </MudStack>
 </div>
 
