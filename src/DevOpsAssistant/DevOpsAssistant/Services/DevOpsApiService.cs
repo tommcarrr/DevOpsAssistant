@@ -300,6 +300,57 @@ public class DevOpsApiService
         return list;
     }
 
+    public async Task<List<QueryInfo>> GetSharedQueriesAsync()
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var result = await GetJsonAsync<JsonElement>($"{baseUri}/queries?$depth=2&api-version={ApiVersion}");
+        List<QueryInfo> list = [];
+        if (result.TryGetProperty("value", out var queries))
+            foreach (var q in queries.EnumerateArray())
+                ExtractQueries(q, list);
+        else
+            ExtractQueries(result, list);
+        return list;
+    }
+
+    public async Task<List<WorkItemInfo>> GetWorkItemInfosByQueryAsync(string id)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var itemUrlBase = BuildItemUrlBase(config);
+
+        var wiqlResult = await GetJsonAsync<WiqlResult>($"{baseUri}/wiql/{id}?api-version={ApiVersion}");
+        if (wiqlResult?.WorkItems == null || wiqlResult.WorkItems.Length == 0)
+            return [];
+
+        var ids = wiqlResult.WorkItems.Select(w => w.Id).Distinct();
+        List<WorkItemInfo> list = [];
+        foreach (var chunk in ids.Chunk(200))
+        {
+            var idList = string.Join(',', chunk);
+            var itemsResult = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&api-version={ApiVersion}");
+            if (itemsResult?.Value == null) continue;
+            foreach (var w in itemsResult.Value)
+            {
+                list.Add(new WorkItemInfo
+                {
+                    Id = w.Id,
+                    Title = w.Fields["System.Title"].GetString() ?? string.Empty,
+                    State = w.Fields["System.State"].GetString() ?? string.Empty,
+                    WorkItemType = w.Fields["System.WorkItemType"].GetString() ?? string.Empty,
+                    Url = $"{itemUrlBase}{w.Id}"
+                });
+            }
+        }
+
+        return list;
+    }
+
     public async Task<List<WorkItemDetails>> GetValidationItemsAsync(string areaPath, IEnumerable<string> states, IEnumerable<string> types)
     {
         var config = GetValidatedConfig();
@@ -450,6 +501,33 @@ public class DevOpsApiService
         if (el.TryGetProperty("children", out var children))
             foreach (var child in children.EnumerateArray())
                 ExtractIterations(child, list);
+    }
+
+    private static void ExtractQueries(JsonElement el, List<QueryInfo> list)
+    {
+        var isFolder = el.TryGetProperty("isFolder", out var folder) && folder.GetBoolean();
+        if (!isFolder)
+        {
+            if (el.TryGetProperty("path", out var pathEl) &&
+                el.TryGetProperty("id", out var idEl) &&
+                el.TryGetProperty("name", out var nameEl))
+            {
+                var path = pathEl.GetString() ?? string.Empty;
+                if (path.StartsWith("Shared Queries", StringComparison.OrdinalIgnoreCase))
+                {
+                    list.Add(new QueryInfo
+                    {
+                        Id = idEl.GetString() ?? string.Empty,
+                        Name = nameEl.GetString() ?? string.Empty,
+                        Path = path
+                    });
+                }
+            }
+        }
+
+        if (el.TryGetProperty("children", out var children))
+            foreach (var child in children.EnumerateArray())
+                ExtractQueries(child, list);
     }
 
     private static List<WorkItemNode> FilterClosedEpics(IEnumerable<WorkItemNode> roots)

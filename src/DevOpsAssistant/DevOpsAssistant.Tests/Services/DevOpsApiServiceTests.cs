@@ -941,6 +941,59 @@ public class DevOpsApiServiceTests
         Assert.Empty(results);
     }
 
+    [Fact]
+    public async Task GetSharedQueriesAsync_Uses_Api_Endpoint()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"value\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var results = await service.GetSharedQueriesAsync();
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Get, captured!.Method);
+        Assert.NotNull(captured.RequestUri);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/queries?$depth=2&api-version=7.0", captured.RequestUri.ToString());
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetWorkItemInfosByQueryAsync_Returns_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":11}]}";
+        var itemsJson = "{\"value\":[{\"id\":11,\"fields\":{\"System.Title\":\"Item\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.GetWorkItemInfosByQueryAsync("1");
+
+        Assert.Single(result);
+        Assert.Equal(11, result[0].Id);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.BadRequest, "Invalid request")]
     [InlineData(HttpStatusCode.TooManyRequests, "Rate limit exceeded")]

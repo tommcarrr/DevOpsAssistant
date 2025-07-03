@@ -136,6 +136,53 @@ public class WorkItemSelectorTests : ComponentTestBase
     }
 
     [Fact]
+    public async Task Query_Loads_Items_Into_Table()
+    {
+        var config = SetupServices(includeApi: true);
+        await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+
+        var backlogJson = "{\"path\":\"Area\"}";
+        var statesJson = "{\"value\":[{\"name\":\"New\"}]}";
+        var queriesJson = "{\"value\":[{\"id\":\"1\",\"name\":\"MyQuery\",\"path\":\"Shared Queries/MyQuery\",\"isFolder\":false}]}";
+        var wiqlJson = "{\"workItems\":[{\"id\":10}]}";
+        var itemsJson = "{\"value\":[{\"id\":10,\"fields\":{\"System.Title\":\"Q Item\",\"System.State\":\"Active\",\"System.WorkItemType\":\"User Story\"}}]}";
+
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            var url = req.RequestUri!.AbsoluteUri;
+            if (url.Contains("classificationnodes/areas"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(backlogJson) };
+            if (url.Contains("states"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(statesJson) };
+            if (url.Contains("queries"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(queriesJson) };
+            if (url.Contains("wiql/1"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(wiqlJson) };
+            if (url.Contains("workitems"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(itemsJson) };
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") };
+        });
+        var client = new HttpClient(handler);
+        Services.AddSingleton(new DeploymentConfigService(new HttpClient()));
+        Services.AddSingleton(sp => new DevOpsApiService(
+            client,
+            config,
+            sp.GetRequiredService<DeploymentConfigService>(),
+            sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
+
+        var cut = RenderWithProvider<WorkItemSelector>();
+        var queryField = cut.Instance.GetType().GetField("_query", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        queryField!.SetValue(cut.Instance, new QueryInfo { Id = "1", Name = "MyQuery", Path = "Shared Queries/MyQuery" });
+        var method = cut.Instance.GetType().GetMethod("LoadQuery", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        await cut.InvokeAsync(async () => await (Task)method!.Invoke(cut.Instance, null)!);
+        var setField = cut.Instance.GetType().GetField("_querySelected", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var selected = (System.Collections.Generic.HashSet<WorkItemInfo>)setField!.GetValue(cut.Instance)!;
+
+        Assert.Single(selected);
+        Assert.Equal(10, selected.First().Id);
+    }
+
+    [Fact]
     public async Task Shows_Loading_Indicator_When_Loading()
     {
         var config = SetupServices(includeApi: true);

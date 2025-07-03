@@ -113,6 +113,36 @@
                     </MudTable>
                 }
             </MudTabPanel>
+            <MudTabPanel Text="@L["QueryTab"]">
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End">
+                    <MudSelect T="QueryInfo" @bind-Value="_query" Label="@L["QueryLabel"]" ToStringFunc="q => q?.Path ?? string.Empty">
+                        @foreach (var q in _queries)
+                        {
+                            <MudSelectItem Value="@q">@q.Path</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadQuery" Disabled="_query == null">Load</MudButton>
+                </MudStack>
+                @if (_querySelected.Any())
+                {
+                    <MudTable Items="_querySelected" Dense="true">
+                        <HeaderContent>
+                            <MudTh>ID</MudTh>
+                            <MudTh>Title</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Id</MudTd>
+                            <MudTd DataLabel="Title">@context.Title</MudTd>
+                            <MudTd>
+                                <MudTooltip Text='@L["DeleteTooltip"]'>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveQuery(context)" />
+                                </MudTooltip>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            </MudTabPanel>
             <MudTabPanel Text="Tree">
                 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
                     <MudSelect T="string" @bind-Value="_treePath" Label="Backlog">
@@ -158,6 +188,9 @@
     private string? _iteration;
     private List<IterationInfo> _iterations = new();
     private string _tag = string.Empty;
+    private List<QueryInfo> _queries = new();
+    private QueryInfo? _query;
+    private readonly HashSet<WorkItemInfo> _querySelected = [];
 
     private readonly HashSet<WorkItemInfo> _listSelected = [];
     private WorkItemInfo? _searchValue;
@@ -185,6 +218,7 @@
         SelectedStates = _states.Where(s => s.Equals("New", StringComparison.OrdinalIgnoreCase) || s.Equals("Active", StringComparison.OrdinalIgnoreCase)).ToHashSet();
         SelectedTypes = _types.ToHashSet();
         _tags = await ApiService.GetTagsAsync();
+        _queries = await ApiService.GetSharedQueriesAsync();
         if (UseIteration)
             _iterations = await ApiService.GetIterationsAsync();
         if (!string.IsNullOrWhiteSpace(StateKey))
@@ -273,6 +307,12 @@
         UpdateSelected();
     }
 
+    private void RemoveQuery(WorkItemInfo info)
+    {
+        _querySelected.Remove(info);
+        UpdateSelected();
+    }
+
     private async Task LoadList()
     {
         _loading = true;
@@ -302,6 +342,25 @@
             _tagSelected.Clear();
             foreach (var i in items)
                 _tagSelected.Add(i);
+            UpdateSelected();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task LoadQuery()
+    {
+        if (_query == null) return;
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var items = await ApiService.GetWorkItemInfosByQueryAsync(_query.Id);
+            _querySelected.Clear();
+            foreach (var i in items)
+                _querySelected.Add(i);
             UpdateSelected();
         }
         finally
@@ -352,6 +411,8 @@
             set.Add(li);
         foreach (var ti in _tagSelected)
             set.Add(ti);
+        foreach (var qi in _querySelected)
+            set.Add(qi);
         if (_selectedNodes != null)
             foreach (var n in _selectedNodes)
                 set.Add(n.Info);
