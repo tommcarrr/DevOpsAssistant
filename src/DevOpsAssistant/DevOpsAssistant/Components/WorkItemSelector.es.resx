@@ -21,4 +21,10 @@
   <data name="TagLabel" xml:space="preserve">
     <value>Etiqueta</value>
   </data>
+  <data name="QueryTab" xml:space="preserve">
+    <value>Consulta</value>
+  </data>
+  <data name="QueryLabel" xml:space="preserve">
+    <value>Consulta</value>
+  </data>
 </root>
