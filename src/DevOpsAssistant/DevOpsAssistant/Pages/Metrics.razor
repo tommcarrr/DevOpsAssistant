@@ -237,7 +237,7 @@ else if (_periods.Any())
     private VelocityMode _velocityMode = VelocityMode.StoryPoints;
     private DateTime? _startDate = DateTime.Today.AddDays(-84);
     private DateTime? _endDate = DateTime.Today;
-    private List<PeriodMetrics> _periods = new();
+    private readonly List<PeriodMetrics> _periods = new();
     private List<IterationInfo> _iterations = new();
     private List<StoryMetric> _items = new();
 
@@ -268,7 +268,7 @@ else if (_periods.Any())
     private List<ApexSeries> _burnApex = [];
     private List<ApexSeries> _flowApex = [];
     private ApexChartOptions<ChartPoint> _burnOptions = new();
-    private ApexChartOptions<ChartPoint> _flowOptions = new() { Chart = new Chart { Stacked = true } };
+    private readonly ApexChartOptions<ChartPoint> _flowOptions = new() { Chart = new Chart { Stacked = true } };
     private bool _leadCycleExpanded;
     private bool _barExpanded;
     private bool _wipExpanded;
@@ -726,7 +726,8 @@ else if (_periods.Any())
 
     private static string BuildPrompt(IEnumerable<PeriodMetrics> periods, OutputFormat format)
     {
-        var metrics = periods.Select(p => new
+        var list = periods.ToList();
+        var metrics = list.Select(p => new
         {
             end = p.End.ToString("yyyy-MM-dd"),
             leadTime = p.AvgLeadTime,
@@ -739,12 +740,12 @@ else if (_periods.Any())
 
         var summary = new
         {
-            avgLeadTime = periods.Any() ? periods.Average(p => p.AvgLeadTime) : 0,
-            avgCycleTime = periods.Any() ? periods.Average(p => p.AvgCycleTime) : 0,
-            avgThroughput = periods.Any() ? periods.Average(p => p.Throughput) : 0,
-            avgVelocity = periods.Any() ? periods.Average(p => p.Velocity) : 0,
-            avgWip = periods.Any() ? periods.Average(p => p.AvgWip) : 0,
-            avgSprintEfficiency = periods.Any() ? periods.Average(p => p.SprintEfficiency) : 0
+            avgLeadTime = list.Any() ? list.Average(p => p.AvgLeadTime) : 0,
+            avgCycleTime = list.Any() ? list.Average(p => p.AvgCycleTime) : 0,
+            avgThroughput = list.Any() ? list.Average(p => p.Throughput) : 0,
+            avgVelocity = list.Any() ? list.Average(p => p.Velocity) : 0,
+            avgWip = list.Any() ? list.Average(p => p.AvgWip) : 0,
+            avgSprintEfficiency = list.Any() ? list.Average(p => p.SprintEfficiency) : 0
         };
 
         var payload = new { metrics, summary };

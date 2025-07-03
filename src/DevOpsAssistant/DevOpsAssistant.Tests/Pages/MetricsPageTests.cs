@@ -291,9 +291,10 @@ public class MetricsPageTests : ComponentTestBase
             new() { CreatedDate = DateTime.Today, ActivatedDate = DateTime.Today, ClosedDate = DateTime.Today, Tags = ["Keep"] }
         ];
         var result = (IEnumerable<StoryMetric>)filter.Invoke(metrics, new object?[] { items })!;
+        var list = result.ToList();
 
-        Assert.Single(result);
-        Assert.Contains("Keep", result.First().Tags);
+        Assert.Single(list);
+        Assert.Contains("Keep", list[0].Tags);
     }
 
 

@@ -58,7 +58,7 @@
     [Parameter] public string ProjectName { get; set; } = string.Empty;
 
     private readonly HashSet<WorkItemInfo> _selectedItems = [];
-    private HashSet<string> _selectedTags = new();
+    private readonly HashSet<string> _selectedTags = new();
     private string[] _tags = [];
     private string _tag = string.Empty;
     private bool _loading;
