@@ -32,8 +32,8 @@ public class ChartDialogTests : ComponentTestBase
             .AddCascadingValue(fake)
             .Add(p => p.Title, "Test Chart")
             .Add(p => p.ChartType, ChartType.Line)
-            .Add(p => p.ChartSeries, new List<ChartSeries>())
-            .Add(p => p.XAxisLabels, Array.Empty<string>())
+            .Add(p => p.ChartSeries, [])
+            .Add(p => p.XAxisLabels, [])
             .Add(p => p.AxisChartOptions, new AxisChartOptions())
         );
 

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Tests.Utils;
@@ -31,9 +32,9 @@ public class GlobalOptionsDialogTests : ComponentTestBase
         var fake = new FakeDialog();
         var cut = RenderComponent<GlobalOptionsDialog>(p => p.AddCascadingValue(fake));
 
-        var field = cut.Instance.GetType().GetField("_culture", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var field = cut.Instance.GetType().GetField("_culture", BindingFlags.NonPublic | BindingFlags.Instance)!;
         field.SetValue(cut.Instance, "es");
-        var method = cut.Instance.GetType().GetMethod("Save", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var method = cut.Instance.GetType().GetMethod("Save", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         await cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, null)!);
 

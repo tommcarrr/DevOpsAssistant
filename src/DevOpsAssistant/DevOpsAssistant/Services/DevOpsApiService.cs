@@ -790,7 +790,8 @@ public class DevOpsApiService
 
     public async Task<List<StoryHierarchyDetails>> GetStoryHierarchyDetailsAsync(IEnumerable<int> storyIds)
     {
-        var idsToFetch = new HashSet<int>(storyIds);
+        var idsList = storyIds.ToList();
+        var idsToFetch = new HashSet<int>(idsList);
         var fetched = new HashSet<int>();
         var items = new Dictionary<int, WorkItem>();
 
@@ -821,7 +822,7 @@ public class DevOpsApiService
         }
 
         List<StoryHierarchyDetails> list = [];
-        foreach (var id in storyIds)
+        foreach (var id in idsList)
         {
             if (!items.TryGetValue(id, out var story))
                 continue;

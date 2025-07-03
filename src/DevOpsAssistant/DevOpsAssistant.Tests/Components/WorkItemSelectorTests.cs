@@ -1,6 +1,7 @@
 using System.Net;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Services;
@@ -124,12 +125,12 @@ public class WorkItemSelectorTests : ComponentTestBase
             sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var cut = RenderWithProvider<WorkItemSelector>();
-        var field = cut.Instance.GetType().GetField("_tag", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var field = cut.Instance.GetType().GetField("_tag", BindingFlags.NonPublic | BindingFlags.Instance);
         field!.SetValue(cut.Instance, "UI");
-        var method = cut.Instance.GetType().GetMethod("LoadTag", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var method = cut.Instance.GetType().GetMethod("LoadTag", BindingFlags.NonPublic | BindingFlags.Instance);
         await cut.InvokeAsync(async () => await (Task)method!.Invoke(cut.Instance, null)!);
-        var setField = cut.Instance.GetType().GetField("_tagSelected", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var selected = (System.Collections.Generic.HashSet<DevOpsAssistant.Services.Models.WorkItemInfo>)setField!.GetValue(cut.Instance)!;
+        var setField = cut.Instance.GetType().GetField("_tagSelected", BindingFlags.NonPublic | BindingFlags.Instance);
+        var selected = (HashSet<WorkItemInfo>)setField!.GetValue(cut.Instance)!;
 
         Assert.Single(selected);
         Assert.Equal(5, selected.First().Id);
@@ -171,12 +172,12 @@ public class WorkItemSelectorTests : ComponentTestBase
             sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var cut = RenderWithProvider<WorkItemSelector>();
-        var queryField = cut.Instance.GetType().GetField("_query", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var queryField = cut.Instance.GetType().GetField("_query", BindingFlags.NonPublic | BindingFlags.Instance);
         queryField!.SetValue(cut.Instance, new QueryInfo { Id = "1", Name = "MyQuery", Path = "Shared Queries/MyQuery" });
-        var method = cut.Instance.GetType().GetMethod("LoadQuery", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var method = cut.Instance.GetType().GetMethod("LoadQuery", BindingFlags.NonPublic | BindingFlags.Instance);
         await cut.InvokeAsync(async () => await (Task)method!.Invoke(cut.Instance, null)!);
-        var setField = cut.Instance.GetType().GetField("_querySelected", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var selected = (System.Collections.Generic.HashSet<WorkItemInfo>)setField!.GetValue(cut.Instance)!;
+        var setField = cut.Instance.GetType().GetField("_querySelected", BindingFlags.NonPublic | BindingFlags.Instance);
+        var selected = (HashSet<WorkItemInfo>)setField!.GetValue(cut.Instance)!;
 
         Assert.Single(selected);
         Assert.Equal(10, selected.First().Id);
@@ -211,7 +212,7 @@ public class WorkItemSelectorTests : ComponentTestBase
             sp.GetRequiredService<IStringLocalizer<DevOpsApiService>>()));
 
         var cut = RenderWithProvider<WorkItemSelector>();
-        var loadingField = cut.Instance.GetType().GetField("_loading", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var loadingField = cut.Instance.GetType().GetField("_loading", BindingFlags.NonPublic | BindingFlags.Instance);
         loadingField!.SetValue(cut.Instance, true);
         cut.Render();
 

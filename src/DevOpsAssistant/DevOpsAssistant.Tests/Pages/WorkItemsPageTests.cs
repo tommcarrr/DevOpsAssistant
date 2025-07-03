@@ -4,6 +4,7 @@ using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DevOpsAssistant.Services.Models;
 
 namespace DevOpsAssistant.Tests.Pages;
@@ -83,11 +84,11 @@ public class WorkItemsPageTests : ComponentTestBase
                 StatusValid = false
             };
 
-            var backlogsField = typeof(WorkItems).GetField("_backlogs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var backlogsField = typeof(WorkItems).GetField("_backlogs", BindingFlags.NonPublic | BindingFlags.Instance)!;
             backlogsField.SetValue(this, new[] { "Area" });
-            var pathField = typeof(WorkItems).GetField("_path", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var pathField = typeof(WorkItems).GetField("_path", BindingFlags.NonPublic | BindingFlags.Instance)!;
             pathField.SetValue(this, "Area");
-            var rootsField = typeof(WorkItems).GetField("_roots", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var rootsField = typeof(WorkItems).GetField("_roots", BindingFlags.NonPublic | BindingFlags.Instance)!;
             rootsField.SetValue(this, new List<WorkItemNode> { root });
 
             return Task.CompletedTask;
@@ -120,11 +121,11 @@ public class WorkItemsPageTests : ComponentTestBase
                 StatusValid = true
             };
 
-            var backlogsField = typeof(WorkItems).GetField("_backlogs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var backlogsField = typeof(WorkItems).GetField("_backlogs", BindingFlags.NonPublic | BindingFlags.Instance)!;
             backlogsField.SetValue(this, new[] { "Area" });
-            var pathField = typeof(WorkItems).GetField("_path", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var pathField = typeof(WorkItems).GetField("_path", BindingFlags.NonPublic | BindingFlags.Instance)!;
             pathField.SetValue(this, "Area");
-            var rootsField = typeof(WorkItems).GetField("_roots", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var rootsField = typeof(WorkItems).GetField("_roots", BindingFlags.NonPublic | BindingFlags.Instance)!;
             rootsField.SetValue(this, new List<WorkItemNode> { epic1, epic2 });
 
             return Task.CompletedTask;
@@ -136,7 +137,7 @@ public class WorkItemsPageTests : ComponentTestBase
         protected override Task OnInitializedAsync()
         {
             base.OnInitializedAsync();
-            var field = typeof(WorkItems).GetField("_issuesOnly", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var field = typeof(WorkItems).GetField("_issuesOnly", BindingFlags.NonPublic | BindingFlags.Instance)!;
             field.SetValue(this, false);
             return Task.CompletedTask;
         }

@@ -111,7 +111,7 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         planField.SetValue(cut.Instance, plan);
 
         var remove = typeof(RequirementsPlanner).GetMethod("RemoveEpic", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        cut.InvokeAsync(() => remove.Invoke(cut.Instance, new[] { epic }));
+        cut.InvokeAsync(() => remove.Invoke(cut.Instance, [epic]));
 
         Assert.Empty((System.Collections.IList)epicsProp.GetValue(plan)!);
     }
@@ -144,8 +144,8 @@ public class RequirementsPlannerPageTests : ComponentTestBase
 
         var drag = typeof(RequirementsPlanner).GetMethod("OnDragStart", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var drop = typeof(RequirementsPlanner).GetMethod("OnDropOnEpic", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        cut.InvokeAsync(() => drag.Invoke(cut.Instance, new[] { feature }));
-        cut.InvokeAsync(() => drop.Invoke(cut.Instance, new[] { epic2 }));
+        cut.InvokeAsync(() => drag.Invoke(cut.Instance, [feature]));
+        cut.InvokeAsync(() => drop.Invoke(cut.Instance, [epic2]));
 
         Assert.Empty((System.Collections.IList)featuresProp.GetValue(epic1)!);
         Assert.Single((System.Collections.IList)featuresProp.GetValue(epic2)!);

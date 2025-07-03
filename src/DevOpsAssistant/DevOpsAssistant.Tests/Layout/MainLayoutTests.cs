@@ -5,6 +5,7 @@ using DevOpsAssistant.Tests.Utils;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
 using Bunit.TestDoubles;
@@ -55,7 +56,7 @@ public class MainLayoutTests : ComponentTestBase
         await config.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
 
         var cut = RenderComponent<MainLayout>();
-        var method = typeof(MainLayout).GetMethod("SignOut", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var method = typeof(MainLayout).GetMethod("SignOut", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, null)!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
@@ -118,7 +119,7 @@ public class MainLayoutTests : ComponentTestBase
         await config.SelectProjectAsync("One");
         await config.SelectProjectAsync("One");
         var cut = RenderComponent<MainLayout>();
-        var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var method = typeof(MainLayout).GetMethod("ChangeProject", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, ["Two"])!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
@@ -139,7 +140,7 @@ public class MainLayoutTests : ComponentTestBase
         nav!.NavigateTo("projects/new");
 
         var cut = RenderComponent<MainLayout>();
-        var method = typeof(MainLayout).GetMethod("ChangeProject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var method = typeof(MainLayout).GetMethod("ChangeProject", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, ["Two"])!);
         var dialog = cut.WaitForElement("div.mud-dialog");
         dialog.GetElementsByTagName("button")[0].Click();
