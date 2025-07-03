@@ -1,7 +1,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace PromptGenerator;
 
@@ -12,8 +15,8 @@ public class PromptGenerator : IIncrementalGenerator
     {
         var prompts = context.AdditionalTextsProvider
             .Where(at => at.Path.EndsWith(".txt"))
-            .Select((at, ct) => (Name: Path.GetFileNameWithoutExtension(at.Path),
-                                 Content: at.GetText(ct)!.ToString()));
+            .SelectMany((at, ct) => ParseFile(at.Path,
+                                               at.GetText(ct)!.ToString()));
 
         context.RegisterSourceOutput(prompts, (spc, prompt) =>
         {
@@ -33,5 +36,46 @@ public class PromptGenerator : IIncrementalGenerator
 
             spc.AddSource(prompt.Name + ".g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
         });
+    }
+
+    private static ImmutableArray<(string Name, string Content)> ParseFile(string path, string text)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(path);
+        var sections = new List<(string Name, StringBuilder Builder)>();
+        StringBuilder? current = null;
+        string? currentName = null;
+
+        foreach (var line in text.Replace("\r", "").Split('\n'))
+        {
+            if (line.StartsWith("====") && line.EndsWith("===="))
+            {
+                if (currentName is not null && current is not null)
+                {
+                    sections.Add((currentName, current));
+                }
+
+                currentName = line.Trim('=', ' ').Trim();
+                current = new StringBuilder();
+            }
+            else
+            {
+                current ??= new StringBuilder();
+                current.AppendLine(line);
+            }
+        }
+
+        if (currentName is not null && current is not null)
+        {
+            sections.Add((currentName, current));
+        }
+
+        if (sections.Count == 0)
+        {
+            sections.Add((fileName, new StringBuilder(text)));
+        }
+
+        return sections
+            .Select(s => (s.Item1, s.Item2.ToString()))
+            .ToImmutableArray();
     }
 }

@@ -1,2 +1,0 @@
-Document:
-The following document provides an overview of the current state of the application these requirements apply to.
