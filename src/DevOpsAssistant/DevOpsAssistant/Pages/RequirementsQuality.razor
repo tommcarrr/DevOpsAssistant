@@ -134,7 +134,7 @@ else if (_promptParts != null)
                     }
                     break;
             }
-            _prompt = BuildPrompt(pages);
+            _prompt = BuildPrompt(pages, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             _error = null;
@@ -191,11 +191,18 @@ else if (_promptParts != null)
         return item;
     }
 
-    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages)
+    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
         sb.AppendLine("You are an expert requirements analyst reviewing the following document.");
         sb.AppendLine("Assess whether the requirements are clear, complete, and testable. Identify ambiguities, missing information, or conflicts and provide improvement suggestions.");
+        if (config.Standards.RequirementsDocumentation.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("Apply these requirements documentation standards:");
+            foreach (var s in config.Standards.RequirementsDocumentation)
+                sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+        }
         sb.AppendLine();
         sb.AppendLine("Document:");
         foreach (var page in pages)

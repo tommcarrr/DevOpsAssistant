@@ -172,6 +172,13 @@ else if (_promptParts != null)
         {
             sb.AppendLine("You are an expert Agile coach reviewing user stories and bugs for quality.");
             sb.AppendLine();
+            if (config.Standards.UserStoryQuality.Count > 0)
+            {
+                sb.AppendLine("Apply these story quality standards:");
+                foreach (var s in config.Standards.UserStoryQuality)
+                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+                sb.AppendLine();
+            }
             sb.AppendLine("For stories, assess adherence to the INVEST principles:");
         sb.AppendLine();
         sb.AppendLine("**Independent, Negotiable, Valuable, Estimable, Small, Testable**");
@@ -248,6 +255,12 @@ else if (_promptParts != null)
         sb.AppendLine("---");
         sb.AppendLine();
         sb.AppendLine("For bugs, check that the reproduction steps and system information are clear and complete.");
+        if (config.Standards.BugReporting.Count > 0)
+        {
+            sb.AppendLine("Ensure bug reports follow these standards:");
+            foreach (var s in config.Standards.BugReporting)
+                sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+        }
         if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
         {
             sb.AppendLine();

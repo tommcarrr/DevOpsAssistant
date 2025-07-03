@@ -17,7 +17,6 @@ public class DevOpsConfig
     public PromptMode RequirementsPromptMode { get; set; }
     public int PromptCharacterLimit { get; set; }
     public OutputFormat OutputFormat { get; set; }
-    public bool UseGherkinSyntax { get; set; } = true;
-    public bool UseAsAFormat { get; set; }
+    public PromptStandards Standards { get; set; } = new();
     public ValidationRules Rules { get; set; } = new();
 }

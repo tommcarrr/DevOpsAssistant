@@ -36,11 +36,20 @@
   <data name="OutputFormat" xml:space="preserve">
     <value>Formato de salida</value>
   </data>
-  <data name="UseGherkin" xml:space="preserve">
-    <value>Usar sintaxis Gherkin</value>
+  <data name="RequirementsDocumentationGroup" xml:space="preserve">
+    <value>Documentación de Requisitos</value>
   </data>
-  <data name="UseAsAFormat" xml:space="preserve">
-    <value>Usar formato "Como"</value>
+  <data name="UserStoryDescriptionGroup" xml:space="preserve">
+    <value>Descripción de Historias de Usuario</value>
+  </data>
+  <data name="UserStoryAcceptanceCriteriaGroup" xml:space="preserve">
+    <value>Estilo de Criterios de Aceptación</value>
+  </data>
+  <data name="UserStoryQualityGroup" xml:space="preserve">
+    <value>Estándares de Calidad de Historias</value>
+  </data>
+  <data name="BugReportingGroup" xml:space="preserve">
+    <value>Estándar de Reporte de Bugs</value>
   </data>
   <data name="BugHasStoryPoints" xml:space="preserve">
     <value>Tiene story points</value>
