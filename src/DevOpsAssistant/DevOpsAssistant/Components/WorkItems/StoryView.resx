@@ -39,4 +39,10 @@
   <data name="RelationshipsHeading" xml:space="preserve">
     <value>Relationships</value>
   </data>
+  <data name="DetailsTab" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="HierarchyTab" xml:space="preserve">
+    <value>Hierarchy</value>
+  </data>
 </root>
