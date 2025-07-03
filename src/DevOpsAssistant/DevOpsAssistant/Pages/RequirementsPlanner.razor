@@ -490,7 +490,7 @@
                 var parentId = _feature?.Id;
                 foreach (var story in _plan.Stories)
                 {
-                    var tags = story.Tags.Concat(["AI Generated"]).ToArray();
+                    var tags = story.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                     story.Id = await ApiService.CreateWorkItemAsync(
                         "User Story",
                         story.Title,
@@ -507,17 +507,17 @@
             {
                 foreach (var epic in _plan.Epics)
                 {
-                    var epicTags = epic.Tags.Concat(["AI Generated"]).ToArray();
+                    var epicTags = epic.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                     epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, epicTags);
                     _createdItems.Add(epic.Id);
                     foreach (var feature in epic.Features)
                     {
-                        var featureTags = feature.Tags.Concat(["AI Generated"]).ToArray();
+                        var featureTags = feature.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                         feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, featureTags);
                         _createdItems.Add(feature.Id);
                         foreach (var story in feature.Stories)
                         {
-                            var tags2 = story.Tags.Concat(["AI Generated"]).ToArray();
+                            var tags2 = story.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                             story.Id = await ApiService.CreateWorkItemAsync(
                                 "User Story",
                                 story.Title,

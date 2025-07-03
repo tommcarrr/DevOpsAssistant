@@ -101,7 +101,7 @@
         }
     }
 
-    private bool IsProtected(string tag) => string.Equals(tag, "AI Generated", StringComparison.OrdinalIgnoreCase);
+    private bool IsProtected(string tag) => string.Equals(tag, AppConstants.AiGeneratedTag, StringComparison.OrdinalIgnoreCase);
 
     private void RemoveTag(string tag)
     {
