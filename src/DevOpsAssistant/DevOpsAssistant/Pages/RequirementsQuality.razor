@@ -3,6 +3,7 @@
 @using DevOpsAssistant.Services
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Utils
+@using GeneratedPrompts
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
@@ -194,12 +195,11 @@ else if (_promptParts != null)
     private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("You are an expert requirements analyst reviewing the following document.");
-        sb.AppendLine("Assess whether the requirements are clear, complete, and testable. Identify ambiguities, missing information, or conflicts and provide improvement suggestions.");
+        sb.AppendLine(GeneratedPrompts.RequirementsQuality_MainPrompt.Value);
         if (config.Standards.RequirementsDocumentation.Count > 0)
         {
             sb.AppendLine();
-            sb.AppendLine("Apply these requirements documentation standards:");
+            sb.AppendLine(GeneratedPrompts.RequirementsDocumentationStandardsIntroPrompt.Value);
             foreach (var s in config.Standards.RequirementsDocumentation)
                 sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
         }

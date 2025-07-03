@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.Tests", "De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOpsAssistant.UiTests", "DevOpsAssistant.UiTests\DevOpsAssistant.UiTests.csproj", "{89984139-0328-4ECF-B41D-3F10F8184076}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromptGenerator", "PromptGenerator\PromptGenerator.csproj", "{56DDC0E8-926C-411E-8EE2-1C4ED2332C1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,5 +27,9 @@ Global
 		{89984139-0328-4ECF-B41D-3F10F8184076}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89984139-0328-4ECF-B41D-3F10F8184076}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89984139-0328-4ECF-B41D-3F10F8184076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56DDC0E8-926C-411E-8EE2-1C4ED2332C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56DDC0E8-926C-411E-8EE2-1C4ED2332C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56DDC0E8-926C-411E-8EE2-1C4ED2332C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56DDC0E8-926C-411E-8EE2-1C4ED2332C1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

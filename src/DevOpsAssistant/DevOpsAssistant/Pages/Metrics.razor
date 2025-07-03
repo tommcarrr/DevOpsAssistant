@@ -3,6 +3,7 @@
 @using System.Text.Json
 @using System.Linq
 @using System.Resources
+@using GeneratedPrompts
 @using DevOpsAssistant.Services.Models
 @using DevOpsAssistant.Components.Apex
 @using ApexCharts
@@ -750,82 +751,7 @@ else if (_periods.Any())
         var json = JsonSerializer.Serialize(payload);
 
         var sb = new StringBuilder();
-        sb.AppendLine("You are an experienced Agile Coach preparing a delivery metrics report for your Delivery Manager.");
-        sb.AppendLine();
-        sb.AppendLine("Your objective is to analyse team delivery data over time, identify trends or risks, and make useful, actionable recommendations based on standard Agile metrics. This report will help the Delivery Manager understand what’s working well, what might need investigation, and where to focus for continuous improvement.");
-        sb.AppendLine();
-        sb.AppendLine("You will use the following **markdown report template** to structure your output. Before generating the final report, feel free to ask any clarifying questions about the data or expectations to ensure a useful and accurate analysis.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## 📊 Agile Delivery Metrics Report Template");
-        sb.AppendLine();
-        sb.AppendLine("```markdown");
-        sb.AppendLine("# 📊 Agile Delivery Metrics Report");
-        sb.AppendLine();
-        sb.AppendLine("## 🗓️ Reporting Range");
-        sb.AppendLine("> _From: [earliest date] To: [latest date]_");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## 📈 Summary Statistics");
-        sb.AppendLine();
-        sb.AppendLine("| Metric                | Average             |");
-        sb.AppendLine("|-----------------------|---------------------|");
-        sb.AppendLine("| Lead Time (days)      | {{avgLeadTime}} |");
-        sb.AppendLine("| Cycle Time (days)     | {{avgCycleTime}} |");
-        sb.AppendLine("| Throughput (items)    | {{avgThroughput}} |");
-        sb.AppendLine("| Velocity (points)     | {{avgVelocity}} |");
-        sb.AppendLine("| Avg WIP               | {{avgWip}} |");
-        sb.AppendLine("| Sprint Efficiency (%) | {{avgSprintEfficiency}} |");
-        sb.AppendLine();
-        sb.AppendLine("> 📌 _Commentary: Summarise what these averages suggest about recent delivery performance._");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## 📈 Trend Analysis");
-        sb.AppendLine();
-        sb.AppendLine("### Lead Time & Cycle Time");
-        sb.AppendLine();
-        sb.AppendLine("> _Analyse recent trends in lead time and cycle time. Are they improving, worsening, or volatile? What could be contributing to this?_");
-        sb.AppendLine();
-        sb.AppendLine("### Throughput & Velocity");
-        sb.AppendLine();
-        sb.AppendLine("> _Highlight any significant rises or drops. Are delivery patterns consistent or irregular? Note any anomalies or explanations._");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## 🔄 Sprint Pattern Highlights");
-        sb.AppendLine();
-        sb.AppendLine("> _Pick out 3–5 noteworthy sprints (by end date) and describe what happened. Reference spikes, drops, or zero activity._");
-        sb.AppendLine();
-        sb.AppendLine("| Sprint End | Lead Time | Cycle Time | Throughput | Velocity | Avg WIP | Sprint % | Observations |");
-        sb.AppendLine("|------------|-----------|------------|------------|----------|--------|----------|--------------|");
-        sb.AppendLine("|            |           |            |            |          |        |          |              |");
-        sb.AppendLine("|            |           |            |            |          |        |          |              |");
-        sb.AppendLine("|            |           |            |            |          |        |          |              |");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## 🚧 Risks & Bottlenecks");
-        sb.AppendLine();
-        sb.AppendLine("> _Identify any patterns suggesting risk (e.g. inconsistent throughput, stalled sprints, recurring zero velocities). Suggest what might be causing them._");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("## ✅ Recommendations");
-        sb.AppendLine();
-        sb.AppendLine("> _List 3–5 actionable insights the Delivery Manager can consider._");
-        sb.AppendLine();
-        sb.AppendLine("- [ ] Example: Investigate high cycle times around 2025-03-16 for potential process blockers.");
-        sb.AppendLine("- [ ] Example: Monitor recent drop in velocity and validate sprint planning confidence.");
-        sb.AppendLine("- [ ] Example: Encourage refinement practices to reduce lead time volatility.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("_Compiled by:_ **Agile Coach Persona**  ");
-        sb.AppendLine("_Report Date:_ **{{today}}**");
-        sb.AppendLine("```");
+        sb.AppendLine(GeneratedPrompts.Metrics_MainPrompt.Value);
         sb.AppendLine();
         if (format == OutputFormat.Inline)
             sb.AppendLine("Reply inline with the final report.");

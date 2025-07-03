@@ -8,15 +8,20 @@
         <DefineConstants>$(DefineConstants)</DefineConstants>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.0" />
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.16" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.16" PrivateAssets="all" />
         <PackageReference Include="MudBlazor" Version="8.7.0" />
         <PackageReference Include="Blazor-ApexCharts" Version="2.0.0" />
-        <PackageReference Include="PdfPig" Version="0.1.10" />
-    </ItemGroup>
+    <PackageReference Include="PdfPig" Version="0.1.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Prompts/*.txt" />
+    <ProjectReference Include="../PromptGenerator/PromptGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(IncludeMockData)' == 'true'">
     <Content Include="wwwroot/mock-data/**">
