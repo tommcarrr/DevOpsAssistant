@@ -135,6 +135,12 @@
   <data name="ApplyToAll" xml:space="preserve">
     <value>Apply to all projects</value>
   </data>
+  <data name="CopyPrompts" xml:space="preserve">
+    <value>Copy Prompts</value>
+  </data>
+  <data name="PromptsCopied" xml:space="preserve">
+    <value>Prompts copied to clipboard</value>
+  </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Project Settings</value>
   </data>

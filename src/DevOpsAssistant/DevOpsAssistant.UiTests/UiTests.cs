@@ -266,6 +266,23 @@ public class UiTests
     }
 
     [Fact]
+    public async Task ProjectSettings_Has_CopyPrompts_Button()
+    {
+        if (string.IsNullOrEmpty(_baseUrl))
+            return;
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+        var page = await browser.NewPageAsync();
+        await page.GotoAsync(_baseUrl);
+        await page.EvaluateAsync("localStorage.setItem('devops-config', JSON.stringify({ Organization: 'Org', Project: 'Proj', PatToken: 'Token' }))");
+        await page.ReloadAsync();
+        await page.GotoAsync(_baseUrl.TrimEnd('/') + "/projects/Proj/settings");
+        var button = await page.QuerySelectorAsync("text=Copy Prompts");
+        Assert.NotNull(button);
+    }
+
+    [Fact]
     public async Task Footer_Displays_Version()
     {
         if (string.IsNullOrEmpty(_baseUrl))

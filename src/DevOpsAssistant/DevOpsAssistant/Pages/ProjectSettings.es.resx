@@ -135,6 +135,12 @@
   <data name="ApplyToAll" xml:space="preserve">
     <value>Aplicar a todos los proyectos</value>
   </data>
+  <data name="CopyPrompts" xml:space="preserve">
+    <value>Copiar Prompts</value>
+  </data>
+  <data name="PromptsCopied" xml:space="preserve">
+    <value>Prompts copiados al portapapeles</value>
+  </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Configuración del proyecto</value>
   </data>
