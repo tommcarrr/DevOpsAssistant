@@ -755,9 +755,9 @@ else if (_periods.Any())
         sb.AppendLine(GeneratedPrompts.Metrics_MainPrompt.Value);
         sb.AppendLine();
         if (format == OutputFormat.Inline)
-            sb.AppendLine("Reply inline with the final report.");
+            sb.AppendLine(GeneratedPrompts.FormatInstructions_MetricsInlinePrompt.Value);
         else
-            sb.AppendLine($"Once you summarize the metrics, convert the output to {format} format and include it.");
+            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_MetricsConvertPrompt.Value, format));
         sb.AppendLine();
         sb.AppendLine($"Data: {json}");
         sb.AppendLine();

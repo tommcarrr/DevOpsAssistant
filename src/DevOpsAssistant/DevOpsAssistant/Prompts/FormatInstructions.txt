@@ -1,0 +1,12 @@
+==== FormatInstructions_MetricsInline ====
+Reply inline with the final report.
+==== FormatInstructions_MetricsConvert ====
+Once you summarize the metrics, convert the output to {0} format and include it.
+==== FormatInstructions_ReleaseNotesInline ====
+Reply inline with the final notes.
+==== FormatInstructions_ReleaseNotesConvert ====
+After generating the notes, convert the content to {0} format and include that version.
+==== FormatInstructions_WorkItemAnalysisInline ====
+Reply inline with the analysis results.
+==== FormatInstructions_WorkItemAnalysisConvert ====
+After completing the analysis, convert the output to {0} format and include that version.
