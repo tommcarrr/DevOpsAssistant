@@ -22,7 +22,7 @@
     <value>Validación de elementos de trabajo</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>Etiquetado masivo</value>
+    <value>Etiquetado masivo de elementos</value>
   </data>
   <data name="WorkItemViewer" xml:space="preserve">
     <value>Visor de elementos</value>
