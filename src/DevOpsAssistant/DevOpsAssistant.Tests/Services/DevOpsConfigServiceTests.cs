@@ -25,6 +25,7 @@ public class DevOpsConfigServiceTests
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
             MainBranch = " main ",
+            WorkItemGranularity = 3,
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
@@ -62,6 +63,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", storedCfg.ReleaseNotesPrompt);
         Assert.Equal("RP", storedCfg.RequirementsPrompt);
         Assert.Equal("main", storedCfg.MainBranch);
+        Assert.Equal(3, storedCfg.WorkItemGranularity);
         Assert.Equal(OutputFormat.Pdf, storedCfg.OutputFormat);
         Assert.Contains("Gherkin", storedCfg.Standards.UserStoryAcceptanceCriteria);
         Assert.Contains("ScrumUserStory", storedCfg.Standards.UserStoryDescription);
@@ -84,6 +86,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPromptMode = PromptMode.Append,
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
+            WorkItemGranularity = 7,
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
@@ -142,6 +145,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPromptMode = PromptMode.Append,
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
+            WorkItemGranularity = 5,
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
@@ -164,6 +168,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
+        Assert.Equal(5, service.Config.WorkItemGranularity);
         Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
         Assert.Empty(service.Config.Standards.UserStoryDescription);
         Assert.Equal("default", service.CurrentProject.Name);
