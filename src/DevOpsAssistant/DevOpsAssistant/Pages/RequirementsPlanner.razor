@@ -560,27 +560,25 @@
         {
             if (storiesOnly)
             {
-                sb.AppendLine("You are a senior business analyst. Break down the following product requirement into User Stories.");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_UserStoriesBlockPrompt.Value);
             }
             else
             {
-                sb.AppendLine("You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsBlockPrompt.Value);
             }
-            sb.AppendLine("Each story must include:");
             if (config.Standards.UserStoryDescription.Contains("ScrumUserStory"))
-                sb.AppendLine("- Description in 'As a <role>, I want <goal> so that <benefit>' format");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_ScrumPrompt.Value);
             else if (config.Standards.UserStoryDescription.Contains("JobStory"))
-                sb.AppendLine("- Description in 'When <situation> I want to <motivation> so I can <expected outcome>' format");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_JobPrompt.Value);
             else
-                sb.AppendLine("- A clear, user-centric title and description");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_GenericPrompt.Value);
             if (config.Standards.UserStoryAcceptanceCriteria.Contains("Gherkin"))
-                sb.AppendLine("- Acceptance criteria in Gherkin-style format using <pre><code class=\"language-gherkin\"></code></pre> (no markdown)");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_GherkinPrompt.Value);
             else if (config.Standards.UserStoryAcceptanceCriteria.Contains("BulletPoints"))
-                sb.AppendLine("- Acceptance criteria as bullet points");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_BulletPointsPrompt.Value);
             else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
-                sb.AppendLine("- Acceptance criteria that are clear, unambiguous and testable");
-            sb.AppendLine("- A \"tags\" array for engineering triage (e.g., [\"frontend\", \"backend\", \"integration\", \"performance\", \"security\", \"accessibility\", \"needs-design\"])");
-            sb.AppendLine("Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
+            sb.AppendLine(GeneratedPrompts.RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
 
             if (config.Standards.UserStoryQuality.Count > 0)
             {
@@ -601,30 +599,18 @@
             if (storiesOnly)
             {
                 sb.AppendLine();
-                sb.AppendLine("Stories Only:");
-                sb.AppendLine("Do not generate epics or features. Only return an array of user stories in this format:");
-                sb.AppendLine("{\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_StoriesOnlyBlockPrompt.Value);
             }
             else
             {
                 sb.AppendLine();
-                sb.AppendLine("Return strict JSON using this format:");
-                sb.AppendLine("{\"epics\":[{\"title\":\"\",\"description\":\"\",\"features\":[{\"title\":\"\",\"description\":\"\",\"stories\":[{\"title\":\"\",\"description\":\"\",\"acceptanceCriteria\":\"\",\"tags\":[\"\"]}]}]}]}");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsJsonBlockPrompt.Value);
             }
 
             if (clarify)
             {
                 sb.AppendLine();
-                sb.AppendLine("Clarify Requirements:");
-                sb.AppendLine("Before writing the output, review the requirement and ask for clarification if:");
-                sb.AppendLine("- Expected user behaviors or flows are ambiguous");
-                sb.AppendLine("- Access restrictions or permissions are not clearly defined");
-                sb.AppendLine("- Search or filtering functionality is mentioned without scope (e.g., partial matches, filtering fields)");
-                sb.AppendLine("- External system dependencies are implied but not detailed (e.g., email sending, file uploads, audit logging)");
-                sb.AppendLine("- Non-functional requirements are vague (e.g., \"must be fast\")");
-                sb.AppendLine("- It's unclear if optional elements (e.g., \"nice to have\" features) are in scope");
-                sb.AppendLine();
-                sb.AppendLine("If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.");
+                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_ClarifyBlockPrompt.Value);
             }
         }
         if (!string.IsNullOrWhiteSpace(config.RequirementsPrompt))
