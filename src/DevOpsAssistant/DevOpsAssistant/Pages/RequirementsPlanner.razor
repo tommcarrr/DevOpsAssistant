@@ -85,7 +85,6 @@
     <MudStep Title="Create Work Items" Disabled="@(_plan == null)">
         @if (_plan != null)
         {
-            <MudSwitch T="bool" @bind-Value="_previewHtml" Color="Color.Primary" Label="Preview HTML" />
             if (_storiesOnly)
             {
                 <MudAutocomplete T="WorkItemInfo"
@@ -99,7 +98,6 @@
                     <PlanItemEditor Type="User Story"
                                     Draggable="true"
                                     Droppable="true"
-                                    Preview="_previewHtml"
                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnStoryList(story))"
                                     OnDelete="EventCallback.Factory.Create(this, () => RemoveStory(story))"
@@ -117,7 +115,6 @@
                     <PlanItemEditor Type="Epic"
                                     Draggable="true"
                                     Droppable="true"
-                                    Preview="_previewHtml"
                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(epic))"
                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnPlan(epic))"
                                     OnDelete="EventCallback.Factory.Create(this, () => RemoveEpic(epic))"
@@ -129,7 +126,6 @@
                             <PlanItemEditor Type="Feature"
                                             Draggable="true"
                                             Droppable="true"
-                                            Preview="_previewHtml"
                                             DragStart="EventCallback.Factory.Create(this, () => OnDragStart(feature))"
                                             Drop="EventCallback.Factory.Create(this, () => OnDropOnEpic(epic))"
                                             OnDelete="EventCallback.Factory.Create(this, () => RemoveFeature(feature))"
@@ -141,7 +137,6 @@
                                     <PlanItemEditor Type="User Story"
                                                     Draggable="true"
                                                     Droppable="true"
-                                                    Preview="_previewHtml"
                                                     DragStart="EventCallback.Factory.Create(this, () => OnDragStart(story))"
                                                     Drop="EventCallback.Factory.Create(this, () => OnDropOnFeature(feature))"
                                                     OnDelete="EventCallback.Factory.Create(this, () => RemoveStory(story))"
@@ -202,7 +197,6 @@
     private string _backlog = string.Empty;
     private bool _storiesOnly;
     private bool _clarify;
-    private bool _previewHtml;
     private WorkItemInfo? _feature;
     private Plan? _plan;
     private readonly List<int> _createdItems = new();
