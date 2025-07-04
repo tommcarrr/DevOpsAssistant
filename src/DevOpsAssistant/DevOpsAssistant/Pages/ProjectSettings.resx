@@ -144,6 +144,9 @@
   <data name="ProjectColor" xml:space="preserve">
     <value>Project Color</value>
   </data>
+  <data name="ClearColor" xml:space="preserve">
+    <value>Clear Color</value>
+  </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Project Settings</value>
   </data>
