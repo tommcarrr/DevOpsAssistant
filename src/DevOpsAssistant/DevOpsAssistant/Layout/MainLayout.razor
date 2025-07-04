@@ -90,7 +90,9 @@
     private string _selectedProject = string.Empty;
     private bool _initialized;
     private bool _isDarkMode;
-    private MudTheme CurrentTheme => ThemeSession.IsDoom ? DoomTheme.Theme : AzureDevOpsTheme.Theme;
+    private MudTheme CurrentTheme
+        => (ThemeSession.IsDoom ? DoomTheme.Theme : AzureDevOpsTheme.Theme)
+            .WithPrimaryColor(ConfigService.CurrentProject.Color);
     
     private void HandleProjectChanged()
     {

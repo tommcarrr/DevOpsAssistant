@@ -229,7 +229,7 @@ public class DevOpsConfigServiceTests
         await service.SelectProjectAsync("one");
 
         var cfg = new DevOpsConfig { Organization = "Org" };
-        await service.UpdateProjectAsync("two", "two", cfg);
+        await service.UpdateProjectAsync("two", "two", cfg, "");
 
         Assert.Equal("one", service.CurrentProject.Name);
         var other = service.Projects.First(p => p.Name == "two");
@@ -258,7 +258,7 @@ public class DevOpsConfigServiceTests
         await service.AddProjectAsync("two");
         await service.SelectProjectAsync("one");
 
-        var result = await service.SaveCurrentAsync("two", new DevOpsConfig());
+        var result = await service.SaveCurrentAsync("two", new DevOpsConfig(), "");
 
         Assert.False(result);
         Assert.Equal("one", service.CurrentProject.Name);
@@ -272,7 +272,7 @@ public class DevOpsConfigServiceTests
         await service.AddProjectAsync("one");
         await service.AddProjectAsync("two");
 
-        var result = await service.UpdateProjectAsync("two", "one", new DevOpsConfig());
+        var result = await service.UpdateProjectAsync("two", "one", new DevOpsConfig(), "");
 
         Assert.False(result);
     }
@@ -330,7 +330,7 @@ public class DevOpsConfigServiceTests
             Organization = "Org",
             Project = "Proj",
             PatToken = "token"
-        });
+        }, "");
 
         Assert.True(raised);
     }
@@ -341,7 +341,7 @@ public class DevOpsConfigServiceTests
         var storage = new FakeLocalStorageService();
         var service = new DevOpsConfigService(storage);
         await service.AddProjectAsync("one");
-        await service.SaveCurrentAsync("one", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        await service.SaveCurrentAsync("one", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" }, "");
         bool raised = false;
         service.ProjectChanged += () => raised = true;
 
@@ -350,7 +350,7 @@ public class DevOpsConfigServiceTests
             Organization = "Org2",
             Project = "Proj2",
             PatToken = "token2"
-        });
+        }, "");
 
         Assert.False(raised);
     }

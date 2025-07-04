@@ -15,7 +15,7 @@ public class HomePageTests : ComponentTestBase
     {
         var config = SetupServices();
         await config.AddProjectAsync("Demo");
-        await config.SaveCurrentAsync("Demo", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        await config.SaveCurrentAsync("Demo", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" }, "");
         var cut = RenderComponent<Home>(p => p.Add(c => c.ProjectName, config.CurrentProject.Name));
 
         Assert.Contains("DevOpsAssistant provides", cut.Markup);
@@ -26,7 +26,7 @@ public class HomePageTests : ComponentTestBase
     {
         var config = SetupServices();
         await config.AddProjectAsync("Demo");
-        await config.SaveCurrentAsync("Demo", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        await config.SaveCurrentAsync("Demo", new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" }, "");
 
         var nav = Services.GetRequiredService<NavigationManager>() as FakeNavigationManager;
         RenderComponent<Home>();

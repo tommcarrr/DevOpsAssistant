@@ -84,7 +84,7 @@ public class DevOpsConfigService
         await SaveProjectsAsync();
     }
 
-    public async Task<bool> SaveCurrentAsync(string name, DevOpsConfig config)
+    public async Task<bool> SaveCurrentAsync(string name, DevOpsConfig config, string color)
     {
         var wasValid = IsCurrentProjectValid;
         name = name.Trim();
@@ -94,6 +94,7 @@ public class DevOpsConfigService
 
         CurrentProject.Name = name;
         CurrentProject.Config = Normalize(config);
+        CurrentProject.Color = color.Trim();
         await SaveProjectsAsync();
         if (wasValid != IsCurrentProjectValid)
             OnProjectChanged();
@@ -125,7 +126,7 @@ public class DevOpsConfigService
         await _localStorage.SetItemAsync(GlobalCultureKey, GlobalCulture);
     }
 
-    public async Task<bool> UpdateProjectAsync(string existingName, string newName, DevOpsConfig config)
+    public async Task<bool> UpdateProjectAsync(string existingName, string newName, DevOpsConfig config, string color)
     {
         var proj = Projects.FirstOrDefault(p => p.Name == existingName);
         if (proj == null) return false;
@@ -135,6 +136,7 @@ public class DevOpsConfigService
             return false;
         proj.Name = newName;
         proj.Config = Normalize(config);
+        proj.Color = color.Trim();
         await SaveProjectsAsync();
         return true;
     }
@@ -147,7 +149,8 @@ public class DevOpsConfigService
         var project = new DevOpsProject
         {
             Name = name,
-            Config = source != null ? Clone(source.Config) : new DevOpsConfig()
+            Config = source != null ? Clone(source.Config) : new DevOpsConfig(),
+            Color = source?.Color ?? string.Empty
         };
         Projects.Add(Normalize(project));
         CurrentProject = project;
@@ -211,6 +214,7 @@ public class DevOpsConfigService
     {
         project.Name = project.Name.Trim();
         project.Config = Normalize(project.Config);
+        project.Color = project.Color.Trim();
         return project;
     }
 
