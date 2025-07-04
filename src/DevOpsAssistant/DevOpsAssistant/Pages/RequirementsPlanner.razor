@@ -602,6 +602,7 @@
             else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
                 sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
             sb.AppendLine(GeneratedPrompts.RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
+            sb.AppendLine($"Work item granularity level {config.WorkItemGranularity}/10: 1 = large complex items, 10 = smallest sensible tasks.");
 
             if (config.Standards.UserStoryQuality.Count > 0)
             {

@@ -87,6 +87,12 @@
                         <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
                         <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
                     </MudRadioGroup>
+                    <MudText Typo="Typo.subtitle2">@L["WorkItemGranularity"]: @_model.WorkItemGranularity</MudText>
+                    <MudSlider T="int" Min="1" Max="10" Step="1"
+                               Value="_model.WorkItemGranularity"
+                               Immediate="true"
+                               ValueChanged="OnGranularityChanged"
+                               Color="Color.Primary" />
                     <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
                     <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
                         <MudSelectItem Value="OutputFormat.Markdown">Markdown</MudSelectItem>
@@ -236,6 +242,7 @@
             ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
             RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
+            WorkItemGranularity = cfg.WorkItemGranularity,
             OutputFormat = cfg.OutputFormat,
             Standards = cfg.Standards,
             Rules = new ValidationRules
@@ -291,6 +298,7 @@
             ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode,
             RequirementsPromptMode = _model.RequirementsPromptMode,
             PromptCharacterLimit = _model.PromptCharacterLimit,
+            WorkItemGranularity = _model.WorkItemGranularity,
             OutputFormat = _model.OutputFormat,
             Standards = _model.Standards,
             Rules = _model.Rules
@@ -328,6 +336,7 @@
         cfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
         cfg.RequirementsPromptMode = _model.RequirementsPromptMode;
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+        cfg.WorkItemGranularity = _model.WorkItemGranularity;
         cfg.OutputFormat = _model.OutputFormat;
         cfg.Standards = _model.Standards;
         await ConfigService.SaveCurrentAsync(_model.Project, cfg, _color);
@@ -361,6 +370,7 @@
                 pcfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
                 pcfg.RequirementsPromptMode = _model.RequirementsPromptMode;
                 pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
+                pcfg.WorkItemGranularity = _model.WorkItemGranularity;
                 pcfg.OutputFormat = _model.OutputFormat;
                 pcfg.Standards = _model.Standards;
                 await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg, p.Color);
@@ -517,6 +527,13 @@
     private Task OnOutputFormatChanged(OutputFormat value)
     {
         _model.OutputFormat = value;
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnGranularityChanged(int value)
+    {
+        _model.WorkItemGranularity = value;
         _promptsDirty = true;
         return Task.CompletedTask;
     }

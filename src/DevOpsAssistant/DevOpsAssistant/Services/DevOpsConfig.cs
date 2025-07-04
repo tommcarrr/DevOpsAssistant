@@ -16,6 +16,7 @@ public class DevOpsConfig
     public PromptMode ReleaseNotesPromptMode { get; set; }
     public PromptMode RequirementsPromptMode { get; set; }
     public int PromptCharacterLimit { get; set; }
+    public int WorkItemGranularity { get; set; } = 5;
     public OutputFormat OutputFormat { get; set; }
     public PromptStandards Standards { get; set; } = new();
     public ValidationRules Rules { get; set; } = new();

@@ -212,6 +212,7 @@ public class DevOpsConfigService
             ReleaseNotesPromptMode = config.ReleaseNotesPromptMode,
             RequirementsPromptMode = config.RequirementsPromptMode,
             PromptCharacterLimit = config.PromptCharacterLimit,
+            WorkItemGranularity = config.WorkItemGranularity,
             OutputFormat = config.OutputFormat,
             Standards = config.Standards,
             Rules = config.Rules
@@ -242,6 +243,7 @@ public class DevOpsConfigService
             ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
             RequirementsPromptMode = cfg.RequirementsPromptMode,
             PromptCharacterLimit = cfg.PromptCharacterLimit,
+            WorkItemGranularity = cfg.WorkItemGranularity,
             OutputFormat = cfg.OutputFormat,
             Standards = cfg.Standards,
             Rules = cfg.Rules
