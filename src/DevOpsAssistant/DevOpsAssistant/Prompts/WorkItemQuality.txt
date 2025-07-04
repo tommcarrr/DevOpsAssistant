@@ -83,3 +83,5 @@ Ensure bug reports follow these standards:
 Also confirm each story meets this Definition of Ready:
 ==== WorkItemQuality_StoryQualityStandardsIntro ====
 Apply these story quality standards:
+==== WorkItemQuality_WorkItemsIntro ====
+Work items:

@@ -11,6 +11,7 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
+@inject PromptService PromptService
 @inherits ProjectComponentBase
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
@@ -288,7 +289,7 @@
                     }
                     break;
             }
-            _prompt = BuildPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
+            _prompt = PromptService.BuildRequirementsPlannerPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             await StateService.SaveAsync(StateKey, new PageState
@@ -575,83 +576,6 @@
         return item;
     }
 
-        private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify, DevOpsConfig config)
-    {
-        var sb = new System.Text.StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.RequirementsPrompt) ||
-            config.RequirementsPromptMode == PromptMode.Append)
-        {
-            if (storiesOnly)
-            {
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_UserStoriesBlockPrompt.Value);
-            }
-            else
-            {
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsBlockPrompt.Value);
-            }
-            if (config.Standards.UserStoryDescription.Contains("ScrumUserStory"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_ScrumPrompt.Value);
-            else if (config.Standards.UserStoryDescription.Contains("JobStory"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_JobPrompt.Value);
-            else
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_GenericPrompt.Value);
-            if (config.Standards.UserStoryAcceptanceCriteria.Contains("Gherkin"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_GherkinPrompt.Value);
-            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("BulletPoints"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_BulletPointsPrompt.Value);
-            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
-            sb.AppendLine(GeneratedPrompts.RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
-            sb.AppendLine($"Work item granularity level {config.WorkItemGranularity}/10: 1 = large complex items, 10 = smallest sensible tasks.");
-
-            if (config.Standards.UserStoryQuality.Count > 0)
-            {
-                sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_StoryQualityStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.UserStoryQuality)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-            }
-
-            if (config.Standards.RequirementsDocumentation.Count > 0)
-            {
-                sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsDocumentationStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.RequirementsDocumentation)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-            }
-
-            if (storiesOnly)
-            {
-                sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_StoriesOnlyBlockPrompt.Value);
-            }
-            else
-            {
-                sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsJsonBlockPrompt.Value);
-            }
-
-            if (clarify)
-            {
-                sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_ClarifyBlockPrompt.Value);
-            }
-        }
-        if (!string.IsNullOrWhiteSpace(config.RequirementsPrompt))
-        {
-            sb.AppendLine(config.RequirementsPrompt.Trim());
-        }
-        sb.AppendLine();
-        sb.AppendLine(GeneratedPrompts.RequirementsPlanner_DocumentIntroPrompt.Value);
-        foreach (var page in pages)
-        {
-            sb.AppendLine($"## {page.Name}");
-            sb.AppendLine(page.Text);
-            sb.AppendLine();
-        }
-        sb.AppendLine();
-        return sb.ToString();
-    }
 
     private async Task<IEnumerable<WorkItemInfo>> SearchFeatures(string value, CancellationToken _)
     {

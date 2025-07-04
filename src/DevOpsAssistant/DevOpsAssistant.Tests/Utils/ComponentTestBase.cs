@@ -24,6 +24,7 @@ public abstract class ComponentTestBase : TestContext
         Services.AddSingleton(config);
         Services.AddSingleton(new PageStateService(storage, config));
         Services.AddSingleton(new ThemeSessionService(JSInterop.JSRuntime));
+        Services.AddSingleton<PromptService>();
         if (includeApi)
         {
             var deployment = new DeploymentConfigService(new HttpClient());

@@ -11,6 +11,8 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
+@inject PromptService PromptService
+@inject PromptService PromptService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Metrics> L
 @inject ISnackbar Snackbar
@@ -724,45 +726,6 @@ else if (_periods.Any())
         _showBurnChartControls = !_showBurnChartControls;
     }
 
-    private static string BuildPrompt(IEnumerable<PeriodMetrics> periods, OutputFormat format)
-    {
-        var list = periods.ToList();
-        var metrics = list.Select(p => new
-        {
-            end = p.End.ToString("yyyy-MM-dd"),
-            leadTime = p.AvgLeadTime,
-            cycleTime = p.AvgCycleTime,
-            throughput = p.Throughput,
-            velocity = p.Velocity,
-            avgWip = p.AvgWip,
-            sprintEfficiency = p.SprintEfficiency
-        });
-
-        var summary = new
-        {
-            avgLeadTime = list.Any() ? list.Average(p => p.AvgLeadTime) : 0,
-            avgCycleTime = list.Any() ? list.Average(p => p.AvgCycleTime) : 0,
-            avgThroughput = list.Any() ? list.Average(p => p.Throughput) : 0,
-            avgVelocity = list.Any() ? list.Average(p => p.Velocity) : 0,
-            avgWip = list.Any() ? list.Average(p => p.AvgWip) : 0,
-            avgSprintEfficiency = list.Any() ? list.Average(p => p.SprintEfficiency) : 0
-        };
-
-        var payload = new { metrics, summary };
-        var json = JsonSerializer.Serialize(payload);
-
-        var sb = new StringBuilder();
-        sb.AppendLine(GeneratedPrompts.Metrics_MainPrompt.Value);
-        sb.AppendLine();
-        if (format == OutputFormat.Inline)
-            sb.AppendLine(GeneratedPrompts.FormatInstructions_MetricsInlinePrompt.Value);
-        else
-            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_MetricsConvertPrompt.Value, format));
-        sb.AppendLine();
-        sb.AppendLine($"Data: {json}");
-        sb.AppendLine();
-        return sb.ToString();
-    }
 
     private async Task ExportCsv()
     {
@@ -774,7 +737,7 @@ else if (_periods.Any())
     private async Task CopyPrompt()
     {
         if (_periods.Count == 0) return;
-        var prompt = BuildPrompt(_periods, ConfigService.Config.OutputFormat);
+        var prompt = PromptService.BuildMetricsPrompt(_periods, ConfigService.Config.OutputFormat);
         await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
@@ -861,18 +824,6 @@ else if (_periods.Any())
     }
 
 
-    private class PeriodMetrics
-    {
-        public string Name { get; set; } = string.Empty;
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public double AvgLeadTime { get; set; }
-        public double AvgCycleTime { get; set; }
-        public int Throughput { get; set; }
-        public double Velocity { get; set; }
-        public double AvgWip { get; set; }
-        public double SprintEfficiency { get; set; }
-    }
 
     private class PageState
     {
