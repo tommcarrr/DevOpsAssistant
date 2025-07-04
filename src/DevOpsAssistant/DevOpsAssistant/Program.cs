@@ -26,6 +26,7 @@ builder.Services.AddScoped<VersionService>();
 builder.Services.AddScoped<DeploymentConfigService>();
 builder.Services.AddLocalization();
 builder.Services.AddScoped<ThemeSessionService>();
+builder.Services.AddScoped<PromptService>();
 
 var host = builder.Build();
 var js = host.Services.GetRequiredService<IJSRuntime>();

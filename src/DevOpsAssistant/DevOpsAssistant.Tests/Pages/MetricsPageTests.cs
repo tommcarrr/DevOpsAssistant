@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
+using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Utils;
 using MudBlazor;
@@ -32,15 +33,17 @@ public class MetricsPageTests : ComponentTestBase
         SetupServices();
 
         var method = typeof(Metrics).GetMethod("BuildCsv", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var periodType = typeof(Metrics).GetNestedType("PeriodMetrics", BindingFlags.NonPublic)!;
-        var array = Array.CreateInstance(periodType, 1);
-        var period = Activator.CreateInstance(periodType)!;
-        periodType.GetProperty("End")!.SetValue(period, new DateTime(2024, 1, 1));
-        periodType.GetProperty("AvgLeadTime")!.SetValue(period, 1.0);
-        periodType.GetProperty("AvgCycleTime")!.SetValue(period, 2.0);
-        periodType.GetProperty("Throughput")!.SetValue(period, 3);
-        periodType.GetProperty("Velocity")!.SetValue(period, 4.0);
-        array.SetValue(period, 0);
+        var array = new[]
+        {
+            new PeriodMetrics
+            {
+                End = new DateTime(2024,1,1),
+                AvgLeadTime = 1.0,
+                AvgCycleTime = 2.0,
+                Throughput = 3,
+                Velocity = 4.0
+            }
+        };
 
         var csv = (string)method.Invoke(null, new object?[] { array })!;
 
@@ -53,20 +56,18 @@ public class MetricsPageTests : ComponentTestBase
     {
         SetupServices();
 
-        var method = typeof(Metrics).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var periodType = typeof(Metrics).GetNestedType("PeriodMetrics", BindingFlags.NonPublic)!;
-        var array = Array.CreateInstance(periodType, 1);
-        var period = Activator.CreateInstance(periodType)!;
-        periodType.GetProperty("End")!.SetValue(period, new DateTime(2024, 1, 1));
-        periodType.GetProperty("AvgLeadTime")!.SetValue(period, 1.2);
-        periodType.GetProperty("AvgCycleTime")!.SetValue(period, 2.3);
-        periodType.GetProperty("Throughput")!.SetValue(period, 3);
-        periodType.GetProperty("Velocity")!.SetValue(period, 4.5);
-        periodType.GetProperty("AvgWip")!.SetValue(period, 1.5);
-        periodType.GetProperty("SprintEfficiency")!.SetValue(period, 80.0);
-        array.SetValue(period, 0);
-
-        var prompt = (string)method.Invoke(null, new object?[] { array, OutputFormat.Markdown })!;
+        var period = new PeriodMetrics
+        {
+            End = new DateTime(2024, 1, 1),
+            AvgLeadTime = 1.2,
+            AvgCycleTime = 2.3,
+            Throughput = 3,
+            Velocity = 4.5,
+            AvgWip = 1.5,
+            SprintEfficiency = 80.0
+        };
+        var svc = new PromptService();
+        var prompt = svc.BuildMetricsPrompt(new[] { period }, OutputFormat.Markdown);
 
         Assert.Contains("Agile Delivery Metrics Report Template", prompt);
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);

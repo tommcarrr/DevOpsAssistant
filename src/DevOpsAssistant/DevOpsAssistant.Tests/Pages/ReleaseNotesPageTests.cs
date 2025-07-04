@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Net;
 using System.Threading;
 using System.Linq;
@@ -28,8 +27,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
             }
         };
 
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details, new DevOpsConfig()])!;
+        var svc = new PromptService();
+        var result = svc.BuildReleaseNotesPrompt(details, new DevOpsConfig());
 
         Assert.Contains("\"AcceptanceCriteria\": \"criteria\"", result);
     }
@@ -45,8 +44,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
             }
         };
 
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details, new DevOpsConfig()])!;
+        var svc = new PromptService();
+        var result = svc.BuildReleaseNotesPrompt(details, new DevOpsConfig());
 
         Assert.Contains("Bugs are also in scope", result);
     }
@@ -54,8 +53,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
     [Fact]
     public void BuildPrompt_Includes_NoBranding_Note()
     {
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), new DevOpsConfig()])!;
+        var svc = new PromptService();
+        var result = svc.BuildReleaseNotesPrompt(new List<StoryHierarchyDetails>(), new DevOpsConfig());
 
         Assert.Contains("No branding is required.", result);
     }
@@ -79,8 +78,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
                 Bug = new BugRules { IncludeReproSteps = false }
             }
         };
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details, cfg])!;
+        var svc = new PromptService();
+        var result = svc.BuildReleaseNotesPrompt(details, cfg);
 
         Assert.DoesNotContain("ReproSteps", result);
     }
@@ -104,8 +103,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
                 Bug = new BugRules { IncludeSystemInfo = false }
             }
         };
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (string)method.Invoke(null, [details, cfg])!;
+        var svc = new PromptService();
+        var result = svc.BuildReleaseNotesPrompt(details, cfg);
 
         Assert.DoesNotContain("SystemInfo", result);
     }
@@ -113,10 +112,10 @@ public class ReleaseNotesPageTests : ComponentTestBase
     [Fact]
     public void BuildPrompt_Inline_Format_Does_Not_Request_Conversion()
     {
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var svc = new PromptService();
         var cfg = new DevOpsConfig { OutputFormat = OutputFormat.Inline };
 
-        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), cfg])!;
+        var result = svc.BuildReleaseNotesPrompt(new List<StoryHierarchyDetails>(), cfg);
 
         Assert.DoesNotContain("convert the content", result);
         Assert.Contains("Reply inline", result);
@@ -125,9 +124,9 @@ public class ReleaseNotesPageTests : ComponentTestBase
     [Fact]
     public void BuildPrompt_Includes_Templates()
     {
-        var method = typeof(ReleaseNotes).GetMethod("BuildPrompt", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var svc = new PromptService();
 
-        var result = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), new DevOpsConfig()])!;
+        var result = svc.BuildReleaseNotesPrompt(new List<StoryHierarchyDetails>(), new DevOpsConfig());
 
         Assert.Contains("# Release Notes", result);
         Assert.Contains("# Change Control Ticket", result);

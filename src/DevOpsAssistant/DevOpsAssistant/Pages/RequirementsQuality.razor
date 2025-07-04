@@ -7,6 +7,7 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
+@inject PromptService PromptService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<RequirementsQuality> L
 @inherits ProjectComponentBase
@@ -135,7 +136,7 @@ else if (_promptParts != null)
                     }
                     break;
             }
-            _prompt = BuildPrompt(pages, ConfigService.Config);
+            _prompt = PromptService.BuildRequirementsQualityPrompt(pages, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             _error = null;
@@ -192,27 +193,6 @@ else if (_promptParts != null)
         return item;
     }
 
-    private static string BuildPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine(GeneratedPrompts.RequirementsQuality_MainPrompt.Value);
-        if (config.Standards.RequirementsDocumentation.Count > 0)
-        {
-            sb.AppendLine();
-            sb.AppendLine(GeneratedPrompts.RequirementsDocumentationStandardsIntroPrompt.Value);
-            foreach (var s in config.Standards.RequirementsDocumentation)
-                sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-        }
-        sb.AppendLine();
-        sb.AppendLine("Document:");
-        foreach (var page in pages)
-        {
-            sb.AppendLine($"## {page.Name}");
-            sb.AppendLine(page.Text);
-            sb.AppendLine();
-        }
-        return sb.ToString();
-    }
 
     protected override Task OnProjectChangedAsync()
     {

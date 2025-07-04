@@ -29,6 +29,7 @@ Codex must be proficient in the following technologies and frameworks, which are
 - Use async/await for I/O operations.
 - Avoid Bootstrap. Prefer MudBlazor components and attributes for layout and spacing.
 - Avoid hardcoded strings in the UI – use localization resources.
+- Store all AI prompt text in the `Prompts` folder for the source generator; never hardcode prompts in C# code.
 - Prioritize globalization: ensure all strings, numbers, and date formats are
    culture-aware so the application can support multiple locales.
 

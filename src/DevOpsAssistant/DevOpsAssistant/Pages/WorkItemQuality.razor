@@ -8,6 +8,7 @@
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
+@inject PromptService PromptService
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<WorkItemQuality> L
 @inherits ProjectComponentBase
@@ -83,7 +84,7 @@ else if (_promptParts != null)
         try
         {
             var details = await ApiService.GetStoryHierarchyDetailsAsync(_selectedItems.Select(i => i.Id));
-            _prompt = BuildPrompt(details, ConfigService.Config);
+            _prompt = PromptService.BuildWorkItemQualityPrompt(details, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             _error = null;
@@ -141,74 +142,6 @@ else if (_promptParts != null)
         return Task.CompletedTask;
     }
 
-    private static string BuildPrompt(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)
-    {
-        var items = details.Select(d => new
-        {
-            Epic = d.Epic == null
-                ? null
-                : new
-                {
-                    d.Epic.Title,
-                    Description = TextHelpers.Sanitize(d.EpicDescription)
-                },
-            Feature = d.Feature == null
-                ? null
-                : new
-                {
-                    d.Feature.Title,
-                    Description = TextHelpers.Sanitize(d.FeatureDescription)
-                },
-            Story = d.Story.WorkItemType.Equals("User Story", StringComparison.OrdinalIgnoreCase)
-                ? new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description) }
-                : null,
-            Bug = d.Story.WorkItemType.Equals("Bug", StringComparison.OrdinalIgnoreCase)
-                ? new { d.Story.Id, d.Story.Title, Description = TextHelpers.Sanitize(d.Description), ReproSteps = TextHelpers.Sanitize(d.ReproSteps), SystemInfo = TextHelpers.Sanitize(d.SystemInfo) }
-                : null
-        });
-        var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
-        var sb = new StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) ||
-            config.StoryQualityPromptMode == PromptMode.Append)
-        {
-            sb.AppendLine("You are an expert Agile coach reviewing user stories and bugs for quality.");
-            sb.AppendLine();
-            if (config.Standards.UserStoryQuality.Count > 0)
-            {
-                sb.AppendLine(GeneratedPrompts.WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.UserStoryQuality)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-                sb.AppendLine();
-            }
-            sb.AppendLine(GeneratedPrompts.WorkItemQuality_MainPrompt.Value);
-            sb.AppendLine("For bugs, check that the reproduction steps and system information are clear and complete.");
-        if (config.Standards.BugReporting.Count > 0)
-        {
-            sb.AppendLine(GeneratedPrompts.WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
-            foreach (var s in config.Standards.BugReporting)
-                sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-        }
-        if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
-        {
-            sb.AppendLine();
-            sb.AppendLine(GeneratedPrompts.WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
-            sb.AppendLine(config.DefinitionOfReady);
-        }
-        }
-        if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
-        {
-            sb.AppendLine(config.StoryQualityPrompt.Trim());
-        }
-        if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine(GeneratedPrompts.FormatInstructions_WorkItemAnalysisInlinePrompt.Value);
-        else
-            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
-        sb.AppendLine();
-        sb.AppendLine("Work items:");
-        sb.AppendLine(json);
-        sb.AppendLine();
-        return sb.ToString();
-    }
 
 
     protected override Task OnProjectChangedAsync()

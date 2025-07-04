@@ -81,6 +81,8 @@ Each story must include:
 ==== RequirementsPlanner_TagsAndHtmlAdvice ====
 - A "tags" array for engineering triage (e.g., ["frontend", "backend", "integration", "performance", "security", "accessibility", "needs-design"])
 Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.
+==== RequirementsPlanner_WorkItemGranularity ====
+Work item granularity level {0}/10: 1 = large complex items, 10 = smallest sensible tasks.
 ==== RequirementsPlanner_StoriesOnlyBlock ====
 Stories Only:
 Do not generate epics or features. Only return an array of user stories in this format:
