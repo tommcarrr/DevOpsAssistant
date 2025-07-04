@@ -18,7 +18,7 @@
 }
 else if (Source == DocumentSource.Text)
 {
-    <MudTextField T="string" @bind-Value="Text" Lines="4" Placeholder="@L["TextPlaceholder"]" />
+    <MudTextField T="string" @bind-Value="Text" Lines="4" Placeholder="@L["TextPlaceholder"]" Immediate="true" />
 }
 else if (WikiItems != null)
 {
