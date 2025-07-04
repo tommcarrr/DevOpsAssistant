@@ -61,6 +61,7 @@
     protected override void OnInitialized()
     {
         ThemeSession.ThemeChanged += OnThemeChanged;
+        ConfigService.ProjectChanged += OnProjectChanged;
     }
 
     protected override async Task OnInitializedAsync()
@@ -126,8 +127,14 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void OnProjectChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     public void Dispose()
     {
         ThemeSession.ThemeChanged -= OnThemeChanged;
+        ConfigService.ProjectChanged -= OnProjectChanged;
     }
 }

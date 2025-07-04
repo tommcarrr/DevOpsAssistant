@@ -87,17 +87,25 @@ public class DevOpsConfigService
     public async Task<bool> SaveCurrentAsync(string name, DevOpsConfig config, string color)
     {
         var wasValid = IsCurrentProjectValid;
-        name = name.Trim();
-        if (!CurrentProject.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
-            Projects.Any(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        var trimmedName = name.Trim();
+        var trimmedColor = color.Trim();
+
+        if (!CurrentProject.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase) &&
+            Projects.Any(p => p.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
             return false;
 
-        CurrentProject.Name = name;
+        var nameChanged = !CurrentProject.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase);
+        var colorChanged = !CurrentProject.Color.Equals(trimmedColor, StringComparison.OrdinalIgnoreCase);
+
+        CurrentProject.Name = trimmedName;
         CurrentProject.Config = Normalize(config);
-        CurrentProject.Color = color.Trim();
+        CurrentProject.Color = trimmedColor;
+
         await SaveProjectsAsync();
-        if (wasValid != IsCurrentProjectValid)
+
+        if (wasValid != IsCurrentProjectValid || nameChanged || colorChanged)
             OnProjectChanged();
+
         return true;
     }
 
