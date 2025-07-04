@@ -60,3 +60,42 @@ Document:
 The following document provides an overview of the current state of the application these requirements apply to.
 ==== RequirementsPlanner_StoryQualityStandardsIntro ====
 Ensure stories follow these quality standards:
+==== RequirementsPlanner_UserStoriesBlock ====
+You are a senior business analyst. Break down the following product requirement into User Stories.
+Each story must include:
+==== RequirementsPlanner_EpicsBlock ====
+You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.
+Each story must include:
+==== RequirementsPlanner_Description_Scrum ====
+- Description in 'As a <role>, I want <goal> so that <benefit>' format
+==== RequirementsPlanner_Description_Job ====
+- Description in 'When <situation> I want to <motivation> so I can <expected outcome>' format
+==== RequirementsPlanner_Description_Generic ====
+- A clear, user-centric title and description
+==== RequirementsPlanner_AcceptanceCriteria_Gherkin ====
+- Acceptance criteria in Gherkin-style format using <pre><code class="language-gherkin"></code></pre> (no markdown)
+==== RequirementsPlanner_AcceptanceCriteria_BulletPoints ====
+- Acceptance criteria as bullet points
+==== RequirementsPlanner_AcceptanceCriteria_SAFeStyle ====
+- Acceptance criteria that are clear, unambiguous and testable
+==== RequirementsPlanner_TagsAndHtmlAdvice ====
+- A "tags" array for engineering triage (e.g., ["frontend", "backend", "integration", "performance", "security", "accessibility", "needs-design"])
+Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.
+==== RequirementsPlanner_StoriesOnlyBlock ====
+Stories Only:
+Do not generate epics or features. Only return an array of user stories in this format:
+{"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}
+==== RequirementsPlanner_EpicsJsonBlock ====
+Return strict JSON using this format:
+{"epics":[{"title":"","description":"","features":[{"title":"","description":"","stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}]}]}
+==== RequirementsPlanner_ClarifyBlock ====
+Clarify Requirements:
+Before writing the output, review the requirement and ask for clarification if:
+- Expected user behaviors or flows are ambiguous
+- Access restrictions or permissions are not clearly defined
+- Search or filtering functionality is mentioned without scope (e.g., partial matches, filtering fields)
+- External system dependencies are implied but not detailed (e.g., email sending, file uploads, audit logging)
+- Non-functional requirements are vague (e.g., "must be fast")
+- It's unclear if optional elements (e.g., "nice to have" features) are in scope
+
+If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.
