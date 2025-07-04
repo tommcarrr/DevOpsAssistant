@@ -440,7 +440,10 @@
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _plan = JsonSerializer.Deserialize<Plan>(json, options);
             if (_plan != null)
+            {
+                AddAiGeneratedTags(_plan);
                 SetTagStrings(_plan);
+            }
             _error = null;
             _ = _stepper?.NextStepAsync();
         }
@@ -474,6 +477,28 @@
                     story.TagString = string.Join(", ", story.Tags);
             }
         }
+    }
+
+    private static void AddAiGeneratedTags(Plan plan)
+    {
+        foreach (var story in plan.Stories)
+            AddTagIfMissing(story.Tags);
+        foreach (var epic in plan.Epics)
+        {
+            AddTagIfMissing(epic.Tags);
+            foreach (var feature in epic.Features)
+            {
+                AddTagIfMissing(feature.Tags);
+                foreach (var story in feature.Stories)
+                    AddTagIfMissing(story.Tags);
+            }
+        }
+    }
+
+    private static void AddTagIfMissing(ICollection<string> tags)
+    {
+        if (!tags.Any(t => string.Equals(t, AppConstants.AiGeneratedTag, StringComparison.OrdinalIgnoreCase)))
+            tags.Add(AppConstants.AiGeneratedTag);
     }
 
     private async Task CreateItems()

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Services;
+using DevOpsAssistant.Utils;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -60,6 +62,32 @@ public class RequirementsPlannerPageTests : ComponentTestBase
         Assert.NotNull(plan);
         var epics = (System.Collections.ICollection?)plan!.GetType().GetProperty("Epics")!.GetValue(plan);
         Assert.Equal(1, epics?.Count);
+    }
+
+    [Fact]
+    public void ImportPlan_Adds_AiGeneratedTag()
+    {
+        SetupServices(includeApi: true);
+        var cut = RenderWithProvider<TestPage>();
+        var responseField = typeof(RequirementsPlanner).GetField("_responseText", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var json = "{\"epics\":[{\"title\":\"E\",\"description\":\"D\",\"features\":[{\"title\":\"F\",\"description\":\"FD\",\"stories\":[{\"title\":\"S\",\"description\":\"SD\",\"acceptanceCriteria\":\"AC\"}]}]}]}";
+        responseField.SetValue(cut.Instance, json);
+        var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
+
+        var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var plan = planField.GetValue(cut.Instance)!;
+        var epicType = typeof(RequirementsPlanner).GetNestedType("Epic", BindingFlags.NonPublic)!;
+        var featureType = typeof(RequirementsPlanner).GetNestedType("Feature", BindingFlags.NonPublic)!;
+        var storyType = typeof(RequirementsPlanner).GetNestedType("Story", BindingFlags.NonPublic)!;
+
+        var epic = ((IEnumerable<object>)plan.GetType().GetProperty("Epics")!.GetValue(plan)!).Cast<object>().First();
+        var feature = ((IEnumerable<object>)epicType.GetProperty("Features")!.GetValue(epic)!).Cast<object>().First();
+        var story = ((IEnumerable<object>)featureType.GetProperty("Stories")!.GetValue(feature)!).Cast<object>().First();
+
+        Assert.Contains(AppConstants.AiGeneratedTag, ((IEnumerable<string>)epicType.GetProperty("Tags")!.GetValue(epic)!));
+        Assert.Contains(AppConstants.AiGeneratedTag, ((IEnumerable<string>)featureType.GetProperty("Tags")!.GetValue(feature)!));
+        Assert.Contains(AppConstants.AiGeneratedTag, ((IEnumerable<string>)storyType.GetProperty("Tags")!.GetValue(story)!));
     }
 
     [Fact]
