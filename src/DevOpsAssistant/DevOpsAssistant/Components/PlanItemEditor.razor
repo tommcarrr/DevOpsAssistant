@@ -19,11 +19,15 @@
     @if (Preview)
     {
         <MudText Typo="Typo.subtitle2">Description</MudText>
-        <div class="preview-box">@((MarkupString)Description)</div>
+        <MudPaper Class="preview-box mud-typography-body1" Elevation="0">
+            @((MarkupString)Description)
+        </MudPaper>
         @if (AcceptanceCriteria != null)
         {
             <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
-            <div class="preview-box">@((MarkupString)AcceptanceCriteria)</div>
+            <MudPaper Class="preview-box mud-typography-body1" Elevation="0">
+                @((MarkupString)AcceptanceCriteria)
+            </MudPaper>
         }
         <MudText Typo="Typo.subtitle2">Tags</MudText>
         <div>@string.Join(", ", Tags)</div>
