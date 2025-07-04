@@ -29,7 +29,7 @@
                                    FileChanged="@(f => _promptFile = f)"
                                    Text="@_promptText"
                                    TextChanged="@(t => _promptText = t)"
-                                   WikiItems="@_wikiItems"
+                                   WikiItems="@_promptWikiItems"
                                    SelectedPages="@_promptSelectedPages"
                                    SelectedPagesChanged="@(p => _promptSelectedPages = p)" />
         </MudStack>
@@ -182,6 +182,7 @@
     [Parameter] public string ProjectName { get; set; } = string.Empty;
     private MudStepper? _stepper;
     private List<TreeItemData<WikiPageNode>>? _wikiItems;
+    private List<TreeItemData<WikiPageNode>>? _promptWikiItems;
     private IReadOnlyCollection<WikiPageNode>? _selectedPages;
     private IBrowserFile? _file;
     private string _text = string.Empty;
@@ -246,7 +247,10 @@
                     _wikiId = wikis[0].Id;
                 var root = await ApiService.GetWikiPageTreeAsync(_wikiId);
                 if (root != null)
+                {
                     _wikiItems = [BuildTreeItem(root)];
+                    _promptWikiItems = [BuildTreeItem(root)];
+                }
             }
 
             _error = null;

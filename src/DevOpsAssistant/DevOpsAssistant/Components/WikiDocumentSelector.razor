@@ -18,7 +18,12 @@
 }
 else if (Source == DocumentSource.Text)
 {
-    <MudTextField T="string" @bind-Value="Text" Lines="4" Placeholder="@L["TextPlaceholder"]" Immediate="true" />
+    <MudTextField T="string"
+                  Value="@Text"
+                  ValueChanged="OnTextChanged"
+                  Lines="4"
+                  Placeholder="@L["TextPlaceholder"]"
+                  Immediate="true" />
 }
 else if (WikiItems != null)
 {
@@ -55,6 +60,12 @@ else if (WikiItems != null)
     {
         Source = source;
         return SourceChanged.InvokeAsync(Source);
+    }
+
+    private Task OnTextChanged(string? value)
+    {
+        Text = value;
+        return TextChanged.InvokeAsync(Text);
     }
 
     private Task OnSelectedPagesChanged(IReadOnlyCollection<WikiPageNode> pages)
