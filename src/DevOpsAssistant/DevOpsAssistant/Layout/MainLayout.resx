@@ -22,7 +22,7 @@
     <value>Work Item Validation</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>Bulk Tag</value>
+    <value>Work Item Bulk Tag</value>
   </data>
   <data name="WorkItemViewer" xml:space="preserve">
     <value>Work Item Viewer</value>

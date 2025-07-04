@@ -28,7 +28,7 @@
     <value>Notas de lanzamiento — genere un resumen para las historias completadas</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>Etiquetado masivo — agrega etiquetas a varias historias</value>
+    <value>Etiquetado masivo de elementos — agrega etiquetas a varios items</value>
   </data>
   <data name="Quality" xml:space="preserve">
     <value>Calidad de la historia — revise las historias para el cumplimiento de INVEST</value>

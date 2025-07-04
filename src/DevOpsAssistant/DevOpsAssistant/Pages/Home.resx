@@ -28,7 +28,7 @@
     <value>Release Notes — generate a summary prompt for completed stories</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>Bulk Tag — apply existing tags to multiple stories</value>
+    <value>Work Item Bulk Tag — apply existing tags to multiple items</value>
   </data>
   <data name="Quality" xml:space="preserve">
     <value>Story Quality — review stories for INVEST compliance</value>
