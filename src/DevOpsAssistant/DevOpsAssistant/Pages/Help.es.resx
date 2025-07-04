@@ -28,7 +28,7 @@
     <value>&lt;p&gt;Genere un prompt detallado para revisar y calificar historias con INVEST y brindar coaching usando su Definición de Ready.&lt;/p&gt;&lt;p&gt;Los prompts largos se dividen en partes y puede cambiar entre ellas con las flechas.&lt;/p&gt;</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
-    <value>&lt;p&gt;Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.&lt;/p&gt;&lt;p&gt;Utilice HTML en las descripciones y criterios cuando ayude al formato. Active Vista previa HTML tras importar para verificar el marcado.&lt;/p&gt;</value>
+    <value>&lt;p&gt;Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.&lt;/p&gt;&lt;p&gt;Utilice HTML en las descripciones y criterios cuando ayude al formato. El texto importado se muestra automáticamente para que pueda verificar el marcado.&lt;/p&gt;</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>&lt;p&gt;Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento.&lt;/p&gt;&lt;p&gt;Puede copiar o descargar los prompts, que se dividen en partes navegables con flechas.&lt;/p&gt;</value>

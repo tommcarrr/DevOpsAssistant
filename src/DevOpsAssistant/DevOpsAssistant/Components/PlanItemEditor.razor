@@ -16,33 +16,89 @@
             </MudTooltip>
         }
     </MudStack>
-    @if (Preview)
-    {
-        <MudText Typo="Typo.subtitle2">Description</MudText>
-        <MudPaper Class="preview-box mud-typography-body1" Elevation="0">
-            @((MarkupString)Description)
-        </MudPaper>
-        @if (AcceptanceCriteria != null)
+    <MudStack Spacing="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+            <MudText Typo="Typo.subtitle2">Title</MudText>
+            @if (!_editTitle)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="BeginEditTitle" />
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="ConfirmTitle" />
+            }
+        </MudStack>
+        @if (_editTitle)
         {
-            <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
+            <MudTextField @bind-Value="_titleEdit" Label="Title" />
+        }
+        else
+        {
+            <div>@Title</div>
+        }
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+            <MudText Typo="Typo.subtitle2">Description</MudText>
+            @if (!_editDescription)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="BeginEditDescription" />
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="ConfirmDescription" />
+            }
+        </MudStack>
+        @if (_editDescription)
+        {
+            <MudTextField @bind-Value="_descriptionEdit" Label="Description" Lines="3" />
+        }
+        else
+        {
             <MudPaper Class="preview-box mud-typography-body1" Elevation="0">
-                @((MarkupString)AcceptanceCriteria)
+                @((MarkupString)Description)
             </MudPaper>
         }
-        <MudText Typo="Typo.subtitle2">Tags</MudText>
-        <div>@string.Join(", ", Tags)</div>
-    }
-    else
-    {
-        <MudTextField @bind-Value="Title" Label="Title" />
-        <MudTextField @bind-Value="Description" Label="Description" Lines="3" />
+
         @if (AcceptanceCriteria != null)
         {
-            <MudTextField @bind-Value="AcceptanceCriteria" Label="Acceptance Criteria" Lines="3" />
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                <MudText Typo="Typo.subtitle2">Acceptance Criteria</MudText>
+                @if (!_editCriteria)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="BeginEditCriteria" />
+                }
+                else
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="ConfirmCriteria" />
+                }
+            </MudStack>
+            @if (_editCriteria)
+            {
+                <MudTextField @bind-Value="_criteriaEdit" Label="Acceptance Criteria" Lines="3" />
+            }
+            else
+            {
+                <MudPaper Class="preview-box mud-typography-body1" Elevation="0">
+                    @((MarkupString)AcceptanceCriteria)
+                </MudPaper>
+            }
         }
-        <MudStack Spacing="1">
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+            <MudText Typo="Typo.subtitle2">Tags</MudText>
+            @if (!_editTags)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="BeginEditTags" />
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="ConfirmTags" />
+            }
+        </MudStack>
+        @if (_editTags)
+        {
             <MudChipSet T="string">
-                @foreach (var t in Tags)
+                @foreach (var t in _tagsEdit)
                 {
                     if (IsProtected(t))
                     {
@@ -58,8 +114,12 @@
                 <MudTextField T="string" @bind-Value="_newTag" Label="Tag" />
                 <MudButton Variant="Variant.Text" OnClick="AddTag" Disabled="string.IsNullOrWhiteSpace(_newTag)">Add</MudButton>
             </MudStack>
-        </MudStack>
-    }
+        }
+        else
+        {
+            <div>@string.Join(", ", Tags)</div>
+        }
+    </MudStack>
 
     @if (ChildContent != null)
     {
@@ -69,7 +129,6 @@
 
 @code {
     [Parameter] public string Type { get; set; } = string.Empty;
-    [Parameter] public bool Preview { get; set; }
     [Parameter] public bool Draggable { get; set; }
     [Parameter] public bool Droppable { get; set; }
     [Parameter] public EventCallback DragStart { get; set; }
@@ -87,6 +146,14 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private string _newTag = string.Empty;
+    private bool _editTitle;
+    private bool _editDescription;
+    private bool _editCriteria;
+    private bool _editTags;
+    private string _titleEdit = string.Empty;
+    private string _descriptionEdit = string.Empty;
+    private string? _criteriaEdit;
+    private List<string> _tagsEdit = new();
 
     private Typo HeaderTypo => Type switch
     {
@@ -99,9 +166,8 @@
     {
         if (!string.IsNullOrWhiteSpace(_newTag))
         {
-            Tags.Add(_newTag.Trim());
+            _tagsEdit.Add(_newTag.Trim());
             _newTag = string.Empty;
-            TagsChanged.InvokeAsync(Tags);
         }
     }
 
@@ -111,8 +177,7 @@
     {
         if (IsProtected(tag))
             return;
-        Tags.Remove(tag);
-        TagsChanged.InvokeAsync(Tags);
+        _tagsEdit.Remove(tag);
     }
 
     private Task OnDropInternal()
@@ -120,5 +185,57 @@
         if (Droppable && Drop.HasDelegate)
             return Drop.InvokeAsync();
         return Task.CompletedTask;
+    }
+
+    private void BeginEditTitle()
+    {
+        _titleEdit = Title;
+        _editTitle = true;
+    }
+
+    private async Task ConfirmTitle()
+    {
+        _editTitle = false;
+        Title = _titleEdit;
+        await TitleChanged.InvokeAsync(Title);
+    }
+
+    private void BeginEditDescription()
+    {
+        _descriptionEdit = Description;
+        _editDescription = true;
+    }
+
+    private async Task ConfirmDescription()
+    {
+        _editDescription = false;
+        Description = _descriptionEdit;
+        await DescriptionChanged.InvokeAsync(Description);
+    }
+
+    private void BeginEditCriteria()
+    {
+        _criteriaEdit = AcceptanceCriteria;
+        _editCriteria = true;
+    }
+
+    private async Task ConfirmCriteria()
+    {
+        _editCriteria = false;
+        AcceptanceCriteria = _criteriaEdit;
+        await AcceptanceCriteriaChanged.InvokeAsync(AcceptanceCriteria);
+    }
+
+    private void BeginEditTags()
+    {
+        _tagsEdit = Tags.ToList();
+        _editTags = true;
+    }
+
+    private async Task ConfirmTags()
+    {
+        _editTags = false;
+        Tags = _tagsEdit;
+        await TagsChanged.InvokeAsync(Tags);
     }
 }
