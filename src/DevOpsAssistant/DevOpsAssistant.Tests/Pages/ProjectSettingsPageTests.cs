@@ -15,7 +15,7 @@ public class ProjectSettingsPageTests : ComponentTestBase
     {
         var config = SetupServices();
         await config.AddProjectAsync("Demo");
-        await config.SaveCurrentAsync("Demo", new DevOpsConfig());
+        await config.SaveCurrentAsync("Demo", new DevOpsConfig(), "");
 
         var cut = RenderComponent<ProjectSettings>(p => p.Add(c => c.ProjectName, "Demo"));
         var selectedField = cut.Instance.GetType().GetField("_selectedStandards", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;

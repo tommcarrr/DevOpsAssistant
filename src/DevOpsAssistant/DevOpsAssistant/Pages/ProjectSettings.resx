@@ -141,6 +141,9 @@
   <data name="PromptsCopied" xml:space="preserve">
     <value>Prompts copied to clipboard</value>
   </data>
+  <data name="ProjectColor" xml:space="preserve">
+    <value>Project Color</value>
+  </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Project Settings</value>
   </data>

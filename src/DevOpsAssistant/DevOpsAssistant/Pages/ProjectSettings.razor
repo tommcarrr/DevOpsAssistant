@@ -49,6 +49,7 @@
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
+                    <MudTextField T="string" Value="_color" ValueChanged="OnColorChanged" InputType="InputType.Color" Label='@L["ProjectColor"]' />
                     <MudStack Row="true" Spacing="1">
                         <MudButton OnClick="SaveGeneral" Variant="Variant.Filled" Color="Color.Primary" Disabled="!CanSave">@L["Save"]</MudButton>
                         <MudButton OnClick="Delete" Variant="Variant.Filled" Color="Color.Error">@L["DeleteProject"]</MudButton>
@@ -195,6 +196,7 @@
     private bool _overridePat;
     private bool _useOrgAsGlobal;
     private bool _useAsGlobal;
+    private string _color = string.Empty;
     private bool _qualityDirty;
     private bool _promptsDirty;
     private bool _validationDirty;
@@ -252,6 +254,7 @@
                 }
             }
         };
+        _color = ConfigService.CurrentProject.Color;
         _overrideOrg = !string.IsNullOrWhiteSpace(_model.Organization) || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization);
         _overridePat = !string.IsNullOrWhiteSpace(_model.PatToken) || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
         _useOrgAsGlobal = string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization);
@@ -284,7 +287,7 @@
             Standards = _model.Standards,
             Rules = _model.Rules
         };
-        var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave);
+        var saved = await ConfigService.SaveCurrentAsync(_model.Project, toSave, _color);
         if (!saved)
         {
             _errors = [ L["DuplicateName"] ];
@@ -302,7 +305,7 @@
     {
         var cfg = ConfigService.Config;
         cfg.DefinitionOfReady = _model.DefinitionOfReady;
-        await ConfigService.SaveCurrentAsync(_model.Project, cfg);
+        await ConfigService.SaveCurrentAsync(_model.Project, cfg, _color);
         _qualityDirty = false;
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["StoryQualityTab"].Value, _model.Project), Severity.Success);
     }
@@ -319,7 +322,7 @@
         cfg.PromptCharacterLimit = _model.PromptCharacterLimit;
         cfg.OutputFormat = _model.OutputFormat;
         cfg.Standards = _model.Standards;
-        await ConfigService.SaveCurrentAsync(_model.Project, cfg);
+        await ConfigService.SaveCurrentAsync(_model.Project, cfg, _color);
         _promptsDirty = false;
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, _model.Project), Severity.Success);
     }
@@ -328,7 +331,7 @@
     {
         var vcfg = ConfigService.Config;
         vcfg.Rules = _model.Rules;
-        await ConfigService.SaveCurrentAsync(_model.Project, vcfg);
+        await ConfigService.SaveCurrentAsync(_model.Project, vcfg, _color);
         _validationDirty = false;
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, _model.Project), Severity.Success);
     }
@@ -352,7 +355,7 @@
                 pcfg.PromptCharacterLimit = _model.PromptCharacterLimit;
                 pcfg.OutputFormat = _model.OutputFormat;
                 pcfg.Standards = _model.Standards;
-                await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg);
+                await ConfigService.UpdateProjectAsync(p.Name, p.Name, pcfg, p.Color);
             }
             Snackbar.Add(string.Format(L["SectionSaved"].Value, L["PromptsTab"].Value, L["AllProjects"].Value), Severity.Success);
         }
@@ -394,7 +397,7 @@
             {
                 var vc = p.Config;
                 vc.Rules = _model.Rules;
-                await ConfigService.UpdateProjectAsync(p.Name, p.Name, vc);
+                await ConfigService.UpdateProjectAsync(p.Name, p.Name, vc, p.Color);
             }
             Snackbar.Add(string.Format(L["SectionSaved"].Value, L["ValidationTab"].Value, L["AllProjects"].Value), Severity.Success);
         }
@@ -464,6 +467,13 @@
     private Task OnUseAsGlobalChanged(bool value)
     {
         _useAsGlobal = value;
+        _generalDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnColorChanged(string value)
+    {
+        _color = value;
         _generalDirty = true;
         return Task.CompletedTask;
     }

@@ -141,6 +141,9 @@
   <data name="PromptsCopied" xml:space="preserve">
     <value>Prompts copiados al portapapeles</value>
   </data>
+  <data name="ProjectColor" xml:space="preserve">
+    <value>Color del proyecto</value>
+  </data>
   <data name="ProjectSettings" xml:space="preserve">
     <value>Configuración del proyecto</value>
   </data>
