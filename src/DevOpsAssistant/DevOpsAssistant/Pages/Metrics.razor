@@ -720,6 +720,32 @@ else if (_periods.Any())
         return sb.ToString();
     }
 
+    private static string BuildPromptData(IEnumerable<PeriodMetrics> periods)
+    {
+        var list = periods.ToList();
+        var metrics = list.Select(p => new
+        {
+            end = p.End.ToString("yyyy-MM-dd"),
+            leadTime = p.AvgLeadTime,
+            cycleTime = p.AvgCycleTime,
+            throughput = p.Throughput,
+            velocity = p.Velocity,
+            avgWip = p.AvgWip,
+            sprintEfficiency = p.SprintEfficiency
+        });
+        var summary = new
+        {
+            avgLeadTime = list.Any() ? list.Average(p => (decimal)p.AvgLeadTime) : 0,
+            avgCycleTime = list.Any() ? list.Average(p => (decimal)p.AvgCycleTime) : 0,
+            avgThroughput = list.Any() ? list.Average(p => p.Throughput) : 0,
+            avgVelocity = list.Any() ? list.Average(p => (decimal)p.Velocity) : 0,
+            avgWip = list.Any() ? list.Average(p => (decimal)p.AvgWip) : 0,
+            avgSprintEfficiency = list.Any() ? list.Average(p => (decimal)p.SprintEfficiency) : 0
+        };
+        var payload = new { metrics, summary };
+        return JsonSerializer.Serialize(payload);
+    }
+
     private void ToggleBurnChartControls()
     {
         _showBurnChartControls = !_showBurnChartControls;
@@ -736,7 +762,8 @@ else if (_periods.Any())
     private async Task CopyPrompt()
     {
         if (_periods.Count == 0) return;
-        var prompt = PromptService.BuildMetricsPrompt(_periods, ConfigService.Config.OutputFormat);
+        var json = BuildPromptData(_periods);
+        var prompt = PromptService.BuildMetricsPrompt(json, ConfigService.Config.OutputFormat);
         await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
     }
