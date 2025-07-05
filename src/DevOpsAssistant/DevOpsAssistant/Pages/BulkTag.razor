@@ -6,7 +6,7 @@
 @inject IStringLocalizer<BulkTag> L
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Work Item Bulk Tag</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
@@ -38,8 +38,8 @@
 {
     <MudTable Items="_selectedItems" Dense="true">
         <HeaderContent>
-            <MudTh>ID</MudTh>
-            <MudTh>Title</MudTh>
+            <MudTh>@L["IdHeader"]</MudTh>
+            <MudTh>@L["TitleHeader"]</MudTh>
             <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate>

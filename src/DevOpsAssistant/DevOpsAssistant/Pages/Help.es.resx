@@ -15,6 +15,9 @@
   <data name="Heading" xml:space="preserve">
     <value>Ayuda e instrucciones</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Ayuda</value>
+  </data>
   <data name="Intro" xml:space="preserve">
     <value>&lt;p&gt;Bienvenido a DevOpsAssistant. Esta página explica brevemente cómo funciona cada sección.&lt;/p&gt;&lt;p&gt;Utilice estas herramientas para revisar su backlog y generar métricas que mejoren la planificación.&lt;/p&gt;</value>
   </data>
@@ -35,6 +38,36 @@
   </data>
   <data name="BulkTag" xml:space="preserve">
     <value>&lt;p&gt;Elija varios elementos, seleccione una o más etiquetas y aplíquelas de una vez.&lt;/p&gt;</value>
+  </data>
+  <data name="EpicsHeading" xml:space="preserve">
+    <value>Épicas y características</value>
+  </data>
+  <data name="ValidationHeading" xml:space="preserve">
+    <value>Validación de historias</value>
+  </data>
+  <data name="QualityHeading" xml:space="preserve">
+    <value>Calidad de la historia</value>
+  </data>
+  <data name="RequirementsPlannerHeading" xml:space="preserve">
+    <value>Planificador de requisitos</value>
+  </data>
+  <data name="ReleaseNotesHeading" xml:space="preserve">
+    <value>Notas de lanzamiento</value>
+  </data>
+  <data name="BulkTagHeading" xml:space="preserve">
+    <value>Etiquetado masivo de elementos</value>
+  </data>
+  <data name="MetricsHeading" xml:space="preserve">
+    <value>Métricas</value>
+  </data>
+  <data name="BranchHealthHeading" xml:space="preserve">
+    <value>Salud de ramas</value>
+  </data>
+  <data name="SettingsHeading" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="GuideLinkText" xml:space="preserve">
+    <value>esta guía</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>&lt;p&gt;Muestre gráficas de rendimiento, tiempo de entrega, tiempo de ciclo, velocidad, burn up y flujo para el backlog elegido.&lt;/p&gt;&lt;p&gt;El rendimiento cuenta los elementos cerrados en cada periodo. El tiempo de entrega es la diferencia entre la Fecha de creación y la Fecha de cierre. El tiempo de ciclo se calcula desde la Fecha de activación hasta el cierre. La velocidad suma los Puntos de Historia o la Estimación Original de las historias completadas. La gráfica burn up proyecta la finalización usando los puntos adicionales, la eficiencia y el rango de error, mientras que el flujo acumulado muestra backlog, trabajo en progreso y tareas terminadas día a día.&lt;/p&gt;&lt;p&gt;Utilice las gráficas para detectar tendencias y planificar iteraciones futuras.&lt;/p&gt;</value>
