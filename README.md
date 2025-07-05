@@ -20,9 +20,12 @@ update it without rebuilding.
 
 ### Using the `dotnet` CLI
 
-If you prefer to run the site without Docker you can use the .NET SDK. A helper script `dotnet-install.sh` is provided for installing the SDK on Linux. Run it and add the installed tools to your `PATH` with:
+If you prefer to run the site without Docker you can use the .NET SDK. Download Microsoft's
+official installation script and add the installed tools to your `PATH` with:
 
 ```bash
+curl -L https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+chmod +x dotnet-install.sh
 ./dotnet-install.sh --channel 8.0
 export DOTNET_ROOT="$HOME/.dotnet"
 export PATH="$HOME/.dotnet:$PATH"
