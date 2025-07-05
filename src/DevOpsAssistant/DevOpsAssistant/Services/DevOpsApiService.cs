@@ -577,26 +577,61 @@ public class DevOpsApiService
         var idsToFetch = new HashSet<int>(rootIds);
         var fetched = new HashSet<int>();
         var items = new Dictionary<int, WorkItem>();
+        var lockObj = new object();
+        var tasks = new List<Task>();
+        using var sem = new SemaphoreSlim(4);
+
+        async Task ProcessBatch(int[] batch)
+        {
+            try
+            {
+                var idList = string.Join(',', batch);
+                var result = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
+                if (result?.Value == null) return;
+                lock (lockObj)
+                {
+                    foreach (var w in result.Value)
+                    {
+                        if (items.TryAdd(w.Id, w) && w.Relations != null)
+                        {
+                            foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Forward"))
+                                if (int.TryParse(rel.Url.Split('/').Last(), out var childId))
+                                    idsToFetch.Add(childId);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                sem.Release();
+            }
+        }
 
         while (true)
         {
-            var batch = idsToFetch.Except(fetched).Take(200).ToArray();
+            int[] batch;
+            lock (lockObj)
+            {
+                batch = idsToFetch.Except(fetched).Take(200).ToArray();
+                fetched.UnionWith(batch);
+            }
+
             if (batch.Length == 0)
-                break;
-            fetched.UnionWith(batch);
-            var idList = string.Join(',', batch);
-            var result = await GetJsonAsync<WorkItemsResult>($"{baseUri}/workitems?ids={idList}&$expand=relations&api-version={ApiVersion}");
-            if (result?.Value == null) continue;
-            foreach (var w in result.Value)
-                if (items.TryAdd(w.Id, w))
-                {
-                    if (w.Relations == null) continue;
-                    foreach (var rel in w.Relations.Where(r => r.Rel == "System.LinkTypes.Hierarchy-Forward"))
-                        if (int.TryParse(rel.Url.Split('/').Last(), out var childId))
-                            idsToFetch.Add(childId);
-                }
+            {
+                if (tasks.Count == 0)
+                    break;
+                var completed = await Task.WhenAny(tasks);
+                tasks.Remove(completed);
+                await completed;
+                continue;
+            }
+
+            await sem.WaitAsync();
+            var t = ProcessBatch(batch);
+            tasks.Add(t);
         }
 
+        await Task.WhenAll(tasks);
         return items;
     }
 

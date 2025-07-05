@@ -994,6 +994,62 @@ public class DevOpsApiServiceTests
         Assert.Equal(11, result[0].Id);
     }
 
+    [Fact]
+    public async Task GetWorkItemHierarchyAsync_Concurrent_Fetch_Builds_Hierarchy()
+    {
+        const int count = 300;
+        var wiqlJson = "{\"workItems\":[" + string.Join(',', Enumerable.Range(1, count).Select(i => $"{{\"id\":{i}}}")) + "]}";
+
+        string BuildItemsJson(IEnumerable<int> ids)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append("{\"value\":[");
+            bool first = true;
+            foreach (var id in ids)
+            {
+                if (!first) sb.Append(',');
+                first = false;
+                var type = id <= count ? "Epic" : "User Story";
+                sb.Append($"{{\"id\":{id},\"fields\":{{\"System.Title\":\"Item {id}\",\"System.State\":\"New\",\"System.WorkItemType\":\"{type}\"}}");
+                if (id <= count)
+                    sb.Append($",\"relations\":[{{\"rel\":\"System.LinkTypes.Hierarchy-Forward\",\"url\":\"https://dev.azure.com/Org/Proj/_apis/wit/workItems/{id + 1000}\"}}]");
+                sb.Append('}');
+            }
+            sb.Append("]}");
+            return sb.ToString();
+        }
+
+        var handler = new ConcurrencyTrackingHandler(async req =>
+        {
+            await Task.Delay(10);
+            var url = req.RequestUri!.ToString();
+            if (url.Contains("/wiql"))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(wiqlJson) };
+
+            var match = System.Text.RegularExpressions.Regex.Match(url, @"ids=([^&]+)");
+            var idsCsv = match.Groups[1].Value;
+            var ids = idsCsv.Split(',').Select(int.Parse);
+            var json = BuildItemsJson(ids);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var roots = await service.GetWorkItemHierarchyAsync("Area");
+
+        Assert.Equal(count, roots.Count);
+        foreach (var root in roots)
+        {
+            Assert.Single(root.Children);
+            Assert.Equal(root.Info.Id + 1000, root.Children[0].Info.Id);
+        }
+        Assert.True(handler.MaxConcurrency <= 4);
+        Assert.True(handler.MaxConcurrency > 1);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.BadRequest, "Invalid request")]
     [InlineData(HttpStatusCode.TooManyRequests, "Rate limit exceeded")]
