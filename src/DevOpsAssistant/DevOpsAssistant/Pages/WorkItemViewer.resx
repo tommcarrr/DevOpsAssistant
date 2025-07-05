@@ -30,4 +30,10 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Work Item Viewer</value>
+  </data>
+  <data name="SelectItemPrompt" xml:space="preserve">
+    <value>Select an item to view details.</value>
+  </data>
 </root>

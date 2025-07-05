@@ -7,7 +7,7 @@
 @inject IStringLocalizer<WorkItemViewer> L
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Work Item Viewer</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
@@ -55,7 +55,7 @@
             }
             else
             {
-                <MudText>Select an item to view details.</MudText>
+                <MudText>@L["SelectItemPrompt"]</MudText>
             }
         </MudPaper>
     </MudItem>
