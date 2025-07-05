@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -38,15 +39,34 @@ public class PromptGenerator : IIncrementalGenerator
         });
     }
 
-    private static ImmutableArray<(string Name, string Content)> ParseFile(string path, string text)
+    internal static ImmutableArray<(string Name, string Content)> ParseFile(string path, string text)
     {
         var fileName = Path.GetFileNameWithoutExtension(path);
         var sections = new List<(string Name, StringBuilder Builder)>();
         StringBuilder? current = null;
         string? currentName = null;
+        bool inBlockComment = false;
 
         foreach (var line in text.Replace("\r", "").Split('\n'))
         {
+            var trimmed = line.Trim();
+            if (inBlockComment)
+            {
+                if (trimmed.EndsWith("*/"))
+                    inBlockComment = false;
+                continue;
+            }
+
+            if (trimmed.StartsWith("/*"))
+            {
+                if (!trimmed.EndsWith("*/"))
+                    inBlockComment = true;
+                continue;
+            }
+
+            if (trimmed.StartsWith("//"))
+                continue;
+
             if (line.StartsWith("====") && line.EndsWith("===="))
             {
                 if (currentName is not null && current is not null)

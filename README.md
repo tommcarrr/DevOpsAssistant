@@ -87,6 +87,18 @@ The UI tests use Playwright to exercise the deployed staging site. Set
 `STAGING_URL` to the site's base URL when running the tests locally so they know
 where to connect.
 
+## Prompt files
+
+- All prompt text lives in the `Prompts` folder and is transformed into C# classes
+by a source generator. A file may define multiple sections using lines of the
+form `==== Name ====`. You can include comments that the generator will ignore:
+
+- Lines starting with `//` are treated as single line comments.
+- Text surrounded by `/*` and `*/` is ignored as a multiline comment.
+
+These comments are stripped from the generated classes so you can document each
+prompt without affecting runtime behavior.
+
 ## Accessibility
 
 DevOpsAssistant uses MudBlazor components which emit semantic HTML and ARIA

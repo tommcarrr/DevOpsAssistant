@@ -8,4 +8,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.10.0" PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DevOpsAssistant.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
