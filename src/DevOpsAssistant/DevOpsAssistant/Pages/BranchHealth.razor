@@ -8,7 +8,7 @@
 @inject IStringLocalizer<BranchHealth> L
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Branch Health</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
@@ -42,17 +42,17 @@ else if (_branches != null)
 {
     <MudTable Items="_branches" Dense="true" Hover="true" SortLabel="@L["SortBy"]">
         <HeaderContent>
-            <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Name)">Branch</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.CommitDate)" InitialDirection="SortDirection.Ascending">Last Commit</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Name)">@L["Branch"]</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.CommitDate)" InitialDirection="SortDirection.Ascending">@L["LastCommit"]</MudTableSortLabel></MudTh>
             @if (ShowAheadBehind)
             {
-                <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Ahead)">Ahead</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Behind)">Behind</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Ahead)">@L["Ahead"]</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="@((BranchInfo b) => b.Behind)">@L["Behind"]</MudTableSortLabel></MudTh>
             }
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="@L["Branch"]">@context.Name</MudTd>
-            <MudTd DataLabel="@L["Date"]">
+            <MudTd DataLabel="@L["LastCommit"]">
                 @context.CommitDate.ToLocalDateString()
                 @if (IsStale(context))
                 {

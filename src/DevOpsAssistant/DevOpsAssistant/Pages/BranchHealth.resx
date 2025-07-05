@@ -30,11 +30,14 @@
   <data name="SortBy" xml:space="preserve">
     <value>Sort by</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Branch Health</value>
+  </data>
+  <data name="LastCommit" xml:space="preserve">
+    <value>Last Commit</value>
+  </data>
   <data name="Branch" xml:space="preserve">
     <value>Branch</value>
-  </data>
-  <data name="Date" xml:space="preserve">
-    <value>Date</value>
   </data>
   <data name="Ahead" xml:space="preserve">
     <value>Ahead</value>

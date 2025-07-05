@@ -30,11 +30,14 @@
   <data name="SortBy" xml:space="preserve">
     <value>Ordenar por</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Salud de Ramas</value>
+  </data>
+  <data name="LastCommit" xml:space="preserve">
+    <value>Último commit</value>
+  </data>
   <data name="Branch" xml:space="preserve">
     <value>Rama</value>
-  </data>
-  <data name="Date" xml:space="preserve">
-    <value>Fecha</value>
   </data>
   <data name="Ahead" xml:space="preserve">
     <value>Adelante</value>
