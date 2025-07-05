@@ -117,4 +117,28 @@
   <data name="ProjectSettings" xml:space="preserve">
     <value>Configuración del proyecto</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Nuevo Proyecto</value>
+  </data>
+  <data name="HelpPrefix" xml:space="preserve">
+    <value>Para ayuda con estos valores visite la</value>
+  </data>
+  <data name="HelpLink" xml:space="preserve">
+    <value>página de ayuda</value>
+  </data>
+  <data name="UseAsGlobalOrganization" xml:space="preserve">
+    <value>Usar como organización global</value>
+  </data>
+  <data name="OverrideGlobalOrganization" xml:space="preserve">
+    <value>Reemplazar organización global</value>
+  </data>
+  <data name="UseAsGlobalToken" xml:space="preserve">
+    <value>Usar como token global</value>
+  </data>
+  <data name="OverrideGlobalToken" xml:space="preserve">
+    <value>Reemplazar token global</value>
+  </data>
+  <data name="PatTokenHelper" xml:space="preserve">
+    <value>Déjelo en blanco para usar el token global</value>
+  </data>
 </root>

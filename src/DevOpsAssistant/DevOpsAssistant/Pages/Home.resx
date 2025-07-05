@@ -42,4 +42,7 @@
   <data name="NewProject" xml:space="preserve">
     <value>New Project</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Home</value>
+  </data>
 </root>

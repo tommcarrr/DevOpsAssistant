@@ -10,13 +10,13 @@
 @inject IStringLocalizer<GlobalOptionsDialog> TL
 @inject IStringLocalizer<Help> HL
 
-<PageTitle>DevOpsAssistant - New Project</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 <MudPaper Class="p-4">
     <MudStack Spacing="2">
         <MudText Typo="Typo.h5">@L["NewProject"]</MudText>
         <MudText Typo="Typo.body2">
-            For help finding these values see the <MudLink Class="cursor-pointer" OnClick="OpenHelpDialog">help page</MudLink>.
+            @L["HelpPrefix"] <MudLink Class="cursor-pointer" OnClick="OpenHelpDialog">@L["HelpLink"]</MudLink>.
         </MudText>
         @if (ConfigService.Projects.Any())
         {
@@ -36,11 +36,11 @@
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
             {
                 <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" autocomplete="off" />
-                <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" Color="Color.Primary" />
+                <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label='@L["UseAsGlobalOrganization"]' Color="Color.Primary" />
             }
             else
             {
-                <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" Color="Color.Primary" />
+                <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label='@L["OverrideGlobalOrganization"]' Color="Color.Primary" />
                 @if (_overrideOrg)
                 {
                     <MudTextField T="string" Value="_organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" />
@@ -48,12 +48,12 @@
             }
             @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
             {
-                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" autocomplete="off" />
-                <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" Color="Color.Primary" />
+                <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" HelperText='@L["PatTokenHelper"]' Immediate="true" autocomplete="off" />
+                <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label='@L["UseAsGlobalToken"]' Color="Color.Primary" />
             }
             else
             {
-                <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" Color="Color.Primary" />
+                <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label='@L["OverrideGlobalToken"]' Color="Color.Primary" />
                 @if (_overridePat)
                 {
                     <MudTextField T="string" Value="_patToken" ValueChanged="OnPatChanged" Label="@TL["PatToken"]" InputType="InputType.Password" Immediate="true" autocomplete="off" />
