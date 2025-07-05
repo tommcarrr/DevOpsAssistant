@@ -27,4 +27,40 @@
   <data name="QueryLabel" xml:space="preserve">
     <value>Query</value>
   </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Work Item Selection</value>
+  </data>
+  <data name="BacklogTab" xml:space="preserve">
+    <value>Backlog</value>
+  </data>
+  <data name="SearchTab" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="TreeTab" xml:space="preserve">
+    <value>Tree</value>
+  </data>
+  <data name="BacklogLabel" xml:space="preserve">
+    <value>Backlog</value>
+  </data>
+  <data name="IterationLabel" xml:space="preserve">
+    <value>Iteration</value>
+  </data>
+  <data name="StatesLabel" xml:space="preserve">
+    <value>States</value>
+  </data>
+  <data name="TypesLabel" xml:space="preserve">
+    <value>Types</value>
+  </data>
+  <data name="SearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="IdHeader" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="TitleHeader" xml:space="preserve">
+    <value>Title</value>
+  </data>
 </root>

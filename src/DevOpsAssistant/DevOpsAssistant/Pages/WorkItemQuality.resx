@@ -33,4 +33,7 @@
   <data name="PartFormat" xml:space="preserve">
     <value>Part {0}/{1}</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Work Item Quality</value>
+  </data>
 </root>
