@@ -18,6 +18,9 @@
   <data name="PageHeading" xml:space="preserve">
     <value>Metrics</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Metrics</value>
+  </data>
   <data name="OptionsHeading" xml:space="preserve">
     <value>Options</value>
   </data>

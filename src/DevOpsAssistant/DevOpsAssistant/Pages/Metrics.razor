@@ -18,14 +18,14 @@
 @inject ISnackbar Snackbar
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Metrics</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 <MudText Typo="Typo.h4">@L["PageHeading"]</MudText>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
-}
+/*end*/}
 
 <MudPaper>
     <MudStack Spacing="2">
@@ -35,7 +35,7 @@
                 @foreach (var b in _backlogs)
                 {
                     <MudSelectItem Value="@b">@b</MudSelectItem>
-                }
+                /*end*/}
             </MudSelect>
             <MudDatePicker @bind-Date="_startDate" Label="@L["StartDate"]"/>
             <MudDatePicker @bind-Date="_endDate" Label="@L["EndDate"]" MaxDate="@DateTime.Today"/>
@@ -71,9 +71,9 @@
                 @foreach (var t in _ignoredTags)
                 {
                     <MudChip Value="@t" OnClose="(MudChip<string> _) => RemoveIgnoreTag(t)">@t</MudChip>
-                }
+                /*end*/}
             </MudChipSet>
-        }
+        /*end*/}
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudButton Variant="Variant.Filled" Color="Mud.Color.Primary" OnClick="Load">@L["Load"]</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">@L["ExportCsv"]</MudButton>
@@ -84,7 +84,7 @@
 @if (_loading)
 {
     <MudProgressCircular Color="Mud.Color.Primary" Indeterminate="true"/>
-}
+/*end*/}
 else if (_periods.Any())
 {
     <MudText Typo="Typo.h6" Class="mt-4">@L["TableHeading"]</MudText>
@@ -204,7 +204,7 @@ else if (_periods.Any())
                                     </RowTemplate>
                                 </MudTable>
                             </MudStack>
-                            }
+                            /*end*/}
                         </MudItem>
                     </MudGrid>
                 </MudCollapse>
@@ -228,7 +228,7 @@ else if (_periods.Any())
                OnClick="CopyPrompt">
         @L["GeneratePrompt"]
     </MudButton>
-}
+/*end*/}
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
@@ -293,7 +293,7 @@ else if (_periods.Any())
             ConfigService.CurrentProject.Name != ProjectName)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
-        }
+        /*end*/}
 
         try
         {
@@ -322,15 +322,15 @@ else if (_periods.Any())
                 if (state.IgnoredTags != null)
                     foreach (var t in state.IgnoredTags)
                         _ignoredTags.Add(t);
-            }
+            /*end*/}
 
             _error = null;
-        }
+        /*end*/}
         catch (Exception ex)
         {
             _error = ex.Message;
-        }
-    }
+        /*end*/}
+    /*end*/}
 
     private async Task Load()
     {
@@ -363,18 +363,18 @@ else if (_periods.Any())
                 TagMarksSprint = _tagMarksSprint,
                 UseSprintEfficiency = _useSprintEfficiency,
                 IgnoredTags = _ignoredTags.ToList()
-            });
+            /*end*/});
             _error = null;
-        }
+        /*end*/}
         catch (Exception ex)
         {
             _error = ex.Message;
-        }
+        /*end*/}
         finally
         {
             _loading = false;
-        }
-    }
+        /*end*/}
+    /*end*/}
 
     private void ComputePeriods(List<StoryMetric> items, List<IterationInfo>? iterations = null)
     {
@@ -398,7 +398,7 @@ else if (_periods.Any())
                     AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
                     AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
                     Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
-                };
+                /*end*/};
                 var overlap = items.Where(w => w.ActivatedDate <= metrics.End && w.ClosedDate >= metrics.Start);
                 double active = 0;
                 foreach (var w in overlap)
@@ -406,7 +406,7 @@ else if (_periods.Any())
                     var s = w.ActivatedDate > metrics.Start ? w.ActivatedDate.Date : metrics.Start.Date;
                     var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
                     active += (e - s).TotalDays + 1;
-                }
+                /*end*/}
 
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
@@ -419,11 +419,11 @@ else if (_periods.Any())
                             ? 100.0 * value / metrics.Velocity
                             : 100.0 * (metrics.Velocity - value) / metrics.Velocity
                         : 0;
-                }
+                /*end*/}
 
                 _periods.Add(metrics);
-            }
-        }
+            /*end*/}
+        /*end*/}
         else
         {
             DateTime start = _mode == AggregateMode.Month
@@ -437,7 +437,7 @@ else if (_periods.Any())
                     AggregateMode.Week => start.AddDays(7),
                     AggregateMode.Fortnight => start.AddDays(14),
                     _ => start.AddMonths(1)
-                };
+                /*end*/};
                 var rangeItems = items.Where(x => x.ClosedDate >= start && x.ClosedDate < next && x.ClosedDate <= endDate).ToList();
                 var metrics = new PeriodMetrics
                 {
@@ -447,7 +447,7 @@ else if (_periods.Any())
                     AvgLeadTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.CreatedDate).TotalDays) : 0,
                     AvgCycleTime = rangeItems.Any() ? rangeItems.Average(w => (w.ClosedDate - w.ActivatedDate).TotalDays) : 0,
                     Velocity = rangeItems.Sum(w => _velocityMode == VelocityMode.StoryPoints ? w.StoryPoints : w.OriginalEstimate)
-                };
+                /*end*/};
                 var overlap = items.Where(w => w.ActivatedDate <= metrics.End && w.ClosedDate >= metrics.Start);
                 double active = 0;
                 foreach (var w in overlap)
@@ -455,7 +455,7 @@ else if (_periods.Any())
                     var s = w.ActivatedDate > metrics.Start ? w.ActivatedDate.Date : metrics.Start.Date;
                     var e = w.ClosedDate < metrics.End ? w.ClosedDate.Date : metrics.End.Date;
                     active += (e - s).TotalDays + 1;
-                }
+                /*end*/}
 
                 var days = (metrics.End.Date - metrics.Start.Date).TotalDays + 1;
                 metrics.AvgWip = days > 0 ? active / days : 0;
@@ -468,12 +468,12 @@ else if (_periods.Any())
                             ? 100.0 * value / metrics.Velocity
                             : 100.0 * (metrics.Velocity - value) / metrics.Velocity
                         : 0;
-                }
+                /*end*/}
 
                 _periods.Add(metrics);
                 start = next;
-            }
-        }
+            /*end*/}
+        /*end*/}
 
         _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Month
             ? p.End.ToString("yyyy-MM")
@@ -500,13 +500,13 @@ else if (_periods.Any())
         {
             var sprint = _periods.Select(p => p.SprintEfficiency).ToArray();
             _sprintSeries = [new ChartSeries { Name = "Sprint %", Data = sprint }];
-        }
+        /*end*/}
 
         _leadCycleApex = ToApexSeries(_leadCycleSeries, _xAxisLabels);
         _barApex = ToApexSeries(_barSeries, _xAxisLabels);
         _wipApex = ToApexSeries(_wipSeries, _xAxisLabels);
         _sprintApex = ToApexSeries(_sprintSeries, _xAxisLabels);
-    }
+    /*end*/}
 
     private void ComputeBurnUp(List<StoryMetric> items)
     {
@@ -515,7 +515,7 @@ else if (_periods.Any())
         {
             _burnLabels = [];
             return;
-        }
+        /*end*/}
         var efficiency = _useSprintEfficiency && !string.IsNullOrWhiteSpace(_tag)
             ? ComputeOverallSprintEfficiency(items)
             : _efficiency;
@@ -530,7 +530,7 @@ else if (_periods.Any())
             var idx = (it.ClosedDate.Date - start).Days;
             var val = _velocityMode == VelocityMode.StoryPoints ? it.StoryPoints : it.OriginalEstimate;
             daily[idx] += val;
-        }
+        /*end*/}
 
         double[] doneActual = new double[daysActual];
         double sum = 0;
@@ -538,7 +538,7 @@ else if (_periods.Any())
         {
             sum += daily[i];
             doneActual[i] = sum;
-        }
+        /*end*/}
 
         var avgVel = sum / Math.Max(1, daysActual);
         var effVel = avgVel * (efficiency.GetValueOrDefault() / 100.0);
@@ -568,7 +568,7 @@ else if (_periods.Any())
                 complete.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(doneActual[i], 2) });
                 minProj.Add(new ChartPoint { Label = labels[i], Value = null });
                 maxProj.Add(new ChartPoint { Label = labels[i], Value = null });
-            }
+            /*end*/}
             else
             {
                 complete.Add(new ChartPoint { Label = labels[i], Value = null });
@@ -582,19 +582,19 @@ else if (_periods.Any())
                     {
                         maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(finalTarget, 2) });
                         maxReached = true;
-                    }
+                    /*end*/}
                     else
                     {
                         maxProj.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(maxVal, 2) });
-                    }
-                }
+                    /*end*/}
+                /*end*/}
                 else
                 {
                     maxProj.Add(new ChartPoint { Label = labels[i], Value = null });
-                }
-            }
+                /*end*/}
+            /*end*/}
             target.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(finalTarget, 2) });
-        }
+        /*end*/}
 
         // Straight trend line from 0 to final completion
         double slope = daysActual > 1 ? sum / (daysActual - 1) : 0;
@@ -604,12 +604,12 @@ else if (_periods.Any())
             {
                 var val = slope * i;
                 trend.Add(new ChartPoint { Label = labels[i], Value = (decimal)Math.Round(val, 2) });
-            }
+            /*end*/}
             else
             {
                 trend.Add(new ChartPoint { Label = labels[i], Value = null });
-            }
-        }
+            /*end*/}
+        /*end*/}
 
         _burnApex = [
             new ApexSeries { Name = "Complete", Points = complete },
@@ -624,22 +624,22 @@ else if (_periods.Any())
             _daysMax = daysMax;
             _dateMin = end.AddDays(daysMin);
             _dateMax = end.AddDays(daysMax);
-        }
+        /*end*/}
         else
         {
             _daysMin = null;
             _daysMax = null;
             _dateMin = null;
             _dateMax = null;
-        }
+        /*end*/}
 
         List<double> dash = [];
         foreach (var s in _burnApex)
         {
             dash.Add(s.Name is "Trend" or "Projection Min" or "Projection Max" ? 5d : 0d);
-        }
+        /*end*/}
         _burnOptions.Stroke = new Stroke { DashArray = new ApexCharts.Size(dash) };
-    }
+    /*end*/}
 
     private void ComputeFlow(List<StoryMetric> items)
     {
@@ -648,7 +648,7 @@ else if (_periods.Any())
         {
             _flowLabels = [];
             return;
-        }
+        /*end*/}
 
         var start = (_startDate ?? items.Min(i => i.CreatedDate)).Date;
         var end = (_endDate ?? items.Max(i => i.ClosedDate)).Date;
@@ -662,13 +662,13 @@ else if (_periods.Any())
             backlog[i] = items.Count(it => it.CreatedDate.Date <= day && it.ActivatedDate.Date > day);
             wip[i] = items.Count(it => it.ActivatedDate.Date <= day && it.ClosedDate.Date > day);
             done[i] = items.Count(it => it.ClosedDate.Date <= day);
-        }
+        /*end*/}
 
         string[] labels = new string[days];
         for (int i = 0; i < days; i++)
         {
             labels[i] = start.AddDays(i).ToLocalDateString();
-        }
+        /*end*/}
 
         _flowLabels = labels;
         _flowSeries =
@@ -679,7 +679,7 @@ else if (_periods.Any())
         ];
 
         _flowApex = ToApexSeries(_flowSeries, _flowLabels);
-    }
+    /*end*/}
 
     private double ComputeOverallSprintEfficiency(List<StoryMetric> items)
     {
@@ -691,7 +691,7 @@ else if (_periods.Any())
                 ? 100.0 * value / total
                 : 100.0 * (total - value) / total
             : 0;
-    }
+    /*end*/}
 
     private static List<ApexSeries> ToApexSeries(List<ChartSeries> series, string[] labels)
     {
@@ -705,11 +705,11 @@ else if (_periods.Any())
                 if (val.HasValue)
                     val = Math.Round(val.Value, 2);
                 converted.Points.Add(new ChartPoint { Label = labels[i], Value = val });
-            }
+            /*end*/}
             result.Add(converted);
-        }
+        /*end*/}
         return result;
-    }
+    /*end*/}
 
     private static string BuildCsv(IEnumerable<PeriodMetrics> periods)
     {
@@ -719,7 +719,7 @@ else if (_periods.Any())
         foreach (var p in periods)
             sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
         return sb.ToString();
-    }
+    /*end*/}
 
     private static string BuildPromptData(IEnumerable<PeriodMetrics> periods)
     {
@@ -733,7 +733,7 @@ else if (_periods.Any())
             velocity = p.Velocity,
             avgWip = p.AvgWip,
             sprintEfficiency = p.SprintEfficiency
-        });
+        /*end*/});
         decimal totalLead = 0;
         decimal totalCycle = 0;
         decimal totalThroughput = 0;
@@ -751,7 +751,7 @@ else if (_periods.Any())
             totalWip += (decimal)p.AvgWip;
             totalSprint += (decimal)p.SprintEfficiency;
             count++;
-        }
+        /*end*/}
 
         var summary = new
         {
@@ -761,15 +761,15 @@ else if (_periods.Any())
             avgVelocity = count > 0 ? totalVelocity / count : 0,
             avgWip = count > 0 ? totalWip / count : 0,
             avgSprintEfficiency = count > 0 ? totalSprint / count : 0
-        };
+        /*end*/};
         var payload = new { metrics, summary };
         return JsonSerializer.Serialize(payload);
-    }
+    /*end*/}
 
     private void ToggleBurnChartControls()
     {
         _showBurnChartControls = !_showBurnChartControls;
-    }
+    /*end*/}
 
 
     private async Task ExportCsv()
@@ -777,7 +777,7 @@ else if (_periods.Any())
         if (_periods.Count == 0) return;
         var csv = BuildCsv(_periods);
         await JS.InvokeVoidAsync("downloadCsv", "metrics.csv", csv);
-    }
+    /*end*/}
 
     private async Task CopyPrompt()
     {
@@ -786,12 +786,12 @@ else if (_periods.Any())
         var prompt = PromptService.BuildMetricsPrompt(json, ConfigService.Config.OutputFormat);
         await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
-    }
+    /*end*/}
 
     private string FormatValue(decimal value)
     {
         return value.ToString("0.##");
-    }
+    /*end*/}
 
     private async Task UpdateBurnUp()
     {
@@ -810,9 +810,9 @@ else if (_periods.Any())
             TagMarksSprint = _tagMarksSprint,
             UseSprintEfficiency = _useSprintEfficiency,
             IgnoredTags = _ignoredTags.ToList()
-        });
+        /*end*/});
         StateHasChanged();
-    }
+    /*end*/}
 
     private void ToggleLeadCycle() => _leadCycleExpanded = !_leadCycleExpanded;
     private void ToggleBar() => _barExpanded = !_barExpanded;
@@ -832,7 +832,7 @@ else if (_periods.Any())
         if (!string.IsNullOrWhiteSpace(value))
             result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult(result);
-    }
+    /*end*/}
 
     private Task<IEnumerable<string>> SearchIgnoreTags(string value, CancellationToken _)
     {
@@ -841,14 +841,14 @@ else if (_periods.Any())
             result = result.Where(t => t.Contains(value, StringComparison.OrdinalIgnoreCase));
         result = result.Where(t => !_ignoredTags.Contains(t));
         return Task.FromResult(result);
-    }
+    /*end*/}
 
     private IEnumerable<StoryMetric> FilterItems(IEnumerable<StoryMetric> items)
     {
         if (_ignoredTags.Count == 0)
             return items;
         return items.Where(i => !i.Tags.Any(t => _ignoredTags.Contains(t)));
-    }
+    /*end*/}
 
     private void AddIgnoreTag()
     {
@@ -856,18 +856,18 @@ else if (_periods.Any())
             return;
         _ignoredTags.Add(_ignoreTag);
         _ignoreTag = string.Empty;
-    }
+    /*end*/}
 
     private void RemoveIgnoreTag(string tag)
     {
         _ignoredTags.Remove(tag);
-    }
+    /*end*/}
 
     private static DateTime StartOfWeek(DateTime dt)
     {
         int diff = (7 + (int)dt.DayOfWeek - (int)DayOfWeek.Monday) % 7;
         return dt.Date.AddDays(-diff);
-    }
+    /*end*/}
 
 
 
@@ -885,11 +885,11 @@ else if (_periods.Any())
         public bool TagMarksSprint { get; set; }
         public bool UseSprintEfficiency { get; set; }
         public List<string>? IgnoredTags { get; set; }
-    }
+    /*end*/}
 
     protected override Task OnProjectChangedAsync()
     {
         return OnInitializedAsync();
-    }
+    /*end*/}
 
-}
+/*end*/}
