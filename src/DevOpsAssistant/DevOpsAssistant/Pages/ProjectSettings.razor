@@ -12,7 +12,7 @@
 @using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Components.Routing
 
-<PageTitle>DevOpsAssistant - Settings</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 <MudPaper Class="pa-6">
     <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="ConfirmLeave" />
@@ -24,28 +24,28 @@
                     <MudTextField T="string" Value="_model.Project" ValueChanged="OnProjectChanged" Label='@L["Project"]' Immediate="true" autocomplete="off"/>
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization))
                     {
-                        <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" autocomplete="off"/>
-                        <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label="Use as global organization" Color="Color.Primary" />
+                        <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" autocomplete="off"/>
+                        <MudCheckBox T="bool" Value="_useOrgAsGlobal" ValueChanged="OnUseOrgAsGlobalChanged" Label='@L["UseAsGlobalOrganization"]' Color="Color.Primary" />
                     }
                     else
                     {
-                        <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label="Override global organization" Color="Color.Primary" />
+                        <MudCheckBox T="bool" Value="_overrideOrg" ValueChanged="OnOverrideOrgChanged" Label='@L["OverrideGlobalOrganization"]' Color="Color.Primary" />
                         @if (_overrideOrg)
                         {
-                            <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label="DevOps Organization" Immediate="true" autocomplete="off"/>
+                            <MudTextField T="string" Value="_model.Organization" ValueChanged="OnOrgChanged" Label='@L["Organization"]' Immediate="true" autocomplete="off"/>
                         }
                     }
                     @if (string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken))
                     {
-                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="Leave blank to use global token" Immediate="true" autocomplete="off"/>
-                        <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label="Use as global token" Color="Color.Primary" />
+                    <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" HelperText="@L["PatTokenHelper"]" Immediate="true" autocomplete="off"/>
+                        <MudCheckBox T="bool" Value="_useAsGlobal" ValueChanged="OnUseAsGlobalChanged" Label='@L["UseAsGlobalToken"]' Color="Color.Primary" />
                     }
                     else
                     {
-                        <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label="Override global token" Color="Color.Primary" />
+                        <MudCheckBox T="bool" Value="_overridePat" ValueChanged="OnOverridePatChanged" Label='@L["OverrideGlobalToken"]' Color="Color.Primary" />
                         @if (_overridePat)
                         {
-                            <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label="PAT Token" InputType="InputType.Password" Immediate="true" autocomplete="off"/>
+                            <MudTextField T="string" Value="_model.PatToken" ValueChanged="OnPatChanged" Label='@L["PatToken"]' InputType="InputType.Password" Immediate="true" autocomplete="off"/>
                         }
                     }
                     <MudTextField @bind-Value="_model.MainBranch" Label='@L["MainBranch"]'/>
@@ -95,11 +95,11 @@
                                Color="Color.Primary" />
                     <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
                     <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
-                        <MudSelectItem Value="OutputFormat.Markdown">Markdown</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Pdf">PDF</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Word">Word</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Html">HTML</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Inline">Inline</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Markdown">@L["OutputMarkdown"]</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Pdf">@L["OutputPdf"]</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Word">@L["OutputWord"]</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Html">@L["OutputHtml"]</MudSelectItem>
+                        <MudSelectItem Value="OutputFormat.Inline">@L["OutputInline"]</MudSelectItem>
                     </MudSelect>
                     <MudText Typo="Typo.h6">@L["StandardsHeader"]</MudText>
                     <MudTabs @bind-ActivePanelIndex="_standardsTab">
@@ -161,29 +161,29 @@
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
                 <MudStack Spacing="1">
-                    <MudText Typo="Typo.h6">Epic</MudText>
-                    <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Color="Color.Primary" Label="Has description"/>
+                    <MudText Typo="Typo.h6">@L["EpicHeading"]</MudText>
+                    <MudSwitch T="bool" @bind-Value="_model.Rules.Epic.HasDescription" Color="Color.Primary" Label="@L["HasDescription"]"/>
 
                     <MudDivider/>
 
-                    <MudText Typo="Typo.h6">Feature</MudText>
-                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
+                    <MudText Typo="Typo.h6">@L["FeatureHeading"]</MudText>
+                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasDescription = v)" Color="Color.Primary" Label="@L["HasDescription"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Feature.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Feature.HasParent = v)" Color="Color.Primary" Label="@L["HasParent"]"/>
 
                     <MudDivider/>
 
-                    <MudText Typo="Typo.h6">User Story</MudText>
-                    <MudSwitch T="bool" Value="_model.Rules.Story.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasDescription = v)" Color="Color.Primary" Label="Has description"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Story.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasParent = v)" Color="Color.Primary" Label="Has parent"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Story.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasStoryPoints = v)" Color="Color.Primary" Label="Has story points"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAcceptanceCriteria" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAcceptanceCriteria = v)" Color="Color.Primary" Label="Has acceptance criteria"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAssignee" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAssignee = v)" Color="Color.Primary" Label="Has assignee"/>
+                    <MudText Typo="Typo.h6">@L["StoryHeading"]</MudText>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasDescription" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasDescription = v)" Color="Color.Primary" Label="@L["HasDescription"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasParent" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasParent = v)" Color="Color.Primary" Label="@L["HasParent"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasStoryPoints = v)" Color="Color.Primary" Label="@L["HasStoryPoints"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAcceptanceCriteria" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAcceptanceCriteria = v)" Color="Color.Primary" Label="@L["HasAcceptanceCriteria"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Story.HasAssignee" ValueChanged="v => OnValidationChanged(() => _model.Rules.Story.HasAssignee = v)" Color="Color.Primary" Label="@L["HasAssignee"]"/>
 
                     <MudDivider/>
 
-                    <MudText Typo="Typo.h6">Bug</MudText>
-                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeReproSteps" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeReproSteps = v)" Color="Color.Primary" Label="Include Repro Steps"/>
-                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeSystemInfo" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeSystemInfo = v)" Color="Color.Primary" Label="Include System Info" />
+                    <MudText Typo="Typo.h6">@L["BugHeading"]</MudText>
+                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeReproSteps" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeReproSteps = v)" Color="Color.Primary" Label="@L["IncludeReproSteps"]"/>
+                    <MudSwitch T="bool" Value="_model.Rules.Bug.IncludeSystemInfo" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.IncludeSystemInfo = v)" Color="Color.Primary" Label="@L["IncludeSystemInfo"]" />
                     <MudSwitch T="bool" Value="_model.Rules.Bug.HasStoryPoints" ValueChanged="v => OnValidationChanged(() => _model.Rules.Bug.HasStoryPoints = v)" Color="Color.Primary" Label='@L["BugHasStoryPoints"]' />
                     <MudButton OnClick="SaveValidation" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_validationDirty">@L["Save"]</MudButton>
                     <MudButton OnClick="ApplyValidationToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>

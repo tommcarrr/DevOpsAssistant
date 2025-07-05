@@ -39,6 +39,21 @@
   <data name="OutputFormat" xml:space="preserve">
     <value>Formato de salida</value>
   </data>
+  <data name="OutputMarkdown" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="OutputPdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="OutputWord" xml:space="preserve">
+    <value>Word</value>
+  </data>
+  <data name="OutputHtml" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="OutputInline" xml:space="preserve">
+    <value>Inline</value>
+  </data>
   <data name="RequirementsDocumentationGroup" xml:space="preserve">
     <value>Documentación de Requisitos</value>
   </data>
@@ -158,5 +173,56 @@
   </data>
   <data name="IncompatibleWith" xml:space="preserve">
     <value>Incompatible con {0}</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Configuración</value>
+  </data>
+  <data name="UseAsGlobalOrganization" xml:space="preserve">
+    <value>Usar como organización global</value>
+  </data>
+  <data name="OverrideGlobalOrganization" xml:space="preserve">
+    <value>Reemplazar organización global</value>
+  </data>
+  <data name="UseAsGlobalToken" xml:space="preserve">
+    <value>Usar como token global</value>
+  </data>
+  <data name="OverrideGlobalToken" xml:space="preserve">
+    <value>Reemplazar token global</value>
+  </data>
+  <data name="PatTokenHelper" xml:space="preserve">
+    <value>Déjelo en blanco para usar el token global</value>
+  </data>
+  <data name="EpicHeading" xml:space="preserve">
+    <value>Épica</value>
+  </data>
+  <data name="FeatureHeading" xml:space="preserve">
+    <value>Característica</value>
+  </data>
+  <data name="StoryHeading" xml:space="preserve">
+    <value>Historia de usuario</value>
+  </data>
+  <data name="BugHeading" xml:space="preserve">
+    <value>Bug</value>
+  </data>
+  <data name="HasDescription" xml:space="preserve">
+    <value>Tiene descripción</value>
+  </data>
+  <data name="HasParent" xml:space="preserve">
+    <value>Tiene padre</value>
+  </data>
+  <data name="HasStoryPoints" xml:space="preserve">
+    <value>Tiene puntos de historia</value>
+  </data>
+  <data name="HasAcceptanceCriteria" xml:space="preserve">
+    <value>Tiene criterios de aceptación</value>
+  </data>
+  <data name="HasAssignee" xml:space="preserve">
+    <value>Tiene asignado</value>
+  </data>
+  <data name="IncludeReproSteps" xml:space="preserve">
+    <value>Incluir pasos de reproducción</value>
+  </data>
+  <data name="IncludeSystemInfo" xml:space="preserve">
+    <value>Incluir información del sistema</value>
   </data>
 </root>

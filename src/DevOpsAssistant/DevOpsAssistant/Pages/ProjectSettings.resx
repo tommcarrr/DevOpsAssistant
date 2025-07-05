@@ -39,6 +39,21 @@
   <data name="OutputFormat" xml:space="preserve">
     <value>Output Format</value>
   </data>
+  <data name="OutputMarkdown" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="OutputPdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="OutputWord" xml:space="preserve">
+    <value>Word</value>
+  </data>
+  <data name="OutputHtml" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="OutputInline" xml:space="preserve">
+    <value>Inline</value>
+  </data>
   <data name="RequirementsDocumentationGroup" xml:space="preserve">
     <value>Requirements Documentation</value>
   </data>
@@ -158,5 +173,56 @@
   </data>
   <data name="IncompatibleWith" xml:space="preserve">
     <value>Incompatible with {0}</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Settings</value>
+  </data>
+  <data name="UseAsGlobalOrganization" xml:space="preserve">
+    <value>Use as global organization</value>
+  </data>
+  <data name="OverrideGlobalOrganization" xml:space="preserve">
+    <value>Override global organization</value>
+  </data>
+  <data name="UseAsGlobalToken" xml:space="preserve">
+    <value>Use as global token</value>
+  </data>
+  <data name="OverrideGlobalToken" xml:space="preserve">
+    <value>Override global token</value>
+  </data>
+  <data name="PatTokenHelper" xml:space="preserve">
+    <value>Leave blank to use global token</value>
+  </data>
+  <data name="EpicHeading" xml:space="preserve">
+    <value>Epic</value>
+  </data>
+  <data name="FeatureHeading" xml:space="preserve">
+    <value>Feature</value>
+  </data>
+  <data name="StoryHeading" xml:space="preserve">
+    <value>User Story</value>
+  </data>
+  <data name="BugHeading" xml:space="preserve">
+    <value>Bug</value>
+  </data>
+  <data name="HasDescription" xml:space="preserve">
+    <value>Has description</value>
+  </data>
+  <data name="HasParent" xml:space="preserve">
+    <value>Has parent</value>
+  </data>
+  <data name="HasStoryPoints" xml:space="preserve">
+    <value>Has story points</value>
+  </data>
+  <data name="HasAcceptanceCriteria" xml:space="preserve">
+    <value>Has acceptance criteria</value>
+  </data>
+  <data name="HasAssignee" xml:space="preserve">
+    <value>Has assignee</value>
+  </data>
+  <data name="IncludeReproSteps" xml:space="preserve">
+    <value>Include Repro Steps</value>
+  </data>
+  <data name="IncludeSystemInfo" xml:space="preserve">
+    <value>Include System Info</value>
   </data>
 </root>

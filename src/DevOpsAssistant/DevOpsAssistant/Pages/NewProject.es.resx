@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Nuevo Proyecto</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Para obtener ayuda con estos valores consulte la</value>
+  </data>
+  <data name="UseAsGlobalOrganization" xml:space="preserve">
+    <value>Usar como organización global</value>
+  </data>
+  <data name="OverrideGlobalOrganization" xml:space="preserve">
+    <value>Reemplazar organización global</value>
+  </data>
+  <data name="UseAsGlobalToken" xml:space="preserve">
+    <value>Usar como token global</value>
+  </data>
+  <data name="OverrideGlobalToken" xml:space="preserve">
+    <value>Reemplazar token global</value>
+  </data>
+  <data name="PatTokenHelper" xml:space="preserve">
+    <value>Déjelo en blanco para usar el token global</value>
+  </data>
+</root>
