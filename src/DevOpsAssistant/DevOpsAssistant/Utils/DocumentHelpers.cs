@@ -1,11 +1,12 @@
 using DocumentFormat.OpenXml.Packaging;
+using System.Threading.Tasks;
 using UglyToad.PdfPig;
 
 namespace DevOpsAssistant.Utils;
 
 public static class DocumentHelpers
 {
-    public static string ExtractText(Stream stream, string fileName)
+    public static async Task<string> ExtractTextAsync(Stream stream, string fileName)
     {
         var ext = Path.GetExtension(fileName).ToLowerInvariant();
         return ext switch
@@ -13,7 +14,7 @@ public static class DocumentHelpers
             ".pdf" => ExtractPdf(stream),
             ".docx" => ExtractDocx(stream),
             ".pptx" => ExtractPptx(stream),
-            ".md" => ExtractMarkdown(stream),
+            ".md" => await ExtractMarkdownAsync(stream),
             _ => string.Empty
         };
     }
@@ -45,9 +46,9 @@ public static class DocumentHelpers
             .Select(t => t.Text));
     }
 
-    private static string ExtractMarkdown(Stream stream)
+    private static async Task<string> ExtractMarkdownAsync(Stream stream)
     {
         using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
+        return await reader.ReadToEndAsync();
     }
 }

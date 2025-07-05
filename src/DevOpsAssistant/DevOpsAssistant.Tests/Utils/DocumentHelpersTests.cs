@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using DevOpsAssistant.Utils;
 using Pkg = DocumentFormat.OpenXml.Packaging;
 using W = DocumentFormat.OpenXml.Wordprocessing;
@@ -17,18 +18,18 @@ namespace DevOpsAssistant.Tests.Utils;
 public class DocumentHelpersTests
 {
     [Fact]
-    public void ExtractText_Returns_Content_For_Markdown()
+    public async Task ExtractText_Returns_Content_For_Markdown()
     {
         var text = "# Heading\nContent";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
 
-        var result = DocumentHelpers.ExtractText(stream, "test.md");
+        var result = await DocumentHelpers.ExtractTextAsync(stream, "test.md");
 
         Assert.Equal(text, result);
     }
 
     [Fact]
-    public void ExtractText_Returns_Content_For_Docx()
+    public async Task ExtractText_Returns_Content_For_Docx()
     {
         using var ms = new MemoryStream();
         using (var doc = Pkg.WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
@@ -39,13 +40,13 @@ public class DocumentHelpersTests
         }
         ms.Position = 0;
 
-        var result = DocumentHelpers.ExtractText(ms, "file.docx");
+        var result = await DocumentHelpers.ExtractTextAsync(ms, "file.docx");
 
         Assert.Contains("Docx Text", result);
     }
 
     [Fact]
-    public void ExtractText_Returns_Content_For_Pptx()
+    public async Task ExtractText_Returns_Content_For_Pptx()
     {
         using var ms = new MemoryStream();
         using (var doc = Pkg.PresentationDocument.Create(ms, PresentationDocumentType.Presentation))
@@ -69,13 +70,13 @@ public class DocumentHelpersTests
         }
         ms.Position = 0;
 
-        var result = DocumentHelpers.ExtractText(ms, "file.pptx");
+        var result = await DocumentHelpers.ExtractTextAsync(ms, "file.pptx");
 
         Assert.Contains("Slide Text", result);
     }
 
     [Fact]
-    public void ExtractText_Returns_Content_For_Pdf()
+    public async Task ExtractText_Returns_Content_For_Pdf()
     {
         var builder = new PdfDocumentBuilder();
         var page = builder.AddPage(PageSize.A4);
@@ -84,7 +85,7 @@ public class DocumentHelpersTests
         var bytes = builder.Build();
         using var ms = new MemoryStream(bytes);
 
-        var result = DocumentHelpers.ExtractText(ms, "file.pdf");
+        var result = await DocumentHelpers.ExtractTextAsync(ms, "file.pdf");
 
         Assert.Contains("Pdf Text", result);
     }

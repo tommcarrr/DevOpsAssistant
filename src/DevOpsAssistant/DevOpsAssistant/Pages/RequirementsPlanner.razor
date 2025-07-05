@@ -270,7 +270,7 @@
                     if (_file != null)
                     {
                         using var stream = _file.OpenReadStream(MaxFileSize);
-                        var text = DocumentHelpers.ExtractText(stream, _file.Name);
+                        var text = await DocumentHelpers.ExtractTextAsync(stream, _file.Name);
                         pages.Add((_file.Name, text));
                     }
                     break;
@@ -399,7 +399,7 @@
                 if (_promptFile != null)
                 {
                     using var stream = _promptFile.OpenReadStream(MaxFileSize);
-                    var text = DocumentHelpers.ExtractText(stream, _promptFile.Name);
+                    var text = await DocumentHelpers.ExtractTextAsync(stream, _promptFile.Name);
                     pages.Add((_promptFile.Name, text));
                 }
                 break;
