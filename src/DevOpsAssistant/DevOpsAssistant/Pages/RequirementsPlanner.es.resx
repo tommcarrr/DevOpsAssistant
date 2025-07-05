@@ -96,4 +96,7 @@
   <data name="Backlog" xml:space="preserve">
     <value>Backlog</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Planificador de Requisitos</value>
+  </data>
 </root>
