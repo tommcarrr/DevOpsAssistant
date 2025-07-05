@@ -70,6 +70,9 @@ Codex must be proficient in the following technologies and frameworks, which are
 ### Common Pitfalls
 - Always bind MudCheckBox with `@bind-Value` instead of `@bind-Checked`.
 - Keep markup well-formed; mismatched tags cause build errors.
+- The Azure DevOps API requires a `$` in the work item creation path
+  (e.g., `/workitems/$Bug`). Do **not** remove this dollar sign when
+  constructing URLs.
 
 ## Final Checklist Before Completing Work
 
