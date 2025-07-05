@@ -27,4 +27,13 @@
   <data name="AddedMessage" xml:space="preserve">
     <value>Tags added</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Work Item Bulk Tag</value>
+  </data>
+  <data name="IdHeader" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="TitleHeader" xml:space="preserve">
+    <value>Title</value>
+  </data>
 </root>
