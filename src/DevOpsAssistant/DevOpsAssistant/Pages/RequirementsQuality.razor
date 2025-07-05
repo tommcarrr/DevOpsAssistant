@@ -117,7 +117,7 @@ else if (_promptParts != null)
                     if (_file != null)
                     {
                         using var stream = _file.OpenReadStream(MaxFileSize);
-                        var text = DocumentHelpers.ExtractText(stream, _file.Name);
+                        var text = await DocumentHelpers.ExtractTextAsync(stream, _file.Name);
                         pages.Add((_file.Name, text));
                     }
                     break;
