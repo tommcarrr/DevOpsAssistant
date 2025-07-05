@@ -59,7 +59,7 @@
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
                                 <MudTooltip Text='@L["DeleteTooltip"]'>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveList(context)" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="async () => await RemoveList(context)" />
                                 </MudTooltip>
                             </MudTd>
                         </RowTemplate>
@@ -81,7 +81,7 @@
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
                                 <MudTooltip Text='@L["DeleteTooltip"]'>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveSearch(context)" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="async () => await RemoveSearch(context)" />
                                 </MudTooltip>
                             </MudTd>
                         </RowTemplate>
@@ -106,7 +106,7 @@
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
                                 <MudTooltip Text='@L["DeleteTooltip"]'>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveTag(context)" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="async () => await RemoveTag(context)" />
                                 </MudTooltip>
                             </MudTd>
                         </RowTemplate>
@@ -136,7 +136,7 @@
                             <MudTd DataLabel="Title">@context.Title</MudTd>
                             <MudTd>
                                 <MudTooltip Text='@L["DeleteTooltip"]'>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="() => RemoveQuery(context)" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="async () => await RemoveQuery(context)" />
                                 </MudTooltip>
                             </MudTd>
                         </RowTemplate>
@@ -282,36 +282,36 @@
         return Task.FromResult(result);
     }
 
-    private void OnItemSelected(WorkItemInfo? item)
+    private async Task OnItemSelected(WorkItemInfo? item)
     {
         if (item != null)
             _searchSelected.Add(item);
         _searchValue = null;
-        UpdateSelected();
+        await UpdateSelected();
     }
 
-    private void RemoveSearch(WorkItemInfo info)
+    private async Task RemoveSearch(WorkItemInfo info)
     {
         _searchSelected.Remove(info);
-        UpdateSelected();
+        await UpdateSelected();
     }
 
-    private void RemoveList(WorkItemInfo info)
+    private async Task RemoveList(WorkItemInfo info)
     {
         _listSelected.Remove(info);
-        UpdateSelected();
+        await UpdateSelected();
     }
 
-    private void RemoveTag(WorkItemInfo info)
+    private async Task RemoveTag(WorkItemInfo info)
     {
         _tagSelected.Remove(info);
-        UpdateSelected();
+        await UpdateSelected();
     }
 
-    private void RemoveQuery(WorkItemInfo info)
+    private async Task RemoveQuery(WorkItemInfo info)
     {
         _querySelected.Remove(info);
-        UpdateSelected();
+        await UpdateSelected();
     }
 
     private async Task LoadList()
@@ -324,7 +324,7 @@
             _listSelected.Clear();
             foreach (var i in items)
                 _listSelected.Add(i);
-            UpdateSelected();
+            await UpdateSelected();
             await SaveState();
         }
         finally
@@ -343,7 +343,7 @@
             _tagSelected.Clear();
             foreach (var i in items)
                 _tagSelected.Add(i);
-            UpdateSelected();
+            await UpdateSelected();
         }
         finally
         {
@@ -362,7 +362,7 @@
             _querySelected.Clear();
             foreach (var i in items)
                 _querySelected.Add(i);
-            UpdateSelected();
+            await UpdateSelected();
         }
         finally
         {
@@ -398,14 +398,13 @@
         return item;
     }
 
-    private Task OnTreeSelected(IReadOnlyCollection<WorkItemNode> nodes)
+    private async Task OnTreeSelected(IReadOnlyCollection<WorkItemNode> nodes)
     {
         _selectedNodes = nodes;
-        UpdateSelected();
-        return Task.CompletedTask;
+        await UpdateSelected();
     }
 
-    private async void UpdateSelected()
+    private async Task UpdateSelected()
     {
         HashSet<WorkItemInfo> set = new(_searchSelected);
         foreach (var li in _listSelected)
