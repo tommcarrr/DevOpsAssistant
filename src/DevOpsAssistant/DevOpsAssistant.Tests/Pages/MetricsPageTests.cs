@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Services;
@@ -77,6 +78,47 @@ public class MetricsPageTests : ComponentTestBase
         Assert.Contains("\"velocity\":4.5", prompt);
         Assert.Contains("\"avgWip\":1.5", prompt);
         Assert.Contains("\"sprintEfficiency\":80", prompt);
+    }
+
+    [Fact]
+    public void BuildPromptData_Computes_Correct_Averages()
+    {
+        SetupServices();
+
+        var periods = new[]
+        {
+            new PeriodMetrics
+            {
+                End = new DateTime(2024, 1, 1),
+                AvgLeadTime = 1,
+                AvgCycleTime = 2,
+                Throughput = 3,
+                Velocity = 4,
+                AvgWip = 5,
+                SprintEfficiency = 60
+            },
+            new PeriodMetrics
+            {
+                End = new DateTime(2024, 1, 2),
+                AvgLeadTime = 3,
+                AvgCycleTime = 4,
+                Throughput = 5,
+                Velocity = 6,
+                AvgWip = 7,
+                SprintEfficiency = 80
+            }
+        };
+        var method = typeof(Metrics).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var json = (string)method.Invoke(null, new object?[] { periods })!;
+        using var doc = JsonDocument.Parse(json);
+        var summary = doc.RootElement.GetProperty("summary");
+
+        Assert.Equal(2m, summary.GetProperty("avgLeadTime").GetDecimal());
+        Assert.Equal(3m, summary.GetProperty("avgCycleTime").GetDecimal());
+        Assert.Equal(4m, summary.GetProperty("avgThroughput").GetDecimal());
+        Assert.Equal(5m, summary.GetProperty("avgVelocity").GetDecimal());
+        Assert.Equal(6m, summary.GetProperty("avgWip").GetDecimal());
+        Assert.Equal(70m, summary.GetProperty("avgSprintEfficiency").GetDecimal());
     }
 
     [Fact]
