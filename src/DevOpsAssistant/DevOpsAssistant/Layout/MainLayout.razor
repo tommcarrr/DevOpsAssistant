@@ -19,7 +19,7 @@
     <MudAppBar Color="Color.Primary" Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" aria-label="@L["Menu"]"/>
         <MudText Typo="Typo.h6">
-            <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style app-logo">DevOpsAssistant</MudNavLink>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style app-logo">@L["AppName"]</MudNavLink>
         </MudText>
         <MudSpacer/>
         <MudMenu Label='@(_selectedProject.Length > 0 ? _selectedProject : L["Projects"])' EndIcon="@Icons.Material.Filled.ArrowDropDown">
@@ -77,7 +77,7 @@
                 @L["FooterDisclaimer"]
             </MudText>
             <MudText Typo="Typo.caption" Class="float-right" Inline="true">
-                Version @VersionService.Version
+                @L["VersionLabel"] @VersionService.Version
             </MudText>
             </MudContainer>
         </footer>

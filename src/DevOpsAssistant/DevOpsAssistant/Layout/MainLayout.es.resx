@@ -114,4 +114,10 @@
   <data name="FooterDisclaimer" xml:space="preserve">
     <value>Este es un prototipo. Todos los datos deben comprobarse.</value>
   </data>
+  <data name="AppName" xml:space="preserve">
+    <value>DevOpsAssistant</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>Versión</value>
+  </data>
 </root>
