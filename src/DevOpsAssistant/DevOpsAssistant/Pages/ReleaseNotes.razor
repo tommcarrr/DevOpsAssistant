@@ -23,7 +23,7 @@
 }
 
 <WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading || !_selectedItems.Any()" OnClick="Generate">Generate Prompt</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading || !_selectedItems.Any()" OnClick="Generate">@L["GeneratePrompt"]</MudButton>
 @if (_loading)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
@@ -35,7 +35,7 @@ else if (_promptParts != null)
             <MudButton Variant="Variant.Text"
                        StartIcon="@Icons.Material.Filled.Download"
                        OnClick="DownloadPrompt">
-                Download
+                @L["Download"]
             </MudButton>
             <MudTextField T="string"
                           Text="@_promptParts[_partIndex]"
@@ -48,7 +48,7 @@ else if (_promptParts != null)
                                    Disabled="_partIndex == 0"
                                    OnClick="PrevPart" />
                 </MudTooltip>
-                <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
+                <MudText Typo="Typo.body2">@string.Format(L["PartFormat"], _partIndex + 1, _promptParts.Count)</MudText>
                 <MudTooltip Text='@L["NextPartTooltip"]'>
                     <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
                                    Disabled="_partIndex == _promptParts.Count - 1"
@@ -57,7 +57,7 @@ else if (_promptParts != null)
                 <MudButton Variant="Variant.Text"
                            StartIcon="@Icons.Material.Filled.ContentCopy"
                            OnClick="() => CopyPart(_promptParts[_partIndex])">
-                    Copy
+                    @L["Copy"]
                 </MudButton>
             </MudStack>
         </MudStack>
