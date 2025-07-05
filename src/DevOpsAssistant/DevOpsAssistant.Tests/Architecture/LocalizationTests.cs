@@ -9,9 +9,6 @@ public class LocalizationTests
 
     private static readonly HashSet<string> PendingFiles = new(StringComparer.OrdinalIgnoreCase)
     {
-        "ProjectsList.razor",
-        "ReleaseNotes.razor",
-        "RequirementsQuality.razor",
         "Validation.razor",
         "WorkItemQuality.razor",
         "WorkItemSelector.razor",
