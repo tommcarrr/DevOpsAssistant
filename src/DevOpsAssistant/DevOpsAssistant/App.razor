@@ -1,12 +1,15 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<App> L
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>DevOpsAssistant - Not found</PageTitle>
+        <PageTitle>@L["NotFoundTitle"]</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <p role="alert">@L["NotFoundMessage"]</p>
         </LayoutView>
     </NotFound>
 </Router>
