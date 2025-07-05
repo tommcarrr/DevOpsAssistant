@@ -28,7 +28,7 @@ public class PromptService
         {
             avgLeadTime = list.Any() ? list.Average(p => (decimal)p.AvgLeadTime) : 0,
             avgCycleTime = list.Any() ? list.Average(p => (decimal)p.AvgCycleTime) : 0,
-            avgThroughput = list.Any() ? list.Average(p => (int)p.Throughput) : 0,
+            avgThroughput = list.Any() ? list.Average(p => p.Throughput) : 0,
             avgVelocity = list.Any() ? list.Average(p => (decimal)p.Velocity) : 0,
             avgWip = list.Any() ? list.Average(p => (decimal)p.AvgWip) : 0,
             avgSprintEfficiency = list.Any() ? list.Average(p => (decimal)p.SprintEfficiency) : 0
