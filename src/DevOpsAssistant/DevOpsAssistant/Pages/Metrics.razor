@@ -734,14 +734,33 @@ else if (_periods.Any())
             avgWip = p.AvgWip,
             sprintEfficiency = p.SprintEfficiency
         });
+        decimal totalLead = 0;
+        decimal totalCycle = 0;
+        decimal totalThroughput = 0;
+        decimal totalVelocity = 0;
+        decimal totalWip = 0;
+        decimal totalSprint = 0;
+        int count = 0;
+
+        foreach (var p in list)
+        {
+            totalLead += (decimal)p.AvgLeadTime;
+            totalCycle += (decimal)p.AvgCycleTime;
+            totalThroughput += p.Throughput;
+            totalVelocity += (decimal)p.Velocity;
+            totalWip += (decimal)p.AvgWip;
+            totalSprint += (decimal)p.SprintEfficiency;
+            count++;
+        }
+
         var summary = new
         {
-            avgLeadTime = list.Any() ? list.Average(p => (decimal)p.AvgLeadTime) : 0,
-            avgCycleTime = list.Any() ? list.Average(p => (decimal)p.AvgCycleTime) : 0,
-            avgThroughput = list.Any() ? list.Average(p => p.Throughput) : 0,
-            avgVelocity = list.Any() ? list.Average(p => (decimal)p.Velocity) : 0,
-            avgWip = list.Any() ? list.Average(p => (decimal)p.AvgWip) : 0,
-            avgSprintEfficiency = list.Any() ? list.Average(p => (decimal)p.SprintEfficiency) : 0
+            avgLeadTime = count > 0 ? totalLead / count : 0,
+            avgCycleTime = count > 0 ? totalCycle / count : 0,
+            avgThroughput = count > 0 ? totalThroughput / count : 0,
+            avgVelocity = count > 0 ? totalVelocity / count : 0,
+            avgWip = count > 0 ? totalWip / count : 0,
+            avgSprintEfficiency = count > 0 ? totalSprint / count : 0
         };
         var payload = new { metrics, summary };
         return JsonSerializer.Serialize(payload);
