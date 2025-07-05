@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Linq;
 using System.Text.Json;
+using System.Globalization;
 using System.Collections.Generic;
 using DevOpsAssistant.Services.Models;
 
@@ -999,7 +1000,7 @@ public class DevOpsApiService
     private static string BuildMetricsWiql(string areaPath, DateTime startDate)
     {
         areaPath = NormalizeAreaPath(areaPath);
-        var start = startDate.ToString("yyyy-MM-dd");
+        var start = startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         return
             $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND ([Microsoft.VSTS.Common.ClosedDate] >= '{start}' OR [System.State] <> 'Closed') ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
     }
