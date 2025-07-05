@@ -111,13 +111,6 @@ public class MainLayoutTests : ComponentTestBase
         await config.AddProjectAsync("One");
         await config.AddProjectAsync("Two");
         await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
-        await config.SelectProjectAsync("One");
         var cut = RenderComponent<MainLayout>();
         var method = typeof(MainLayout).GetMethod("ChangeProject", BindingFlags.NonPublic | BindingFlags.Instance)!;
         var task = cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, ["Two"])!);
