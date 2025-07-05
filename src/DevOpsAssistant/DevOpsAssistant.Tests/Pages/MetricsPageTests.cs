@@ -66,8 +66,10 @@ public class MetricsPageTests : ComponentTestBase
             AvgWip = 1.5,
             SprintEfficiency = 80.0
         };
+        var method = typeof(Metrics).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var json = (string)method.Invoke(null, new object?[] { new[] { period } })!;
         var svc = new PromptService();
-        var prompt = svc.BuildMetricsPrompt(new[] { period }, OutputFormat.Markdown);
+        var prompt = svc.BuildMetricsPrompt(json, OutputFormat.Markdown);
 
         Assert.Contains("Agile Delivery Metrics Report Template", prompt);
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);

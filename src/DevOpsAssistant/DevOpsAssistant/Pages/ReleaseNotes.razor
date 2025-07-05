@@ -95,7 +95,8 @@ else if (_promptParts != null)
         {
             var ids = _selectedItems.Select(s => s.Id);
             var details = await ApiService.GetStoryHierarchyDetailsAsync(ids);
-            _prompt = PromptService.BuildReleaseNotesPrompt(details, ConfigService.Config);
+            var json = BuildPromptData(details, ConfigService.Config);
+            _prompt = PromptService.BuildReleaseNotesPrompt(json, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             _error = null;
@@ -143,6 +144,26 @@ else if (_promptParts != null)
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
+    }
+
+    private static string BuildPromptData(IEnumerable<StoryHierarchyDetails> details, DevOpsConfig config)
+    {
+        var hierarchy = details.Select(d => new
+        {
+            Epic = d.Epic == null ? null : new { d.Epic.Id, d.Epic.Title, Description = TextHelpers.Sanitize(d.EpicDescription) },
+            Feature = d.Feature == null ? null : new { d.Feature.Id, d.Feature.Title, Description = TextHelpers.Sanitize(d.FeatureDescription) },
+            Item = new
+            {
+                d.Story.Id,
+                d.Story.Title,
+                d.Story.WorkItemType,
+                Description = TextHelpers.Sanitize(d.Description),
+                ReproSteps = config.Rules.Bug.IncludeReproSteps ? TextHelpers.Sanitize(d.ReproSteps) : null,
+                SystemInfo = config.Rules.Bug.IncludeSystemInfo ? TextHelpers.Sanitize(d.SystemInfo) : null,
+                AcceptanceCriteria = TextHelpers.Sanitize(d.AcceptanceCriteria)
+            }
+        });
+        return JsonSerializer.Serialize(hierarchy, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
     }
 
 
