@@ -17,7 +17,7 @@
 <MudLayout>
     <MudAppBar Color="Color.Primary" Elevation="1">
         <MudText Typo="Typo.h6">
-            <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style app-logo">DevOpsAssistant</MudNavLink>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Class="no-link-style app-logo">@L["AppName"]</MudNavLink>
         </MudText>
         <MudSpacer/>
         <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)" Color="Color.Inherit" OnClick="ToggleDarkMode" title='@L["ToggleTheme"]'/>
@@ -45,7 +45,7 @@
                 @L["FooterDisclaimer"]
             </MudText>
             <MudText Typo="Typo.caption" Class="float-right" Inline="true">
-                Version @VersionService.Version
+                @L["VersionLabel"] @VersionService.Version
             </MudText>
             </MudContainer>
         </footer>

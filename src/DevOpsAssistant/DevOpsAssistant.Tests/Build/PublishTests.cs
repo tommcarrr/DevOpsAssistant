@@ -17,7 +17,8 @@ public class PublishTests
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            WorkingDirectory = Path.GetDirectoryName(projectPath)!
         };
 
         using var process = Process.Start(info);
