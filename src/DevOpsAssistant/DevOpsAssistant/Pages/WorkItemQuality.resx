@@ -21,4 +21,16 @@
   <data name="NextPartTooltip" xml:space="preserve">
     <value>Next part</value>
   </data>
+  <data name="GeneratePrompt" xml:space="preserve">
+    <value>Generate Prompt</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="PartFormat" xml:space="preserve">
+    <value>Part {0}/{1}</value>
+  </data>
 </root>

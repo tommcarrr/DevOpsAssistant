@@ -51,4 +51,49 @@
   <data name="DeleteTooltip" xml:space="preserve">
     <value>Remove item</value>
   </data>
+  <data name="GeneratePrompt" xml:space="preserve">
+    <value>Generate Prompt</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="PartFormat" xml:space="preserve">
+    <value>Part {0}/{1}</value>
+  </data>
+  <data name="SelectRequirements" xml:space="preserve">
+    <value>Select Requirements</value>
+  </data>
+  <data name="ImportResponse" xml:space="preserve">
+    <value>Import Response</value>
+  </data>
+  <data name="LLMResponse" xml:space="preserve">
+    <value>LLM Response</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="CreateWorkItems" xml:space="preserve">
+    <value>Create Work Items</value>
+  </data>
+  <data name="AddEpic" xml:space="preserve">
+    <value>Add Epic</value>
+  </data>
+  <data name="AddFeature" xml:space="preserve">
+    <value>Add Feature</value>
+  </data>
+  <data name="AddStory" xml:space="preserve">
+    <value>Add Story</value>
+  </data>
+  <data name="StoriesOnlyLabel" xml:space="preserve">
+    <value>Stories Only</value>
+  </data>
+  <data name="FeatureLabel" xml:space="preserve">
+    <value>Feature</value>
+  </data>
+  <data name="Backlog" xml:space="preserve">
+    <value>Backlog</value>
+  </data>
 </root>

@@ -28,7 +28,7 @@
                        WikiItems="@_wikiItems"
                        SelectedPages="@_selectedPages"
                        SelectedPagesChanged="@(p => _selectedPages = p)" />
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">Generate Prompt</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@GenerateDisabled" OnClick="Generate">@L["GeneratePrompt"]</MudButton>
 
 @if (_loading)
 {
@@ -38,17 +38,17 @@ else if (_promptParts != null)
 {
     <MudPaper Class="pa-6">
         <MudStack Spacing="2">
-            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadPrompt">Download</MudButton>
+            <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" OnClick="DownloadPrompt">@L["Download"]</MudButton>
             <MudTextField T="string" Text="@_promptParts[_partIndex]" Lines="10" ReadOnly="true" />
             <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
                 <MudTooltip Text='@L["PrevPartTooltip"]'>
                     <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="_partIndex == 0" OnClick="PrevPart" />
                 </MudTooltip>
-                <MudText Typo="Typo.body2">@($"Part {_partIndex + 1}/{_promptParts.Count}")</MudText>
+                <MudText Typo="Typo.body2">@string.Format(L["PartFormat"], _partIndex + 1, _promptParts.Count)</MudText>
                 <MudTooltip Text='@L["NextPartTooltip"]'>
                     <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="_partIndex == _promptParts.Count - 1" OnClick="NextPart" />
                 </MudTooltip>
-                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">Copy</MudButton>
+                <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">@L["Copy"]</MudButton>
             </MudStack>
         </MudStack>
     </MudPaper>
