@@ -31,7 +31,7 @@ public class DocumentHelpersTests
     public void ExtractText_Returns_Content_For_Docx()
     {
         using var ms = new MemoryStream();
-        using (var doc = Pkg.WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+        using (var doc = Pkg.WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
         {
             var mainPart = doc.AddMainDocumentPart();
             mainPart.Document = new W.Document(new W.Body(new W.Paragraph(new W.Run(new W.Text("Docx Text")))));
@@ -48,7 +48,7 @@ public class DocumentHelpersTests
     public void ExtractText_Returns_Content_For_Pptx()
     {
         using var ms = new MemoryStream();
-        using (var doc = Pkg.PresentationDocument.Create(ms, DocumentFormat.OpenXml.PresentationDocumentType.Presentation))
+        using (var doc = Pkg.PresentationDocument.Create(ms, PresentationDocumentType.Presentation))
         {
             var presPart = doc.AddPresentationPart();
             presPart.Presentation = new P.Presentation();

@@ -204,7 +204,7 @@
     private const string StateKey = "requirements-planner";
     private const long MaxFileSize = 10 * 1024 * 1024;
 
-    private static readonly string InitialPrompt = GeneratedPrompts.RequirementsPlanner_MainPrompt.Value;
+    private static readonly string InitialPrompt = RequirementsPlanner_MainPrompt.Value;
     private bool GenerateDisabled => _loading || _source switch
         {
             DocumentSource.Document => _file == null,
@@ -421,7 +421,7 @@
         if (pages.Count > 0)
         {
             sb.AppendLine();
-            sb.AppendLine(GeneratedPrompts.RequirementsPlanner_DocumentIntroPrompt.Value);
+            sb.AppendLine(RequirementsPlanner_DocumentIntroPrompt.Value);
             foreach (var page in pages)
             {
                 sb.AppendLine($"## {page.Name}");

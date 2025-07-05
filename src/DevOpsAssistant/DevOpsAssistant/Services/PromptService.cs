@@ -36,14 +36,14 @@ public class PromptService
         var payload = new { metrics, summary };
         var json = JsonSerializer.Serialize(payload);
         var sb = new StringBuilder();
-        sb.AppendLine(GeneratedPrompts.Metrics_MainPrompt.Value);
+        sb.AppendLine(Metrics_MainPrompt.Value);
         sb.AppendLine();
         if (format == OutputFormat.Inline)
-            sb.AppendLine(GeneratedPrompts.FormatInstructions_MetricsInlinePrompt.Value);
+            sb.AppendLine(FormatInstructions_MetricsInlinePrompt.Value);
         else
-            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_MetricsConvertPrompt.Value, format));
+            sb.AppendLine(string.Format(FormatInstructions_MetricsConvertPrompt.Value, format));
         sb.AppendLine();
-        sb.AppendLine(string.Format(GeneratedPrompts.Metrics_DataIntroPrompt.Value, json));
+        sb.AppendLine(string.Format(Metrics_DataIntroPrompt.Value, json));
         sb.AppendLine();
         return sb.ToString();
     }
@@ -68,15 +68,15 @@ public class PromptService
         var json = JsonSerializer.Serialize(hierarchy, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) || config.ReleaseNotesPromptMode == PromptMode.Append)
-            sb.AppendLine(GeneratedPrompts.ReleaseNotes_MainPrompt.Value);
+            sb.AppendLine(ReleaseNotes_MainPrompt.Value);
         if (!string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
             sb.AppendLine(config.ReleaseNotesPrompt.Trim());
         if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine(GeneratedPrompts.FormatInstructions_ReleaseNotesInlinePrompt.Value);
+            sb.AppendLine(FormatInstructions_ReleaseNotesInlinePrompt.Value);
         else
-            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat));
+            sb.AppendLine(string.Format(FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat));
         sb.AppendLine();
-        sb.AppendLine(GeneratedPrompts.ReleaseNotes_WorkItemsIntroPrompt.Value);
+        sb.AppendLine(ReleaseNotes_WorkItemsIntroPrompt.Value);
         sb.AppendLine(json);
         sb.AppendLine();
         return sb.ToString();
@@ -85,16 +85,16 @@ public class PromptService
     public string BuildRequirementsQualityPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(GeneratedPrompts.RequirementsQuality_MainPrompt.Value);
+        sb.AppendLine(RequirementsQuality_MainPrompt.Value);
         if (config.Standards.RequirementsDocumentation.Count > 0)
         {
             sb.AppendLine();
-            sb.AppendLine(GeneratedPrompts.RequirementsDocumentationStandardsIntroPrompt.Value);
+            sb.AppendLine(RequirementsDocumentationStandardsIntroPrompt.Value);
             foreach (var s in config.Standards.RequirementsDocumentation)
                 sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
         }
         sb.AppendLine();
-        sb.AppendLine(GeneratedPrompts.RequirementsQuality_DocumentIntroPrompt.Value);
+        sb.AppendLine(RequirementsQuality_DocumentIntroPrompt.Value);
         foreach (var page in pages)
         {
             sb.AppendLine($"## {page.Name}");
@@ -110,57 +110,57 @@ public class PromptService
         if (string.IsNullOrWhiteSpace(config.RequirementsPrompt) || config.RequirementsPromptMode == PromptMode.Append)
         {
             if (storiesOnly)
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_UserStoriesBlockPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_UserStoriesBlockPrompt.Value);
             else
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsBlockPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_EpicsBlockPrompt.Value);
             if (config.Standards.UserStoryDescription.Contains("ScrumUserStory"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_ScrumPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_Description_ScrumPrompt.Value);
             else if (config.Standards.UserStoryDescription.Contains("JobStory"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_JobPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_Description_JobPrompt.Value);
             else
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_Description_GenericPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_Description_GenericPrompt.Value);
             if (config.Standards.UserStoryAcceptanceCriteria.Contains("Gherkin"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_GherkinPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_GherkinPrompt.Value);
             else if (config.Standards.UserStoryAcceptanceCriteria.Contains("BulletPoints"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_BulletPointsPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_BulletPointsPrompt.Value);
             else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
-            sb.AppendLine(GeneratedPrompts.RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
-            sb.AppendLine(string.Format(GeneratedPrompts.RequirementsPlanner_WorkItemGranularityPrompt.Value, config.WorkItemGranularity));
+                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
+            sb.AppendLine(RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
+            sb.AppendLine(string.Format(RequirementsPlanner_WorkItemGranularityPrompt.Value, config.WorkItemGranularity));
             if (config.Standards.UserStoryQuality.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_StoryQualityStandardsIntroPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_StoryQualityStandardsIntroPrompt.Value);
                 foreach (var s in config.Standards.UserStoryQuality)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
             if (config.Standards.RequirementsDocumentation.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsDocumentationStandardsIntroPrompt.Value);
+                sb.AppendLine(RequirementsDocumentationStandardsIntroPrompt.Value);
                 foreach (var s in config.Standards.RequirementsDocumentation)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
             if (storiesOnly)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_StoriesOnlyBlockPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_StoriesOnlyBlockPrompt.Value);
             }
             else
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_EpicsJsonBlockPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_EpicsJsonBlockPrompt.Value);
             }
             if (clarify)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.RequirementsPlanner_ClarifyBlockPrompt.Value);
+                sb.AppendLine(RequirementsPlanner_ClarifyBlockPrompt.Value);
             }
         }
         if (!string.IsNullOrWhiteSpace(config.RequirementsPrompt))
             sb.AppendLine(config.RequirementsPrompt.Trim());
         sb.AppendLine();
-        sb.AppendLine(GeneratedPrompts.RequirementsPlanner_DocumentIntroPrompt.Value);
+        sb.AppendLine(RequirementsPlanner_DocumentIntroPrompt.Value);
         foreach (var page in pages)
         {
             sb.AppendLine($"## {page.Name}");
@@ -188,36 +188,36 @@ public class PromptService
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) || config.StoryQualityPromptMode == PromptMode.Append)
         {
-            sb.AppendLine(GeneratedPrompts.WorkItemQuality_MainPrompt.Value);
+            sb.AppendLine(WorkItemQuality_MainPrompt.Value);
             if (config.Standards.UserStoryQuality.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
+                sb.AppendLine(WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
                 foreach (var s in config.Standards.UserStoryQuality)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
             if (config.Standards.BugReporting.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
+                sb.AppendLine(WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
                 foreach (var s in config.Standards.BugReporting)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
             if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
             {
                 sb.AppendLine();
-                sb.AppendLine(GeneratedPrompts.WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
+                sb.AppendLine(WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
                 sb.AppendLine(config.DefinitionOfReady);
             }
         }
         if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
             sb.AppendLine(config.StoryQualityPrompt.Trim());
         if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine(GeneratedPrompts.FormatInstructions_WorkItemAnalysisInlinePrompt.Value);
+            sb.AppendLine(FormatInstructions_WorkItemAnalysisInlinePrompt.Value);
         else
-            sb.AppendLine(string.Format(GeneratedPrompts.FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
+            sb.AppendLine(string.Format(FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
         sb.AppendLine();
-        sb.AppendLine(GeneratedPrompts.WorkItemQuality_WorkItemsIntroPrompt.Value);
+        sb.AppendLine(WorkItemQuality_WorkItemsIntroPrompt.Value);
         sb.AppendLine(json);
         sb.AppendLine();
         return sb.ToString();

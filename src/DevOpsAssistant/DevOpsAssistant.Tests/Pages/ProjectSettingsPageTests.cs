@@ -19,9 +19,9 @@ public class ProjectSettingsPageTests : ComponentTestBase
 
         var cut = RenderComponent<ProjectSettings>(p => p.Add(c => c.ProjectName, "Demo"));
         var selectedField = cut.Instance.GetType().GetField("_selectedStandards", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        selectedField.SetValue(cut.Instance, new System.Collections.Generic.HashSet<string> { "ScrumUserStory" });
+        selectedField.SetValue(cut.Instance, new HashSet<string> { "ScrumUserStory" });
         var method = cut.Instance.GetType().GetMethod("GetStandardTooltip", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
-        var option = DevOpsAssistant.Services.Models.StandardsCatalog.Options.First(o => o.Id == "JobStory");
+        var option = StandardsCatalog.Options.First(o => o.Id == "JobStory");
         var text = (string)method.Invoke(cut.Instance, [option])!;
 
         Assert.Contains("Incompatible", text);
