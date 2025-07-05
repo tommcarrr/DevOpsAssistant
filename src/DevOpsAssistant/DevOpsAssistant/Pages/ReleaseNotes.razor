@@ -15,7 +15,7 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<ReleaseNotes> L
 
-<PageTitle>DevOpsAssistant - Release Notes</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {

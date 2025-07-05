@@ -5,8 +5,9 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<Home> L
+@inject IStringLocalizer<ProjectsList> PL
 
-<PageTitle>DevOpsAssistant - Projects</PageTitle>
+<PageTitle>@PL["PageTitle"]</PageTitle>
 
 <MudPaper Class="p-4">
     <MudText Typo="Typo.h5">@L["Project"]</MudText>
