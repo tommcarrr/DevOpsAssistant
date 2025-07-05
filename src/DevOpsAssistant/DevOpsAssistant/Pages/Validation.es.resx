@@ -18,4 +18,34 @@
   <data name="AlreadyTaggedTooltip" xml:space="preserve">
     <value>Este elemento ya está etiquetado</value>
   </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>DevOpsAssistant - Validación de historias</value>
+  </data>
+  <data name="NoRules" xml:space="preserve">
+    <value>No hay reglas de validación configuradas.</value>
+  </data>
+  <data name="OpenSettings" xml:space="preserve">
+    <value>Abrir configuración</value>
+  </data>
+  <data name="HideRules" xml:space="preserve">
+    <value>Ocultar reglas</value>
+  </data>
+  <data name="ShowRules" xml:space="preserve">
+    <value>Mostrar reglas</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Comprobar</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Restablecer</value>
+  </data>
+  <data name="AllConform" xml:space="preserve">
+    <value>Todos los elementos cumplen las reglas.</value>
+  </data>
+  <data name="TagAllInvalid" xml:space="preserve">
+    <value>Etiquetar todos los inválidos</value>
+  </data>
+  <data name="Tag" xml:space="preserve">
+    <value>Etiqueta</value>
+  </data>
 </root>

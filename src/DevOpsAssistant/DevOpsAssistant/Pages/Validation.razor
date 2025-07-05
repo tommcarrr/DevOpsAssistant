@@ -7,17 +7,17 @@
 @inject IStringLocalizer<Validation> L
 @inherits ProjectComponentBase
 
-<PageTitle>DevOpsAssistant - Story Validation</PageTitle>
+<PageTitle>@L["PageTitle"]</PageTitle>
 
 @if (!_hasRules)
 {
     <MudAlert Severity="Severity.Warning">
-        No validation rules are configured.
+        @L["NoRules"]
         <MudButton Variant="Variant.Text"
                    StartIcon="@Icons.Material.Filled.Settings"
                    Href="@($"/projects/{ConfigService.CurrentProject.Name}/settings")"
                   >
-            Open Settings
+            @L["OpenSettings"]
         </MudButton>
     </MudAlert>
 }
@@ -28,7 +28,7 @@
 @if (_hasRules)
 {
     <MudButton Variant="Variant.Text" OnClick="ToggleRules" StartIcon="@(_rulesExpanded ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)">
-        @(_rulesExpanded ? "Hide Rules" : "Show Rules")
+        @(_rulesExpanded ? L["HideRules"] : L["ShowRules"])
     </MudButton>
     <MudCollapse Expanded="_rulesExpanded">
         <MudList T="string" Dense="true">
@@ -42,8 +42,8 @@
 
 <WorkItemSelector Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)" UseIteration="true" SelectedChanged="OnWorkItemsSelected" StateKey="StateKey" />
 <MudStack Row="true" Spacing="2" Class="mb-4">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">Check</MudButton>
-    <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Disabled="!_hasRules || !_selectedItems.Any()">@L["Check"]</MudButton>
+    <MudButton Variant="Variant.Outlined" OnClick="Reset">@L["Reset"]</MudButton>
 </MudStack>
 
 @if (_loading)
@@ -54,12 +54,12 @@ else if (_results != null)
 {
     if (_results.Count == 0)
     {
-        <MudAlert Severity="Severity.Success">All items conform to rules.</MudAlert>
+        <MudAlert Severity="Severity.Success">@L["AllConform"]</MudAlert>
     }
     else
     {
         <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd" Class="mb-2">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">Tag All Invalid</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_loading" OnClick="TagAll">@L["TagAllInvalid"]</MudButton>
         </MudStack>
         <MudPaper Class="pa-6 work-item-container">
             <MudList T="ResultItem" Dense="true" Class="work-item-tree">
@@ -71,7 +71,7 @@ else if (_results != null)
                                 <MudText>
                                     <MudLink Href="@r.Info.Url" Class="@WorkItemHelpers.GetItemClass(r.Info.WorkItemType)" Target="_blank">@r.Info.Title</MudLink> - @r.Info.WorkItemType (@r.Info.State)
                                 </MudText>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Disabled="@(_loading || r.NeedsAttention)" OnClick="() => TagItem(r)">Tag</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Disabled="@(_loading || r.NeedsAttention)" OnClick="() => TagItem(r)">@L["Tag"]</MudButton>
                                 @if (r.NeedsAttention)
                                 {
                                     <MudTooltip Text='@L["AlreadyTaggedTooltip"]'>
@@ -145,8 +145,9 @@ else if (_results != null)
         {
             _loading = false;
         }
-    }
+    @*Load*@}
 
+@code {
     private List<ResultItem> Validate(List<WorkItemDetails> items)
     {
         var rules = ConfigService.Config.Rules;
@@ -289,5 +290,6 @@ else if (_results != null)
     {
         return OnInitializedAsync();
     }
+}
 
 }
