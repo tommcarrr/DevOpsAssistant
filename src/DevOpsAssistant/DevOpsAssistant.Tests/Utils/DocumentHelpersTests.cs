@@ -89,4 +89,14 @@ public class DocumentHelpersTests
 
         Assert.Contains("Pdf Text", result);
     }
+
+    [Fact]
+    public async Task ExtractText_Returns_Empty_For_Unknown_Extension()
+    {
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes("ignored"));
+
+        var result = await DocumentHelpers.ExtractTextAsync(ms, "file.txt");
+
+        Assert.Equal(string.Empty, result);
+    }
 }
