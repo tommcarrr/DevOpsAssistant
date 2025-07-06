@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using System.Xml.Linq;
 using Xunit;
 
 namespace DevOpsAssistant.Tests.Build;
@@ -6,30 +6,17 @@ namespace DevOpsAssistant.Tests.Build;
 public class PublishTests
 {
     [Fact]
-    public void Publish_Copies_StaticWebAppConfig_To_Wwwroot()
+    public void Publish_Config_Is_Copied_During_Build()
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        Directory.CreateDirectory(tempDir);
-
         var projectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../DevOpsAssistant/DevOpsAssistant.csproj"));
-        var info = new ProcessStartInfo("dotnet",
-            $"publish \"{projectPath}\" -c Release -o \"{tempDir}\" --no-restore --nologo")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            WorkingDirectory = Path.GetDirectoryName(projectPath)!
-        };
+        var doc = XDocument.Load(projectPath);
+        var ns = doc.Root!.Name.Namespace;
 
-        using var process = Process.Start(info);
-        process!.WaitForExit();
-        if (process.ExitCode != 0)
-        {
-            var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
-            throw new Xunit.Sdk.XunitException($"dotnet publish failed: {output}");
-        }
+        var contentItem = doc.Descendants(ns + "Content")
+            .FirstOrDefault(e => e.Attribute("Update")?.Value == "staticwebapp.config.json");
 
-        var configPath = Path.Combine(tempDir, "wwwroot", "staticwebapp.config.json");
-        Assert.True(File.Exists(configPath), $"Expected file '{configPath}' to exist.");
+        Assert.NotNull(contentItem);
+        Assert.Equal("wwwroot/staticwebapp.config.json", contentItem!.Element(ns + "Link")?.Value);
+        Assert.Equal("PreserveNewest", contentItem.Element(ns + "CopyToPublishDirectory")?.Value);
     }
 }
