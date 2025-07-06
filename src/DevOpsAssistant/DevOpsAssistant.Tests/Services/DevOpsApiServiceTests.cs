@@ -1052,6 +1052,10 @@ public class DevOpsApiServiceTests
 
     [Theory]
     [InlineData(HttpStatusCode.BadRequest, "Invalid request")]
+    [InlineData(HttpStatusCode.Unauthorized, "Authentication failed")]
+    [InlineData(HttpStatusCode.Forbidden, "Access denied")]
+    [InlineData(HttpStatusCode.NotFound, "The requested project was not found")]
+    [InlineData(HttpStatusCode.Conflict, "The item was updated elsewhere")]
     [InlineData(HttpStatusCode.TooManyRequests, "Rate limit exceeded")]
     [InlineData(HttpStatusCode.InternalServerError, "Azure DevOps service is unavailable")]
     public async Task HandleError_Maps_Status_To_Message(HttpStatusCode code, string expected)
