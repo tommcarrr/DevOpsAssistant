@@ -24,6 +24,9 @@
   <data name="RequirementsPrompt" xml:space="preserve">
     <value>Requirements Prompt</value>
   </data>
+  <data name="NonFunctionalRequirements" xml:space="preserve">
+    <value>Project NFRs (one per line)</value>
+  </data>
   <data name="PromptReplace" xml:space="preserve">
     <value>Replace default prompt</value>
   </data>

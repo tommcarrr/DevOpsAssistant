@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @using System.Text
+@using System.Linq
 @using System.Text.RegularExpressions
 
 <PageTitle>@L["PageTitle"]</PageTitle>
@@ -85,6 +86,7 @@
                         <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
                         <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
                     </MudRadioGroup>
+                    <MudTextField T="string" Value="_nfrText" ValueChanged="OnNfrsChanged" Label='@L["NonFunctionalRequirements"]' Lines="3"/>
                     <MudText Typo="Typo.subtitle2">@L["WorkItemGranularity"]: @_model.WorkItemGranularity</MudText>
                     <MudSlider T="int" Min="1" Max="5" Step="1"
                                Value="_model.WorkItemGranularity"
@@ -212,6 +214,7 @@
     private bool _qualityDirty;
     private bool _promptsDirty;
     private bool _validationDirty;
+    private string _nfrText = string.Empty;
     private bool _generalDirty;
     private int _activeTab;
     private int _standardsTab;
@@ -236,6 +239,7 @@
             StoryQualityPrompt = cfg.StoryQualityPrompt,
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
+            Nfrs = cfg.Nfrs.ToList(),
             StoryQualityPromptMode = cfg.StoryQualityPromptMode,
             ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
             RequirementsPromptMode = cfg.RequirementsPromptMode,
@@ -267,6 +271,7 @@
                 }
             }
         };
+        _nfrText = string.Join("\n", _model.Nfrs);
         _color = ConfigService.CurrentProject.Color;
         _overrideOrg = !string.IsNullOrWhiteSpace(_model.Organization) || string.IsNullOrWhiteSpace(ConfigService.GlobalOrganization);
         _overridePat = !string.IsNullOrWhiteSpace(_model.PatToken) || string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
@@ -330,6 +335,7 @@
         cfg.StoryQualityPrompt = _model.StoryQualityPrompt;
         cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
+        cfg.Nfrs = _nfrText.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
         cfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
         cfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
         cfg.RequirementsPromptMode = _model.RequirementsPromptMode;
@@ -364,6 +370,7 @@
                 pcfg.StoryQualityPrompt = _model.StoryQualityPrompt;
                 pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
                 pcfg.RequirementsPrompt = _model.RequirementsPrompt;
+                pcfg.Nfrs = _nfrText.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
                 pcfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
                 pcfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
                 pcfg.RequirementsPromptMode = _model.RequirementsPromptMode;
@@ -388,6 +395,12 @@
         sb.AppendLine("---");
         sb.AppendLine($"### {L["RequirementsPrompt"].Value}");
         sb.AppendLine(WithDummyData(_model.RequirementsPrompt));
+        if (!string.IsNullOrWhiteSpace(_nfrText))
+        {
+            sb.AppendLine("---");
+            sb.AppendLine($"### {L["NonFunctionalRequirements"].Value}");
+            sb.AppendLine(_nfrText);
+        }
         await JS.InvokeVoidAsync("copyText", sb.ToString());
         Snackbar.Add(L["PromptsCopied"].Value, Severity.Success);
     }
@@ -511,6 +524,14 @@
     private Task OnPromptsChanged(Action update)
     {
         update();
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnNfrsChanged(string value)
+    {
+        _nfrText = value;
+        _model.Nfrs = value.Split('\n').Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
         _promptsDirty = true;
         return Task.CompletedTask;
     }

@@ -21,6 +21,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
+            Nfrs = ["NFR1"],
             StoryQualityPromptMode = PromptMode.Append,
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
@@ -62,6 +63,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", storedCfg.StoryQualityPrompt);
         Assert.Equal("RN", storedCfg.ReleaseNotesPrompt);
         Assert.Equal("RP", storedCfg.RequirementsPrompt);
+        Assert.Contains("NFR1", storedCfg.Nfrs);
         Assert.Equal("main", storedCfg.MainBranch);
         Assert.Equal(3, storedCfg.WorkItemGranularity);
         Assert.Equal(OutputFormat.Pdf, storedCfg.OutputFormat);
@@ -83,6 +85,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = "SQ",
             ReleaseNotesPrompt = "RN",
             RequirementsPrompt = "RP",
+            Nfrs = ["NFR1"],
             StoryQualityPromptMode = PromptMode.Append,
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
@@ -121,6 +124,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
+        Assert.Contains("NFR1", service.Config.Nfrs);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
         Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
         Assert.Contains("ScrumUserStory", service.Config.Standards.UserStoryDescription);
@@ -142,6 +146,7 @@ public class DevOpsConfigServiceTests
             StoryQualityPrompt = " SQ ",
             ReleaseNotesPrompt = " RN ",
             RequirementsPrompt = " RP ",
+            Nfrs = [" NFR1 "],
             StoryQualityPromptMode = PromptMode.Append,
             ReleaseNotesPromptMode = PromptMode.Append,
             RequirementsPromptMode = PromptMode.Append,
@@ -167,6 +172,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal("SQ", service.Config.StoryQualityPrompt);
         Assert.Equal("RN", service.Config.ReleaseNotesPrompt);
         Assert.Equal("RP", service.Config.RequirementsPrompt);
+        Assert.Contains("NFR1", service.Config.Nfrs);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
         Assert.Equal(5, service.Config.WorkItemGranularity);
         Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
@@ -204,6 +210,7 @@ public class DevOpsConfigServiceTests
         Assert.Equal(string.Empty, service.Config.StoryQualityPrompt);
         Assert.Equal(string.Empty, service.Config.ReleaseNotesPrompt);
         Assert.Equal(string.Empty, service.Config.RequirementsPrompt);
+        Assert.Empty(service.Config.Nfrs);
         Assert.False(service.Config.Rules.Bug.IncludeReproSteps);
         Assert.False(service.Config.Rules.Bug.IncludeSystemInfo);
         Assert.False(service.Config.Rules.Bug.HasStoryPoints);
