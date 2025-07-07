@@ -29,14 +29,15 @@ User Story Granularity Grading Scale (1–5)
 {3}
 //{4} Work Item AC Standards
 {4}
-//{5} - The text of the requirements document
-Requirements Document:
+
+//{5} Clarify Requirements
 {5}
 
-//{6} Clarify Requirements
+//{6} Appended User Prompt
 {6}
 
-//{7} Appended User Prompt
+//{7} - The text of the requirements document
+Requirements Document:
 {7}
 
 ==== RequirementsPlanner_EpicsFeaturesStories ====
@@ -80,7 +81,7 @@ Ensure that the relevant work items adhere to the following standards:
 Ensure that the relevant work item descriptions adhere to the following standards:
 
 ==== RequirementsPlanner_WorkItemDescriptionStandardsNone ====
-Do not follow any standard framework for writing the work item descriptions, such as the Scrum USer Story or Job Story templates, but ensure that the descriptions are clear and unambiguous.
+Do not follow any standard framework for writing the work item descriptions, such as the Scrum User Story or Job Story templates, but ensure that the descriptions are clear and unambiguous.
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStory ====
 - Scrum User Story - in the 'As a <role>, I want <goal> so that <benefit>.' format

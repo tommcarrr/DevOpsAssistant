@@ -83,8 +83,9 @@ public class PromptService
                 BuildWorkItemDescriptionStandards(config),
                 BuildWorkItemAcStandards(config),
                 clarify ? RequirementsPlanner_ClarifyRequirementsPrompt.Value : RequirementsPlanner_ClarifyRequirementsNonePrompt.Value,
-                requirementsDocument,
-                ShouldAppendPrompt(config) ? config.RequirementsPrompt : string.Empty);
+                ShouldAppendPrompt(config) ? config.RequirementsPrompt : string.Empty,
+                requirementsDocument
+                );
         }
         else
         {
