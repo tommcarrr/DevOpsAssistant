@@ -1008,9 +1008,20 @@ public class DevOpsApiService
             var created = w.Fields.TryGetValue("System.CreatedDate", out var cr) && cr.ValueKind == JsonValueKind.String
                 ? cr.GetDateTime()
                 : closed;
-            var activated = w.Fields.TryGetValue("Microsoft.VSTS.Common.ActivatedDate", out var ad) && ad.ValueKind == JsonValueKind.String
-                ? ad.GetDateTime()
-                : created;
+            DateTime activated;
+            if (w.Fields.TryGetValue("Microsoft.VSTS.Common.ActivatedDate", out var ad) && ad.ValueKind == JsonValueKind.String)
+            {
+                activated = ad.GetDateTime();
+            }
+            else
+            {
+                // Items that have never been activated should not contribute to WIP
+                // calculations until work actually starts. Treat their activation
+                // date as open when the story is still active, otherwise fall back
+                // to creation date for closed items so lead and cycle times remain
+                // meaningful.
+                activated = closed == StoryMetric.OpenClosedDate ? StoryMetric.OpenClosedDate : created;
+            }
 
             var storyPoints = w.Fields.TryGetValue("Microsoft.VSTS.Scheduling.StoryPoints", out var sp) && sp.ValueKind == JsonValueKind.Number
                 ? sp.GetDouble()
