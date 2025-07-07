@@ -35,7 +35,10 @@ public static class StandardsCatalog
         ["Gherkin"] = ["BulletPoints", "SAFeStyle"],
         ["BulletPoints"] = ["Gherkin"],
         ["SAFeStyle"] = ["Gherkin"],
-        ["ISO29148"] = ["ScrumUserStory", "JobStory"]
+        ["ISO29148"] = ["ScrumUserStory", "JobStory", "Volere", "BABOK", "ISO25010"],
+        ["Volere"] = ["ISO29148", "BABOK", "ISO25010"],
+        ["BABOK"] = ["ISO29148", "Volere", "ISO25010"],
+        ["ISO25010"] = ["ISO29148", "Volere", "BABOK"]
     };
 
     public static string GetName(string id) => Options.FirstOrDefault(o => o.Id == id)?.Name ?? id;

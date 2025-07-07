@@ -68,7 +68,6 @@
                     <MudTabPanel Text='@L["StoryQualityTab"]'>
                         <MudStack Spacing="2">
                             <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3" />
-                            <MudButton OnClick="SaveQuality" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
                         </MudStack>
                     </MudTabPanel>
                     <MudTabPanel Text='@L["PromptSettingsTab"]'>
@@ -217,7 +216,6 @@
     private bool _useOrgAsGlobal;
     private bool _useAsGlobal;
     private string _color = string.Empty;
-    private bool _qualityDirty;
     private bool _promptsDirty;
     private bool _validationDirty;
     private string _nfrText = string.Empty;
@@ -228,7 +226,7 @@
     private static readonly StandardOption[] StandardOptions = StandardsCatalog.Options;
     private HashSet<string> _selectedStandards = new();
 
-    private bool HasChanges => _generalDirty || _qualityDirty || _promptsDirty || _validationDirty;
+    private bool HasChanges => _generalDirty || _promptsDirty || _validationDirty;
     private bool CanSave => _errors.Count == 0;
 
     protected override async Task OnParametersSetAsync()
@@ -328,18 +326,10 @@
         Snackbar.Add(string.Format(L["SectionSaved"].Value, L["GeneralTab"].Value, _model.Project), Severity.Success);
     }
 
-    private async Task SaveQuality()
-    {
-        var cfg = ConfigService.Config;
-        cfg.DefinitionOfReady = _model.DefinitionOfReady;
-        await ConfigService.SaveCurrentAsync(_model.Project, cfg, _color);
-        _qualityDirty = false;
-        Snackbar.Add(string.Format(L["SectionSaved"].Value, L["StoryQualityTab"].Value, _model.Project), Severity.Success);
-    }
-
     private async Task SavePrompts()
     {
         var cfg = ConfigService.Config;
+        cfg.DefinitionOfReady = _model.DefinitionOfReady;
         cfg.StoryQualityPrompt = _model.StoryQualityPrompt;
         cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
@@ -525,7 +515,7 @@
     private Task OnQualityChanged(string value)
     {
         _model.DefinitionOfReady = value;
-        _qualityDirty = true;
+        _promptsDirty = true;
         return Task.CompletedTask;
     }
 
