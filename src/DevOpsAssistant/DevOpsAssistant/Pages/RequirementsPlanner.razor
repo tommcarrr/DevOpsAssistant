@@ -34,7 +34,7 @@
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
-/*end*/}
+}
 
 <MudStepper @ref="_stepper" NonLinear="true">
     <MudStep Title="@L["SelectRequirements"]" Skippable="true">
@@ -73,7 +73,7 @@
                     </MudTooltip>
                     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="() => CopyPart(_promptParts[_partIndex])">@L["Copy"]</MudButton>
                 </MudStack>
-            /*end*/}
+            }
             <MudTextField T="string" @bind-Value="_responseText" Lines="6" Label="@L["LLMResponse"]" />
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ImportPlan">@L["Import"]</MudButton>
         </MudStack>
@@ -101,9 +101,9 @@
                                     @bind-Description="story.Description"
                                     @bind-AcceptanceCriteria="story.AcceptanceCriteria"
                                     @bind-Tags="story.Tags" />
-                /*end*/}
+                }
                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="AddStory">@L["AddStory"]</MudButton>
-            /*end*/}
+            }
             else
             {
                 @foreach (var epic in _plan.Epics)
@@ -140,34 +140,34 @@
                                                     @bind-Description="story.Description"
                                                     @bind-AcceptanceCriteria="story.AcceptanceCriteria"
                                                     @bind-Tags="story.Tags" />
-                                /*end*/}
+                                }
                                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddStory(feature)">@L["AddStory"]</MudButton>
                             </PlanItemEditor>
-                        /*end*/}
+                        }
                         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddFeature(epic)">@L["AddFeature"]</MudButton>
                     </PlanItemEditor>
-                /*end*/}
+                }
                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="AddEpic">@L["AddEpic"]</MudButton>
-            /*end*/}
+            }
 
             <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap">
                 <MudSelect T="string" @bind-Value="_backlog" Label="@L["Backlog"]">
                     @foreach (var b in _backlogs)
                     {
                         <MudSelectItem Value="@b">@b</MudSelectItem>
-                    /*end*/}
+                    }
                 </MudSelect>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="CreateItems">@L["CreateWorkItems"]</MudButton>
                 <MudButton Variant="Variant.Outlined" Color="Color.Error" Disabled="_loading || _createdItems.Count == 0" OnClick="UndoCreatedItems">@L["Undo"]</MudButton>
             </MudStack>
-        /*end*/}
+        }
     </MudStep>
 </MudStepper>
 
 @if (_loading)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-/*end*/}
+}
 
 @code {
     [Parameter] public string ProjectName { get; set; } = string.Empty;
@@ -199,13 +199,12 @@
     private const string StateKey = "requirements-planner";
     private const long MaxFileSize = 10 * 1024 * 1024;
 
-    private static readonly string InitialPrompt = RequirementsGatherer_MainPrompt.Value;
     private bool GenerateDisabled => _loading || _source switch
         {
             DocumentSource.Document => _file == null,
             DocumentSource.Text => string.IsNullOrWhiteSpace(_text),
             _ => _selectedPages == null || _selectedPages.Count == 0
-        /*end*/};
+        };
 
     protected override async Task OnInitializedAsync()
     {
@@ -214,7 +213,7 @@
             ConfigService.CurrentProject.Name != ProjectName)
         {
             await ConfigService.SelectProjectAsync(ProjectName);
-        /*end*/}
+        }
         try
         {
             _backlogs = await ApiService.GetBacklogsAsync();
@@ -228,7 +227,7 @@
                     _backlog = state.Backlog;
                 if (!string.IsNullOrWhiteSpace(state.WikiId))
                     _wikiId = state.WikiId;
-            /*end*/}
+            }
 
             var wikis = await ApiService.GetWikisAsync();
             if (wikis.Count > 0)
@@ -240,16 +239,16 @@
                 {
                     _wikiItems = [BuildTreeItem(root)];
                     _promptWikiItems = [BuildTreeItem(root)];
-                /*end*/}
-            /*end*/}
+                }
+            }
 
             _error = null;
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _error = ex.Message;
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private async Task Generate()
     {
@@ -267,7 +266,7 @@
                         using var stream = _file.OpenReadStream(MaxFileSize);
                         var text = await DocumentHelpers.ExtractTextAsync(stream, _file.Name);
                         pages.Add((_file.Name, text));
-                    /*end*/}
+                    }
                     break;
                 case DocumentSource.Text:
                     if (!string.IsNullOrWhiteSpace(_text))
@@ -280,10 +279,10 @@
                         {
                             var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
                             pages.Add((p.Name, text));
-                        /*end*/}
-                    /*end*/}
+                        }
+                    }
                     break;
-            /*end*/}
+            }
             _prompt = PromptService.BuildRequirementsPlannerPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
@@ -291,20 +290,20 @@
             {
                 Backlog = _backlog,
                 WikiId = _wikiId
-            /*end*/});
+            });
             _error = null;
             await CopyPrompt();
             await (_stepper?.NextStepAsync() ?? Task.CompletedTask);
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _error = ex.Message;
-        /*end*/}
+        }
         finally
         {
             _loading = false;
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private async Task UndoCreatedItems()
     {
@@ -320,23 +319,23 @@
         {
             await DeleteCreatedItems();
             _error = null;
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _error = ex.Message;
-        /*end*/}
+        }
         finally
         {
             _loading = false;
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private async Task DeleteCreatedItems()
     {
         for (var i = _createdItems.Count - 1; i >= 0; i--)
             await ApiService.DeleteWorkItemAsync(_createdItems[i]);
         _createdItems.Clear();
-    /*end*/}
+    }
 
     private async Task CopyPrompt()
     {
@@ -344,49 +343,48 @@
         {
             await JS.InvokeVoidAsync("copyText", _prompt);
             Snackbar.Add(L["CopyToast"].Value, Severity.Success);
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private async Task CopyInitialPrompt()
     {
         var prompt = await BuildInitialPrompt();
         await JS.InvokeVoidAsync("copyText", prompt);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
-    /*end*/}
+    }
 
     private async Task CopyPart(string text)
     {
         await JS.InvokeVoidAsync("copyText", text);
         Snackbar.Add(L["CopyToast"].Value, Severity.Success);
-    /*end*/}
+    }
 
     private void PrevPart()
     {
         if (_partIndex > 0)
             _partIndex--;
-    /*end*/}
+    }
 
     private void NextPart()
     {
         if (_promptParts != null && _partIndex < _promptParts.Count - 1)
             _partIndex++;
-    /*end*/}
+    }
 
     private async Task DownloadPrompt()
     {
         if (!string.IsNullOrWhiteSpace(_prompt))
             await JS.InvokeVoidAsync("downloadText", "prompt.txt", _prompt);
-    /*end*/}
+    }
 
     private Task OnFileSelected(InputFileChangeEventArgs e)
     {
         _file = e.File;
         return Task.CompletedTask;
-    /*end*/}
+    }
 
     private async Task<string> BuildInitialPrompt()
     {
-        var sb = new System.Text.StringBuilder(InitialPrompt);
         List<(string Name, string Text)> pages = [];
         switch (_promptSource)
         {
@@ -396,7 +394,7 @@
                     using var stream = _promptFile.OpenReadStream(MaxFileSize);
                     var text = await DocumentHelpers.ExtractTextAsync(stream, _promptFile.Name);
                     pages.Add((_promptFile.Name, text));
-                /*end*/}
+                }
                 break;
             case DocumentSource.Text:
                 if (!string.IsNullOrWhiteSpace(_promptText))
@@ -409,23 +407,13 @@
                     {
                         var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
                         pages.Add((p.Name, text));
-                    /*end*/}
-                /*end*/}
+                    }
+                }
                 break;
-        /*end*/}
-        if (pages.Count > 0)
-        {
-            sb.AppendLine();
-            sb.AppendLine(RequirementsGatherer_DocumentIntroPrompt.Value);
-            foreach (var page in pages)
-            {
-                sb.AppendLine($"## {page.Name}");
-                sb.AppendLine(page.Text);
-                sb.AppendLine();
-            /*end*/}
-        /*end*/}
-        return sb.ToString();
-    /*end*/}
+        }
+
+        return PromptService.BuildRequirementsGathererPrompt(pages);
+    }
 
 
     private void ImportPlan()
@@ -439,16 +427,16 @@
             {
                 AddAiGeneratedTags(_plan);
                 SetTagStrings(_plan);
-            /*end*/}
+            }
             _error = null;
             _ = _stepper?.NextStepAsync();
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _plan = null;
             _error = ex.Message;
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private static string ExtractJson(string text)
     {
@@ -457,7 +445,7 @@
         return start >= 0 && end > start
             ? text[start..(end + 1)]
             : text;
-    /*end*/}
+    }
 
     private static void SetTagStrings(Plan plan)
     {
@@ -471,9 +459,9 @@
                 feature.TagString = string.Join(", ", feature.Tags);
                 foreach (var story in feature.Stories)
                     story.TagString = string.Join(", ", story.Tags);
-            /*end*/}
-        /*end*/}
-    /*end*/}
+            }
+        }
+    }
 
     private static void AddAiGeneratedTags(Plan plan)
     {
@@ -487,15 +475,15 @@
                 AddTagIfMissing(feature.Tags);
                 foreach (var story in feature.Stories)
                     AddTagIfMissing(story.Tags);
-            /*end*/}
-        /*end*/}
-    /*end*/}
+            }
+        }
+    }
 
     private static void AddTagIfMissing(ICollection<string> tags)
     {
         if (!tags.Any(t => string.Equals(t, AppConstants.AiGeneratedTag, StringComparison.OrdinalIgnoreCase)))
             tags.Add(AppConstants.AiGeneratedTag);
-    /*end*/}
+    }
 
     private async Task CreateItems()
     {
@@ -520,8 +508,8 @@
                         tags
                     );
                     _createdItems.Add(story.Id);
-                /*end*/}
-            /*end*/}
+                }
+            }
             else
             {
                 foreach (var epic in _plan.Epics)
@@ -547,21 +535,21 @@
                                 tags2
                             );
                             _createdItems.Add(story.Id);
-                        /*end*/}
-                    /*end*/}
-                /*end*/}
-            /*end*/}
+                        }
+                    }
+                }
+            }
             _error = null;
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _error = ex.Message;
-        /*end*/}
+        }
         finally
         {
             _loading = false;
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private static TreeItemData<WikiPageNode> BuildTreeItem(WikiPageNode node)
     {
@@ -569,7 +557,7 @@
         if (node.Children.Count > 0)
             item.Children = node.Children.Select(BuildTreeItem).ToList();
         return item;
-    /*end*/}
+    }
 
 
     private async Task<IEnumerable<WorkItemInfo>> SearchFeatures(string value, CancellationToken _)
@@ -581,20 +569,20 @@
             var result = await ApiService.SearchFeaturesAsync(value);
             _error = null;
             return result;
-        /*end*/}
+        }
         catch (Exception ex)
         {
             _error = ex.Message;
             return Array.Empty<WorkItemInfo>();
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private object? _dragItem;
 
     private void OnDragStart(object item)
     {
         _dragItem = item;
-    /*end*/}
+    }
 
 
     private void OnDropOnPlan(Epic target)
@@ -605,7 +593,7 @@
         var index = _plan.Epics.IndexOf(target);
         _plan.Epics.Insert(index + 1, epic);
         _dragItem = null;
-    /*end*/}
+    }
 
     private void OnDropOnEpic(Epic epic)
     {
@@ -615,7 +603,7 @@
         if (parent != null && !epic.Features.Contains(feature))
             epic.Features.Add(feature);
         _dragItem = null;
-    /*end*/}
+    }
 
     private void OnDropOnFeature(Feature feature)
     {
@@ -627,7 +615,7 @@
         if (!feature.Stories.Contains(story))
             feature.Stories.Add(story);
         _dragItem = null;
-    /*end*/}
+    }
 
     private void OnDropOnStoryList(Story target)
     {
@@ -638,12 +626,12 @@
         var index = list.IndexOf(target);
         list.Insert(index + 1, story);
         _dragItem = null;
-    /*end*/}
+    }
 
     private void RemoveEpic(Epic epic)
     {
         _plan?.Epics.Remove(epic);
-    /*end*/}
+    }
 
     private void RemoveFeature(Feature feature)
     {
@@ -652,7 +640,7 @@
         foreach (var e in _plan.Epics)
             if (e.Features.Remove(feature))
                 break;
-    /*end*/}
+    }
 
     private void RemoveStory(Story story)
     {
@@ -662,38 +650,38 @@
         {
             _plan.Stories.Remove(story);
             return;
-        /*end*/}
+        }
         foreach (var e in _plan.Epics)
             foreach (var f in e.Features)
                 if (f.Stories.Remove(story))
                     return;
-    /*end*/}
+    }
 
     private void AddEpic()
     {
         _plan?.Epics.Add(new Epic());
-    /*end*/}
+    }
 
     private void AddFeature(Epic epic)
     {
         epic.Features.Add(new Feature());
-    /*end*/}
+    }
 
     private void AddStory(Feature feature)
     {
         feature.Stories.Add(new Story());
-    /*end*/}
+    }
 
     private void AddStory()
     {
         _plan?.Stories.Add(new Story());
-    /*end*/}
+    }
 
     private class Plan
     {
         public List<Epic> Epics { get; set; } = new();
         public List<Story> Stories { get; set; } = new();
-    /*end*/}
+    }
 
     private class Epic
     {
@@ -709,9 +697,9 @@
             set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(t => t.Trim())
                                 .ToList();
-        /*end*/}
+        }
         public List<Feature> Features { get; set; } = new();
-    /*end*/}
+    }
 
     private class Feature
     {
@@ -727,9 +715,9 @@
             set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(t => t.Trim())
                                 .ToList();
-        /*end*/}
+        }
         public List<Story> Stories { get; set; } = new();
-    /*end*/}
+    }
 
     private class Story
     {
@@ -746,17 +734,17 @@
             set => Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                 .Select(t => t.Trim())
                                 .ToList();
-        /*end*/}
-    /*end*/}
+        }
+    }
 
     private class PageState
     {
         public string Backlog { get; set; } = string.Empty;
         public string WikiId { get; set; } = string.Empty;
-    /*end*/}
+    }
 
     protected override Task OnProjectChangedAsync()
     {
         return OnInitializedAsync();
-    /*end*/}
-/*end*/}
+    }
+}
