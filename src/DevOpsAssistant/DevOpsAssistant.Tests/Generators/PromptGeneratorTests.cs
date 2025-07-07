@@ -37,4 +37,16 @@ Line4
         Assert.Equal("Section2", result[1].Name);
         Assert.Equal($"Line4{System.Environment.NewLine}", result[1].Content);
     }
+
+    [Fact]
+    public void ParseFile_Trims_Trailing_Empty_Lines()
+    {
+        var text = "Line1\n\n\n";
+
+        var result = InvokeParseFile(text);
+
+        Assert.Single(result);
+        Assert.Equal("Test", result[0].Name);
+        Assert.Equal($"Line1{System.Environment.NewLine}", result[0].Content);
+    }
 }
