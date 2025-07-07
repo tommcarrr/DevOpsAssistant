@@ -94,7 +94,20 @@ public class PromptGenerator : IIncrementalGenerator
         }
 
         return sections
-            .Select(s => (s.Item1, s.Item2.ToString()))
+            .Select(s => (s.Item1, TrimTrailingEmptyLines(s.Item2.ToString())))
             .ToImmutableArray();
+    }
+
+    private static string TrimTrailingEmptyLines(string text)
+    {
+        var lines = text.Replace("\r", "").Split('\n').ToList();
+        while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
+            lines.RemoveAt(lines.Count - 1);
+
+        var sb = new StringBuilder();
+        foreach (var line in lines)
+            sb.AppendLine(line);
+
+        return sb.ToString();
     }
 }
