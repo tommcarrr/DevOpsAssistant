@@ -996,10 +996,15 @@ public class DevOpsApiService
         List<StoryMetric> list = [];
         foreach (var w in workItems)
         {
-            if (!w.Fields.TryGetValue("Microsoft.VSTS.Common.ClosedDate", out var cd) || cd.ValueKind != JsonValueKind.String)
-                continue;
-
-            var closed = cd.GetDateTime();
+            DateTime closed;
+            if (w.Fields.TryGetValue("Microsoft.VSTS.Common.ClosedDate", out var cd) && cd.ValueKind == JsonValueKind.String)
+            {
+                closed = cd.GetDateTime();
+            }
+            else
+            {
+                closed = StoryMetric.OpenClosedDate;
+            }
             var created = w.Fields.TryGetValue("System.CreatedDate", out var cr) && cr.ValueKind == JsonValueKind.String
                 ? cr.GetDateTime()
                 : closed;
