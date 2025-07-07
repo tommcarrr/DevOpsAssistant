@@ -108,4 +108,4 @@ Do not use gherkin syntax, bullet points or any other specific framework for wri
 - SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
 
 ==== RequirementsPlanner_NonFunctionalIntro ====
-Non-Functional Requirements:
+This is a list of existing Non-Functional Requirements for the project, work items should not include anything that is already covered by the NFRs:
