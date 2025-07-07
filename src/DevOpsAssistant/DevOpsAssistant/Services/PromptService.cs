@@ -37,6 +37,25 @@ public class PromptService
         return sb.ToString();
     }
 
+    public static string BuildRequirementsGathererPrompt(IEnumerable<(string Name, string Text)> pages)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(RequirementsGatherer_MainPrompt.Value);
+        if (pages.Any())
+        {
+            sb.AppendLine();
+            sb.AppendLine(RequirementsGatherer_DocumentIntroPrompt.Value);
+            foreach (var page in pages)
+            {
+                sb.AppendLine($"## {page.Name}");
+                sb.AppendLine(page.Text);
+                sb.AppendLine();
+            }
+        }
+
+        return sb.ToString();
+    }
+
     public static string BuildRequirementsQualityPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();

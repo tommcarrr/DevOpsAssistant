@@ -16,7 +16,7 @@ public class PromptServiceTests
                 UserStoryAcceptanceCriteria = ["BulletPoints"]
             }
         };
-        
+
         var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
 
         Assert.Contains("Bullet Points", result);
@@ -35,5 +35,17 @@ public class PromptServiceTests
         var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
 
         Assert.StartsWith("Custom", result.Trim());
+    }
+
+    [Fact]
+    public void BuildRequirementsGathererPrompt_Includes_Document_When_Pages_Provided()
+    {
+        var pages = new List<(string Name, string Text)> { ("Doc", "content") };
+
+        var result = PromptService.BuildRequirementsGathererPrompt(pages);
+
+        Assert.Contains("Agile Business Analyst", result);
+        Assert.Contains("Document:", result);
+        Assert.Contains("## Doc", result);
     }
 }
