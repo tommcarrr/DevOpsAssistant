@@ -116,7 +116,7 @@ public class PromptService
 
     private static string BuildWorkItemAcStandards(DevOpsConfig config)
     {
-        if (config.Standards.UserStoryAcceptanceCriteria.Count <= 0) return string.Empty;
+        if (config.Standards.UserStoryAcceptanceCriteria.Count <= 0) return RequirementsPlanner_WorkItemACStandardsNonePrompt.Value;
 
         var sb = new StringBuilder();
         sb.AppendLine(RequirementsPlanner_WorkItemACStandardsPrompt.Value);
@@ -136,7 +136,7 @@ public class PromptService
 
     private static string BuildWorkItemDescriptionStandards(DevOpsConfig config)
     {
-        if (config.Standards.UserStoryDescription.Count <= 0) return string.Empty;
+        if (config.Standards.UserStoryDescription.Count <= 0) return RequirementsPlanner_WorkItemDescriptionStandardsNonePrompt.Value;
 
         var sb = new StringBuilder();
         sb.AppendLine(RequirementsPlanner_WorkItemDescriptionStandardsPrompt.Value);
