@@ -228,4 +228,10 @@
   <data name="IncludeSystemInfo" xml:space="preserve">
     <value>Include System Info</value>
   </data>
+  <data name="PromptSettingsTab" xml:space="preserve">
+    <value>Prompt Settings</value>
+  </data>
+  <data name="StandardsTab" xml:space="preserve">
+    <value>Standards</value>
+  </data>
 </root>
