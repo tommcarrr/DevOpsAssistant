@@ -1,9 +1,6 @@
 using Bunit;
 using DevOpsAssistant.Pages;
-using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using DevOpsAssistant.Services.Models;
 

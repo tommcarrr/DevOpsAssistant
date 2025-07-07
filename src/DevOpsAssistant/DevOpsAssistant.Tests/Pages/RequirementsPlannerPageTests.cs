@@ -1,12 +1,10 @@
 using System.Reflection;
 using Bunit;
 using System.Net;
-using System.Collections.Generic;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Utils;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 

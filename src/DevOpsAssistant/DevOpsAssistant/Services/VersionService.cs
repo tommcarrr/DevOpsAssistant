@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 namespace DevOpsAssistant.Services;
 
 public class VersionService

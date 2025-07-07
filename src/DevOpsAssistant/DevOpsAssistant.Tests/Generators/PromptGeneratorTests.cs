@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Collections.Immutable;
-using PromptGenerator;
 
 namespace DevOpsAssistant.Tests.Generators;
 

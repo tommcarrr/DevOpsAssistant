@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using DevOpsAssistant.Services.Models;
 
 namespace DevOpsAssistant.Services;

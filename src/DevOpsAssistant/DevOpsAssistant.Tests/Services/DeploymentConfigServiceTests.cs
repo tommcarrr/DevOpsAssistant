@@ -1,8 +1,6 @@
 using System.Net;
-using System.Reflection;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
-using Xunit;
 
 namespace DevOpsAssistant.Tests.Services;
 

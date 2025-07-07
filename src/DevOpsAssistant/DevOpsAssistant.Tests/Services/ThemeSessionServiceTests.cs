@@ -1,6 +1,5 @@
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
-using Xunit;
 
 namespace DevOpsAssistant.Tests.Services;
 

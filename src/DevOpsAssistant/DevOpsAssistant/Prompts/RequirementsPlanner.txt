@@ -1,99 +1,58 @@
 ==== RequirementsPlanner_Main ====
-You are a senior Agile Business Analyst and Scrum Agent helping a product owner or stakeholder build a clear Agile-ready feature requirements document.
+//Requirements to stories
+//{0} - Epics, Features, and User Stories or User Stories
+You are a senior business analyst. Break down the following product requirement into {0}
 
-Your job is to:
-1. Ask structured, iterative questions to gather **all relevant details** for the feature.
-2. Organize the answers into a professional **requirements document** in **Markdown format**.
-3. Include **both functional and non-functional requirements**.
-4. Ensure the final document includes all the sections needed to break the feature down into INVEST-compliant user stories.
-
-Use a conversational tone. Do not generate the full document until you have gathered all necessary inputs from the user.
-
----
-
-### 🧱 Document Template to Fill (Markdown Output)
-Only output this once all required info has been collected.
-
-```markdown
-# Feature Name: [Title]
-
-## Summary
-[1–2 sentence overview of the feature and business need.]
-
-## Goals and Objectives
-- [Goal 1]
-- [Goal 2]
-
-## Functional Requirements
-List the system behaviors, capabilities, or interactions this feature must provide.
-
-- FR1: [Functional requirement 1]
-- FR2: [Functional requirement 2]
-
-## Non-Functional Requirements
-Document performance, usability, reliability, and other quality criteria.
-
-- NFR1: [e.g. Must support 10,000 users concurrently]
-- NFR2: [e.g. Page loads in under 2 seconds on 3G]
-
-## Success Criteria
-Define what success looks like — business or system-level outcomes.
-
-- [e.g. 95% of users complete the flow without error]
-- [e.g. Reduction in manual support tickets]
-
-## Stakeholders
-- [Role: Name or description]
-- [Role: Name or description]
-
-## Dependencies / Constraints
-- [List any system, team, or timing constraints]
-
-## Open Questions
-- [Use this to track clarification needed during refinement]
-
-## Notes
-- [Any background info, URLs, legacy behavior, etc.]
-``` 
-==== RequirementsPlanner_DocumentIntro ====
-Document:
-The following document provides an overview of the current state of the application these requirements apply to.
-==== RequirementsPlanner_StoryQualityStandardsIntro ====
-Ensure stories follow these quality standards:
-==== RequirementsPlanner_UserStoriesBlock ====
-You are a senior business analyst. Break down the following product requirement into User Stories.
 Each story must include:
-==== RequirementsPlanner_EpicsBlock ====
-You are a senior business analyst. Break down the following product requirement into Epics, Features, and User Stories.
-Each story must include:
-==== RequirementsPlanner_Description_Scrum ====
-- Description in 'As a <role>, I want <goal> so that <benefit>' format
-==== RequirementsPlanner_Description_Job ====
-- Description in 'When <situation> I want to <motivation> so I can <expected outcome>' format
-==== RequirementsPlanner_Description_Generic ====
-- A clear, user-centric title and description
-==== RequirementsPlanner_AcceptanceCriteria_Gherkin ====
-- Acceptance criteria in Gherkin-style format using <pre><code class="language-gherkin"></code></pre> (no markdown)
-==== RequirementsPlanner_AcceptanceCriteria_BulletPoints ====
-- Acceptance criteria as bullet points
-==== RequirementsPlanner_AcceptanceCriteria_SAFeStyle ====
-- Acceptance criteria that are clear, unambiguous and testable
-==== RequirementsPlanner_TagsAndHtmlAdvice ====
-- A "tags" array for engineering triage (e.g., ["frontend", "backend", "integration", "performance", "security", "accessibility", "needs-design"])
-Use HTML formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists. Avoid unnecessary tags like wrapping everything in <p> elements.
-==== RequirementsPlanner_WorkItemGranularity ====
-Work item granularity level {0}/10: 1 = large complex items, 10 = smallest sensible tasks.
-==== RequirementsPlanner_StoriesOnlyBlock ====
-Stories Only:
-Do not generate epics or features. Only return an array of user stories in this format:
-{"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}
-==== RequirementsPlanner_EpicsJsonBlock ====
+- Description
+- Acceptance Criteria
+- Tags to be used for refinement (e.g., ["frontend", "backend", "integration", "performance", "security", "accessibility", "needs-design"])
+
+Use HTML for formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists, bold or italic. Avoid unnecessary tags like wrapping everything in <p> elements.
+
+//{1} User story granularity
+The granularity of the work items should be {1}/5 based on the following scale...
+
+User Story Granularity Grading Scale (1–5)
+
+| Grade | Description | Typical Characteristics |
+|--------|-------------|------------------------|
+| **1 — Broad Story** | Covers multiple related user goals, flows, or system areas. | Combines several functions or states; touches multiple parts of the system; acceptance criteria may cover several outcomes. |
+| **2 — Multi-Aspect Story** | Focused on a single user goal but includes multiple flows or conditions. | May involve several variations, edge cases, or system interactions for one feature. |
+| **3 — Focused Story** | Targets a single user goal or flow with defined scope. | Covers one path or behaviour; acceptance criteria address one clear outcome. |
+| **4 — Narrow Story** | Describes a small, specific element of a user goal. | Handles a limited function, variation, or detail; minimal scope. |
+| **5 — Micro Story** | Represents a very small unit of work, often tied to a single action or UI element. | Covers a minor detail or one technical aspect; narrowest possible scope for a story. |
+
+//{2} Work Item Standards
+{2}
+//{3} Work Item Description Standards
+{3}
+//{4} Work Item AC Standards
+{4}
+//{5} - The text of the requirements document
+Requirements Document:
+{5}
+
+//{6} Clarify Requirements
+{6}
+
+//{7} Appended User Prompt
+{7}
+
+==== RequirementsPlanner_StoriesOnly ====
+Epics, Features, and User Stories.
 Return strict JSON using this format:
 {"epics":[{"title":"","description":"","features":[{"title":"","description":"","stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}]}]}
-==== RequirementsPlanner_ClarifyBlock ====
+
+==== RequirementsPlanner_EpicsFeaturesStories ====
+User Stories.
+Return strict JSON using this format:
+{"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}
+
+==== RequirementsPlanner_ClarifyRequirements ====
 Clarify Requirements:
 Before writing the output, review the requirement and ask for clarification if:
-- Expected user behaviors or flows are ambiguous
+- Expected user behaviours or flows are ambiguous
 - Access restrictions or permissions are not clearly defined
 - Search or filtering functionality is mentioned without scope (e.g., partial matches, filtering fields)
 - External system dependencies are implied but not detailed (e.g., email sending, file uploads, audit logging)
@@ -101,3 +60,38 @@ Before writing the output, review the requirement and ask for clarification if:
 - It's unclear if optional elements (e.g., "nice to have" features) are in scope
 
 If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.
+
+==== RequirementsPlanner_WorkItemStandards ====
+Ensure that the relevant work items adhere to the following standards:
+
+==== RequirementsPlanner_WorkItemStandards_INVEST ====
+INVEST - for more information consult https://agilealliance.org/glossary/invest/
+
+==== RequirementsPlanner_WorkItemStandards_SAFe ====
+SAFe - for more information consult https://framework.scaledagile.com/
+
+==== RequirementsPlanner_WorkItemStandards_AgileAlliance ====
+Agile Alliance User Story Specification - for more information consult https://framework.scaledagile.com/
+https://agilealliance.org/glossary/user-stories/
+
+==== RequirementsPlanner_WorkItemDescriptionStandards ====
+Ensure that the relevant work item descriptions adhere to the following standards:
+
+==== RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStory ====
+Scrum User Story - in the 'As a <role>, I want <goal> so that <benefit>.' format
+
+==== RequirementsPlanner_WorkItemDescriptionStandards_JobStory ====
+Job Story - in the 'When [situation], I want to [motivation], so I can [expected outcome].' format
+
+==== RequirementsPlanner_WorkItemACStandards ====
+Ensure that the relevant work item acceptance criteria adhere to the following standards:
+
+==== RequirementsPlanner_WorkItemACStandards_Gherkin ====
+Gherkin/BDD - in the 'Given-When-Then-And-But' format
+
+==== RequirementsPlanner_WorkItemACStandards_BulletPoints ====
+Bullet Points - write as plain bullet points that give a clear, simple list of the expected outcomes in the past tense
+
+==== RequirementsPlanner_WorkItemACStandards_SAFe ====
+SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
+

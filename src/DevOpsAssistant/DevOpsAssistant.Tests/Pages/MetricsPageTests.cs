@@ -1,15 +1,10 @@
-using Bunit;
-using System;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Utils;
-using MudBlazor;
 using DevOpsAssistant.Components.Apex;
 using ApexCharts;
 

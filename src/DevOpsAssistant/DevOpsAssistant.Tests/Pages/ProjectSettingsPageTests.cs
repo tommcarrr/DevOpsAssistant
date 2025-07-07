@@ -1,10 +1,7 @@
-using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Services;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DevOpsAssistant.Tests.Pages;
 

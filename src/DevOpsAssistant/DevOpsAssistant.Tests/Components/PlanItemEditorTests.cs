@@ -2,7 +2,6 @@ using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Utils;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace DevOpsAssistant.Tests.Components;

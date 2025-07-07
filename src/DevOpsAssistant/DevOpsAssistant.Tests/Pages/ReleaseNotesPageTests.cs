@@ -1,15 +1,8 @@
-using System.Net;
-using System.Threading;
-using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
-using Bunit;
 using DevOpsAssistant.Pages;
 using DevOpsAssistant.Services;
 using DevOpsAssistant.Services.Models;
 using DevOpsAssistant.Tests.Utils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
 namespace DevOpsAssistant.Tests.Pages;
 

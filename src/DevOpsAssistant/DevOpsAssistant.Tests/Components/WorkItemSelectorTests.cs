@@ -1,6 +1,4 @@
 using System.Net;
-using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;

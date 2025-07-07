@@ -1,5 +1,4 @@
 using DevOpsAssistant.Utils;
-using Xunit;
 
 namespace DevOpsAssistant.Tests.Utils;
 

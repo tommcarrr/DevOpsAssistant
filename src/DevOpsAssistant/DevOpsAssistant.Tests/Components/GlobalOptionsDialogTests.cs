@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using System.Reflection;
 using Bunit;
 using DevOpsAssistant.Components;

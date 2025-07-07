@@ -1,6 +1,4 @@
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using DevOpsAssistant.Utils;
 using Pkg = DocumentFormat.OpenXml.Packaging;
 using W = DocumentFormat.OpenXml.Wordprocessing;
@@ -11,7 +9,6 @@ using UglyToad.PdfPig.Writer;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Fonts.Standard14Fonts;
 using UglyToad.PdfPig.Core;
-using Xunit;
 
 namespace DevOpsAssistant.Tests.Utils;
 

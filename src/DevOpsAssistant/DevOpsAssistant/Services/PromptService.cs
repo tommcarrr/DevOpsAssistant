@@ -1,10 +1,6 @@
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using GeneratedPrompts;
 using DevOpsAssistant.Services.Models;
-using DevOpsAssistant.Utils;
-using System.Collections.Generic;
 
 namespace DevOpsAssistant.Services;
 
@@ -54,6 +50,7 @@ public class PromptService
             foreach (var s in config.Standards.RequirementsDocumentation)
                 sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
         }
+
         sb.AppendLine();
         sb.AppendLine(RequirementsQuality_DocumentIntroPrompt.Value);
         foreach (var page in pages)
@@ -62,74 +59,110 @@ public class PromptService
             sb.AppendLine(page.Text);
             sb.AppendLine();
         }
+
         return sb.ToString();
     }
 
-    public string BuildRequirementsPlannerPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly, bool clarify, DevOpsConfig config)
+    public string BuildRequirementsPlannerPrompt(IEnumerable<(string Name, string Text)> pages, bool storiesOnly,
+        bool clarify, DevOpsConfig config)
     {
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.RequirementsPrompt) || config.RequirementsPromptMode == PromptMode.Append)
         {
-            if (storiesOnly)
-                sb.AppendLine(RequirementsPlanner_UserStoriesBlockPrompt.Value);
-            else
-                sb.AppendLine(RequirementsPlanner_EpicsBlockPrompt.Value);
-            if (config.Standards.UserStoryDescription.Contains("ScrumUserStory"))
-                sb.AppendLine(RequirementsPlanner_Description_ScrumPrompt.Value);
-            else if (config.Standards.UserStoryDescription.Contains("JobStory"))
-                sb.AppendLine(RequirementsPlanner_Description_JobPrompt.Value);
-            else
-                sb.AppendLine(RequirementsPlanner_Description_GenericPrompt.Value);
-            if (config.Standards.UserStoryAcceptanceCriteria.Contains("Gherkin"))
-                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_GherkinPrompt.Value);
-            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("BulletPoints"))
-                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_BulletPointsPrompt.Value);
-            else if (config.Standards.UserStoryAcceptanceCriteria.Contains("SAFeStyle"))
-                sb.AppendLine(RequirementsPlanner_AcceptanceCriteria_SAFeStylePrompt.Value);
-            sb.AppendLine(RequirementsPlanner_TagsAndHtmlAdvicePrompt.Value);
-            sb.AppendLine(string.Format(RequirementsPlanner_WorkItemGranularityPrompt.Value, config.WorkItemGranularity));
-            if (config.Standards.UserStoryQuality.Count > 0)
+            sb.AppendFormat(RequirementsPlanner_MainPrompt.Value,
+                storiesOnly
+                    ? RequirementsPlanner_StoriesOnlyPrompt.Value
+                    : RequirementsPlanner_EpicsFeaturesStoriesPrompt.Value,
+                config.WorkItemGranularity.ToString(),
+                GetWorkItemStandards(config),
+                GetWorkItemDescriptionStandards(config),
+                GetWorkItemAcStandards(config),
+                GetRequirementsDocument(),
+                clarify ? RequirementsPlanner_ClarifyRequirementsPrompt.Value : "",
+                !string.IsNullOrWhiteSpace(config.RequirementsPrompt) &&
+                config.RequirementsPromptMode == PromptMode.Append
+                    ? config.RequirementsPrompt
+                    : "");
+
+            return sb.ToString();
+
+            string GetWorkItemAcStandards(DevOpsConfig devOpsConfig)
             {
-                sb.AppendLine();
-                sb.AppendLine(RequirementsPlanner_StoryQualityStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.UserStoryQuality)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+                if (config.Standards.UserStoryAcceptanceCriteria.Count <= 0) return "";
+
+                var sbLocal = new StringBuilder();
+                sbLocal.AppendLine(RequirementsPlanner_WorkItemACStandardsPrompt.Value);
+                foreach (var standardText in devOpsConfig.Standards.UserStoryDescription.Select(s => s switch
+                         {
+                             "Gherkin" => RequirementsPlanner_WorkItemACStandards_GherkinPrompt.Value,
+                             "BulletPoints" => RequirementsPlanner_WorkItemACStandards_BulletPointsPrompt.Value,
+                             "SAFeStyle" => RequirementsPlanner_WorkItemACStandards_SAFePrompt.Value,
+                             _ => ""
+                         }))
+                {
+                    sbLocal.AppendLine(standardText);
+                }
+
+                return sbLocal.ToString();
             }
-            if (config.Standards.RequirementsDocumentation.Count > 0)
+
+            string GetWorkItemDescriptionStandards(DevOpsConfig devOpsConfig)
             {
-                sb.AppendLine();
-                sb.AppendLine(RequirementsDocumentationStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.RequirementsDocumentation)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
+                if (config.Standards.UserStoryDescription.Count <= 0) return "";
+
+                var sbLocal = new StringBuilder();
+                sbLocal.AppendLine(RequirementsPlanner_WorkItemDescriptionStandardsPrompt.Value);
+                foreach (var standardText in devOpsConfig.Standards.UserStoryDescription.Select(s => s switch
+                         {
+                             "ScrumUserStory" => RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStoryPrompt
+                                 .Value,
+                             "JobStory" => RequirementsPlanner_WorkItemDescriptionStandards_JobStoryPrompt.Value,
+                             _ => ""
+                         }))
+                {
+                    sbLocal.AppendLine(standardText);
+                }
+                
+                return sbLocal.ToString();
             }
-            if (storiesOnly)
+
+            string GetWorkItemStandards(DevOpsConfig devOpsConfig)
             {
-                sb.AppendLine();
-                sb.AppendLine(RequirementsPlanner_StoriesOnlyBlockPrompt.Value);
-            }
-            else
-            {
-                sb.AppendLine();
-                sb.AppendLine(RequirementsPlanner_EpicsJsonBlockPrompt.Value);
-            }
-            if (clarify)
-            {
-                sb.AppendLine();
-                sb.AppendLine(RequirementsPlanner_ClarifyBlockPrompt.Value);
+                if (config.Standards.UserStoryQuality.Count <= 0) return "";
+
+                var sbLocal = new StringBuilder();
+                sbLocal.AppendLine(RequirementsPlanner_WorkItemStandardsPrompt.Value);
+                foreach (var standardText in devOpsConfig.Standards.UserStoryQuality.Select(s => s switch
+                         {
+                             "INVEST" => RequirementsPlanner_WorkItemStandards_INVESTPrompt.Value,
+                             "SAFe" => RequirementsPlanner_WorkItemStandards_SAFePrompt.Value,
+                             "AgileAlliance" => RequirementsPlanner_WorkItemStandards_AgileAlliancePrompt.Value,
+                             _ => ""
+                         }))
+                {
+                    sbLocal.AppendLine(standardText);
+                }
+
+                return sbLocal.ToString();
             }
         }
-        if (!string.IsNullOrWhiteSpace(config.RequirementsPrompt))
-            sb.AppendLine(config.RequirementsPrompt.Trim());
-        sb.AppendLine();
-        sb.AppendLine(RequirementsPlanner_DocumentIntroPrompt.Value);
-        foreach (var page in pages)
-        {
-            sb.AppendLine($"## {page.Name}");
-            sb.AppendLine(page.Text);
-            sb.AppendLine();
-        }
-        sb.AppendLine();
+
+        sb.AppendLine(config.RequirementsPrompt);
+        sb.AppendLine(GetRequirementsDocument());
         return sb.ToString();
+
+        string GetRequirementsDocument()
+        {
+            var sbLocal = new StringBuilder();
+            foreach (var page in pages)
+            {
+                sbLocal.AppendLine($"## {page.Name}");
+                sbLocal.AppendLine(page.Text);
+                sbLocal.AppendLine();
+            }
+
+            return sbLocal.ToString();
+        }
     }
 
     public string BuildWorkItemQualityPrompt(string json, DevOpsConfig config)
@@ -145,6 +178,7 @@ public class PromptService
                 foreach (var s in config.Standards.UserStoryQuality)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
+
             if (config.Standards.BugReporting.Count > 0)
             {
                 sb.AppendLine();
@@ -152,6 +186,7 @@ public class PromptService
                 foreach (var s in config.Standards.BugReporting)
                     sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
             }
+
             if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
             {
                 sb.AppendLine();
@@ -159,6 +194,7 @@ public class PromptService
                 sb.AppendLine(config.DefinitionOfReady);
             }
         }
+
         if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
             sb.AppendLine(config.StoryQualityPrompt.Trim());
         if (config.OutputFormat == OutputFormat.Inline)

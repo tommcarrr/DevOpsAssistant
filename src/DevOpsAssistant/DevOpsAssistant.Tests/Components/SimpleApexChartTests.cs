@@ -1,8 +1,6 @@
 using Bunit;
 using DevOpsAssistant.Components.Apex;
-using DevOpsAssistant.Components;
 using DevOpsAssistant.Tests.Utils;
-using ApexCharts;
 
 namespace DevOpsAssistant.Tests.Components;
 

@@ -1,8 +1,6 @@
 using Bunit;
 using DevOpsAssistant.Services;
 using System.Net;
-using System.Net.Http;
-using DevOpsAssistant.Tests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
