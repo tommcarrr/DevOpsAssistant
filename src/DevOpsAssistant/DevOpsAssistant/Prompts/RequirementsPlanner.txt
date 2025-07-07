@@ -68,14 +68,13 @@ Use your best judgement if anything is unclear but provide feedback as to what a
 Ensure that the relevant work items adhere to the following standards:
 
 ==== RequirementsPlanner_WorkItemStandards_INVEST ====
-INVEST - for more information consult https://agilealliance.org/glossary/invest/
+- INVEST - for more information consult https://agilealliance.org/glossary/invest/
 
 ==== RequirementsPlanner_WorkItemStandards_SAFe ====
-SAFe - for more information consult https://framework.scaledagile.com/
+- SAFe - for more information consult https://framework.scaledagile.com/
 
 ==== RequirementsPlanner_WorkItemStandards_AgileAlliance ====
-Agile Alliance User Story Specification - for more information consult https://framework.scaledagile.com/
-https://agilealliance.org/glossary/user-stories/
+- Agile Alliance User Story Specification - for more information consult https://agilealliance.org/glossary/user-stories/
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards ====
 Ensure that the relevant work item descriptions adhere to the following standards:
@@ -84,10 +83,10 @@ Ensure that the relevant work item descriptions adhere to the following standard
 Do not follow any standard framework for writing the work item descriptions, such as the Scrum USer Story or Job Story templates, but ensure that the descriptions are clear and unambiguous.
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStory ====
-Scrum User Story - in the 'As a <role>, I want <goal> so that <benefit>.' format
+- Scrum User Story - in the 'As a <role>, I want <goal> so that <benefit>.' format
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards_JobStory ====
-Job Story - in the 'When [situation], I want to [motivation], so I can [expected outcome].' format
+- Job Story - in the 'When [situation], I want to [motivation], so I can [expected outcome].' format
 
 ==== RequirementsPlanner_WorkItemACStandards ====
 Ensure that the relevant work item acceptance criteria adhere to the following standards:
@@ -96,11 +95,10 @@ Ensure that the relevant work item acceptance criteria adhere to the following s
 Do not use gherkin syntax, bullet points or any other specific framework for writing the work item acceptance criteria, but ensure they are clear, comprehensive and well written.
 
 ==== RequirementsPlanner_WorkItemACStandards_Gherkin ====
-Gherkin/BDD - in the 'Given-When-Then-And-But' format
+- Gherkin/BDD - in the 'Given-When-Then-And-But' format
 
 ==== RequirementsPlanner_WorkItemACStandards_BulletPoints ====
-Bullet Points - write as plain bullet points that give a clear, simple list of the expected outcomes in the past tense
+- Bullet Points - write as plain bullet points that give a clear, simple list of the expected outcomes in the past tense
 
 ==== RequirementsPlanner_WorkItemACStandards_SAFe ====
-SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
-
+- SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
