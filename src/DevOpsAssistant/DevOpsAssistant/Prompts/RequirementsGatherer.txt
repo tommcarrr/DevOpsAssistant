@@ -1,19 +1,25 @@
-﻿//TODO: modify document according to specs
-==== RequirementsGatherer_Main ====
+﻿==== RequirementsGatherer_Main ====
 You are a senior Agile Business Analyst and Scrum Agent helping a product owner or stakeholder build a clear Agile-ready feature requirements document.
 
 Your job is to:
 1. Ask structured, iterative questions to gather **all relevant details** for the feature.
 2. Organize the answers into a professional **requirements document** in **Markdown format**.
 3. Include **both functional and non-functional requirements**.
-4. Ensure the final document includes all the sections needed to break the feature down into INVEST-compliant user stories.
+4. Ensure the final document includes all the sections needed to break the feature down into agile work items. Do not ask if I want you to produce work items as this will be done in a future step.
 
-Use a conversational tone. Do not generate the full document until you have gathered all necessary inputs from the user.
+Use a conversational tone and challenge any assumptions. Do not generate the full document until you have gathered all necessary inputs from the user.
 
 
 ### 🧱 Document Template to Fill (Markdown Output)
 Only output this once all required info has been collected.
 
+//{0} - Template
+{0}
+
+//{1} - Document
+{1}
+
+==== RequirementsGatherer_Template_General====
 ```markdown
 # Feature Name: [Title]
 
@@ -55,8 +61,385 @@ Define what success looks like — business or system-level outcomes.
 ## Notes
 - [Any background info, URLs, legacy behavior, etc.]
 ``` 
----
+
+==== RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018 ====
+```markdown
+# Feature Name: [Insert Title Here]
+
+## Summary
+Provide a concise description of the feature, its purpose, and context within the system.
+
+[Example: This feature enables users to reset their password securely through a self-service flow.]
+
+## Goals and Objectives
+Define what the feature aims to accomplish in support of business or mission needs.
+
+- [Goal 1: e.g. Improve account security by providing a self-service recovery option.]
+- [Goal 2: e.g. Reduce support team workload related to password resets.]
+
+## Functional Requirements
+Define system capabilities, functions, and behaviors. Each requirement should be atomic, unambiguous, and verifiable.
+
+- **FR-001:** [Unique ID — Describe what the system shall do. E.g. The system shall allow users to request a password reset link via email.]
+  - *Source:* [Who/what provided this requirement: stakeholder, regulation, etc.]
+  - *Rationale:* [Why is this required?]
+  - *Validation:* [Describe how this will be tested or verified.]
+
+- **FR-002:** [Describe another functional requirement.]
+  - *Source:* 
+  - *Rationale:*
+  - *Validation:*
+
+## Non-Functional Requirements
+Define quality attributes the system or feature must satisfy.
+
+- **NFR-001:** [Unique ID — E.g. The password reset service shall be available 99.9% of the time.]
+  - *Source:*
+  - *Rationale:*
+  - *Validation:*
+
+- **NFR-002:** [E.g. The system shall respond to password reset requests within 3 seconds under normal load.]
+  - *Source:*
+  - *Rationale:*
+  - *Validation:*
+
+## External Interfaces
+Describe interactions with external systems, users, or hardware.
+
+- **EI-001:** [E.g. The system shall send reset links via SMTP-compliant email server.]
+- **EI-002:** [E.g. The system shall consume user data from IdentityProvider v2 API.]
+
+## Constraints
+Document known design, implementation, or operational limitations.
+
+- [E.g. Must comply with GDPR data handling requirements.]
+- [E.g. Must support only English language at initial release.]
+
+## Traceability
+Provide mappings between these requirements and higher-level system requirements, use cases, or design elements.
+
+| Requirement ID | Traces To |
+|----------------|-----------|
+| FR-001 | [e.g. System Requirement SYS-005] |
+| NFR-001 | [e.g. Quality Attribute QA-001] |
+
+## Success Criteria
+Define objective measures for feature acceptance.
+
+- [E.g. 95% of users complete password reset within 5 minutes without support.]
+- [E.g. Zero critical security incidents related to password reset in 12 months.]
+
+## Stakeholders
+Identify individuals or groups impacted or responsible.
+
+- [Role: e.g. Security Officer — ensures compliance with security requirements]
+- [Role: e.g. Customer Support Lead — represents operational impact]
+
+## Open Issues / Questions
+Track any items requiring further analysis or decision.
+
+- [E.g. Confirm whether reset links must expire in 15 or 30 minutes.]
+- [E.g. Clarify encryption standards for stored reset tokens.]
+
+## Notes / References
+Include background, related documents, or external standards.
+
+- [Link to system architecture diagram]
+- [Reference to related feature or requirement document]
+- [Applicable standard: ISO/IEC/IEEE 29148:2018]
+```
+==== RequirementsGatherer_Template_Volare ====
+```markdown
+# Feature Name: [Insert Title Here]
+
+## Summary
+[Provide a high-level description of the feature and its purpose.]
+
+## Goals / Objectives
+- [Goal: The business or product goal this feature supports.]
+
+## Functional Requirements
+Each requirement should have an ID, description, and associated Volere attributes.
+
+### FR-001: [Brief requirement title]
+- **Description:** [Describe the required functionality, using "the system shall..."]
+- **Rationale:** [Why is this requirement necessary?]
+- **Source:** [Where did this requirement originate? Stakeholder, standard, etc.]
+- **Fit Criterion:** [How will we verify this requirement has been met?]
+- **Priority:** [e.g. Essential, desirable, optional]
+- **Supporting Materials:** [Links to diagrams, models, documents if relevant]
+
+### FR-002: [Next functional requirement]
+- **Description:**
+- **Rationale:**
+- **Source:**
+- **Fit Criterion:**
+- **Priority:**
+- **Supporting Materials:**
+
+## Non-Functional Requirements
+Include quality requirements such as performance, usability, security, etc.
+
+### NFR-001: [Brief requirement title]
+- **Description:** [E.g. The system shall respond to user requests within 1 second under normal load.]
+- **Rationale:**
+- **Source:**
+- **Fit Criterion:**
+- **Priority:**
+- **Supporting Materials:**
+
+### NFR-002: 
+- **Description:**
+- **Rationale:**
+- **Source:**
+- **Fit Criterion:**
+- **Priority:**
+- **Supporting Materials:**
+
+## Constraints
+Describe limitations on design, implementation, or environment.
+
+- [E.g. Must comply with accessibility standard WCAG 2.1 AA.]
+- [E.g. Deployment limited to Azure cloud platform.]
+
+## Assumptions
+Document assumptions made in writing these requirements.
+
+- [E.g. All users will have access to modern browsers.]
+- [E.g. External API X will provide accurate data.]
+
+## Business Rules
+List business policies or rules the system must adhere to.
+
+- [E.g. A password reset token expires after 15 minutes.]
+- [E.g. Only managers can approve leave requests.]
+
+## External Interfaces
+Identify interactions with external systems, users, hardware, or software.
+
+- [E.g. Interface with external email service for notifications.]
+- [E.g. API integration with partner system Y.]
+
+## Open Issues / Questions
+Track unresolved matters that require decisions or clarification.
+
+- [E.g. What is the password complexity policy?]
+- [E.g. Should we support multi-factor authentication at launch?]
+
+## Stakeholders
+Identify individuals or groups interested in or impacted by the feature.
+
+- [Name or Role: e.g. Product Manager — responsible for feature delivery]
+- [Name or Role: e.g. Compliance Officer — ensures legal requirements are met]
+
+## Volere Requirements Cross-Reference
+| Requirement ID | Related Use Case | Related Design | Related Test Case |
+|----------------|-----------------|----------------|------------------|
+| FR-001 | UC-05: Password Reset | Design-03 | TC-12 |
+| NFR-001 | - | Design-07 | TC-18 |
+
+## Supporting Materials
+- [Link to business case document]
+- [Reference to domain model]
+- [Links to UI mockups, prototypes]
+
+## Notes
+- [Other background information, legacy considerations, relevant URLs]
+
+```
+
+==== RequirementsGatherer_Template_BABOK ====
+```markdown
+# Feature Name: [Insert Feature Title]
+
+## Summary
+[Brief overview of the feature, its business need, and the problem it addresses.]
+
+## Business Objectives
+Document the business goals this feature supports.
+
+- [Business Objective 1: e.g. Reduce customer support calls related to password recovery.]
+- [Business Objective 2: e.g. Improve customer satisfaction by enabling self-service.]
+
+## Functional Requirements
+Describe what the system must do.
+
+### FR-001: [Requirement title]
+- **Description:** [The system shall...]
+- **Type:** Functional
+- **Rationale:** [Why is this requirement needed?]
+- **Source:** [Stakeholder, regulation, etc.]
+- **Priority:** [Must have / Should have / Could have / Won’t have (or other agreed scale)]
+- **Acceptance Criteria:** [How will we confirm this requirement is met?]
+- **Trace:** [Related business objective, use case, or process model]
+
+### FR-002: 
+- **Description:** 
+- **Type:** Functional
+- **Rationale:** 
+- **Source:** 
+- **Priority:** 
+- **Acceptance Criteria:** 
+- **Trace:** 
+
+## Non-Functional Requirements
+Specify quality attributes.
+
+### NFR-001: [Requirement title]
+- **Description:** [E.g. The system shall support 1000 concurrent users.]
+- **Type:** Non-functional (e.g. performance, security)
+- **Rationale:** 
+- **Source:** 
+- **Priority:** 
+- **Acceptance Criteria:** 
+- **Trace:** 
+
+### NFR-002: 
+- **Description:** 
+- **Type:** 
+- **Rationale:** 
+- **Source:** 
+- **Priority:** 
+- **Acceptance Criteria:** 
+- **Trace:** 
+
+## Business Rules
+Document policies or rules the system must enforce.
+
+- **BR-001:** [E.g. Password reset tokens expire after 15 minutes.]
+- **BR-002:** [E.g. Only users with manager role can approve time-off requests.]
+
+## Constraints
+Describe limitations affecting solution design or delivery.
+
+- [E.g. Must comply with GDPR.]
+- [E.g. Solution must use existing company authentication service.]
+
+## Assumptions
+- [E.g. All users have a valid email address.]
+- [E.g. External API X will be available at time of integration.]
+
+## Stakeholders
+Identify stakeholders involved or impacted.
+
+- [Role / Name: e.g. Product Owner — responsible for feature prioritization.]
+- [Role / Name: e.g. Security Team — reviews for compliance.]
+
+## Dependencies
+List external factors required for successful delivery.
+
+- [E.g. Dependent on rollout of new identity platform.]
+- [E.g. Requires updated API from vendor X.]
+
+## Open Issues / Questions
+Track unresolved points needing clarification.
+
+- [E.g. What is the required password complexity?]
+- [E.g. Confirm retention period for reset tokens.]
+
+## Success Criteria
+State how feature success will be measured.
+
+- [E.g. 90% of password resets completed without support intervention.]
+- [E.g. User satisfaction rating for password reset flow ≥ 4/5.]
+
+## Supporting Materials / References
+- [Links to business process models, use cases, prototypes, or other artefacts.]
+- [Reference related policies, standards, or regulations.]
+
+```
+
+==== RequirementsGatherer_Template_ISO_IEC_25010 ====
+```markdown
+# Feature Name: [Insert Feature Title]
+
+## Summary
+[Provide a brief description of the feature and how it contributes to business goals.]
+
+## Business Objectives
+- [Objective 1: e.g. Improve user engagement by enhancing reporting dashboard.]
+- [Objective 2: e.g. Reduce page load times for analytics reports.]
+
+## Functional Requirements
+Specify what the system shall do.
+
+### FR-001: [Requirement title]
+- **Description:** [The system shall ...]
+- **Rationale:** [Why is this needed?]
+- **Source:** [Stakeholder, regulation, business rule]
+- **Acceptance Criteria:** [How will we verify this requirement?]
+- **Priority:** [Essential / Desirable / Optional]
+- **Traceability:** [Business objective, use case, or system requirement]
+
+### FR-002:
+- **Description:**
+- **Rationale:**
+- **Source:**
+- **Acceptance Criteria:**
+- **Priority:**
+- **Traceability:**
+
+## Non-Functional Requirements
+These address **quality characteristics** as defined by ISO/IEC 25010.
+
+### Performance Efficiency
+- **NFR-001:** [e.g. The system shall respond to 95% of dashboard requests within 2 seconds under normal load.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+### Usability
+- **NFR-002:** [e.g. The dashboard shall comply with WCAG 2.1 AA accessibility standard.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+### Reliability
+- **NFR-003:** [e.g. The system shall achieve 99.9% uptime per calendar month.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+### Security
+- **NFR-004:** [e.g. The system shall encrypt all sensitive data in transit using TLS 1.3.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+### Maintainability
+- **NFR-005:** [e.g. The system shall provide modular code structure with documented APIs.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+### Portability
+- **NFR-006:** [e.g. The system shall be deployable on both Azure and AWS cloud platforms.]
+  - *Source:* 
+  - *Acceptance Criteria:* 
+
+## Constraints
+- [e.g. Solution must use the existing authentication provider.]
+- [e.g. Deployment must occur within existing cloud subscription limits.]
+
+## Assumptions
+- [e.g. All users will use modern browsers.]
+- [e.g. Network latency will not exceed 200ms between app and DB.]
+
+## Dependencies
+- [e.g. Requires API v2 from vendor X.]
+- [e.g. Depends on completion of infrastructure upgrade.]
+
+## Stakeholders
+- [Role: e.g. Product Owner — Jane Doe]
+- [Role: e.g. Security Lead — John Smith]
+
+## Success Criteria
+Define measurable outcomes aligned to both functionality and quality.
+
+- [e.g. 95% of users complete dashboard tasks without errors.]
+- [e.g. Page load times for reports meet performance NFR.]
+
+## Supporting Materials
+- [Links to mockups, business process models, architectural diagrams.]
+- [Reference to ISO/IEC 25010:2011 Quality Model.]
+
+```
 
 ==== RequirementsGatherer_DocumentIntro ====
 Document:
-The following document provides an overview of the current state of the application these requirements apply to.
+The following document provides an overview of the application these requirements apply to.
