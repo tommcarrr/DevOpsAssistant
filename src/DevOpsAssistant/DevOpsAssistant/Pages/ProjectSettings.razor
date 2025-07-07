@@ -63,97 +63,103 @@
                     </MudStack>
                 </MudStack>
             </MudTabPanel>
-            <MudTabPanel Text='@L["StoryQualityTab"]'>
-                <MudStack Spacing="2">
-                    <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3"/>
-                    <MudButton OnClick="SaveQuality" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
-                </MudStack>
-            </MudTabPanel>
             <MudTabPanel Text='@L["PromptsTab"]'>
-                <MudStack Spacing="2">
-                    <MudTextField T="string" Value="_model.StoryQualityPrompt" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPrompt = v)" Label='@L["StoryQualityPrompt"]' Lines="3"/>
-                    <MudRadioGroup T="PromptMode" Value="_model.StoryQualityPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPromptMode = v)">
-                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
-                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
-                    </MudRadioGroup>
-                    <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3"/>
-                    <MudRadioGroup T="PromptMode" Value="_model.ReleaseNotesPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPromptMode = v)">
-                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
-                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
-                    </MudRadioGroup>
-                    <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3"/>
-                    <MudRadioGroup T="PromptMode" Value="_model.RequirementsPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPromptMode = v)">
-                        <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
-                        <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
-                    </MudRadioGroup>
-                    <MudTextField T="string" Value="_nfrText" ValueChanged="OnNfrsChanged" Label='@L["NonFunctionalRequirements"]' Lines="3"/>
-                    <MudText Typo="Typo.subtitle2">@L["WorkItemGranularity"]: @_model.WorkItemGranularity</MudText>
-                    <MudSlider T="int" Min="1" Max="5" Step="1"
-                               Value="_model.WorkItemGranularity"
-                               Immediate="true"
-                               ValueChanged="OnGranularityChanged"
-                               Color="Color.Primary" />
-                    <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
-                    <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
-                        <MudSelectItem Value="OutputFormat.Markdown">@L["Markdown"]</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Pdf">@L["Pdf"]</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Word">@L["Word"]</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Html">@L["Html"]</MudSelectItem>
-                        <MudSelectItem Value="OutputFormat.Inline">@L["Inline"]</MudSelectItem>
-                    </MudSelect>
-                    <MudText Typo="Typo.h6">@L["StandardsHeader"]</MudText>
-                    <MudTabs @bind-ActivePanelIndex="_standardsTab">
-                        <MudTabPanel Text='@L["RequirementsDocumentationGroup"]'>
-                            <MudStack Spacing="1">
-                                @foreach (var opt in StandardOptions.Where(o => o.Group == "requirements_documentation"))
-                                {
-                                    <MudTooltip Text="@GetStandardTooltip(opt)">
-                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                                    </MudTooltip>
-                                }
-                            </MudStack>
-                        </MudTabPanel>
-                        <MudTabPanel Text='@L["UserStoryDescriptionGroup"]'>
-                            <MudStack Spacing="1">
-                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_description"))
-                                {
-                                    <MudTooltip Text="@GetStandardTooltip(opt)">
-                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                                    </MudTooltip>
-                                }
-                            </MudStack>
-                        </MudTabPanel>
-                        <MudTabPanel Text='@L["UserStoryAcceptanceCriteriaGroup"]'>
-                            <MudStack Spacing="1">
-                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_acceptance_criteria"))
-                                {
-                                    <MudTooltip Text="@GetStandardTooltip(opt)">
-                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                                    </MudTooltip>
-                                }
-                            </MudStack>
-                        </MudTabPanel>
-                        <MudTabPanel Text='@L["UserStoryQualityGroup"]'>
-                            <MudStack Spacing="1">
-                                @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_quality"))
-                                {
-                                    <MudTooltip Text="@GetStandardTooltip(opt)">
-                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                                    </MudTooltip>
-                                }
-                            </MudStack>
-                        </MudTabPanel>
-                        <MudTabPanel Text='@L["BugReportingGroup"]'>
-                            <MudStack Spacing="1">
-                                @foreach (var opt in StandardOptions.Where(o => o.Group == "bug_reporting"))
-                                {
-                                    <MudTooltip Text="@GetStandardTooltip(opt)">
-                                        <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
-                                    </MudTooltip>
-                                }
-                            </MudStack>
-                        </MudTabPanel>
-                    </MudTabs>
+                <MudTabs @bind-ActivePanelIndex="_promptsTab">
+                    <MudTabPanel Text='@L["StoryQualityTab"]'>
+                        <MudStack Spacing="2">
+                            <MudTextField T="string" Value="_model.DefinitionOfReady" ValueChanged="OnQualityChanged" Label='@L["DefinitionOfReady"]' Lines="3" />
+                            <MudButton OnClick="SaveQuality" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_qualityDirty">@L["Save"]</MudButton>
+                        </MudStack>
+                    </MudTabPanel>
+                    <MudTabPanel Text='@L["PromptSettingsTab"]'>
+                        <MudStack Spacing="2">
+                            <MudTextField T="string" Value="_model.StoryQualityPrompt" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPrompt = v)" Label='@L["StoryQualityPrompt"]' Lines="3" />
+                            <MudRadioGroup T="PromptMode" Value="_model.StoryQualityPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.StoryQualityPromptMode = v)">
+                                <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                                <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                            </MudRadioGroup>
+                            <MudTextField T="string" Value="_model.ReleaseNotesPrompt" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPrompt = v)" Label='@L["ReleaseNotesPrompt"]' Lines="3" />
+                            <MudRadioGroup T="PromptMode" Value="_model.ReleaseNotesPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.ReleaseNotesPromptMode = v)">
+                                <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                                <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                            </MudRadioGroup>
+                            <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3" />
+                            <MudRadioGroup T="PromptMode" Value="_model.RequirementsPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPromptMode = v)">
+                                <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
+                                <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
+                            </MudRadioGroup>
+                            <MudTextField T="string" Value="_nfrText" ValueChanged="OnNfrsChanged" Label='@L["NonFunctionalRequirements"]' Lines="3" />
+                            <MudText Typo="Typo.subtitle2">@L["WorkItemGranularity"]: @_model.WorkItemGranularity</MudText>
+                            <MudSlider T="int" Min="1" Max="5" Step="1" Value="_model.WorkItemGranularity" Immediate="true" ValueChanged="OnGranularityChanged" Color="Color.Primary" />
+                            <MudTextField T="int" Value="_model.PromptCharacterLimit" ValueChanged="OnPromptsLimitChanged" Label='@L["PromptLimit"]' InputType="InputType.Number" />
+                            <MudSelect T="OutputFormat" Value="_model.OutputFormat" ValueChanged="OnOutputFormatChanged" Label='@L["OutputFormat"]'>
+                                <MudSelectItem Value="OutputFormat.Markdown">@L["Markdown"]</MudSelectItem>
+                                <MudSelectItem Value="OutputFormat.Pdf">@L["Pdf"]</MudSelectItem>
+                                <MudSelectItem Value="OutputFormat.Word">@L["Word"]</MudSelectItem>
+                                <MudSelectItem Value="OutputFormat.Html">@L["Html"]</MudSelectItem>
+                                <MudSelectItem Value="OutputFormat.Inline">@L["Inline"]</MudSelectItem>
+                            </MudSelect>
+                        </MudStack>
+                    </MudTabPanel>
+                    <MudTabPanel Text='@L["StandardsTab"]'>
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.h6">@L["StandardsHeader"]</MudText>
+                            <MudTabs @bind-ActivePanelIndex="_standardsTab">
+                                <MudTabPanel Text='@L["RequirementsDocumentationGroup"]'>
+                                    <MudStack Spacing="1">
+                                        @foreach (var opt in StandardOptions.Where(o => o.Group == "requirements_documentation"))
+                                        {
+                                            <MudTooltip Text="@GetStandardTooltip(opt)">
+                                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                            </MudTooltip>
+                                        }
+                                    </MudStack>
+                                </MudTabPanel>
+                                <MudTabPanel Text='@L["UserStoryDescriptionGroup"]'>
+                                    <MudStack Spacing="1">
+                                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_description"))
+                                        {
+                                            <MudTooltip Text="@GetStandardTooltip(opt)">
+                                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                            </MudTooltip>
+                                        }
+                                    </MudStack>
+                                </MudTabPanel>
+                                <MudTabPanel Text='@L["UserStoryAcceptanceCriteriaGroup"]'>
+                                    <MudStack Spacing="1">
+                                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_acceptance_criteria"))
+                                        {
+                                            <MudTooltip Text="@GetStandardTooltip(opt)">
+                                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                            </MudTooltip>
+                                        }
+                                    </MudStack>
+                                </MudTabPanel>
+                                <MudTabPanel Text='@L["UserStoryQualityGroup"]'>
+                                    <MudStack Spacing="1">
+                                        @foreach (var opt in StandardOptions.Where(o => o.Group == "user_story_quality"))
+                                        {
+                                            <MudTooltip Text="@GetStandardTooltip(opt)">
+                                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                            </MudTooltip>
+                                        }
+                                    </MudStack>
+                                </MudTabPanel>
+                                <MudTabPanel Text='@L["BugReportingGroup"]'>
+                                    <MudStack Spacing="1">
+                                        @foreach (var opt in StandardOptions.Where(o => o.Group == "bug_reporting"))
+                                        {
+                                            <MudTooltip Text="@GetStandardTooltip(opt)">
+                                                <MudCheckBox T="bool" Value="IsStandardSelected(opt)" ValueChanged="v => OnStandardChanged(opt, v)" Disabled="IsStandardDisabled(opt)" Color="Color.Primary" Label="@opt.Name" />
+                                            </MudTooltip>
+                                        }
+                                    </MudStack>
+                                </MudTabPanel>
+                            </MudTabs>
+                        </MudStack>
+                    </MudTabPanel>
+                </MudTabs>
+                <MudStack Row="true" Spacing="1">
                     <MudButton OnClick="CopyAllPrompts" Variant="Variant.Outlined" Color="Color.Primary">@L["CopyPrompts"]</MudButton>
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
                     <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
@@ -217,6 +223,7 @@
     private string _nfrText = string.Empty;
     private bool _generalDirty;
     private int _activeTab;
+    private int _promptsTab;
     private int _standardsTab;
     private static readonly StandardOption[] StandardOptions = StandardsCatalog.Options;
     private HashSet<string> _selectedStandards = new();
@@ -279,6 +286,7 @@
         _useAsGlobal = string.IsNullOrWhiteSpace(ConfigService.GlobalPatToken);
         Validate();
         UpdateSelectedStandardsFromModel();
+        _promptsTab = 0;
     }
 
     private async Task SaveGeneral()

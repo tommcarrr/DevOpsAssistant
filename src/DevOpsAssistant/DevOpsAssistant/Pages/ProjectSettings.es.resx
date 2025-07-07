@@ -228,4 +228,10 @@
   <data name="IncludeSystemInfo" xml:space="preserve">
     <value>Incluir información del sistema</value>
   </data>
+  <data name="PromptSettingsTab" xml:space="preserve">
+    <value>Configuración de Indicaciones</value>
+  </data>
+  <data name="StandardsTab" xml:space="preserve">
+    <value>Estándares</value>
+  </data>
 </root>
