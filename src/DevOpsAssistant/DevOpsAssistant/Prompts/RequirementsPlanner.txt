@@ -30,15 +30,18 @@ User Story Granularity Grading Scale (1–5)
 //{4} Work Item AC Standards
 {4}
 
-//{5} Clarify Requirements
+//{5} Non-Functional Requirements
 {5}
 
-//{6} Appended User Prompt
+//{6} Clarify Requirements
 {6}
 
-//{7} - The text of the requirements document
-Requirements Document:
+//{7} Appended User Prompt
 {7}
+
+//{8} - The text of the requirements document
+Requirements Document:
+{8}
 
 ==== RequirementsPlanner_EpicsFeaturesStories ====
 Epics, Features, and User Stories.
@@ -103,3 +106,6 @@ Do not use gherkin syntax, bullet points or any other specific framework for wri
 
 ==== RequirementsPlanner_WorkItemACStandards_SAFe ====
 - SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
+
+==== RequirementsPlanner_NonFunctionalIntro ====
+Non-Functional Requirements:

@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using System.Linq;
 
 namespace DevOpsAssistant.Services;
 
@@ -208,6 +209,7 @@ public class DevOpsConfigService
             StoryQualityPrompt = config.StoryQualityPrompt.Trim(),
             ReleaseNotesPrompt = config.ReleaseNotesPrompt.Trim(),
             RequirementsPrompt = config.RequirementsPrompt.Trim(),
+            Nfrs = config.Nfrs.Select(n => n.Trim()).Where(n => n.Length > 0).ToList(),
             StoryQualityPromptMode = config.StoryQualityPromptMode,
             ReleaseNotesPromptMode = config.ReleaseNotesPromptMode,
             RequirementsPromptMode = config.RequirementsPromptMode,
@@ -239,6 +241,7 @@ public class DevOpsConfigService
             StoryQualityPrompt = cfg.StoryQualityPrompt,
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
+            Nfrs = cfg.Nfrs.ToList(),
             StoryQualityPromptMode = cfg.StoryQualityPromptMode,
             ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
             RequirementsPromptMode = cfg.RequirementsPromptMode,

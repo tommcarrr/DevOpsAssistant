@@ -1,4 +1,5 @@
 using DevOpsAssistant.Services.Models;
+using System.Collections.Generic;
 
 namespace DevOpsAssistant.Services;
 
@@ -12,6 +13,7 @@ public class DevOpsConfig
     public string StoryQualityPrompt { get; set; } = string.Empty;
     public string ReleaseNotesPrompt { get; set; } = string.Empty;
     public string RequirementsPrompt { get; set; } = string.Empty;
+    public List<string> Nfrs { get; set; } = new();
     public PromptMode StoryQualityPromptMode { get; set; }
     public PromptMode ReleaseNotesPromptMode { get; set; }
     public PromptMode RequirementsPromptMode { get; set; }
