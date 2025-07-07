@@ -23,9 +23,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
 
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
         var cfg = new DevOpsConfig();
-        var json = (string)method.Invoke(null, new object?[] { details, cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [details, cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.Contains("\"AcceptanceCriteria\": \"criteria\"", result);
     }
@@ -43,9 +42,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
 
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
         var cfg = new DevOpsConfig();
-        var json = (string)method.Invoke(null, new object?[] { details, cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [details, cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.Contains("Bugs are also in scope", result);
     }
@@ -55,9 +53,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
     {
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
         var cfg = new DevOpsConfig();
-        var json = (string)method.Invoke(null, new object?[] { new List<StoryHierarchyDetails>(), cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.Contains("No branding is required.", result);
     }
@@ -82,9 +79,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
             }
         };
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var json = (string)method.Invoke(null, new object?[] { details, cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [details, cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.DoesNotContain("ReproSteps", result);
     }
@@ -109,9 +105,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
             }
         };
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var json = (string)method.Invoke(null, new object?[] { details, cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [details, cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.DoesNotContain("SystemInfo", result);
     }
@@ -121,9 +116,8 @@ public class ReleaseNotesPageTests : ComponentTestBase
     {
         var cfg = new DevOpsConfig { OutputFormat = OutputFormat.Inline };
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var json = (string)method.Invoke(null, new object?[] { new List<StoryHierarchyDetails>(), cfg })!;
-        var svc = new PromptService();
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var json = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), cfg])!;
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.DoesNotContain("convert the content", result);
         Assert.Contains("Reply inline", result);
@@ -134,10 +128,9 @@ public class ReleaseNotesPageTests : ComponentTestBase
     {
         var method = typeof(ReleaseNotes).GetMethod("BuildPromptData", BindingFlags.NonPublic | BindingFlags.Static)!;
         var cfg = new DevOpsConfig();
-        var json = (string)method.Invoke(null, new object?[] { new List<StoryHierarchyDetails>(), cfg })!;
-        var svc = new PromptService();
+        var json = (string)method.Invoke(null, [new List<StoryHierarchyDetails>(), cfg])!;
 
-        var result = svc.BuildReleaseNotesPrompt(json, cfg);
+        var result = PromptService.BuildReleaseNotesPrompt(json, cfg);
 
         Assert.Contains("# Release Notes", result);
         Assert.Contains("# Change Control Ticket", result);

@@ -39,12 +39,12 @@ Requirements Document:
 //{7} Appended User Prompt
 {7}
 
-==== RequirementsPlanner_StoriesOnly ====
+==== RequirementsPlanner_EpicsFeaturesStories ====
 Epics, Features, and User Stories.
 Return strict JSON using this format:
 {"epics":[{"title":"","description":"","features":[{"title":"","description":"","stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}]}]}
 
-==== RequirementsPlanner_EpicsFeaturesStories ====
+==== RequirementsPlanner_StoriesOnly ====
 User Stories.
 Return strict JSON using this format:
 {"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}
@@ -60,6 +60,9 @@ Before writing the output, review the requirement and ask for clarification if:
 - It's unclear if optional elements (e.g., "nice to have" features) are in scope
 
 If anything is unclear, ask precise, targeted clarification questions first, then proceed once answered.
+
+==== RequirementsPlanner_ClarifyRequirementsNone ====
+Use your best judgement if anything is unclear but provide feedback as to what assumptions have been made in generating the stories.
 
 ==== RequirementsPlanner_WorkItemStandards ====
 Ensure that the relevant work items adhere to the following standards:

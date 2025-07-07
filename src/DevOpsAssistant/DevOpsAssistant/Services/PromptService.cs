@@ -6,32 +6,30 @@ namespace DevOpsAssistant.Services;
 
 public class PromptService
 {
-    public string BuildMetricsPrompt(string json, OutputFormat format)
+    public static string BuildMetricsPrompt(string json, OutputFormat format)
     {
         var sb = new StringBuilder();
         sb.AppendLine(Metrics_MainPrompt.Value);
         sb.AppendLine();
-        if (format == OutputFormat.Inline)
-            sb.AppendLine(FormatInstructions_MetricsInlinePrompt.Value);
-        else
-            sb.AppendLine(string.Format(FormatInstructions_MetricsConvertPrompt.Value, format));
+        sb.AppendLine(format == OutputFormat.Inline
+            ? FormatInstructions_MetricsInlinePrompt.Value
+            : string.Format(FormatInstructions_MetricsConvertPrompt.Value, format));
         sb.AppendLine();
         sb.AppendLine(string.Format(Metrics_DataIntroPrompt.Value, json));
         sb.AppendLine();
         return sb.ToString();
     }
 
-    public string BuildReleaseNotesPrompt(string json, DevOpsConfig config)
+    public static string BuildReleaseNotesPrompt(string json, DevOpsConfig config)
     {
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) || config.ReleaseNotesPromptMode == PromptMode.Append)
             sb.AppendLine(ReleaseNotes_MainPrompt.Value);
         if (!string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
             sb.AppendLine(config.ReleaseNotesPrompt.Trim());
-        if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine(FormatInstructions_ReleaseNotesInlinePrompt.Value);
-        else
-            sb.AppendLine(string.Format(FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat));
+        sb.AppendLine(config.OutputFormat == OutputFormat.Inline
+            ? FormatInstructions_ReleaseNotesInlinePrompt.Value
+            : string.Format(FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat));
         sb.AppendLine();
         sb.AppendLine(ReleaseNotes_WorkItemsIntroPrompt.Value);
         sb.AppendLine(json);
@@ -39,7 +37,7 @@ public class PromptService
         return sb.ToString();
     }
 
-    public string BuildRequirementsQualityPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
+    public static string BuildRequirementsQualityPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
         sb.AppendLine(RequirementsQuality_MainPrompt.Value);
@@ -63,7 +61,7 @@ public class PromptService
         return sb.ToString();
     }
 
-    public string BuildRequirementsPlannerPrompt(
+    public static string BuildRequirementsPlannerPrompt(
         IEnumerable<(string Name, string Text)> pages,
         bool storiesOnly,
         bool clarify,
@@ -84,9 +82,9 @@ public class PromptService
                 BuildWorkItemStandards(config),
                 BuildWorkItemDescriptionStandards(config),
                 BuildWorkItemAcStandards(config),
+                clarify ? RequirementsPlanner_ClarifyRequirementsPrompt.Value : RequirementsPlanner_ClarifyRequirementsNonePrompt.Value,
                 requirementsDocument,
-                clarify ? RequirementsPlanner_ClarifyRequirementsPrompt.Value : string.Empty,
-                ShouldAppendPrompt(config) ? config.RequirementsPrompt! : string.Empty);
+                ShouldAppendPrompt(config) ? config.RequirementsPrompt : string.Empty);
         }
         else
         {
@@ -173,7 +171,7 @@ public class PromptService
         return sb.ToString();
     }
 
-    public string BuildWorkItemQualityPrompt(string json, DevOpsConfig config)
+    public static string BuildWorkItemQualityPrompt(string json, DevOpsConfig config)
     {
         var sb = new StringBuilder();
         if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) || config.StoryQualityPromptMode == PromptMode.Append)
@@ -205,10 +203,9 @@ public class PromptService
 
         if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
             sb.AppendLine(config.StoryQualityPrompt.Trim());
-        if (config.OutputFormat == OutputFormat.Inline)
-            sb.AppendLine(FormatInstructions_WorkItemAnalysisInlinePrompt.Value);
-        else
-            sb.AppendLine(string.Format(FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
+        sb.AppendLine(config.OutputFormat == OutputFormat.Inline
+            ? FormatInstructions_WorkItemAnalysisInlinePrompt.Value
+            : string.Format(FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
         sb.AppendLine();
         sb.AppendLine(WorkItemQuality_WorkItemsIntroPrompt.Value);
         sb.AppendLine(json);

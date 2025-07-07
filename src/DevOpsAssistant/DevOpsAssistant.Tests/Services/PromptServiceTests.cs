@@ -16,9 +16,8 @@ public class PromptServiceTests
                 UserStoryAcceptanceCriteria = ["BulletPoints"]
             }
         };
-        var svc = new PromptService();
-
-        var result = svc.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
+        
+        var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
 
         Assert.Contains("Bullet Points", result);
     }
@@ -32,9 +31,8 @@ public class PromptServiceTests
             RequirementsPrompt = "Custom",
             RequirementsPromptMode = PromptMode.Replace
         };
-        var svc = new PromptService();
 
-        var result = svc.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
+        var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
 
         Assert.StartsWith("Custom", result.Trim());
     }
