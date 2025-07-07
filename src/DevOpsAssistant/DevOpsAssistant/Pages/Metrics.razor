@@ -341,7 +341,7 @@ else if (_periods.Any())
             var items = await ApiService.GetStoryMetricsAsync(_path, _startDate);
             var endDate = _endDate ?? DateTime.Today;
             _items = FilterItems(items)
-                .Where(i => i.ClosedDate.Date <= endDate)
+                .Where(i => i.ClosedDate == StoryMetric.OpenClosedDate || i.ClosedDate.Date <= endDate)
                 .ToList();
             _iterations = _mode == AggregateMode.Iteration
                 ? await ApiService.GetIterationsAsync()
@@ -511,7 +511,8 @@ else if (_periods.Any())
     private void ComputeBurnUp(List<StoryMetric> items)
     {
         _burnApex.Clear();
-        if (items.Count == 0)
+        var closedItems = items.Where(i => i.ClosedDate != StoryMetric.OpenClosedDate).ToList();
+        if (closedItems.Count == 0)
         {
             _burnLabels = [];
             return;
@@ -520,11 +521,11 @@ else if (_periods.Any())
             ? ComputeOverallSprintEfficiency(items)
             : _efficiency;
 
-        var start = (_startDate ?? items.Min(i => i.ClosedDate)).Date;
+        var start = (_startDate ?? closedItems.Min(i => i.ClosedDate)).Date;
         var end = _endDate ?? DateTime.Today;
         var daysActual = (end - start).Days + 1;
         double[] daily = new double[daysActual];
-        foreach (var it in items)
+        foreach (var it in closedItems)
         {
             if (it.ClosedDate.Date < start || it.ClosedDate.Date > end) continue;
             var idx = (it.ClosedDate.Date - start).Days;
@@ -651,7 +652,8 @@ else if (_periods.Any())
         /*end*/}
 
         var start = (_startDate ?? items.Min(i => i.CreatedDate)).Date;
-        var end = (_endDate ?? items.Max(i => i.ClosedDate)).Date;
+        var closedItems = items.Where(i => i.ClosedDate != StoryMetric.OpenClosedDate);
+        var end = (_endDate ?? (closedItems.Any() ? closedItems.Max(i => i.ClosedDate) : DateTime.Today)).Date;
         var days = (end - start).Days + 1;
         double[] backlog = new double[days];
         double[] wip = new double[days];

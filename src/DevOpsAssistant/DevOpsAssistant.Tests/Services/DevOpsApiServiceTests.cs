@@ -742,6 +742,33 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task GetStoryMetricsAsync_Includes_Open_Items()
+    {
+        var wiqlJson = "{\"workItems\":[{\"id\":1},{\"id\":2}]}";
+        var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.CreatedDate\":\"2024-01-01T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-02T00:00:00Z\",\"Microsoft.VSTS.Common.ClosedDate\":\"2024-01-03T00:00:00Z\"}},{\"id\":2,\"fields\":{\"System.CreatedDate\":\"2024-01-04T00:00:00Z\",\"Microsoft.VSTS.Common.ActivatedDate\":\"2024-01-05T00:00:00Z\"}}]}";
+        var call = 0;
+        var handler = new FakeHttpMessageHandler(_ =>
+        {
+            call++;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(call == 1 ? wiqlJson : itemsJson)
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        var result = await service.GetStoryMetricsAsync("Area", new DateTime(2024, 1, 1));
+
+        Assert.Equal(2, result.Count);
+        var open = result.Single(r => r.Id == 2);
+        Assert.Equal(StoryMetric.OpenClosedDate, open.ClosedDate);
+    }
+
+    [Fact]
     public async Task GetStoryHierarchyDetailsAsync_Returns_Extra_Fields()
     {
         var itemsJson = "{\"value\":[{\"id\":1,\"fields\":{\"System.Title\":\"Story\",\"System.State\":\"New\",\"System.WorkItemType\":\"User Story\",\"System.Tags\":\"A;B\",\"Microsoft.VSTS.Scheduling.StoryPoints\":3},\"relations\":[{\"rel\":\"System.LinkTypes.Dependency-Forward\",\"url\":\"https://dev.azure.com/Org/Proj/_apis/wit/workItems/2\"}]}]}";

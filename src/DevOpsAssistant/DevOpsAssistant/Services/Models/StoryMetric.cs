@@ -2,6 +2,14 @@ namespace DevOpsAssistant.Services.Models;
 
 public class StoryMetric
 {
+    /// <summary>
+    /// Special value used for <see cref="ClosedDate"/> when the work item has
+    /// not yet been closed. This allows metrics to include active stories for
+    /// WIP calculations without affecting throughput or cycle/lead time
+    /// metrics.
+    /// </summary>
+    public static readonly DateTime OpenClosedDate = DateTime.MaxValue;
+
     public int Id { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime ActivatedDate { get; set; }
