@@ -42,7 +42,8 @@ public class PromptService
     {
         var sb = new StringBuilder();
         var pagesArray = pages as (string Name, string Text)[] ?? pages.ToArray();
-        sb.AppendFormat(RequirementsGatherer_MainPrompt.Value,
+        sb.AppendFormat(
+            RequirementsGatherer_MainPrompt.Value,
             GetRequirementsGathererTemplate(config),
             BuildRequirementsDocument(pagesArray));
 
@@ -134,8 +135,13 @@ public class PromptService
 
     private static string BuildRequirementsDocument(IEnumerable<(string Name, string Text)> pages)
     {
+        var pagesArray = pages as (string Name, string Text)[] ?? pages.ToArray();
+        if (pagesArray.Length == 0) return string.Empty;
+
         var sb = new StringBuilder();
-        foreach (var page in pages)
+        sb.AppendLine(RequirementsGatherer_DocumentIntroPrompt.Value);
+
+        foreach (var page in pagesArray)
         {
             sb.AppendLine($"## {page.Name}");
             sb.AppendLine(page.Text);
