@@ -27,6 +27,9 @@
   <data name="Spanish" xml:space="preserve">
     <value>Español</value>
   </data>
+  <data name="HighContrast" xml:space="preserve">
+    <value>Alto contraste</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Guardar</value>
   </data>

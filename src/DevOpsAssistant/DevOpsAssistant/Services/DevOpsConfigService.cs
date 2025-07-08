@@ -9,6 +9,7 @@ public class DevOpsConfigService
     private const string StorageKey = "devops-projects";
     private const string GlobalPatKey = "devops-pat";
     private const string GlobalDarkKey = "devops-dark";
+    private const string GlobalContrastKey = "devops-contrast";
     private const string GlobalOrgKey = "devops-org";
     private const string GlobalCultureKey = "BlazorCulture";
     private const string CurrentKey = "devops-current";
@@ -29,6 +30,7 @@ public class DevOpsConfigService
     public string GlobalPatToken { get; private set; } = string.Empty;
     public string GlobalOrganization { get; private set; } = string.Empty;
     public bool GlobalDarkMode { get; private set; }
+    public bool GlobalHighContrast { get; private set; }
     public string GlobalCulture { get; private set; } = "en-GB";
 
     public DevOpsConfig Config => CurrentProject.Config;
@@ -46,6 +48,7 @@ public class DevOpsConfigService
         GlobalPatToken = await _localStorage.GetItemAsync<string>(GlobalPatKey) ?? string.Empty;
         GlobalOrganization = await _localStorage.GetItemAsync<string>(GlobalOrgKey) ?? string.Empty;
         GlobalDarkMode = await _localStorage.GetItemAsync<bool?>(GlobalDarkKey) ?? false;
+        GlobalHighContrast = await _localStorage.GetItemAsync<bool?>(GlobalContrastKey) ?? false;
         GlobalCulture = await _localStorage.GetItemAsync<string>(GlobalCultureKey) ?? "en-GB";
         var currentName = await _localStorage.GetItemAsync<string>(CurrentKey) ?? string.Empty;
         var projects = await _localStorage.GetItemAsync<List<DevOpsProject>>(StorageKey);
@@ -126,6 +129,12 @@ public class DevOpsConfigService
     {
         GlobalDarkMode = value;
         await _localStorage.SetItemAsync(GlobalDarkKey, GlobalDarkMode);
+    }
+
+    public async Task SaveGlobalHighContrastAsync(bool value)
+    {
+        GlobalHighContrast = value;
+        await _localStorage.SetItemAsync(GlobalContrastKey, GlobalHighContrast);
     }
 
     public async Task SaveGlobalCultureAsync(string culture)
@@ -272,12 +281,14 @@ public class DevOpsConfigService
         GlobalPatToken = string.Empty;
         GlobalOrganization = string.Empty;
         GlobalDarkMode = false;
+        GlobalHighContrast = false;
         GlobalCulture = "en-GB";
         await _localStorage.RemoveItemAsync(StorageKey);
         await _localStorage.RemoveItemAsync(LegacyStorageKey);
         await _localStorage.RemoveItemAsync(GlobalPatKey);
         await _localStorage.RemoveItemAsync(GlobalOrgKey);
         await _localStorage.RemoveItemAsync(GlobalDarkKey);
+        await _localStorage.RemoveItemAsync(GlobalContrastKey);
         await _localStorage.RemoveItemAsync(GlobalCultureKey);
         await _localStorage.RemoveItemAsync(CurrentKey);
         OnProjectChanged();
@@ -295,6 +306,12 @@ public class DevOpsConfigService
         await _localStorage.RemoveItemAsync(GlobalOrgKey);
     }
 
+    public async Task RemoveGlobalHighContrastAsync()
+    {
+        GlobalHighContrast = false;
+        await _localStorage.RemoveItemAsync(GlobalContrastKey);
+    }
+
     public async Task RemoveGlobalCultureAsync()
     {
         GlobalCulture = "en-GB";
@@ -305,5 +322,4 @@ public class DevOpsConfigService
     {
         await _localStorage.SetItemAsync(StorageKey, Projects);
         await _localStorage.SetItemAsync(CurrentKey, CurrentProject.Name);
-    }
-}
+    }}
