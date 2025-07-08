@@ -121,8 +121,8 @@ Do not use gherkin syntax, bullet points or any other specific framework for wri
 - SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
 
 ==== RequirementsPlanner_NonFunctionalIgnore ====
-This is a list of existing Non-Functional Requirements for the project. Do not create stories for requirements that are already covered:
+This is a list of existing Non-Functional Requirements for the project. Do not create stories for requirements that are already covered in these or any NFRs present in the documentation:
 
 ==== RequirementsPlanner_NonFunctionalCover ====
-Create user stories to address these Non-Functional Requirements:
+Create user stories to address these Non-Functional Requirements as well as any that are relevant from the documentation:
 
