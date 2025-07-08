@@ -11,10 +11,11 @@
         <MudStack Spacing="2">
             <MudTextField @bind-Value="_organization" Label='@L["Organization"]' autocomplete="off" />
             <MudTextField @bind-Value="_token" Label='@L["PatToken"]' InputType="InputType.Password" autocomplete="off" />
-            <MudSelect @bind-Value="_culture" Label='@L["Language"]'>
-                <MudSelectItem Value="@("en-GB")">@L["English"]</MudSelectItem>
-                <MudSelectItem Value="@("es")">@L["Spanish"]</MudSelectItem>
-            </MudSelect>
+        <MudSelect @bind-Value="_culture" Label='@L["Language"]'>
+            <MudSelectItem Value="@("en-GB")">@L["English"]</MudSelectItem>
+            <MudSelectItem Value="@("es")">@L["Spanish"]</MudSelectItem>
+        </MudSelect>
+        <MudSwitch T="bool" @bind-Value="_highContrast" Color="Color.Primary" Label='@L["HighContrast"]' />
         </MudStack>
     </DialogContent>
     <DialogActions>
@@ -28,6 +29,7 @@
     private string _organization = string.Empty;
     private string _token = string.Empty;
     private string _culture = "en-GB";
+    private bool _highContrast;
     
 
     protected override async Task OnInitializedAsync()
@@ -36,6 +38,7 @@
         _organization = ConfigService.GlobalOrganization;
         _token = ConfigService.GlobalPatToken;
         _culture = ConfigService.GlobalCulture;
+        _highContrast = ConfigService.GlobalHighContrast;
         try
         {
             var stored = await JSRuntime.InvokeAsync<string>("blazorCulture.get");
@@ -53,6 +56,7 @@
         await ConfigService.SaveGlobalOrganizationAsync(_organization);
         await ConfigService.SaveGlobalPatAsync(_token);
         await ConfigService.SaveGlobalCultureAsync(_culture);
+        await ConfigService.SaveGlobalHighContrastAsync(_highContrast);
         try
         {
             await JSRuntime.InvokeVoidAsync("blazorCulture.set", _culture);

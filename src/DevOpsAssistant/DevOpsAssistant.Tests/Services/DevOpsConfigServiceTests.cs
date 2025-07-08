@@ -303,6 +303,19 @@ public class DevOpsConfigServiceTests
     }
 
     [Fact]
+    public async Task SaveGlobalHighContrastAsync_Persists_Value()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+
+        await service.SaveGlobalHighContrastAsync(true);
+
+        Assert.True(service.GlobalHighContrast);
+        var stored = await storage.GetItemAsync<bool?>("devops-contrast");
+        Assert.True(stored);
+    }
+
+    [Fact]
     public async Task SaveGlobalOrganizationAsync_Persists_Value()
     {
         var storage = new FakeLocalStorageService();
