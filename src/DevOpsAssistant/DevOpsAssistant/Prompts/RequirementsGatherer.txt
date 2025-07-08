@@ -149,8 +149,8 @@ Include background, related documents, or external standards.
 - [Reference to related feature or requirement document]
 - [Applicable standard: ISO/IEC/IEEE 29148:2018]
 ```
-==== RequirementsGatherer_Template_Volare ====
-Ensure when completing the document that it is fully compliant with the Volare specification.
+==== RequirementsGatherer_Template_Volere ====
+Ensure when completing the document that it is fully compliant with the Volere specification.
 ```markdown
 # Feature Name: [Insert Title Here]
 

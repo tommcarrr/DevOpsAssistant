@@ -7,6 +7,7 @@ Each story must include:
 - Description
 - Acceptance Criteria
 - Tags to be used for refinement (e.g., ["frontend", "backend", "integration", "performance", "security", "accessibility", "needs-design"])
+- Where the requirements document contains named artifacts for traceability, can you ensure that these are referenced in the relevant work items?
 
 Use HTML for formatting in descriptions and acceptance criteria only when it improves readability, such as for bulleted lists, bold or italic. Avoid unnecessary tags like wrapping everything in <p> elements.
 

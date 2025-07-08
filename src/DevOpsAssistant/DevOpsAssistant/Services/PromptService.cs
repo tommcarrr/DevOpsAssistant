@@ -57,7 +57,7 @@ public class PromptService
         foreach (var text in config.Standards.RequirementsDocumentation.Select(standard => standard switch
                  {
                      "ISO29148" => RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018Prompt.Value,
-                     "Volare" => RequirementsGatherer_Template_VolarePrompt.Value,
+                     "Volere" => RequirementsGatherer_Template_VolerePrompt.Value,
                      "BABOK" => RequirementsGatherer_Template_BABOKPrompt.Value,
                      "ISO25010" => RequirementsGatherer_Template_ISO_IEC_25010Prompt.Value,
                      _ => RequirementsGatherer_Template_GeneralPrompt.Value
