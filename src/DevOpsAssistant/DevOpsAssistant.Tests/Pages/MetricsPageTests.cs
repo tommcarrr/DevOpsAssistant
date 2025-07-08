@@ -37,7 +37,8 @@ public class MetricsPageTests : ComponentTestBase
                 AvgLeadTime = 1.0,
                 AvgCycleTime = 2.0,
                 Throughput = 3,
-                Velocity = 4.0
+                Velocity = 4.0,
+                RollingVelocity = 4.0
             }
         };
 
@@ -45,6 +46,7 @@ public class MetricsPageTests : ComponentTestBase
 
         Assert.Contains("Velocity", csv);
         Assert.Contains("4.0", csv);
+        Assert.Contains("Rolling Velocity", csv);
     }
 
     [Fact]
@@ -59,6 +61,7 @@ public class MetricsPageTests : ComponentTestBase
             AvgCycleTime = 2.3,
             Throughput = 3,
             Velocity = 4.5,
+            RollingVelocity = 4.5,
             AvgWip = 1.5,
             SprintEfficiency = 80.0
         };
@@ -71,6 +74,7 @@ public class MetricsPageTests : ComponentTestBase
         Assert.Contains("\"end\":\"2024-01-01\"", prompt);
         Assert.Contains("\"leadTime\":1.2", prompt);
         Assert.Contains("\"velocity\":4.5", prompt);
+        Assert.Contains("\"rollingVelocity\":4.5", prompt);
         Assert.Contains("\"avgWip\":1.5", prompt);
         Assert.Contains("\"sprintEfficiency\":80", prompt);
     }
@@ -89,6 +93,7 @@ public class MetricsPageTests : ComponentTestBase
                 AvgCycleTime = 2,
                 Throughput = 3,
                 Velocity = 4,
+                RollingVelocity = 4,
                 AvgWip = 5,
                 SprintEfficiency = 60
             },
@@ -99,6 +104,7 @@ public class MetricsPageTests : ComponentTestBase
                 AvgCycleTime = 4,
                 Throughput = 5,
                 Velocity = 6,
+                RollingVelocity = 6,
                 AvgWip = 7,
                 SprintEfficiency = 80
             }
@@ -112,6 +118,7 @@ public class MetricsPageTests : ComponentTestBase
         Assert.Equal(3m, summary.GetProperty("avgCycleTime").GetDecimal());
         Assert.Equal(4m, summary.GetProperty("avgThroughput").GetDecimal());
         Assert.Equal(5m, summary.GetProperty("avgVelocity").GetDecimal());
+        Assert.Equal(5m, summary.GetProperty("avgRollingVelocity").GetDecimal());
         Assert.Equal(6m, summary.GetProperty("avgWip").GetDecimal());
         Assert.Equal(70m, summary.GetProperty("avgSprintEfficiency").GetDecimal());
     }

@@ -172,6 +172,12 @@
     <value>Rendimiento y Velocidad</value>
   </data>
   <data name="CsvHeader" xml:space="preserve">
-    <value>Fin de período,Prom. Lead Time,Prom. Cycle Time,Rendimiento,Velocidad</value>
+    <value>Fin de período,Prom. Lead Time,Prom. Cycle Time,Rendimiento,Velocidad,Velocidad móvil</value>
+  </data>
+  <data name="RollingWeeks" xml:space="preserve">
+    <value>Semanas móviles</value>
+  </data>
+  <data name="RollingVelocity" xml:space="preserve">
+    <value>Velocidad móvil</value>
   </data>
 </root>

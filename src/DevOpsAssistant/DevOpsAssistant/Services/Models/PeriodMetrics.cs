@@ -9,6 +9,7 @@ public class PeriodMetrics
     public double AvgCycleTime { get; set; }
     public int Throughput { get; set; }
     public double Velocity { get; set; }
+    public double RollingVelocity { get; set; }
     public double AvgWip { get; set; }
     public double SprintEfficiency { get; set; }
 }
