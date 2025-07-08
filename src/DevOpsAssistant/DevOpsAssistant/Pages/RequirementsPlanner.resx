@@ -31,10 +31,16 @@
     <value>Next part</value>
   </data>
   <data name="CopyPromptLink" xml:space="preserve">
-    <value>Copy starter prompt</value>
+    <value>Generate starter prompt</value>
   </data>
   <data name="CopyPromptMessage" xml:space="preserve">
-    <value>If you need help capturing requirements, expand to generate a starter prompt and optionally include a specification document or wiki pages.</value>
+    <value>Select documents that provide context for requirements gathering.</value>
+  </data>
+  <data name="SelectContextDocuments" xml:space="preserve">
+    <value>Select Context Documents</value>
+  </data>
+  <data name="GenerateStarterPrompt" xml:space="preserve">
+    <value>Generate Starter Prompt</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copied to clipboard</value>

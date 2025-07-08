@@ -26,16 +26,21 @@ else if (Source == DocumentSource.Text)
 }
 else if (WikiItems != null)
 {
-    <MudTreeView T="WikiPageNode"
-                 Items="@WikiItems"
-                 SelectionMode="SelectionMode.MultiSelection"
-                 SelectedValues="@SelectedPages"
-                 SelectedValuesChanged="@(pages => OnSelectedPagesChanged(pages))"
-                 Class="scroll-300">
-        <ItemTemplate>
-            <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
-        </ItemTemplate>
-    </MudTreeView>
+    <MudStack Spacing="1">
+        <MudTooltip Text='@L["Reload"]'>
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" OnClick="PerformReload" />
+        </MudTooltip>
+        <MudTreeView T="WikiPageNode"
+                     Items="@WikiItems"
+                     SelectionMode="SelectionMode.MultiSelection"
+                     SelectedValues="@SelectedPages"
+                     SelectedValuesChanged="@(pages => OnSelectedPagesChanged(pages))"
+                     Class="scroll-300">
+            <ItemTemplate>
+                <MudTreeViewItem Items="@context.Children" Value="@context.Value" Text="@context.Text" @bind-Expanded="@context.Expanded" />
+            </ItemTemplate>
+        </MudTreeView>
+    </MudStack>
 }
 
 @code {
@@ -48,6 +53,7 @@ else if (WikiItems != null)
     [Parameter] public List<TreeItemData<WikiPageNode>>? WikiItems { get; set; }
     [Parameter] public IReadOnlyCollection<WikiPageNode>? SelectedPages { get; set; }
     [Parameter] public EventCallback<IReadOnlyCollection<WikiPageNode>?> SelectedPagesChanged { get; set; }
+    [Parameter] public EventCallback Reload { get; set; }
 
     private Task OnFileSelected(InputFileChangeEventArgs e)
     {
@@ -71,5 +77,10 @@ else if (WikiItems != null)
     {
         SelectedPages = pages;
         return SelectedPagesChanged.InvokeAsync(SelectedPages);
+    }
+
+    private Task PerformReload()
+    {
+        return Reload.HasDelegate ? Reload.InvokeAsync() : Task.CompletedTask;
     }
 }

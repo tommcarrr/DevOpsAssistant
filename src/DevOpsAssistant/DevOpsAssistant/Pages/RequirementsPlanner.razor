@@ -13,28 +13,28 @@
 
 <PageTitle>@L["PageTitle"]</PageTitle>
 
-<MudExpansionPanels>
-    <MudExpansionPanel Text="@L["CopyPromptMessage"]">
-        <MudStack Spacing="2">
-            <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["CopyPromptLink"]</MudButton>
-            <WikiDocumentSelector Source="@_promptSource"
-                                   SourceChanged="@(v => _promptSource = v)"
-                                   File="@_promptFile"
-                                   FileChanged="@(f => _promptFile = f)"
-                                   Text="@_promptText"
-                                   TextChanged="@(t => _promptText = t)"
-                                   WikiItems="@_promptWikiItems"
-                                   SelectedPages="@_promptSelectedPages"
-                                   SelectedPagesChanged="@(p => _promptSelectedPages = p)" />
-        </MudStack>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+
 @if (!string.IsNullOrWhiteSpace(_error))
 {
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
 <MudStepper @ref="_stepper" NonLinear="true">
+    <MudStep Title="@L["SelectContextDocuments"]" Skippable="true">
+        <MudStack Spacing="2">
+            <WikiDocumentSelector Source="@_contextSource"
+                                   SourceChanged="@(v => _contextSource = v)"
+                                   File="@_contextFile"
+                                   FileChanged="@(f => _contextFile = f)"
+                                   Text="@_contextText"
+                                   TextChanged="@(t => _contextText = t)"
+                                   WikiItems="@_contextWikiItems"
+                                   SelectedPages="@_contextSelectedPages"
+                                   SelectedPagesChanged="@(p => _contextSelectedPages = p)"
+                                   Reload="ReloadWiki" />
+            <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["GenerateStarterPrompt"]</MudButton>
+        </MudStack>
+    </MudStep>
     <MudStep Title="@L["SelectRequirements"]" Skippable="true">
         <MudStack Spacing="2">
             <WikiDocumentSelector Source="@_source"
@@ -175,15 +175,15 @@
     [Parameter] public string ProjectName { get; set; } = string.Empty;
     private MudStepper? _stepper;
     private List<TreeItemData<WikiPageNode>>? _wikiItems;
-    private List<TreeItemData<WikiPageNode>>? _promptWikiItems;
+    private List<TreeItemData<WikiPageNode>>? _contextWikiItems;
     private IReadOnlyCollection<WikiPageNode>? _selectedPages;
     private IBrowserFile? _file;
     private string _text = string.Empty;
     private DocumentSource _source;
-    private IReadOnlyCollection<WikiPageNode>? _promptSelectedPages;
-    private IBrowserFile? _promptFile;
-    private string _promptText = string.Empty;
-    private DocumentSource _promptSource;
+    private IReadOnlyCollection<WikiPageNode>? _contextSelectedPages;
+    private IBrowserFile? _contextFile;
+    private string _contextText = string.Empty;
+    private DocumentSource _contextSource;
     private string _wikiId = string.Empty;
     private string _prompt = string.Empty;
     private List<string>? _promptParts;
@@ -241,7 +241,7 @@
                 if (root != null)
                 {
                     _wikiItems = [BuildTreeItem(root)];
-                    _promptWikiItems = [BuildTreeItem(root)];
+                    _contextWikiItems = [BuildTreeItem(root)];
                 }
             }
 
@@ -260,7 +260,8 @@
         StateHasChanged();
         try
         {
-            List<(string Name, string Text)> pages = [];
+            List<DocumentItem> reqPages = [];
+            List<DocumentItem> ctxPages = await BuildContextDocuments();
             switch (_source)
             {
                 case DocumentSource.Document:
@@ -268,12 +269,12 @@
                     {
                         using var stream = _file.OpenReadStream(MaxFileSize);
                         var text = await DocumentHelpers.ExtractTextAsync(stream, _file.Name);
-                        pages.Add((_file.Name, text));
+                        reqPages.Add(new DocumentItem(_file.Name, text, _file.Name));
                     }
                     break;
                 case DocumentSource.Text:
                     if (!string.IsNullOrWhiteSpace(_text))
-                        pages.Add(("Pasted", _text));
+                        reqPages.Add(new DocumentItem("Pasted", _text, "Pasted"));
                     break;
                 default:
                     if (_selectedPages != null)
@@ -281,12 +282,12 @@
                         foreach (var p in _selectedPages)
                         {
                             var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
-                            pages.Add((p.Name, text));
+                            reqPages.Add(new DocumentItem(p.Name, text, p.Path));
                         }
                     }
                     break;
             }
-            _prompt = PromptService.BuildRequirementsPlannerPrompt(pages, _storiesOnly, _clarify, ConfigService.Config);
+            _prompt = PromptService.BuildRequirementsPlannerPrompt(reqPages, ctxPages, _storiesOnly, _clarify, ConfigService.Config);
             _promptParts = PromptHelpers.SplitPrompt(_prompt, ConfigService.Config.PromptCharacterLimit).ToList();
             _partIndex = 0;
             await StateService.SaveAsync(StateKey, new PageState
@@ -388,34 +389,76 @@
 
     private async Task<string> BuildInitialPrompt()
     {
-        List<(string Name, string Text)> pages = [];
-        switch (_promptSource)
+        List<DocumentItem> pages = [];
+        switch (_contextSource)
         {
             case DocumentSource.Document:
-                if (_promptFile != null)
+                if (_contextFile != null)
                 {
-                    using var stream = _promptFile.OpenReadStream(MaxFileSize);
-                    var text = await DocumentHelpers.ExtractTextAsync(stream, _promptFile.Name);
-                    pages.Add((_promptFile.Name, text));
+                    using var stream = _contextFile.OpenReadStream(MaxFileSize);
+                    var text = await DocumentHelpers.ExtractTextAsync(stream, _contextFile.Name);
+                    pages.Add(new DocumentItem(_contextFile.Name, text, _contextFile.Name));
                 }
                 break;
             case DocumentSource.Text:
-                if (!string.IsNullOrWhiteSpace(_promptText))
-                    pages.Add(("Pasted", _promptText));
+                if (!string.IsNullOrWhiteSpace(_contextText))
+                    pages.Add(new DocumentItem("Pasted", _contextText, "Pasted"));
                 break;
             default:
-                if (_promptSelectedPages != null)
+                if (_contextSelectedPages != null)
                 {
-                    foreach (var p in _promptSelectedPages)
+                    foreach (var p in _contextSelectedPages)
                     {
                         var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
-                        pages.Add((p.Name, text));
+                        pages.Add(new DocumentItem(p.Name, text, p.Path));
                     }
                 }
                 break;
         }
 
         return PromptService.BuildRequirementsGathererPrompt(pages, ConfigService.Config);
+    }
+
+    private async Task<List<DocumentItem>> BuildContextDocuments()
+    {
+        List<DocumentItem> pages = [];
+        switch (_contextSource)
+        {
+            case DocumentSource.Document:
+                if (_contextFile != null)
+                {
+                    using var stream = _contextFile.OpenReadStream(MaxFileSize);
+                    var text = await DocumentHelpers.ExtractTextAsync(stream, _contextFile.Name);
+                    pages.Add(new DocumentItem(_contextFile.Name, text, _contextFile.Name));
+                }
+                break;
+            case DocumentSource.Text:
+                if (!string.IsNullOrWhiteSpace(_contextText))
+                    pages.Add(new DocumentItem("Pasted", _contextText, "Pasted"));
+                break;
+            default:
+                if (_contextSelectedPages != null)
+                {
+                    foreach (var p in _contextSelectedPages)
+                    {
+                        var text = await ApiService.GetWikiPageContentAsync(_wikiId, p.Path);
+                        pages.Add(new DocumentItem(p.Name, text, p.Path));
+                    }
+                }
+                break;
+        }
+
+        return pages;
+    }
+
+    private async Task ReloadWiki()
+    {
+        var root = await ApiService.GetWikiPageTreeAsync(_wikiId);
+        if (root != null)
+        {
+            _wikiItems = [BuildTreeItem(root)];
+            _contextWikiItems = [BuildTreeItem(root)];
+        }
     }
 
 

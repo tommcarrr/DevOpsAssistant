@@ -8,7 +8,8 @@ public class PromptServiceTests
     [Fact]
     public void BuildRequirementsPlannerPrompt_Includes_Acceptance_Criteria_Standards()
     {
-        var pages = new List<(string Name, string Text)> { ("Req", "text") };
+        var req = new List<DocumentItem> { new("Req", "text", "Req") };
+        var ctx = new List<DocumentItem>();
         var cfg = new DevOpsConfig
         {
             Standards = new PromptStandards
@@ -17,7 +18,7 @@ public class PromptServiceTests
             }
         };
 
-        var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
+        var result = PromptService.BuildRequirementsPlannerPrompt(req, ctx, false, false, cfg);
 
         Assert.Contains("Bullet Points", result);
     }
@@ -25,14 +26,15 @@ public class PromptServiceTests
     [Fact]
     public void BuildRequirementsPlannerPrompt_Uses_Custom_Prompt_When_Replacing()
     {
-        var pages = new List<(string Name, string Text)> { ("Req", "text") };
+        var req = new List<DocumentItem> { new("Req", "text", "Req") };
+        var ctx = new List<DocumentItem>();
         var cfg = new DevOpsConfig
         {
             RequirementsPrompt = "Custom",
             RequirementsPromptMode = PromptMode.Replace
         };
 
-        var result = PromptService.BuildRequirementsPlannerPrompt(pages, false, false, cfg);
+        var result = PromptService.BuildRequirementsPlannerPrompt(req, ctx, false, false, cfg);
 
         Assert.StartsWith("Custom", result.Trim());
     }
@@ -40,7 +42,7 @@ public class PromptServiceTests
     [Fact]
     public void BuildRequirementsGathererPrompt_Includes_Document_When_Pages_Provided()
     {
-        var pages = new List<(string Name, string Text)> { ("Doc", "content") };
+        var pages = new List<DocumentItem> { new("Doc", "content", "Doc") };
         var cfg = new DevOpsConfig
         {
             RequirementsPrompt = "Custom",
