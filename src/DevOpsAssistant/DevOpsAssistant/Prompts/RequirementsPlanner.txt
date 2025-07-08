@@ -1,7 +1,14 @@
 ==== RequirementsPlanner_Main ====
 //Requirements to stories
 //{0} - Epics, Features, and User Stories or User Stories
-You are a senior business analyst. Break down the following product requirement into {0}
+You are a senior business analyst. Break down the following product requirement document into {0}
+
+Allowed link types: "related", "successor" and "predecessor".
+Set "target" to the title of the linked item.
+Use "successor" when the current item depends on the target. The reverse
+"predecessor" link is implied; do not create both directions.
+Only add links where there is a clear dependency or relationship that must be considered
+during refinement.
 
 Each story must include:
 - Description
@@ -16,13 +23,14 @@ The granularity of the work items should be {1}/5 based on the following scale..
 
 User Story Granularity Grading Scale (1–5)
 
-| Grade | Description | Typical Characteristics |
-|--------|-------------|------------------------|
-| **1 — Broad Story** | Covers multiple related user goals, flows, or system areas. | Combines several functions or states; touches multiple parts of the system; acceptance criteria may cover several outcomes. |
-| **2 — Multi-Aspect Story** | Focused on a single user goal but includes multiple flows or conditions. | May involve several variations, edge cases, or system interactions for one feature. |
-| **3 — Focused Story** | Targets a single user goal or flow with defined scope. | Covers one path or behaviour; acceptance criteria address one clear outcome. |
-| **4 — Narrow Story** | Describes a small, specific element of a user goal. | Handles a limited function, variation, or detail; minimal scope. |
-| **5 — Micro Story** | Represents a very small unit of work, often tied to a single action or UI element. | Covers a minor detail or one technical aspect; narrowest possible scope for a story. |
+| **Grade** | **Description** | **Typical Characteristics** | **Implication for Feature Decomposition** |
+|-----------|------------------|------------------------------|--------------------------------------------|
+| **1 — Broad Story** | Covers multiple related user goals, flows, or system areas. | Combines several functions or states; touches multiple parts of the system. | ⚠️ Too large to be a story — should be split into multiple features or epics with a single story per feature. |
+| **2 — Multi-Aspect Story** | Focused on a single user goal but includes multiple flows or conditions. | Involves several variations, edge cases, or system interactions. | Likely 1–2 stories per feature — still too coarse for sprint planning. |
+| **3 — Focused Story** | Targets a single user goal or flow with defined scope. | Covers one path or behaviour; clear outcome. | Ideal: 2–4 stories per feature. |
+| **4 — Narrow Story** | Describes a small, specific element of a user goal. | Limited function or variation; minimal scope. | 4–6+ stories per feature. |
+| **5 — Micro Story** | Very small unit of work, often tied to a single UI element or technical task. | Minor detail or one technical aspect. | 6–10+ stories per feature — may be too fine-grained unless justified. |
+
 
 //{2} Work Item Standards
 {2}
@@ -48,23 +56,11 @@ Requirements Document:
 Epics, Features, and User Stories.
 Return strict JSON using this format:
 {"epics":[{"title":"","description":"","links":[{"type":"","target":""}],"features":[{"title":"","description":"","links":[{"type":"","target":""}],"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""],"links":[{"type":"","target":""}]}]}]}]}
-Allowed link types: "related", "successor" and "predecessor".
-Set "target" to the title of the linked item.
-Use "successor" when the current item depends on the target. The reverse
-"predecessor" link is implied; do not create both directions.
-Only add links where there is a clear relationship that must be considered
-during refinement.
 
 ==== RequirementsPlanner_StoriesOnly ====
 User Stories.
 Return strict JSON using this format:
 {"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""],"links":[{"type":"","target":""}]}]}
-Allowed link types: "related", "successor" and "predecessor".
-Set "target" to the title of the linked item.
-Use "successor" when the current item depends on the target. The reverse
-"predecessor" link is implied; do not create both directions.
-Only add links where there is a clear relationship that must be considered
-during refinement.
 
 ==== RequirementsPlanner_ClarifyRequirements ====
 Clarify Requirements:
