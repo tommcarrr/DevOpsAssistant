@@ -38,6 +38,13 @@ window.blazorCulture = {
     }
 };
 
+window.scrollToId = function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
 window.themeShortcut = {
     init: function (dotnetHelper) {
         let buffer = '';
