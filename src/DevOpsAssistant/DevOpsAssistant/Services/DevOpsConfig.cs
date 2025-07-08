@@ -14,6 +14,7 @@ public class DevOpsConfig
     public string ReleaseNotesPrompt { get; set; } = string.Empty;
     public string RequirementsPrompt { get; set; } = string.Empty;
     public List<string> Nfrs { get; set; } = new();
+    public bool CoverNfrs { get; set; }
     public PromptMode StoryQualityPromptMode { get; set; }
     public PromptMode ReleaseNotesPromptMode { get; set; }
     public PromptMode RequirementsPromptMode { get; set; }
