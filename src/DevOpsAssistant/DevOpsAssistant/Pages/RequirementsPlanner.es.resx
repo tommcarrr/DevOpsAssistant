@@ -31,10 +31,16 @@
     <value>Siguiente parte</value>
   </data>
   <data name="CopyPromptLink" xml:space="preserve">
-    <value>Copiar prompt inicial</value>
+    <value>Generar prompt inicial</value>
   </data>
   <data name="CopyPromptMessage" xml:space="preserve">
-    <value>Si necesita ayuda para recopilar los requisitos, despliegue para generar un prompt inicial e incluya opcionalmente un documento o páginas wiki del proyecto.</value>
+    <value>Seleccione documentos que proporcionen contexto para la recopilación de requisitos.</value>
+  </data>
+  <data name="SelectContextDocuments" xml:space="preserve">
+    <value>Seleccionar documentos de contexto</value>
+  </data>
+  <data name="GenerateStarterPrompt" xml:space="preserve">
+    <value>Generar prompt inicial</value>
   </data>
   <data name="CopyToast" xml:space="preserve">
     <value>Copiado al portapapeles</value>

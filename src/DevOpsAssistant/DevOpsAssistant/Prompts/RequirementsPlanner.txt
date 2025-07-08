@@ -48,9 +48,13 @@ User Story Granularity Grading Scale (1–5)
 //{7} Appended User Prompt
 {7}
 
-//{8} - The text of the requirements document
-Requirements Document:
+//{8} - The text of the context documents
+Context Documentation:
 {8}
+
+//{9} - The text of the requirements document
+Requirements Document:
+{9}
 
 ==== RequirementsPlanner_EpicsFeaturesStories ====
 Epics, Features, and User Stories.

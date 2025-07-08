@@ -38,10 +38,10 @@ public class PromptService
         return sb.ToString();
     }
 
-    public static string BuildRequirementsGathererPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
+    public static string BuildRequirementsGathererPrompt(IEnumerable<DocumentItem> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        var pagesArray = pages as (string Name, string Text)[] ?? pages.ToArray();
+        var pagesArray = pages as DocumentItem[] ?? pages.ToArray();
         sb.AppendFormat(
             RequirementsGatherer_MainPrompt.Value,
             GetRequirementsGathererTemplate(config),
@@ -94,13 +94,15 @@ public class PromptService
     }
 
     public static string BuildRequirementsPlannerPrompt(
-        IEnumerable<(string Name, string Text)> pages,
+        IEnumerable<DocumentItem> requirementPages,
+        IEnumerable<DocumentItem> contextPages,
         bool storiesOnly,
         bool clarify,
         DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        var requirementsDocument = BuildRequirementsDocument(pages);
+        var contextDocument = BuildRequirementsDocument(contextPages);
+        var requirementsDocument = BuildRequirementsDocument(requirementPages);
 
         if (string.IsNullOrWhiteSpace(config.RequirementsPrompt) ||
             config.RequirementsPromptMode == PromptMode.Append)
@@ -117,12 +119,15 @@ public class PromptService
                 BuildNfrs(config),
                 clarify ? RequirementsPlanner_ClarifyRequirementsPrompt.Value : RequirementsPlanner_ClarifyRequirementsNonePrompt.Value,
                 ShouldAppendPrompt(config) ? config.RequirementsPrompt : string.Empty,
+                contextDocument,
                 requirementsDocument
                 );
         }
         else
         {
             sb.AppendLine(config.RequirementsPrompt);
+            if (!string.IsNullOrWhiteSpace(contextDocument))
+                sb.AppendLine(contextDocument);
             sb.AppendLine(requirementsDocument);
         }
 
@@ -133,9 +138,9 @@ public class PromptService
         !string.IsNullOrWhiteSpace(config.RequirementsPrompt) &&
         config.RequirementsPromptMode == PromptMode.Append;
 
-    private static string BuildRequirementsDocument(IEnumerable<(string Name, string Text)> pages)
+    private static string BuildRequirementsDocument(IEnumerable<DocumentItem> pages)
     {
-        var pagesArray = pages as (string Name, string Text)[] ?? pages.ToArray();
+        var pagesArray = pages as DocumentItem[] ?? pages.ToArray();
         if (pagesArray.Length == 0) return string.Empty;
 
         var sb = new StringBuilder();
@@ -143,6 +148,8 @@ public class PromptService
 
         foreach (var page in pagesArray)
         {
+            if (!string.IsNullOrWhiteSpace(page.Path))
+                sb.AppendLine($"### {page.Path}");
             sb.AppendLine($"## {page.Name}");
             sb.AppendLine(page.Text);
             sb.AppendLine();

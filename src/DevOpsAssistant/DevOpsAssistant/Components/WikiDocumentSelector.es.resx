@@ -27,4 +27,7 @@
   <data name="TextPlaceholder" xml:space="preserve">
     <value>Pega texto o Markdown</value>
   </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Recargar árbol</value>
+  </data>
 </root>
