@@ -21,6 +21,9 @@
   <data name="Intro" xml:space="preserve">
     <value>&lt;p&gt;Bienvenido a DevOpsAssistant. Esta página explica brevemente cómo funciona cada sección.&lt;/p&gt;&lt;p&gt;Utilice estas herramientas para revisar su backlog y generar métricas que mejoren la planificación.&lt;/p&gt;</value>
   </data>
+  <data name="NavHeading" xml:space="preserve">
+    <value>Secciones</value>
+  </data>
   <data name="Epics" xml:space="preserve">
     <value>&lt;p&gt;Cargue un backlog para visualizar épicas y características. Los estados sugeridos aparecen cuando los padres difieren de sus hijos.&lt;/p&gt;&lt;p&gt;Aplique esos estados para mantener la jerarquía coherente.&lt;/p&gt;</value>
   </data>
@@ -76,7 +79,7 @@
     <value>&lt;p&gt;Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.&lt;/p&gt;&lt;p&gt;Limpiar regularmente las ramas antiguas mantiene su repositorio ordenado.&lt;/p&gt;</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>&lt;p&gt;Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto.&lt;/p&gt;&lt;p&gt;También puede personalizar los prompts y las reglas de validación. Cree un PAT desde el menú de perfil en Azure DevOps eligiendo Nuevo token. Consulte {0} para ver las instrucciones. El nombre de la organización es la primera parte después de dev.azure.com/ en la URL y el nombre del proyecto aparece junto al icono de inicio al ver un proyecto.&lt;/p&gt;</value>
+    <value>&lt;p&gt;Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto.&lt;/p&gt;&lt;p&gt;También puede personalizar los prompts y las reglas de validación. Cree un PAT desde el menú de perfil en Azure DevOps eligiendo Nuevo token y conceda los ámbitos &lt;strong&gt;Work Items (Read &amp;amp; write)&lt;/strong&gt;, &lt;strong&gt;Wiki (Read)&lt;/strong&gt; y &lt;strong&gt;Code (Read)&lt;/strong&gt;. Consulte {0} para ver las instrucciones. El nombre de la organización es la primera parte después de dev.azure.com/ en la URL y el nombre del proyecto aparece junto al icono de inicio al ver un proyecto.&lt;/p&gt;</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Cerrar</value>

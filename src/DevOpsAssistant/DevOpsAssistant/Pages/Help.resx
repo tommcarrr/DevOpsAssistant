@@ -21,6 +21,9 @@
   <data name="Intro" xml:space="preserve">
     <value>&lt;p&gt;Welcome to DevOpsAssistant! This page explains how each section can help you manage your workflow.&lt;/p&gt;&lt;p&gt;Explore the tools below to review your backlog and generate insights that drive better planning.&lt;/p&gt;</value>
   </data>
+  <data name="NavHeading" xml:space="preserve">
+    <value>Sections</value>
+  </data>
   <data name="Epics" xml:space="preserve">
     <value>&lt;p&gt;Load a backlog to visualize Epics and Features. Suggested states appear when parents differ from their children.&lt;/p&gt;&lt;p&gt;Apply those suggestions to keep your hierarchy consistent.&lt;/p&gt;</value>
   </data>
@@ -76,7 +79,7 @@
     <value>&lt;p&gt;View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.&lt;/p&gt;&lt;p&gt;Regularly cleaning up old branches keeps your repo tidy.&lt;/p&gt;</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>&lt;p&gt;Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects.&lt;/p&gt;&lt;p&gt;You can also customize prompts and validation rules. Create a PAT from your profile menu in Azure DevOps and select New Token. See {0} for instructions. The organization name is the first segment after dev.azure.com/ in the URL and the project name appears next to the home icon when viewing a project.&lt;/p&gt;</value>
+    <value>&lt;p&gt;Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects.&lt;/p&gt;&lt;p&gt;You can also customize prompts and validation rules. Create a PAT from your profile menu in Azure DevOps and select New Token, granting the &lt;strong&gt;Work Items (Read &amp;amp; write)&lt;/strong&gt;, &lt;strong&gt;Wiki (Read)&lt;/strong&gt; and &lt;strong&gt;Code (Read)&lt;/strong&gt; scopes. See {0} for instructions. The organization name is the first segment after dev.azure.com/ in the URL and the project name appears next to the home icon when viewing a project.&lt;/p&gt;</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
