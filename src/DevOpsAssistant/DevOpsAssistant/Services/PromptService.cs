@@ -163,7 +163,9 @@ public class PromptService
         if (config.Nfrs.Count == 0) return string.Empty;
 
         var sb = new StringBuilder();
-        sb.AppendLine(RequirementsPlanner_NonFunctionalIntroPrompt.Value);
+        sb.AppendLine(config.CoverNfrs
+            ? RequirementsPlanner_NonFunctionalCoverPrompt.Value
+            : RequirementsPlanner_NonFunctionalIgnorePrompt.Value);
         foreach (var nfr in config.Nfrs)
             sb.AppendLine($"- {nfr}");
         return sb.ToString();

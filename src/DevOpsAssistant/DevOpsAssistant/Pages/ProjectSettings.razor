@@ -82,11 +82,14 @@
                                 <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
                                 <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
                             </MudRadioGroup>
+                            <MudDivider />
+                            <MudText Typo="Typo.h6">@L["RequirementsPlannerSection"]</MudText>
                             <MudTextField T="string" Value="_model.RequirementsPrompt" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPrompt = v)" Label='@L["RequirementsPrompt"]' Lines="3" />
                             <MudRadioGroup T="PromptMode" Value="_model.RequirementsPromptMode" ValueChanged="v => OnPromptsChanged(() => _model.RequirementsPromptMode = v)">
                                 <MudRadio T="PromptMode" Value="PromptMode.Replace">@L["PromptReplace"]</MudRadio>
                                 <MudRadio T="PromptMode" Value="PromptMode.Append">@L["PromptAppend"]</MudRadio>
                             </MudRadioGroup>
+                            <MudSwitch T="bool" Value="_model.CoverNfrs" ValueChanged="OnCoverNfrsChanged" Label='@L["CoverNfrs"]' Color="Color.Primary" />
                             <MudTextField T="string" Value="_nfrText" ValueChanged="OnNfrsChanged" Label='@L["NonFunctionalRequirements"]' Lines="3" />
                             <MudText Typo="Typo.subtitle2">@L["WorkItemGranularity"]: @_model.WorkItemGranularity</MudText>
                             <MudSlider T="int" Min="1" Max="5" Step="1" Value="_model.WorkItemGranularity" Immediate="true" ValueChanged="OnGranularityChanged" Color="Color.Primary" />
@@ -245,6 +248,7 @@
             ReleaseNotesPrompt = cfg.ReleaseNotesPrompt,
             RequirementsPrompt = cfg.RequirementsPrompt,
             Nfrs = cfg.Nfrs.ToList(),
+            CoverNfrs = cfg.CoverNfrs,
             StoryQualityPromptMode = cfg.StoryQualityPromptMode,
             ReleaseNotesPromptMode = cfg.ReleaseNotesPromptMode,
             RequirementsPromptMode = cfg.RequirementsPromptMode,
@@ -334,6 +338,7 @@
         cfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
         cfg.RequirementsPrompt = _model.RequirementsPrompt;
         cfg.Nfrs = _nfrText.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
+        cfg.CoverNfrs = _model.CoverNfrs;
         cfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
         cfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
         cfg.RequirementsPromptMode = _model.RequirementsPromptMode;
@@ -369,6 +374,7 @@
                 pcfg.ReleaseNotesPrompt = _model.ReleaseNotesPrompt;
                 pcfg.RequirementsPrompt = _model.RequirementsPrompt;
                 pcfg.Nfrs = _nfrText.Split('\n').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
+                pcfg.CoverNfrs = _model.CoverNfrs;
                 pcfg.StoryQualityPromptMode = _model.StoryQualityPromptMode;
                 pcfg.ReleaseNotesPromptMode = _model.ReleaseNotesPromptMode;
                 pcfg.RequirementsPromptMode = _model.RequirementsPromptMode;
@@ -398,6 +404,9 @@
             sb.AppendLine("---");
             sb.AppendLine($"### {L["NonFunctionalRequirements"].Value}");
             sb.AppendLine(_nfrText);
+            sb.AppendLine("---");
+            sb.AppendLine($"### {L["CoverNfrs"].Value}");
+            sb.AppendLine(_model.CoverNfrs ? "true" : "false");
         }
         await JS.InvokeVoidAsync("copyText", sb.ToString());
         Snackbar.Add(L["PromptsCopied"].Value, Severity.Success);
@@ -530,6 +539,13 @@
     {
         _nfrText = value;
         _model.Nfrs = value.Split('\n').Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
+        _promptsDirty = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnCoverNfrsChanged(bool value)
+    {
+        _model.CoverNfrs = value;
         _promptsDirty = true;
         return Task.CompletedTask;
     }

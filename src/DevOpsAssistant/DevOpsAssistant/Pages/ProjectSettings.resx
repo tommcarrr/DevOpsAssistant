@@ -27,6 +27,12 @@
   <data name="NonFunctionalRequirements" xml:space="preserve">
     <value>Project NFRs (one per line)</value>
   </data>
+  <data name="CoverNfrs" xml:space="preserve">
+    <value>Create stories for NFRs</value>
+  </data>
+  <data name="RequirementsPlannerSection" xml:space="preserve">
+    <value>Requirements Planner Prompt</value>
+  </data>
   <data name="PromptReplace" xml:space="preserve">
     <value>Replace default prompt</value>
   </data>

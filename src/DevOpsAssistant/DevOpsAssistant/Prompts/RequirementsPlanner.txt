@@ -120,5 +120,9 @@ Do not use gherkin syntax, bullet points or any other specific framework for wri
 ==== RequirementsPlanner_WorkItemACStandards_SAFe ====
 - SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
 
-==== RequirementsPlanner_NonFunctionalIntro ====
-This is a list of existing Non-Functional Requirements for the project, work items should not include anything that is already covered by the NFRs:
+==== RequirementsPlanner_NonFunctionalIgnore ====
+This is a list of existing Non-Functional Requirements for the project. Do not create stories for requirements that are already covered:
+
+==== RequirementsPlanner_NonFunctionalCover ====
+Create user stories to address these Non-Functional Requirements:
+

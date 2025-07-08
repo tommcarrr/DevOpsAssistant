@@ -27,6 +27,12 @@
   <data name="NonFunctionalRequirements" xml:space="preserve">
     <value>NFRs del proyecto (uno por línea)</value>
   </data>
+  <data name="CoverNfrs" xml:space="preserve">
+    <value>Crear historias para NFRs</value>
+  </data>
+  <data name="RequirementsPlannerSection" xml:space="preserve">
+    <value>Prompt del Planificador de Requisitos</value>
+  </data>
   <data name="PromptReplace" xml:space="preserve">
     <value>Reemplazar el prompt predeterminado</value>
   </data>
