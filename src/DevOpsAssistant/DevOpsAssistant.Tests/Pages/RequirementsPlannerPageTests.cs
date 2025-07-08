@@ -89,6 +89,27 @@ public class RequirementsPlannerPageTests : ComponentTestBase
     }
 
     [Fact]
+    public void ImportPlan_Parses_Links()
+    {
+        SetupServices(includeApi: true);
+        var cut = RenderWithProvider<TestPage>();
+        var responseField = typeof(RequirementsPlanner).GetField("_responseText", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var json = "{\"stories\":[{\"title\":\"S1\",\"description\":\"D\",\"acceptanceCriteria\":\"AC\",\"links\":[{\"type\":\"related\",\"target\":\"S2\"}]}]}";
+        responseField.SetValue(cut.Instance, json);
+        var method = typeof(RequirementsPlanner).GetMethod("ImportPlan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        cut.InvokeAsync(() => method.Invoke(cut.Instance, null));
+
+        var planField = typeof(RequirementsPlanner).GetField("_plan", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var plan = planField.GetValue(cut.Instance)!;
+        var storyType = typeof(RequirementsPlanner).GetNestedType("Story", BindingFlags.NonPublic)!;
+        var storiesProp = plan.GetType().GetProperty("Stories")!;
+        var story = ((IEnumerable<object>)storiesProp.GetValue(plan)!).Cast<object>().First();
+        var linksProp = storyType.GetProperty("Links")!;
+        var links = (IEnumerable<object>)linksProp.GetValue(story)!;
+        Assert.Single(links);
+    }
+
+    [Fact]
     public async Task DeleteCreatedItems_Removes_All_In_Reverse_Order()
     {
         var config = SetupServices(includeApi: true);

@@ -1,4 +1,5 @@
 @using Microsoft.Extensions.Localization
+@using DevOpsAssistant.Services.Models
 @inject IStringLocalizer<PlanItemEditor> L
 
 <MudPaper Class="@($"pa-6 {WorkItemHelpers.GetItemClass(Type)}")" @ondrop="OnDropInternal" @ondragover:preventDefault="Droppable">
@@ -118,6 +119,17 @@
         {
             <div>@string.Join(", ", Tags)</div>
         }
+
+        @if (Links.Count > 0)
+        {
+            <MudText Typo="Typo.subtitle2">@L["LinksLabel"]</MudText>
+            <MudList T="PlanItemLink" Dense="true">
+                @foreach (var l in Links)
+                {
+                    <MudListItem T="PlanItemLink">@l.Type - @l.Target</MudListItem>
+                }
+            </MudList>
+        }
     </MudStack>
 
     @if (ChildContent != null)
@@ -142,6 +154,7 @@
     [Parameter] public EventCallback<string?> AcceptanceCriteriaChanged { get; set; }
     [Parameter] public List<string> Tags { get; set; } = new();
     [Parameter] public EventCallback<List<string>> TagsChanged { get; set; }
+    [Parameter] public List<PlanItemLink> Links { get; set; } = new();
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private string _newTag = string.Empty;

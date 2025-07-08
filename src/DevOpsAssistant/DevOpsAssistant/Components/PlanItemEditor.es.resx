@@ -30,4 +30,7 @@
   <data name="AddLabel" xml:space="preserve">
     <value>Añadir</value>
   </data>
+  <data name="LinksLabel" xml:space="preserve">
+    <value>Vínculos</value>
+  </data>
 </root>
