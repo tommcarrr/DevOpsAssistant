@@ -1,6 +1,8 @@
 @using DevOpsAssistant.Pages
 @using Microsoft.Extensions.Localization
+@using Microsoft.JSInterop
 @inject IStringLocalizer<Help> L
+@inject IJSRuntime JS
 
 <MudText Typo="Typo.h4">@L["Heading"]</MudText>
 <MudText Typo="Typo.body1">@((MarkupString)L["Intro"].Value)</MudText>
@@ -8,15 +10,15 @@
 <MudPaper Class="pa-4 mb-4">
     <MudText Typo="Typo.subtitle1">@L["NavHeading"]</MudText>
     <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
-        <MudLink Href="#epics">@L["EpicsHeading"]</MudLink>
-        <MudLink Href="#validation">@L["ValidationHeading"]</MudLink>
-        <MudLink Href="#quality">@L["QualityHeading"]</MudLink>
-        <MudLink Href="#requirements">@L["RequirementsPlannerHeading"]</MudLink>
-        <MudLink Href="#releaseNotes">@L["ReleaseNotesHeading"]</MudLink>
-        <MudLink Href="#bulkTag">@L["BulkTagHeading"]</MudLink>
-        <MudLink Href="#metrics">@L["MetricsHeading"]</MudLink>
-        <MudLink Href="#branchHealth">@L["BranchHealthHeading"]</MudLink>
-        <MudLink Href="#settings">@L["SettingsHeading"]</MudLink>
+        <a href="#epics" class="mud-link" @onclick="@(() => ScrollTo("epics"))" @onclick:preventDefault="true">@L["EpicsHeading"]</a>
+        <a href="#validation" class="mud-link" @onclick="@(() => ScrollTo("validation"))" @onclick:preventDefault="true">@L["ValidationHeading"]</a>
+        <a href="#quality" class="mud-link" @onclick="@(() => ScrollTo("quality"))" @onclick:preventDefault="true">@L["QualityHeading"]</a>
+        <a href="#requirements" class="mud-link" @onclick="@(() => ScrollTo("requirements"))" @onclick:preventDefault="true">@L["RequirementsPlannerHeading"]</a>
+        <a href="#releaseNotes" class="mud-link" @onclick="@(() => ScrollTo("releaseNotes"))" @onclick:preventDefault="true">@L["ReleaseNotesHeading"]</a>
+        <a href="#bulkTag" class="mud-link" @onclick="@(() => ScrollTo("bulkTag"))" @onclick:preventDefault="true">@L["BulkTagHeading"]</a>
+        <a href="#metrics" class="mud-link" @onclick="@(() => ScrollTo("metrics"))" @onclick:preventDefault="true">@L["MetricsHeading"]</a>
+        <a href="#branchHealth" class="mud-link" @onclick="@(() => ScrollTo("branchHealth"))" @onclick:preventDefault="true">@L["BranchHealthHeading"]</a>
+        <a href="#settings" class="mud-link" @onclick="@(() => ScrollTo("settings"))" @onclick:preventDefault="true">@L["SettingsHeading"]</a>
     </MudStack>
 </MudPaper>
 
@@ -60,6 +62,11 @@
 </MudPaper>
 
 @code {
+    private async Task ScrollTo(string id)
+    {
+        await JS.InvokeVoidAsync("scrollToId", id);
+    }
+
     private string GuideLinkHtml =>
         $"<a href='https://learn.microsoft.com/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate' target='_blank'>{L["GuideLinkText"]}</a>";
 }
