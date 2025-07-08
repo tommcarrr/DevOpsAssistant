@@ -149,9 +149,12 @@ public class PromptService
         foreach (var page in pagesArray)
         {
             if (!string.IsNullOrWhiteSpace(page.Path))
-                sb.AppendLine($"### {page.Path}");
-            sb.AppendLine($"## {page.Name}");
+                sb.AppendLine($"Wiki Path: {page.Path}");
+            sb.AppendLine($"Page Name: {page.Name}");
+            sb.AppendLine("Contents:");
+            sb.AppendLine("```markdown");
             sb.AppendLine(page.Text);
+            sb.AppendLine("```");
             sb.AppendLine();
         }
 

@@ -8,7 +8,12 @@ Your job is to:
 4. Ensure the final document includes all the sections needed to break the feature down into agile work items. Do not ask if I want you to produce work items as this will be done in a future step.
 
 Use a conversational tone and challenge any assumptions. Do not generate the full document until you have gathered all necessary inputs from the user to complete the template.
+If any diagrams are required, create mermaid diagrams with the following correct Azure DevOps syntax with the diagram code replaced:
 
+:::mermaid
+graph TD
+    A[Application 1] --> B[Application 2]
+:::
 
 ### 🧱 Document Template to Fill (Markdown Output)
 Only output this once all required info has been collected.
