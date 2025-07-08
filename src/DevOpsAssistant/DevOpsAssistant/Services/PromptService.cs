@@ -1,6 +1,7 @@
 using System.Text;
 using GeneratedPrompts;
 using DevOpsAssistant.Services.Models;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 
 namespace DevOpsAssistant.Services;
 
@@ -37,22 +38,33 @@ public class PromptService
         return sb.ToString();
     }
 
-    public static string BuildRequirementsGathererPrompt(IEnumerable<(string Name, string Text)> pages)
+    public static string BuildRequirementsGathererPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(RequirementsGatherer_MainPrompt.Value);
-        if (pages.Any())
-        {
-            sb.AppendLine();
-            sb.AppendLine(RequirementsGatherer_DocumentIntroPrompt.Value);
-            foreach (var page in pages)
-            {
-                sb.AppendLine($"## {page.Name}");
-                sb.AppendLine(page.Text);
-                sb.AppendLine();
-            }
-        }
+        var pagesArray = pages as (string Name, string Text)[] ?? pages.ToArray();
+        sb.AppendFormat(RequirementsGatherer_MainPrompt.Value,
+            GetRequirementsGathererTemplate(config),
+            BuildRequirementsDocument(pagesArray));
 
+        return sb.ToString();
+    }
+
+    private static string GetRequirementsGathererTemplate(DevOpsConfig config)
+    {
+        if (config.Standards.RequirementsDocumentation.Count == 0) return RequirementsGatherer_Template_GeneralPrompt.Value;
+
+        var sb = new StringBuilder();
+        foreach (var text in config.Standards.RequirementsDocumentation.Select(standard => standard switch
+                 {
+                     "ISO29148" => RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018Prompt.Value,
+                     "Volare" => RequirementsGatherer_Template_VolarePrompt.Value,
+                     "BABOK" => RequirementsGatherer_Template_BABOKPrompt.Value,
+                     "ISO25010" => RequirementsGatherer_Template_ISO_IEC_25010Prompt.Value,
+                     _ => RequirementsGatherer_Template_GeneralPrompt.Value
+                 }))
+        {
+            sb.AppendLine(text);
+        }
         return sb.ToString();
     }
 

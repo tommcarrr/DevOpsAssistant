@@ -41,8 +41,13 @@ public class PromptServiceTests
     public void BuildRequirementsGathererPrompt_Includes_Document_When_Pages_Provided()
     {
         var pages = new List<(string Name, string Text)> { ("Doc", "content") };
+        var cfg = new DevOpsConfig
+        {
+            RequirementsPrompt = "Custom",
+            RequirementsPromptMode = PromptMode.Replace
+        };
 
-        var result = PromptService.BuildRequirementsGathererPrompt(pages);
+        var result = PromptService.BuildRequirementsGathererPrompt(pages, cfg);
 
         Assert.Contains("Agile Business Analyst", result);
         Assert.Contains("Document:", result);

@@ -2,11 +2,9 @@
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @using DevOpsAssistant.Services.Models
-@using GeneratedPrompts
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
 @inject PageStateService StateService
-@inject PromptService PromptService
 @inherits ProjectComponentBase
 @inject ISnackbar Snackbar
 @using Microsoft.Extensions.Localization
@@ -412,7 +410,7 @@
                 break;
         }
 
-        return PromptService.BuildRequirementsGathererPrompt(pages);
+        return PromptService.BuildRequirementsGathererPrompt(pages, ConfigService.Config);
     }
 
 

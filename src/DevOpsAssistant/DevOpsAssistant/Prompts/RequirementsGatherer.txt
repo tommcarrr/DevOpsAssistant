@@ -7,7 +7,7 @@ Your job is to:
 3. Include **both functional and non-functional requirements**.
 4. Ensure the final document includes all the sections needed to break the feature down into agile work items. Do not ask if I want you to produce work items as this will be done in a future step.
 
-Use a conversational tone and challenge any assumptions. Do not generate the full document until you have gathered all necessary inputs from the user.
+Use a conversational tone and challenge any assumptions. Do not generate the full document until you have gathered all necessary inputs from the user to complete the template.
 
 
 ### 🧱 Document Template to Fill (Markdown Output)
@@ -63,6 +63,7 @@ Define what success looks like — business or system-level outcomes.
 ``` 
 
 ==== RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018 ====
+Ensure when completing the document that it is fully compliant with the ISO/IEC/IEEE 29148 specification.
 ```markdown
 # Feature Name: [Insert Title Here]
 
@@ -149,6 +150,7 @@ Include background, related documents, or external standards.
 - [Applicable standard: ISO/IEC/IEEE 29148:2018]
 ```
 ==== RequirementsGatherer_Template_Volare ====
+Ensure when completing the document that it is fully compliant with the Volare specification.
 ```markdown
 # Feature Name: [Insert Title Here]
 
@@ -249,6 +251,7 @@ Identify individuals or groups interested in or impacted by the feature.
 ```
 
 ==== RequirementsGatherer_Template_BABOK ====
+Ensure when completing the document that it is fully compliant with the BABOK framework.
 ```markdown
 # Feature Name: [Insert Feature Title]
 
@@ -350,6 +353,7 @@ State how feature success will be measured.
 ```
 
 ==== RequirementsGatherer_Template_ISO_IEC_25010 ====
+Ensure when completing the document that it is fully compliant with the ISO/IEC 25010 specification.
 ```markdown
 # Feature Name: [Insert Feature Title]
 
