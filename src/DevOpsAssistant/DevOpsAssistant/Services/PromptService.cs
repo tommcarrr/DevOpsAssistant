@@ -57,10 +57,10 @@ public class PromptService
         var sb = new StringBuilder();
         foreach (var text in config.Standards.RequirementsDocumentation.Select(standard => standard switch
                  {
-                     "ISO29148" => RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018Prompt.Value,
-                     "Volere" => RequirementsGatherer_Template_VolerePrompt.Value,
-                     "BABOK" => RequirementsGatherer_Template_BABOKPrompt.Value,
-                     "ISO25010" => RequirementsGatherer_Template_ISO_IEC_25010Prompt.Value,
+                     StandardIds.ISO29148 => RequirementsGatherer_Template_ISO_IEC_IEEE_29148_2018Prompt.Value,
+                     StandardIds.Volere => RequirementsGatherer_Template_VolerePrompt.Value,
+                     StandardIds.BABOK => RequirementsGatherer_Template_BABOKPrompt.Value,
+                     StandardIds.ISO25010 => RequirementsGatherer_Template_ISO_IEC_25010Prompt.Value,
                      _ => RequirementsGatherer_Template_GeneralPrompt.Value
                  }))
         {
@@ -182,9 +182,9 @@ public class PromptService
         sb.AppendLine(RequirementsPlanner_WorkItemACStandardsPrompt.Value);
         foreach (var standardText in config.Standards.UserStoryAcceptanceCriteria.Select(s => s switch
                  {
-                     "Gherkin" => RequirementsPlanner_WorkItemACStandards_GherkinPrompt.Value,
-                     "BulletPoints" => RequirementsPlanner_WorkItemACStandards_BulletPointsPrompt.Value,
-                     "SAFeStyle" => RequirementsPlanner_WorkItemACStandards_SAFePrompt.Value,
+                     StandardIds.Gherkin => RequirementsPlanner_WorkItemACStandards_GherkinPrompt.Value,
+                     StandardIds.BulletPoints => RequirementsPlanner_WorkItemACStandards_BulletPointsPrompt.Value,
+                     StandardIds.SAFeStyle => RequirementsPlanner_WorkItemACStandards_SAFePrompt.Value,
                      _ => string.Empty
                  }))
         {
@@ -202,8 +202,8 @@ public class PromptService
         sb.AppendLine(RequirementsPlanner_WorkItemDescriptionStandardsPrompt.Value);
         foreach (var standardText in config.Standards.UserStoryDescription.Select(s => s switch
                  {
-                     "ScrumUserStory" => RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStoryPrompt.Value,
-                     "JobStory" => RequirementsPlanner_WorkItemDescriptionStandards_JobStoryPrompt.Value,
+                     StandardIds.ScrumUserStory => RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStoryPrompt.Value,
+                     StandardIds.JobStory => RequirementsPlanner_WorkItemDescriptionStandards_JobStoryPrompt.Value,
                      _ => string.Empty
                  }))
         {
@@ -221,9 +221,9 @@ public class PromptService
         sb.AppendLine(RequirementsPlanner_WorkItemStandardsPrompt.Value);
         foreach (var standardText in config.Standards.UserStoryQuality.Select(s => s switch
                  {
-                     "INVEST" => RequirementsPlanner_WorkItemStandards_INVESTPrompt.Value,
-                     "SAFe" => RequirementsPlanner_WorkItemStandards_SAFePrompt.Value,
-                     "AgileAlliance" => RequirementsPlanner_WorkItemStandards_AgileAlliancePrompt.Value,
+                     StandardIds.INVEST => RequirementsPlanner_WorkItemStandards_INVESTPrompt.Value,
+                     StandardIds.SAFe => RequirementsPlanner_WorkItemStandards_SAFePrompt.Value,
+                     StandardIds.AgileAlliance => RequirementsPlanner_WorkItemStandards_AgileAlliancePrompt.Value,
                      _ => string.Empty
                  }))
         {

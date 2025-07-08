@@ -199,7 +199,7 @@
     private Plan? _plan;
     private readonly List<int> _createdItems = new();
     private readonly Dictionary<string, int> _titleToId = new(StringComparer.OrdinalIgnoreCase);
-    private const string StateKey = "requirements-planner";
+    private const string StateKey = PageStateKeys.RequirementsPlanner;
     private const long MaxFileSize = 10 * 1024 * 1024;
 
     private bool GenerateDisabled => _loading || _source switch

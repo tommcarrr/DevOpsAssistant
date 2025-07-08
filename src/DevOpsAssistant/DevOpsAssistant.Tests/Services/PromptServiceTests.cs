@@ -14,7 +14,7 @@ public class PromptServiceTests
         {
             Standards = new PromptStandards
             {
-                UserStoryAcceptanceCriteria = ["BulletPoints"]
+                UserStoryAcceptanceCriteria = [StandardIds.BulletPoints]
             }
         };
 
