@@ -2,6 +2,7 @@ using Bunit;
 using DevOpsAssistant.Components;
 using DevOpsAssistant.Tests.Utils;
 using DevOpsAssistant.Utils;
+using DevOpsAssistant.Services.Models;
 using System.Reflection;
 
 namespace DevOpsAssistant.Tests.Components;
@@ -48,5 +49,18 @@ public class PlanItemEditorTests : ComponentTestBase
         cut.InvokeAsync(() => remove.Invoke(cut.Instance, [AppConstants.AiGeneratedTag]));
         var tags = (List<string>)field.GetValue(cut.Instance)!;
         Assert.Contains(AppConstants.AiGeneratedTag, tags);
+    }
+
+    [Fact]
+    public void Shows_Links_When_Present()
+    {
+        SetupServices();
+        var links = new List<PlanItemLink> { new() { Type = "related", Target = "Other" } };
+        var cut = RenderComponent<PlanItemEditor>(p => p
+            .Add(c => c.Type, "User Story")
+            .Add(c => c.Links, links)
+        );
+
+        Assert.Contains("related - Other", cut.Markup);
     }
 }

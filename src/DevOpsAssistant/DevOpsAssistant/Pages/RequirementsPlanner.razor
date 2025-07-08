@@ -98,7 +98,8 @@
                                     @bind-Title="story.Title"
                                     @bind-Description="story.Description"
                                     @bind-AcceptanceCriteria="story.AcceptanceCriteria"
-                                    @bind-Tags="story.Tags" />
+                                    @bind-Tags="story.Tags"
+                                    Links="story.Links" />
                 }
                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="AddStory">@L["AddStory"]</MudButton>
             }
@@ -114,7 +115,8 @@
                                     OnDelete="EventCallback.Factory.Create(this, () => RemoveEpic(epic))"
                                     @bind-Title="epic.Title"
                                     @bind-Description="epic.Description"
-                                    @bind-Tags="epic.Tags" >
+                                    @bind-Tags="epic.Tags"
+                                    Links="epic.Links" >
                         @foreach (var feature in epic.Features)
                         {
                             <PlanItemEditor Type="Feature"
@@ -125,7 +127,8 @@
                                             OnDelete="EventCallback.Factory.Create(this, () => RemoveFeature(feature))"
                                             @bind-Title="feature.Title"
                                             @bind-Description="feature.Description"
-                                            @bind-Tags="feature.Tags" >
+                                            @bind-Tags="feature.Tags"
+                                            Links="feature.Links" >
                                 @foreach (var story in feature.Stories)
                                 {
                                     <PlanItemEditor Type="User Story"
@@ -137,7 +140,8 @@
                                                     @bind-Title="story.Title"
                                                     @bind-Description="story.Description"
                                                     @bind-AcceptanceCriteria="story.AcceptanceCriteria"
-                                                    @bind-Tags="story.Tags" />
+                                                    @bind-Tags="story.Tags"
+                                                    Links="story.Links" />
                                 }
                                 <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddStory(feature)">@L["AddStory"]</MudButton>
                             </PlanItemEditor>
@@ -194,6 +198,7 @@
     private WorkItemInfo? _feature;
     private Plan? _plan;
     private readonly List<int> _createdItems = new();
+    private readonly Dictionary<string, int> _titleToId = new(StringComparer.OrdinalIgnoreCase);
     private const string StateKey = "requirements-planner";
     private const long MaxFileSize = 10 * 1024 * 1024;
 
@@ -487,6 +492,7 @@
     {
         if (_plan == null) return;
         _loading = true;
+        _titleToId.Clear();
         StateHasChanged();
         try
         {
@@ -506,6 +512,7 @@
                         tags
                     );
                     _createdItems.Add(story.Id);
+                    _titleToId[story.Title] = story.Id;
                 }
             }
             else
@@ -515,11 +522,13 @@
                     var epicTags = epic.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                     epic.Id = await ApiService.CreateWorkItemAsync("Epic", epic.Title, epic.Description, _backlog, null, null, epicTags);
                     _createdItems.Add(epic.Id);
+                    _titleToId[epic.Title] = epic.Id;
                     foreach (var feature in epic.Features)
                     {
                         var featureTags = feature.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
                         feature.Id = await ApiService.CreateWorkItemAsync("Feature", feature.Title, feature.Description, _backlog, epic.Id, null, featureTags);
                         _createdItems.Add(feature.Id);
+                        _titleToId[feature.Title] = feature.Id;
                         foreach (var story in feature.Stories)
                         {
                             var tags2 = story.Tags.Concat([AppConstants.AiGeneratedTag]).ToArray();
@@ -533,10 +542,12 @@
                                 tags2
                             );
                             _createdItems.Add(story.Id);
+                            _titleToId[story.Title] = story.Id;
                         }
                     }
                 }
             }
+            await AddLinks();
             _error = null;
         }
         catch (Exception ex)
@@ -547,6 +558,29 @@
         {
             _loading = false;
         }
+    }
+
+    private async Task AddLinks()
+    {
+        foreach (var story in _plan?.Stories ?? [])
+            await AddLinksForItem(story.Id, story.Links);
+        foreach (var epic in _plan?.Epics ?? [])
+        {
+            await AddLinksForItem(epic.Id, epic.Links);
+            foreach (var feature in epic.Features)
+            {
+                await AddLinksForItem(feature.Id, feature.Links);
+                foreach (var story in feature.Stories)
+                    await AddLinksForItem(story.Id, story.Links);
+            }
+        }
+    }
+
+    private async Task AddLinksForItem(int id, List<PlanItemLink> links)
+    {
+        foreach (var link in links)
+            if (_titleToId.TryGetValue(link.Target, out var targetId))
+                await ApiService.AddRelationAsync(id, targetId, link.Type);
     }
 
     private static TreeItemData<WikiPageNode> BuildTreeItem(WikiPageNode node)
@@ -687,6 +721,7 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();
+        public List<PlanItemLink> Links { get; set; } = new();
 
         [JsonIgnore]
         public string TagString
@@ -705,6 +740,7 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();
+        public List<PlanItemLink> Links { get; set; } = new();
 
         [JsonIgnore]
         public string TagString
@@ -724,6 +760,7 @@
         public string Description { get; set; } = string.Empty;
         public string AcceptanceCriteria { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();
+        public List<PlanItemLink> Links { get; set; } = new();
 
         [JsonIgnore]
         public string TagString

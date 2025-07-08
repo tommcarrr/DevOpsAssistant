@@ -733,6 +733,32 @@ public class DevOpsApiService
         await SendAsync(request);
     }
 
+    public async Task AddRelationAsync(int id, int targetId, string type)
+    {
+        var config = GetValidatedConfig();
+        ApplyAuthentication(config);
+
+        var baseUri = BuildBaseUri(config);
+        var rel = type.ToLowerInvariant() switch
+        {
+            "successor" => "System.LinkTypes.Dependency-Forward",
+            "predecessor" => "System.LinkTypes.Dependency-Reverse",
+            _ => "System.LinkTypes.Related"
+        };
+        var targetUrl = $"{BuildItemUrlBase(config)}{targetId}";
+        var patch = new[]
+        {
+            new { op = "add", path = "/relations/-", value = new { rel, url = targetUrl } }
+        };
+        var content = new StringContent(JsonSerializer.Serialize(patch));
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json-patch+json");
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"{baseUri}/workitems/{id}?api-version={ApiVersion}")
+        {
+            Content = content
+        };
+        await SendAsync(request);
+    }
+
     public async Task<List<string>> GetCommentsAsync(int id)
     {
         var config = GetValidatedConfig();

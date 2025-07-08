@@ -47,12 +47,24 @@ Requirements Document:
 ==== RequirementsPlanner_EpicsFeaturesStories ====
 Epics, Features, and User Stories.
 Return strict JSON using this format:
-{"epics":[{"title":"","description":"","features":[{"title":"","description":"","stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}]}]}
+{"epics":[{"title":"","description":"","links":[{"type":"","target":""}],"features":[{"title":"","description":"","links":[{"type":"","target":""}],"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""],"links":[{"type":"","target":""}]}]}]}]}
+Allowed link types: "related", "successor" and "predecessor".
+Set "target" to the title of the linked item.
+Use "successor" when the current item depends on the target. The reverse
+"predecessor" link is implied; do not create both directions.
+Only add links where there is a clear relationship that must be considered
+during refinement.
 
 ==== RequirementsPlanner_StoriesOnly ====
 User Stories.
 Return strict JSON using this format:
-{"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""]}]}
+{"stories":[{"title":"","description":"","acceptanceCriteria":"","tags":[""],"links":[{"type":"","target":""}]}]}
+Allowed link types: "related", "successor" and "predecessor".
+Set "target" to the title of the linked item.
+Use "successor" when the current item depends on the target. The reverse
+"predecessor" link is implied; do not create both directions.
+Only add links where there is a clear relationship that must be considered
+during refinement.
 
 ==== RequirementsPlanner_ClarifyRequirements ====
 Clarify Requirements:

@@ -436,6 +436,35 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task AddRelationAsync_Sends_Patch_Request()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        await service.AddRelationAsync(1, 2, "related");
+
+        Assert.NotNull(captured);
+        Assert.Equal(HttpMethod.Patch, captured!.Method);
+        Assert.Equal("https://dev.azure.com/Org/Proj/_apis/wit/workitems/1?api-version=7.0",
+            captured.RequestUri!.ToString());
+        var body = await captured.Content!.ReadAsStringAsync();
+        Assert.Contains("System.LinkTypes.Related", body);
+        Assert.Contains("workitems/edit/2", body);
+    }
+
+    [Fact]
     public async Task GetCommentsAsync_Returns_Text()
     {
         HttpRequestMessage? captured = null;
