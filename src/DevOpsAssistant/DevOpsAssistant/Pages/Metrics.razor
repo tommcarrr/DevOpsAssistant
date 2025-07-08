@@ -26,9 +26,10 @@
     <MudAlert Severity="Severity.Error">@_error</MudAlert>
 }
 
-<MudPaper>
-    <MudStack Spacing="2">
-        <MudText Typo="Typo.h6">@L["OptionsHeading"]</MudText>
+<MudExpansionPanels>
+    <MudExpansionPanel Text="@L["OptionsHeading"]" Expanded="@_filtersExpanded" ExpandedChanged="@(v => _filtersExpanded = v)">
+        <MudPaper>
+        <MudStack Spacing="2">
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudSelect T="string" @bind-Value="_path" Label="@L["Backlog"]">
                 @foreach (var b in _backlogs)
@@ -39,7 +40,7 @@
             <MudDatePicker @bind-Date="_startDate" Label="@L["StartDate"]"/>
             <MudDatePicker @bind-Date="_endDate" Label="@L["EndDate"]" MaxDate="@DateTime.Today"/>
             </MudStack>
-            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
             <MudSelect T="AggregateMode" @bind-Value="_mode" Label="@L["AggregateBy"]">
                 <MudSelectItem Value="AggregateMode.Week">@L["AggregateWeek"]</MudSelectItem>
                 <MudSelectItem Value="AggregateMode.Fortnight">@L["AggregateFortnight"]</MudSelectItem>
@@ -52,6 +53,7 @@
                     <MudSelectItem Value="VelocityMode.OriginalEstimate">@L["VelocityOriginalEstimate"]</MudSelectItem>
                 </MudSelect>
             </MudTooltip>
+            <MudNumericField T="int" @bind-Value="_rollingWeeks" Label="@L["RollingWeeks"]" Immediate="true" />
         </MudStack>
         <MudText Typo="Typo.h6">@L["SprintEfficiencyOptionsHeading"]</MudText>
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End" Wrap="Wrap.Wrap">
@@ -77,8 +79,10 @@
             <MudButton Variant="Variant.Filled" Color="Mud.Color.Primary" OnClick="Load">@L["Load"]</MudButton>
             <MudButton Variant="Variant.Outlined" OnClick="ExportCsv">@L["ExportCsv"]</MudButton>
         </MudStack>
-    </MudStack>
-</MudPaper>
+        </MudStack>
+        </MudPaper>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @if (_loading)
 {
@@ -94,6 +98,7 @@ else if (_periods.Any())
             <MudTh>@L["AvgCycleTimeDays"]</MudTh>
             <MudTh>@L["Throughput"]</MudTh>
             <MudTh>@L["Velocity"]</MudTh>
+            <MudTh>@L["RollingVelocity"]</MudTh>
             <MudTh>@L["AvgWip"]</MudTh>
             <MudTh>@L["SprintEff"]</MudTh>
         </HeaderContent>
@@ -105,6 +110,7 @@ else if (_periods.Any())
             <MudTd DataLabel="@L["Cycle"]">@context.AvgCycleTime.ToString("0.0")</MudTd>
             <MudTd DataLabel="@L["Throughput"]">@context.Throughput</MudTd>
             <MudTd DataLabel="@L["Velocity"]">@context.Velocity.ToString("0.0")</MudTd>
+            <MudTd DataLabel="@L["RollingVelocity"]">@context.RollingVelocity.ToString("0.0")</MudTd>
             <MudTd DataLabel="@L["Wip"]">@context.AvgWip.ToString("0.0")</MudTd>
             <MudTd DataLabel="@L["Sprint"]">@context.SprintEfficiency.ToString("0.0")</MudTd>
         </RowTemplate>
@@ -245,6 +251,7 @@ else if (_periods.Any())
     private double? _additionalPoints;
     private double? _efficiency;
     private double? _errorRange;
+    private int _rollingWeeks = 4;
     private string _tag = string.Empty;
     private bool _tagMarksSprint;
     private bool _useSprintEfficiency;
@@ -252,6 +259,7 @@ else if (_periods.Any())
     private string _ignoreTag = string.Empty;
     private List<string> _tags = [];
     private bool _showBurnChartControls;
+    private bool _filtersExpanded = true;
 
     private string[] _xAxisLabels = [];
     private List<ChartSeries> _leadCycleSeries = [];
@@ -315,6 +323,8 @@ else if (_periods.Any())
                 _additionalPoints = state.AdditionalPoints > 0 ? state.AdditionalPoints : null;
                 _efficiency = state.Efficiency > 0 ? state.Efficiency : null;
                 _errorRange = state.Error > 0 ? state.Error : null;
+                if (state.RollingWeeks > 0)
+                    _rollingWeeks = state.RollingWeeks;
                 _tag = state.Tag ?? string.Empty;
                 _tagMarksSprint = state.TagMarksSprint;
                 _useSprintEfficiency = state.UseSprintEfficiency;
@@ -358,6 +368,7 @@ else if (_periods.Any())
                 AdditionalPoints = _additionalPoints ?? 0,
                 Efficiency = _efficiency ?? 0,
                 Error = _errorRange ?? 0,
+                RollingWeeks = _rollingWeeks,
                 Tag = _tag,
                 TagMarksSprint = _tagMarksSprint,
                 UseSprintEfficiency = _useSprintEfficiency,
@@ -474,6 +485,14 @@ else if (_periods.Any())
             }
         }
 
+        for (int i = 0; i < _periods.Count; i++)
+        {
+            var end = _periods[i].End;
+            var startRange = end.AddDays(-7 * _rollingWeeks);
+            var range = _periods.Where(p => p.End > startRange && p.End <= end);
+            _periods[i].RollingVelocity = range.Any() ? range.Average(p => p.Velocity) : 0;
+        }
+
         _xAxisLabels = _periods.Select(p => _mode == AggregateMode.Month
             ? p.End.ToString("yyyy-MM")
             : _mode == AggregateMode.Iteration
@@ -483,6 +502,7 @@ else if (_periods.Any())
         var cycle = _periods.Select(p => p.AvgCycleTime).ToArray();
         var throughput = _periods.Select(p => (double)p.Throughput).ToArray();
         var velocity = _periods.Select(p => p.Velocity).ToArray();
+        var rolling = _periods.Select(p => p.RollingVelocity).ToArray();
         _leadCycleSeries =
         [
             new ChartSeries { Name = "Lead Time", Data = lead },
@@ -491,7 +511,8 @@ else if (_periods.Any())
         _barSeries =
         [
             new ChartSeries { Name = "Throughput", Data = throughput },
-            new ChartSeries { Name = "Velocity", Data = velocity }
+            new ChartSeries { Name = "Velocity", Data = velocity },
+            new ChartSeries { Name = "Rolling Velocity", Data = rolling }
         ];
         var wip = _periods.Select(p => p.AvgWip).ToArray();
         _wipSeries = [new ChartSeries { Name = "Avg WIP", Data = wip }];
@@ -718,7 +739,7 @@ else if (_periods.Any())
         var rm = new ResourceManager("DevOpsAssistant.Pages.Metrics", typeof(Metrics).Assembly);
         sb.AppendLine(rm.GetString("CsvHeader") ?? "CsvHeader");
         foreach (var p in periods)
-            sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0}");
+            sb.AppendLine($"{p.End:yyyy-MM-dd},{p.AvgLeadTime:0.0},{p.AvgCycleTime:0.0},{p.Throughput},{p.Velocity:0.0},{p.RollingVelocity:0.0}");
         return sb.ToString();
     }
 
@@ -732,6 +753,7 @@ else if (_periods.Any())
             cycleTime = p.AvgCycleTime,
             throughput = p.Throughput,
             velocity = p.Velocity,
+            rollingVelocity = p.RollingVelocity,
             avgWip = p.AvgWip,
             sprintEfficiency = p.SprintEfficiency
         });
@@ -739,6 +761,7 @@ else if (_periods.Any())
         decimal totalCycle = 0;
         decimal totalThroughput = 0;
         decimal totalVelocity = 0;
+        decimal totalRolling = 0;
         decimal totalWip = 0;
         decimal totalSprint = 0;
         int count = 0;
@@ -749,6 +772,7 @@ else if (_periods.Any())
             totalCycle += (decimal)p.AvgCycleTime;
             totalThroughput += p.Throughput;
             totalVelocity += (decimal)p.Velocity;
+            totalRolling += (decimal)p.RollingVelocity;
             totalWip += (decimal)p.AvgWip;
             totalSprint += (decimal)p.SprintEfficiency;
             count++;
@@ -760,6 +784,7 @@ else if (_periods.Any())
             avgCycleTime = count > 0 ? totalCycle / count : 0,
             avgThroughput = count > 0 ? totalThroughput / count : 0,
             avgVelocity = count > 0 ? totalVelocity / count : 0,
+            avgRollingVelocity = count > 0 ? totalRolling / count : 0,
             avgWip = count > 0 ? totalWip / count : 0,
             avgSprintEfficiency = count > 0 ? totalSprint / count : 0
         };
@@ -807,6 +832,7 @@ else if (_periods.Any())
             AdditionalPoints = _additionalPoints ?? 0,
             Efficiency = _efficiency ?? 0,
             Error = _errorRange ?? 0,
+            RollingWeeks = _rollingWeeks,
             Tag = _tag,
             TagMarksSprint = _tagMarksSprint,
             UseSprintEfficiency = _useSprintEfficiency,
@@ -882,6 +908,7 @@ else if (_periods.Any())
         public double AdditionalPoints { get; set; }
         public double Efficiency { get; set; }
         public double Error { get; set; }
+        public int RollingWeeks { get; set; }
         public string? Tag { get; set; }
         public bool TagMarksSprint { get; set; }
         public bool UseSprintEfficiency { get; set; }

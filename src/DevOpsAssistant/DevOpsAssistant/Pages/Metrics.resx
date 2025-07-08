@@ -172,6 +172,12 @@
     <value>Throughput &amp; Velocity</value>
   </data>
   <data name="CsvHeader" xml:space="preserve">
-    <value>Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity</value>
+    <value>Period End,Avg Lead Time,Avg Cycle Time,Throughput,Velocity,Rolling Velocity</value>
+  </data>
+  <data name="RollingWeeks" xml:space="preserve">
+    <value>Rolling Weeks</value>
+  </data>
+  <data name="RollingVelocity" xml:space="preserve">
+    <value>Rolling Velocity</value>
   </data>
 </root>
