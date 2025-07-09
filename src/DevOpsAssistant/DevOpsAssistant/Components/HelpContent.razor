@@ -10,15 +10,15 @@
 <MudPaper Class="pa-4 mb-4">
     <MudText Typo="Typo.subtitle1">@L["NavHeading"]</MudText>
     <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
-        <a href="#epics" class="mud-link" @onclick="@(() => ScrollTo("epics"))" @onclick:preventDefault="true">@L["EpicsHeading"]</a>
-        <a href="#validation" class="mud-link" @onclick="@(() => ScrollTo("validation"))" @onclick:preventDefault="true">@L["ValidationHeading"]</a>
-        <a href="#quality" class="mud-link" @onclick="@(() => ScrollTo("quality"))" @onclick:preventDefault="true">@L["QualityHeading"]</a>
-        <a href="#requirements" class="mud-link" @onclick="@(() => ScrollTo("requirements"))" @onclick:preventDefault="true">@L["RequirementsPlannerHeading"]</a>
-        <a href="#releaseNotes" class="mud-link" @onclick="@(() => ScrollTo("releaseNotes"))" @onclick:preventDefault="true">@L["ReleaseNotesHeading"]</a>
-        <a href="#bulkTag" class="mud-link" @onclick="@(() => ScrollTo("bulkTag"))" @onclick:preventDefault="true">@L["BulkTagHeading"]</a>
-        <a href="#metrics" class="mud-link" @onclick="@(() => ScrollTo("metrics"))" @onclick:preventDefault="true">@L["MetricsHeading"]</a>
-        <a href="#branchHealth" class="mud-link" @onclick="@(() => ScrollTo("branchHealth"))" @onclick:preventDefault="true">@L["BranchHealthHeading"]</a>
-        <a href="#settings" class="mud-link" @onclick="@(() => ScrollTo("settings"))" @onclick:preventDefault="true">@L["SettingsHeading"]</a>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("epics"))">@L["EpicsHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("validation"))">@L["ValidationHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("quality"))">@L["QualityHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("requirements"))">@L["RequirementsPlannerHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("releaseNotes"))">@L["ReleaseNotesHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("bulkTag"))">@L["BulkTagHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("metrics"))">@L["MetricsHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("branchHealth"))">@L["BranchHealthHeading"]</MudLink>
+        <MudLink Underline="Underline.Always" Class="mx-2" OnClick="@(() => ScrollTo("settings"))">@L["SettingsHeading"]</MudLink>
     </MudStack>
 </MudPaper>
 

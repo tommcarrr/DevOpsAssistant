@@ -73,7 +73,7 @@
     <value>this guide</value>
   </data>
   <data name="Metrics" xml:space="preserve">
-    <value>&lt;ul&gt;&lt;li&gt;Display throughput, lead time, cycle time, velocity and rolling velocity along with burn up and cumulative flow charts.&lt;/li&gt;&lt;li&gt;Throughput counts completed items while lead and cycle time measure Created-to-Closed and Activated-to-Closed respectively.&lt;/li&gt;&lt;li&gt;Use the options panel to adjust the rolling window and spot trends.&lt;/li&gt;&lt;/ul&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Display throughput, lead time, cycle time, velocity and rolling velocity along with burn up and cumulative flow charts.&lt;/li&gt;&lt;li&gt;Throughput is the number of completed work items in the selected period.&lt;/li&gt;&lt;li&gt;Lead time measures days from creation until an item closes.&lt;/li&gt;&lt;li&gt;Cycle time measures days from first activation until closure.&lt;/li&gt;&lt;li&gt;Velocity totals completed story points per sprint while rolling velocity averages the last N sprints.&lt;/li&gt;&lt;li&gt;Use the options panel to adjust the rolling window and spot trends.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>&lt;ul&gt;&lt;li&gt;View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.&lt;/li&gt;&lt;li&gt;Regular clean up keeps your repo tidy.&lt;/li&gt;&lt;/ul&gt;</value>
