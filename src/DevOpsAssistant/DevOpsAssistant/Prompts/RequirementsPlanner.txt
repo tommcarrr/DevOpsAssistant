@@ -158,7 +158,7 @@ Ensure that the relevant work item descriptions adhere to the following standard
 Do not follow any standard framework for writing the work item descriptions, such as the Scrum User Story or Job Story templates, but ensure that the descriptions are clear and unambiguous.
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards_ScrumUserStory ====
-- Scrum User Story - in the 'As a <role>, I want <goal> so that <benefit>.' format
+- Scrum User Story - in the 'As a **role**, I want **goal** so that **benefit**.' format
 
 ==== RequirementsPlanner_WorkItemDescriptionStandards_JobStory ====
 - Job Story - in the 'When [situation], I want to [motivation], so I can [expected outcome].' format
