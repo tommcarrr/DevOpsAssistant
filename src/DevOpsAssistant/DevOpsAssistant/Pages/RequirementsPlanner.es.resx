@@ -102,6 +102,21 @@
   <data name="Backlog" xml:space="preserve">
     <value>Backlog</value>
   </data>
+  <data name="ContextNote" xml:space="preserve">
+    <value>Seleccione documentos de referencia que ayuden a guiar la generación de requisitos.</value>
+  </data>
+  <data name="RequirementsNote" xml:space="preserve">
+    <value>Elija los documentos que definen los requisitos y configure las opciones.</value>
+  </data>
+  <data name="ImportNote" xml:space="preserve">
+    <value>Pegue la respuesta del LLM para construir un plan estructurado.</value>
+  </data>
+  <data name="CreateNote" xml:space="preserve">
+    <value>Revise y edite el plan y luego cree los elementos de trabajo.</value>
+  </data>
+  <data name="StarterPromptTooltip" xml:space="preserve">
+    <value>Utiliza un LLM para crear un prompt que ayude a recopilar requisitos.</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DevOpsAssistant - Planificador de Requisitos</value>
   </data>

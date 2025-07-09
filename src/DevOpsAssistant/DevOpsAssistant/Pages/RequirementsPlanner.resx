@@ -102,6 +102,21 @@
   <data name="Backlog" xml:space="preserve">
     <value>Backlog</value>
   </data>
+  <data name="ContextNote" xml:space="preserve">
+    <value>Select reference docs to help guide requirement generation.</value>
+  </data>
+  <data name="RequirementsNote" xml:space="preserve">
+    <value>Choose the docs that define requirements and set your options.</value>
+  </data>
+  <data name="ImportNote" xml:space="preserve">
+    <value>Paste the LLM response to build a structured plan.</value>
+  </data>
+  <data name="CreateNote" xml:space="preserve">
+    <value>Review the plan, make edits and then create the work items.</value>
+  </data>
+  <data name="StarterPromptTooltip" xml:space="preserve">
+    <value>Use an LLM to craft a prompt that gathers requirements.</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>DevOpsAssistant - Requirement Planner</value>
   </data>

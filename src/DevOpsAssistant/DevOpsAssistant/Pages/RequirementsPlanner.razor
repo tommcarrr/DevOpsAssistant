@@ -21,6 +21,7 @@
 
 <MudStepper @ref="_stepper" NonLinear="true">
     <MudStep Title="@L["SelectContextDocuments"]" Skippable="true">
+        <MudText Typo="Typo.body2" Class="mb-2">@L["ContextNote"]</MudText>
         <MudStack Spacing="2">
             <WikiDocumentSelector Source="@_contextSource"
                                    SourceChanged="@(v => _contextSource = v)"
@@ -32,10 +33,13 @@
                                    SelectedPages="@_contextSelectedPages"
                                    SelectedPagesChanged="@(p => _contextSelectedPages = p)"
                                    Reload="ReloadWiki" />
-            <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["GenerateStarterPrompt"]</MudButton>
+            <MudTooltip Text='@L["StarterPromptTooltip"]'>
+                <MudButton Variant="Variant.Text" OnClick="CopyInitialPrompt">@L["GenerateStarterPrompt"]</MudButton>
+            </MudTooltip>
         </MudStack>
     </MudStep>
     <MudStep Title="@L["SelectRequirements"]" Skippable="true">
+        <MudText Typo="Typo.body2" Class="mb-2">@L["RequirementsNote"]</MudText>
         <MudStack Spacing="2">
             <WikiDocumentSelector Source="@_source"
                                    SourceChanged="@(v => _source = v)"
@@ -56,6 +60,7 @@
         </MudStack>
     </MudStep>
     <MudStep Title="@L["ImportResponse"]" Skippable="true">
+        <MudText Typo="Typo.body2" Class="mb-2">@L["ImportNote"]</MudText>
         <MudStack Spacing="2">
             @if (_promptParts != null)
             {
@@ -77,6 +82,7 @@
         </MudStack>
     </MudStep>
     <MudStep Title="@L["CreateWorkItems"]" Disabled="@(_plan == null)">
+        <MudText Typo="Typo.body2" Class="mb-2">@L["CreateNote"]</MudText>
         @if (_plan != null)
         {
             if (_storiesOnly)

@@ -25,22 +25,22 @@
     <value>Sections</value>
   </data>
   <data name="Epics" xml:space="preserve">
-    <value>&lt;p&gt;Load a backlog to visualize Epics and Features. Suggested states appear when parents differ from their children.&lt;/p&gt;&lt;p&gt;Apply those suggestions to keep your hierarchy consistent.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Load a backlog to visualize Epics and Features.&lt;/li&gt;&lt;li&gt;Suggested states appear when parents differ from their children—apply them to keep your hierarchy consistent.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Validation" xml:space="preserve">
-    <value>&lt;p&gt;Select a backlog and states then check work items against your rules.&lt;/p&gt;&lt;p&gt;Violations can be tagged for follow up so nothing slips through the cracks.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Select a backlog and states then check work items against your rules.&lt;/li&gt;&lt;li&gt;Tag violations for follow up so nothing slips through the cracks.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Quality" xml:space="preserve">
-    <value>&lt;p&gt;Generate a detailed prompt to score stories against INVEST and provide coaching using your Definition of Ready.&lt;/p&gt;&lt;p&gt;Long prompts are split into parts—navigate between them with the arrows.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Generate a detailed prompt to score stories against INVEST and coach using your Definition of Ready.&lt;/li&gt;&lt;li&gt;Long prompts are split into parts—use the arrows to navigate.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
-    <value>&lt;p&gt;Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.&lt;/p&gt;&lt;p&gt;Use HTML in descriptions and acceptance criteria when it helps with lists or formatting. Imported text is rendered automatically so you can verify markup.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Break wiki pages or uploaded documents into a plan of Epics, Features and Stories, then create work items.&lt;/li&gt;&lt;li&gt;Use HTML in descriptions and acceptance criteria when helpful—imported text renders automatically so you can verify markup.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
-    <value>&lt;p&gt;Select stories and build a prompt that summarizes them for release notes.&lt;/p&gt;&lt;p&gt;Prompts can be copied or downloaded, splitting into parts with arrows to navigate.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Select stories and build a prompt that summarizes them for release notes.&lt;/li&gt;&lt;li&gt;Prompts can be copied or downloaded in parts—navigate with the arrows.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>&lt;p&gt;Choose multiple work items, pick one or more tags, and apply them all at once.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Choose multiple work items, pick one or more tags, and apply them all at once.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="EpicsHeading" xml:space="preserve">
     <value>Epics &amp; Features</value>
@@ -73,13 +73,13 @@
     <value>this guide</value>
   </data>
   <data name="Metrics" xml:space="preserve">
-    <value>&lt;p&gt;Display throughput, lead time, cycle time, velocity and rolling velocity, burn up and flow charts for the chosen backlog.&lt;/p&gt;&lt;p&gt;Throughput counts the work items closed in each period. Lead time is the number of days from Created Date to Closed Date. Cycle time measures Activated Date to Closed Date. Velocity sums Story Points or Original Estimate for completed stories and rolling velocity averages this value over a configurable number of weeks. The burn up forecast uses additional points, efficiency and error range, while cumulative flow tracks backlog, work in progress and done items each day.&lt;/p&gt;&lt;p&gt;Use the collapsible options panel to configure the rolling window and spot trends for planning future iterations.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Display throughput, lead time, cycle time, velocity and rolling velocity along with burn up and cumulative flow charts.&lt;/li&gt;&lt;li&gt;Throughput counts completed items while lead and cycle time measure Created-to-Closed and Activated-to-Closed respectively.&lt;/li&gt;&lt;li&gt;Use the options panel to adjust the rolling window and spot trends.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BranchHealth" xml:space="preserve">
-    <value>&lt;p&gt;View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.&lt;/p&gt;&lt;p&gt;Regularly cleaning up old branches keeps your repo tidy.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;View repository branches and highlight stale branches or ahead/behind counts compared to a base branch.&lt;/li&gt;&lt;li&gt;Regular clean up keeps your repo tidy.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>&lt;p&gt;Configure your DevOps organization, DevOps project and PAT token using the settings dialog. Use the project dropdown to add or switch projects.&lt;/p&gt;&lt;p&gt;You can also customize prompts and validation rules. Create a PAT from your profile menu in Azure DevOps and select New Token, granting the &lt;strong&gt;Work Items (Read &amp;amp; write)&lt;/strong&gt;, &lt;strong&gt;Wiki (Read)&lt;/strong&gt; and &lt;strong&gt;Code (Read)&lt;/strong&gt; scopes. See {0} for instructions. The organization name is the first segment after dev.azure.com/ in the URL and the project name appears next to the home icon when viewing a project.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Configure your DevOps organization, project and PAT in the settings dialog.&lt;/li&gt;&lt;li&gt;Custom prompts and validation rules are stored in your browser.&lt;/li&gt;&lt;li&gt;Create a PAT with Work Items (Read &amp;amp; write), Wiki (Read) and Code (Read) scopes—see {0} for details.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
