@@ -10,13 +10,12 @@ public class PromptService
     public static string BuildMetricsPrompt(string json, OutputFormat format)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(Metrics_MainPrompt.Value);
-        sb.AppendLine();
-        sb.AppendLine(format == OutputFormat.Inline
-            ? FormatInstructions_MetricsInlinePrompt.Value
-            : string.Format(FormatInstructions_MetricsConvertPrompt.Value, format));
-        sb.AppendLine();
-        sb.AppendLine(string.Format(Metrics_DataIntroPrompt.Value, json));
+        sb.AppendFormat(
+            Metrics_MainPrompt.Value,
+            format == OutputFormat.Inline
+                ? FormatInstructions_MetricsInlinePrompt.Value
+                : string.Format(FormatInstructions_MetricsConvertPrompt.Value, format),
+            json);
         sb.AppendLine();
         return sb.ToString();
     }
@@ -24,17 +23,29 @@ public class PromptService
     public static string BuildReleaseNotesPrompt(string json, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) || config.ReleaseNotesPromptMode == PromptMode.Append)
-            sb.AppendLine(ReleaseNotes_MainPrompt.Value);
-        if (!string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt))
-            sb.AppendLine(config.ReleaseNotesPrompt.Trim());
-        sb.AppendLine(config.OutputFormat == OutputFormat.Inline
+        var format = config.OutputFormat == OutputFormat.Inline
             ? FormatInstructions_ReleaseNotesInlinePrompt.Value
-            : string.Format(FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat));
-        sb.AppendLine();
-        sb.AppendLine(ReleaseNotes_WorkItemsIntroPrompt.Value);
-        sb.AppendLine(json);
-        sb.AppendLine();
+            : string.Format(FormatInstructions_ReleaseNotesConvertPrompt.Value, config.OutputFormat);
+
+        var workItems = BuildReleaseNotesWorkItems(json);
+
+        if (string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) || config.ReleaseNotesPromptMode == PromptMode.Append)
+        {
+            sb.AppendFormat(ReleaseNotes_MainPrompt.Value, format, workItems);
+            if (!string.IsNullOrWhiteSpace(config.ReleaseNotesPrompt) && config.ReleaseNotesPromptMode == PromptMode.Append)
+            {
+                sb.AppendLine();
+                sb.AppendLine(config.ReleaseNotesPrompt.Trim());
+            }
+        }
+        else
+        {
+            sb.AppendLine(config.ReleaseNotesPrompt.Trim());
+            sb.AppendLine();
+            sb.AppendLine(format);
+            sb.Append(workItems);
+        }
+
         return sb.ToString();
     }
 
@@ -75,24 +86,10 @@ public class PromptService
     public static string BuildRequirementsQualityPrompt(IEnumerable<(string Name, string Text)> pages, DevOpsConfig config)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(RequirementsQuality_MainPrompt.Value);
-        if (config.Standards.RequirementsDocumentation.Count > 0)
-        {
-            sb.AppendLine();
-            sb.AppendLine(RequirementsDocumentationStandardsIntroPrompt.Value);
-            foreach (var s in config.Standards.RequirementsDocumentation)
-                sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-        }
-
-        sb.AppendLine();
-        sb.AppendLine(RequirementsQuality_DocumentIntroPrompt.Value);
-        foreach (var page in pages)
-        {
-            sb.AppendLine($"## {page.Name}");
-            sb.AppendLine(page.Text);
-            sb.AppendLine();
-        }
-
+        sb.AppendFormat(
+            RequirementsQuality_MainPrompt.Value,
+            BuildRequirementsDocumentationStandards(config),
+            BuildQualityDocument(pages));
         return sb.ToString();
     }
 
@@ -236,45 +233,138 @@ public class PromptService
         return sb.ToString();
     }
 
-    public static string BuildWorkItemQualityPrompt(string json, DevOpsConfig config)
+    private static string BuildReleaseNotesWorkItems(string json)
     {
         var sb = new StringBuilder();
-        if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) || config.StoryQualityPromptMode == PromptMode.Append)
-        {
-            sb.AppendLine(WorkItemQuality_MainPrompt.Value);
-            if (config.Standards.UserStoryQuality.Count > 0)
-            {
-                sb.AppendLine();
-                sb.AppendLine(WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.UserStoryQuality)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-            }
-
-            if (config.Standards.BugReporting.Count > 0)
-            {
-                sb.AppendLine();
-                sb.AppendLine(WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
-                foreach (var s in config.Standards.BugReporting)
-                    sb.AppendLine($"- {StandardsCatalog.GetName(s)}");
-            }
-
-            if (!string.IsNullOrWhiteSpace(config.DefinitionOfReady))
-            {
-                sb.AppendLine();
-                sb.AppendLine(WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
-                sb.AppendLine(config.DefinitionOfReady);
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt))
-            sb.AppendLine(config.StoryQualityPrompt.Trim());
-        sb.AppendLine(config.OutputFormat == OutputFormat.Inline
-            ? FormatInstructions_WorkItemAnalysisInlinePrompt.Value
-            : string.Format(FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat));
+        sb.AppendLine(ReleaseNotes_WorkItemsIntroPrompt.Value);
+        sb.AppendLine(json);
         sb.AppendLine();
+        return sb.ToString();
+    }
+
+    private static string BuildRequirementsDocumentationStandards(DevOpsConfig config)
+    {
+        if (config.Standards.RequirementsDocumentation.Count == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.AppendLine();
+        sb.AppendLine(RequirementsDocumentationStandardsIntroPrompt.Value);
+        foreach (var text in config.Standards.RequirementsDocumentation.Select(s => s switch
+                 {
+                     StandardIds.ISO29148 => RequirementsDocumentationStandards_ISO29148Prompt.Value,
+                     StandardIds.Volere => RequirementsDocumentationStandards_VolerePrompt.Value,
+                     StandardIds.BABOK => RequirementsDocumentationStandards_BABOKPrompt.Value,
+                     StandardIds.ISO25010 => RequirementsDocumentationStandards_ISO25010Prompt.Value,
+                     _ => string.Empty
+                 }))
+        {
+            sb.AppendLine(text);
+        }
+        return sb.ToString();
+    }
+
+    private static string BuildQualityDocument(IEnumerable<(string Name, string Text)> pages)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine();
+        sb.AppendLine(RequirementsQuality_DocumentIntroPrompt.Value);
+        foreach (var page in pages)
+        {
+            sb.AppendLine($"## {page.Name}");
+            sb.AppendLine(page.Text);
+            sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
+    private static string BuildBugReportingStandards(DevOpsConfig config)
+    {
+        if (config.Standards.BugReporting.Count == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(WorkItemQuality_BugReportingStandardsIntroPrompt.Value);
+        foreach (var text in config.Standards.BugReporting.Select(s => s switch
+                 {
+                     StandardIds.AzureDevOpsBug => WorkItemQuality_BugReportingStandards_AzureDevOpsBugPrompt.Value,
+                     StandardIds.ISTQBDefect => WorkItemQuality_BugReportingStandards_ISTQBDefectPrompt.Value,
+                     _ => string.Empty
+                 }))
+        {
+            sb.AppendLine(text);
+        }
+        return sb.ToString();
+    }
+
+    private static string BuildDefinitionOfReady(DevOpsConfig config)
+    {
+        if (string.IsNullOrWhiteSpace(config.DefinitionOfReady)) return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(WorkItemQuality_DefinitionOfReadyIntroPrompt.Value);
+        sb.AppendLine(config.DefinitionOfReady);
+        return sb.ToString();
+    }
+
+    private static string BuildStoryQualityStandards(DevOpsConfig config)
+    {
+        if (config.Standards.UserStoryQuality.Count == 0) return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(WorkItemQuality_StoryQualityStandardsIntroPrompt.Value);
+        foreach (var text in config.Standards.UserStoryQuality.Select(s => s switch
+                 {
+                     StandardIds.INVEST => WorkItemQuality_StoryQualityStandards_INVESTPrompt.Value,
+                     StandardIds.SAFe => WorkItemQuality_StoryQualityStandards_SAFePrompt.Value,
+                     StandardIds.AgileAlliance => WorkItemQuality_StoryQualityStandards_AgileAlliancePrompt.Value,
+                     _ => string.Empty
+                 }))
+        {
+            sb.AppendLine(text);
+        }
+        return sb.ToString();
+    }
+
+    private static string BuildWorkItemQualityWorkItems(string json)
+    {
+        var sb = new StringBuilder();
         sb.AppendLine(WorkItemQuality_WorkItemsIntroPrompt.Value);
         sb.AppendLine(json);
         sb.AppendLine();
         return sb.ToString();
     }
-}
+
+    public static string BuildWorkItemQualityPrompt(string json, DevOpsConfig config)
+    {
+        var sb = new StringBuilder();
+        var format = config.OutputFormat == OutputFormat.Inline
+            ? FormatInstructions_WorkItemAnalysisInlinePrompt.Value
+            : string.Format(FormatInstructions_WorkItemAnalysisConvertPrompt.Value, config.OutputFormat);
+
+        var workItems = BuildWorkItemQualityWorkItems(json);
+
+        if (string.IsNullOrWhiteSpace(config.StoryQualityPrompt) || config.StoryQualityPromptMode == PromptMode.Append)
+        {
+            sb.AppendFormat(
+                WorkItemQuality_MainPrompt.Value,
+                BuildBugReportingStandards(config),
+                BuildDefinitionOfReady(config),
+                BuildStoryQualityStandards(config),
+                format,
+                workItems);
+
+            if (!string.IsNullOrWhiteSpace(config.StoryQualityPrompt) && config.StoryQualityPromptMode == PromptMode.Append)
+            {
+                sb.AppendLine();
+                sb.AppendLine(config.StoryQualityPrompt.Trim());
+            }
+        }
+        else
+        {
+            sb.AppendLine(config.StoryQualityPrompt.Trim());
+            sb.AppendLine();
+            sb.AppendLine(format);
+            sb.Append(workItems);
+        }
+
+        return sb.ToString();
+    }}
