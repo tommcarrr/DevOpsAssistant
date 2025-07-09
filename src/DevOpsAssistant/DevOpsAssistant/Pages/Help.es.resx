@@ -25,22 +25,22 @@
     <value>Secciones</value>
   </data>
   <data name="Epics" xml:space="preserve">
-    <value>&lt;p&gt;Cargue un backlog para visualizar épicas y características. Los estados sugeridos aparecen cuando los padres difieren de sus hijos.&lt;/p&gt;&lt;p&gt;Aplique esos estados para mantener la jerarquía coherente.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Cargue un backlog para visualizar épicas y características.&lt;/li&gt;&lt;li&gt;Los estados sugeridos aparecen cuando los padres difieren de sus hijos; aplíquelos para mantener la jerarquía coherente.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Validation" xml:space="preserve">
-    <value>&lt;p&gt;Seleccione un backlog y estados y luego verifique los elementos de trabajo con sus reglas.&lt;/p&gt;&lt;p&gt;Las violaciones pueden etiquetarse para seguimiento y asegurar que nada se escape.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Seleccione un backlog y estados y luego verifique los elementos de trabajo con sus reglas.&lt;/li&gt;&lt;li&gt;Etiquete las violaciones para dar seguimiento y evitar que algo se pierda.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Quality" xml:space="preserve">
-    <value>&lt;p&gt;Genere un prompt detallado para revisar y calificar historias con INVEST y brindar coaching usando su Definición de Ready.&lt;/p&gt;&lt;p&gt;Los prompts largos se dividen en partes y puede cambiar entre ellas con las flechas.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Genere un prompt detallado para revisar y calificar historias con INVEST y su Definición de Ready.&lt;/li&gt;&lt;li&gt;Los prompts largos se dividen en partes; navegue con las flechas.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="RequirementsPlanner" xml:space="preserve">
-    <value>&lt;p&gt;Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.&lt;/p&gt;&lt;p&gt;Utilice HTML en las descripciones y criterios cuando ayude al formato. El texto importado se muestra automáticamente para que pueda verificar el marcado.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Desglose páginas wiki o documentos cargados en un plan de épicas, características e historias y cree los elementos.&lt;/li&gt;&lt;li&gt;Use HTML en descripciones y criterios cuando ayude; el texto importado se muestra automáticamente para verificar el marcado.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
-    <value>&lt;p&gt;Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento.&lt;/p&gt;&lt;p&gt;Puede copiar o descargar los prompts, que se dividen en partes navegables con flechas.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Seleccione historias y construya un prompt que las resuma para las notas de lanzamiento.&lt;/li&gt;&lt;li&gt;Los prompts pueden copiarse o descargarse en partes y navegarse con las flechas.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BulkTag" xml:space="preserve">
-    <value>&lt;p&gt;Elija varios elementos, seleccione una o más etiquetas y aplíquelas de una vez.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Elija varios elementos, seleccione una o más etiquetas y aplíquelas de una vez.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="EpicsHeading" xml:space="preserve">
     <value>Épicas y características</value>
@@ -73,13 +73,13 @@
     <value>esta guía</value>
   </data>
   <data name="Metrics" xml:space="preserve">
-    <value>&lt;p&gt;Muestre gráficas de rendimiento, tiempo de entrega, tiempo de ciclo, velocidad y velocidad móvil, burn up y flujo para el backlog elegido.&lt;/p&gt;&lt;p&gt;El rendimiento cuenta los elementos cerrados en cada periodo. El tiempo de entrega es la diferencia entre la Fecha de creación y la Fecha de cierre. El tiempo de ciclo se calcula desde la Fecha de activación hasta el cierre. La velocidad suma los Puntos de Historia o la Estimación Original de las historias completadas y la velocidad móvil promedia este valor durante un número configurable de semanas. La gráfica burn up proyecta la finalización usando los puntos adicionales, la eficiencia y el rango de error, mientras que el flujo acumulado muestra backlog, trabajo en progreso y tareas terminadas día a día.&lt;/p&gt;&lt;p&gt;Use el panel de opciones desplegable para configurar la ventana móvil y detectar tendencias al planificar iteraciones futuras.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Muestre rendimiento, tiempo de entrega, tiempo de ciclo, velocidad y velocidad móvil junto con burn up y flujo acumulado.&lt;/li&gt;&lt;li&gt;El rendimiento cuenta los elementos completados mientras que los tiempos se calculan entre las fechas de creación, activación y cierre.&lt;/li&gt;&lt;li&gt;Ajuste la ventana móvil en el panel de opciones para detectar tendencias.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BranchHealth" xml:space="preserve">
-    <value>&lt;p&gt;Vea las ramas del repositorio y resalte las ramas obsoletas o la diferencia con la rama base.&lt;/p&gt;&lt;p&gt;Limpiar regularmente las ramas antiguas mantiene su repositorio ordenado.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Vea las ramas del repositorio y resalte las obsoletas o la diferencia con la rama base.&lt;/li&gt;&lt;li&gt;La limpieza regular mantiene el repositorio ordenado.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>&lt;p&gt;Configure su organización de DevOps, proyecto de DevOps y token PAT desde el cuadro de configuración. Use el menú de proyectos para agregar o cambiar de proyecto.&lt;/p&gt;&lt;p&gt;También puede personalizar los prompts y las reglas de validación. Cree un PAT desde el menú de perfil en Azure DevOps eligiendo Nuevo token y conceda los ámbitos &lt;strong&gt;Work Items (Read &amp;amp; write)&lt;/strong&gt;, &lt;strong&gt;Wiki (Read)&lt;/strong&gt; y &lt;strong&gt;Code (Read)&lt;/strong&gt;. Consulte {0} para ver las instrucciones. El nombre de la organización es la primera parte después de dev.azure.com/ en la URL y el nombre del proyecto aparece junto al icono de inicio al ver un proyecto.&lt;/p&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Configure su organización, proyecto y PAT en el cuadro de configuración.&lt;/li&gt;&lt;li&gt;Los prompts y reglas personalizados se almacenan en su navegador.&lt;/li&gt;&lt;li&gt;Cree un PAT con permisos de Work Items (Read &amp;amp; write), Wiki (Read) y Code (Read); consulte {0} para más información.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Cerrar</value>
