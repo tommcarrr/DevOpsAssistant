@@ -45,8 +45,11 @@ public class PromptService
         sb.AppendFormat(
             RequirementsGatherer_MainPrompt.Value,
             GetRequirementsGathererTemplate(config),
-            BuildRequirementsDocument(pagesArray));
-
+            BuildRequirementsDocument(pagesArray),
+            config.OutputFormat == OutputFormat.Inline
+                ? FormatInstructions_RequirementsGathererInlinePrompt.Value
+                : string.Format(FormatInstructions_RequirementsGathererConvertPrompt.Value, config.OutputFormat));
+        sb.AppendLine();
         return sb.ToString();
     }
 

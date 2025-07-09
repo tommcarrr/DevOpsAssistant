@@ -87,4 +87,25 @@ public class PromptServiceTests
         Assert.Contains("Document:", result);
         Assert.Contains("Page Name: Doc", result);
     }
+
+    [Fact]
+    public void BuildRequirementsGathererPrompt_Inline_Format_Does_Not_Request_Conversion()
+    {
+        var cfg = new DevOpsConfig { OutputFormat = OutputFormat.Inline };
+
+        var result = PromptService.BuildRequirementsGathererPrompt([], cfg);
+
+        Assert.Contains("Reply inline", result);
+        Assert.DoesNotContain("convert the content", result);
+    }
+
+    [Fact]
+    public void BuildRequirementsGathererPrompt_Convert_Format_Includes_Target()
+    {
+        var cfg = new DevOpsConfig { OutputFormat = OutputFormat.Markdown };
+
+        var result = PromptService.BuildRequirementsGathererPrompt([], cfg);
+
+        Assert.Contains("convert the content to Markdown", result);
+    }
 }

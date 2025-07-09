@@ -10,3 +10,7 @@ After generating the notes, convert the content to {0} format and include that v
 Reply inline with the analysis results.
 ==== FormatInstructions_WorkItemAnalysisConvert ====
 After completing the analysis, convert the output to {0} format and include that version.
+==== FormatInstructions_RequirementsGathererInline ====
+Reply inline with the final requirements document.
+==== FormatInstructions_RequirementsGathererConvert ====
+After generating the requirements document, convert the content to {0} format and include that version.

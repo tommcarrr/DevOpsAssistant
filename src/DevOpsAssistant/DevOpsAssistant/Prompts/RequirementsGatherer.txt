@@ -82,6 +82,9 @@ Only output this once all required info has been collected.
 //{1} - Document
 {1}
 
+//{2} - Format Instructions
+{2}
+
 ==== RequirementsGatherer_Template_General====
 ```markdown
 # Feature Name: [Title]
