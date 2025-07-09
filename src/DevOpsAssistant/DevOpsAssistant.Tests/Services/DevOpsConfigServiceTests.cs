@@ -30,8 +30,8 @@ public class DevOpsConfigServiceTests
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
-                UserStoryAcceptanceCriteria = ["Gherkin"],
-                UserStoryDescription = ["ScrumUserStory"]
+                UserStoryAcceptanceCriteria = [StandardIds.Gherkin],
+                UserStoryDescription = [StandardIds.ScrumUserStory]
             },
             Rules = new ValidationRules
             {
@@ -67,8 +67,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("main", storedCfg.MainBranch);
         Assert.Equal(3, storedCfg.WorkItemGranularity);
         Assert.Equal(OutputFormat.Pdf, storedCfg.OutputFormat);
-        Assert.Contains("Gherkin", storedCfg.Standards.UserStoryAcceptanceCriteria);
-        Assert.Contains("ScrumUserStory", storedCfg.Standards.UserStoryDescription);
+        Assert.Contains(StandardIds.Gherkin, storedCfg.Standards.UserStoryAcceptanceCriteria);
+        Assert.Contains(StandardIds.ScrumUserStory, storedCfg.Standards.UserStoryDescription);
         Assert.True(storedCfg.Rules.Epic.HasDescription);
     }
 
@@ -93,8 +93,8 @@ public class DevOpsConfigServiceTests
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
-                UserStoryAcceptanceCriteria = ["Gherkin"],
-                UserStoryDescription = ["ScrumUserStory"]
+                UserStoryAcceptanceCriteria = [StandardIds.Gherkin],
+                UserStoryDescription = [StandardIds.ScrumUserStory]
             },
             Rules = new ValidationRules
             {
@@ -126,8 +126,8 @@ public class DevOpsConfigServiceTests
         Assert.Equal("RP", service.Config.RequirementsPrompt);
         Assert.Contains("NFR1", service.Config.Nfrs);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
-        Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
-        Assert.Contains("ScrumUserStory", service.Config.Standards.UserStoryDescription);
+        Assert.Contains(StandardIds.Gherkin, service.Config.Standards.UserStoryAcceptanceCriteria);
+        Assert.Contains(StandardIds.ScrumUserStory, service.Config.Standards.UserStoryDescription);
         Assert.True(service.Config.Rules.Epic.HasDescription);
         Assert.Equal("proj", service.CurrentProject.Name);
     }
@@ -154,7 +154,7 @@ public class DevOpsConfigServiceTests
             OutputFormat = OutputFormat.Pdf,
             Standards = new PromptStandards
             {
-                UserStoryAcceptanceCriteria = ["Gherkin"],
+                UserStoryAcceptanceCriteria = [StandardIds.Gherkin],
                 UserStoryDescription = []
             },
             Rules = new ValidationRules()
@@ -175,7 +175,7 @@ public class DevOpsConfigServiceTests
         Assert.Contains("NFR1", service.Config.Nfrs);
         Assert.Equal(OutputFormat.Pdf, service.Config.OutputFormat);
         Assert.Equal(5, service.Config.WorkItemGranularity);
-        Assert.Contains("Gherkin", service.Config.Standards.UserStoryAcceptanceCriteria);
+        Assert.Contains(StandardIds.Gherkin, service.Config.Standards.UserStoryAcceptanceCriteria);
         Assert.Empty(service.Config.Standards.UserStoryDescription);
         Assert.Equal("default", service.CurrentProject.Name);
     }
@@ -299,6 +299,19 @@ public class DevOpsConfigServiceTests
 
         Assert.True(service.GlobalDarkMode);
         var stored = await storage.GetItemAsync<bool?>("devops-dark");
+        Assert.True(stored);
+    }
+
+    [Fact]
+    public async Task SaveGlobalHighContrastAsync_Persists_Value()
+    {
+        var storage = new FakeLocalStorageService();
+        var service = new DevOpsConfigService(storage);
+
+        await service.SaveGlobalHighContrastAsync(true);
+
+        Assert.True(service.GlobalHighContrast);
+        var stored = await storage.GetItemAsync<bool?>("devops-contrast");
         Assert.True(stored);
     }
 

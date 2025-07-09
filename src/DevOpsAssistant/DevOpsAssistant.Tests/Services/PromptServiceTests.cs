@@ -14,7 +14,7 @@ public class PromptServiceTests
         {
             Standards = new PromptStandards
             {
-                UserStoryAcceptanceCriteria = ["BulletPoints"]
+                UserStoryAcceptanceCriteria = [StandardIds.BulletPoints]
             }
         };
 
@@ -85,6 +85,6 @@ public class PromptServiceTests
 
         Assert.Contains("Agile Business Analyst", result);
         Assert.Contains("Document:", result);
-        Assert.Contains("## Doc", result);
+        Assert.Contains("Page Name: Doc", result);
     }
 }

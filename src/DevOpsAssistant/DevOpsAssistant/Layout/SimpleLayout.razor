@@ -53,7 +53,9 @@
 @code {
     private bool _isDarkMode;
     private MudTheme CurrentTheme
-        => (ThemeSession.IsDoom ? DoomTheme.Theme : AzureDevOpsTheme.Theme)
+        => (ThemeSession.IsDoom
+                ? DoomTheme.Theme
+                : (ConfigService.GlobalHighContrast ? HighContrastTheme.Theme : AzureDevOpsTheme.Theme))
             .WithPrimaryColor(ConfigService.CurrentProject.Color);
 
     protected override void OnInitialized()

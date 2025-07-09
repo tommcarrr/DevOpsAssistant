@@ -63,7 +63,7 @@ else if (_promptParts != null)
     private int _partIndex;
     private string? _error;
     private string _wikiId = string.Empty;
-    private const string StateKey = "requirements-quality";
+    private const string StateKey = PageStateKeys.RequirementsQuality;
     private const long MaxFileSize = 10 * 1024 * 1024;
 
     private bool GenerateDisabled => _loading || _source switch

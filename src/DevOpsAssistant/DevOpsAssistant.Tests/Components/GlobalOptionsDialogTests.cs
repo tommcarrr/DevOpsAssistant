@@ -39,4 +39,20 @@ public class GlobalOptionsDialogTests : ComponentTestBase
 
         Assert.Equal("es", config.GlobalCulture);
     }
+
+    [Fact]
+    public async Task Save_Updates_GlobalHighContrast()
+    {
+        var config = SetupServices();
+        var fake = new FakeDialog();
+        var cut = RenderComponent<GlobalOptionsDialog>(p => p.AddCascadingValue(fake));
+
+        var field = cut.Instance.GetType().GetField("_highContrast", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        field.SetValue(cut.Instance, true);
+        var method = cut.Instance.GetType().GetMethod("Save", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        await cut.InvokeAsync(() => (Task)method.Invoke(cut.Instance, null)!);
+
+        Assert.True(config.GlobalHighContrast);
+    }
 }
