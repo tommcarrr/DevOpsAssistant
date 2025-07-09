@@ -77,11 +77,44 @@ Tailor your coaching based on the score:
 ---
 
 For bugs, check that the reproduction steps and system information are clear and complete.
+
+//{0} - Bug Reporting Standards
+{0}
+
+//{1} - Definition of Ready
+{1}
+
+//{2} - Story Quality Standards
+{2}
+
+//{3} - Format Instructions
+{3}
+
+//{4} - Work Items
+{4}
+
 ==== WorkItemQuality_BugReportingStandardsIntro ====
 Ensure bug reports follow these standards:
+
 ==== WorkItemQuality_DefinitionOfReadyIntro ====
 Also confirm each story meets this Definition of Ready:
+
 ==== WorkItemQuality_StoryQualityStandardsIntro ====
 Apply these story quality standards:
+
 ==== WorkItemQuality_WorkItemsIntro ====
 Work items:
+==== WorkItemQuality_BugReportingStandards_AzureDevOpsBug ====
+- Azure DevOps Bug - for more information consult https://learn.microsoft.com/azure/devops/boards/backlogs/about-bugs
+
+==== WorkItemQuality_BugReportingStandards_ISTQBDefect ====
+- ISTQB Defect Report - for more information consult https://glossary.istqb.org/en/term/defect-report
+
+==== WorkItemQuality_StoryQualityStandards_INVEST ====
+- INVEST - for more information consult https://agilealliance.org/glossary/invest/
+
+==== WorkItemQuality_StoryQualityStandards_SAFe ====
+- SAFe - for more information consult https://framework.scaledagile.com/
+
+==== WorkItemQuality_StoryQualityStandards_AgileAlliance ====
+- Agile Alliance - for more information consult https://www.agilealliance.org

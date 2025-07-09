@@ -110,5 +110,12 @@ Change control template:
 *Include any other relevant information for stakeholders, approvers, or implementers.*  
 [Other notes.]
 ```
+
+//{0} - Format Instructions
+{0}
+
+//{1} - Work Items
+{1}
+
 ==== ReleaseNotes_WorkItemsIntro ====
 Work items:

@@ -75,5 +75,9 @@ You will use the following **markdown report template** to structure your output
 _Compiled by:_ **Agile Coach Persona**  
 _Report Date:_ **{{today}}**
 ```
-==== Metrics_DataIntro ====
-Data: {0}
+
+//{0} - Format Instructions
+{0}
+
+//{1} - Data
+Data: {1}
