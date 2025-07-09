@@ -45,6 +45,64 @@ User Story Granularity Grading Scale (1–5)
 //{6} Clarify Requirements
 {6}
 
+────────────────────── PRE-FLIGHT & SELF-CHECK BLOCK ──────────────────────
+↳  Run this loop **before emitting any JSON**:
+
+1 DRAFT  
+   - Build the full JSON exactly as specified above (schema & link rules).
+
+2 EXTRACT LOCAL RULES  
+   - Scan the prompt you just read for the latest occurrences of:  
+     • “User Story Granularity” table → store as `granularityScale`.  
+     • “Work Item Standards”          → store as `storyQualityRules`.  
+     • “Work Item Description Standards” → store as `descriptionTemplate`.  
+     • “Work Item AC Standards”          → store as `acceptanceFormat`.  
+     (If more than one appears, use the one nearest to the JSON instruction.)
+
+3 VALIDATE THE DRAFT  
+
+   Coverage  
+   ▸ Every stated Functional / Non-Functional requirement, Business Rule,  
+     and Constraint is referenced in at least one item or <links> entry.  
+
+   Structure & Granularity  
+   ▸ Respect `granularityScale` → ensure each Story lands on the *ideal*  
+     grade (or mid-point if no “ideal” grade was given).  
+   ▸ 1 ≤ #Epics ≤ 7; every Epic ≥ 1 Feature; Features have the #stories  
+     implied by the ideal grade.  
+
+   Quality framework (`storyQualityRules`)  
+   ▸ Each Story satisfies ALL listed attributes (e.g. INVEST, SAFe, SMART…).  
+
+   Description & AC formats  
+   ▸ Story <description> follows `descriptionTemplate` exactly, **if one is set**.  
+   ▸ Acceptance Criteria follow `acceptanceFormat` exactly, **if one is set**.  
+
+   Links & Semantics  
+   ▸ Titles unique; allowed link types only; no circular links.  
+
+   JSON Hygiene  
+   ▸ Strictly matches the provided schema; valid UTF-8; no trailing commas.  
+
+4 REPAIR OR CONTINUE  
+   ▸ If any check fails, revise the draft and repeat from step 1.  
+   ▸ Continue looping until **all** checks pass.  
+
+─────────────── Fallback if information is missing ───────────────  
+If mandatory criteria cannot be satisfied because source data is missing
+or ambiguous:
+
+• **IF the prompt contains a “Clarify Requirements” section** (look for the
+  header text “Clarify Requirements:”) →  
+  ↳ Stop generating JSON and instead ask the user concise, targeted
+  questions that would unblock the missing information.
+
+• **ELSE** (no clarify-block present) →  
+  ↳ Inform the user plainly (no JSON) that the task cannot be completed
+  because the provided information is insufficient.
+──────────────────────────────────────────────────────────────────────────────
+
+
 //{7} Appended User Prompt
 {7}
 

@@ -15,6 +15,64 @@ graph TD
     A[Application 1] --> B[Application 2]
 :::
 
+─────────────────── ITERATIVE-QUESTIONS & SELF-CHECK BLOCK ──────────────────
+Run this logic before you decide to output the Markdown document:
+
+◼︎  Template Detection  
+    – Examine the “Document Template to Fill” section and record the variant
+      name that appears right before the triple-backtick block
+      (e.g. “Template_BABOK”, “Template_Volere”, etc.).  
+      Store as `activeTemplate`.
+
+◼︎  Missing-Field Scan  
+    – Create an internal checklist of **all sections, sub-sections and mandatory
+      attributes** that the `activeTemplate` requires.  
+      Example:  
+       • For *Volere*, every FR and NFR line must include **Description,
+         Rationale, Source, Fit Criterion, Priority**.  
+       • For *ISO 25010*, NFR headings follow the ISO quality characteristics
+         (Performance Efficiency, Usability, …).
+
+    – Compare the user-supplied answers you already have to this checklist.
+      Mark any missing or ambiguous items.  
+      *Ambiguous* = vague quantities (“fast”, “secure”), conflicting statements,
+      or placeholders like “TBD”.
+
+◼︎  Question Loop  
+    – If **any** item is missing/ambiguous:  
+       • Ask the user concise, numbered follow-up questions that
+         *directly* fill those gaps.  
+       • After receiving answers, re-run Missing-Field Scan.  
+       • Repeat until **no** gaps remain or the user explicitly
+         says they cannot provide more detail.
+
+◼︎  Draft & Validate  
+    1. Draft the full Markdown document using `activeTemplate`.  
+    2. Validate against the same checklist plus these generic rules:  
+       • All Functional and Non-Functional requirements are present and
+         uniquely identified.  
+       • IDs are unique and sequential where required.  
+       • Every diagram code block starts with  
+         “:::mermaid” and ends with “:::”.  
+       • Success Criteria and Stakeholders sections are not empty.  
+       • No section titles from the template are missing.  
+
+    3. If any rule fails, return to **Question Loop** to gather what’s missing.
+
+◼︎  Final Output  
+    – Only when the draft passes all validations output the Markdown **and
+      nothing else**.
+
+◼︎  Ultimate Fallback  
+    – If, after at least one questioning round, critical information
+      is still missing **and** the user declines or cannot provide it:  
+       • Inform the user (plain language, no Markdown document) that you
+         cannot complete the requirements document with the
+         information available.  
+       • Provide a short list of the unresolved items.
+──────────────────────────────────────────────────────────────────────────────
+
+
 ### 🧱 Document Template to Fill (Markdown Output)
 Only output this once all required info has been collected.
 
