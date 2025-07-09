@@ -191,10 +191,12 @@
                         </MudStack>
                     </MudTabPanel>
                 </MudTabs>
-                <MudStack Row="true" Spacing="1">
-                    <MudButton OnClick="CopyAllPrompts" Variant="Variant.Outlined" Color="Color.Primary">@L["CopyPrompts"]</MudButton>
+                <MudStack Spacing="1">
                     <MudButton OnClick="SavePrompts" Variant="Variant.Filled" Color="Color.Primary" Disabled="!_promptsDirty">@L["Save"]</MudButton>
-                    <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
+                    <MudStack Row="true" Spacing="1">
+                        <MudButton OnClick="CopyAllPrompts" Variant="Variant.Outlined" Color="Color.Primary">@L["CopyPrompts"]</MudButton>
+                        <MudButton OnClick="ApplyPromptsToAll" Variant="Variant.Outlined" Color="Color.Primary">@L["ApplyToAll"]</MudButton>
+                    </MudStack>
                 </MudStack>
             </MudTabPanel>
             <MudTabPanel Text='@L["ValidationTab"]'>
