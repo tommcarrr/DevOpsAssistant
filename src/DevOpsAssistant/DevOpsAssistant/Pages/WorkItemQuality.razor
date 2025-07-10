@@ -1,4 +1,4 @@
-@page "/projects/{ProjectName}/work-item-quality"
+@page "/projects/{ProjectName}/work-item-coaching"
 @using System.Text.Json
 @using System.Linq
 @using DevOpsAssistant.Services.Models
@@ -53,7 +53,7 @@ else if (_promptParts != null)
     private int _partIndex;
     private string? _error;
     private bool _filtersExpanded = true;
-    private const string StateKey = "work-item-quality";
+    private const string StateKey = "work-item-coaching";
 
     protected override async Task OnInitializedAsync()
     {

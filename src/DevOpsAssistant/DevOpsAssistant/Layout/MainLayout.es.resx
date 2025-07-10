@@ -28,7 +28,7 @@
     <value>Visor de elementos</value>
   </data>
   <data name="WorkItemQuality" xml:space="preserve">
-    <value>Calidad de elemento de trabajo</value>
+    <value>Coaching de elemento de trabajo</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Métricas</value>
@@ -37,7 +37,7 @@
     <value>Planificador de requisitos</value>
   </data>
   <data name="RequirementQuality" xml:space="preserve">
-    <value>Calidad de requisitos</value>
+    <value>Coaching de requisitos</value>
   </data>
   <data name="SignOut" xml:space="preserve">
     <value>Cerrar sesión</value>
