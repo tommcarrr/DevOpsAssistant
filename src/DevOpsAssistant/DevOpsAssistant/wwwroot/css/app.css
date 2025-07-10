@@ -216,3 +216,8 @@ body {
     border-radius: var(--mud-default-borderradius, 4px);
 }
 
+/* highlight project menu items on hover */
+.project-color-item:hover {
+    filter: brightness(1.1);
+}
+
