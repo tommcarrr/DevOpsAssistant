@@ -321,5 +321,6 @@ public class DevOpsConfigService
     private async Task SaveProjectsAsync()
     {
         await _localStorage.SetItemAsync(StorageKey, Projects);
-        await _localStorage.SetItemAsync(CurrentKey, CurrentProject.Name);    }
+        await _localStorage.SetItemAsync(CurrentKey, CurrentProject.Name);
+    }
 }

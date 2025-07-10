@@ -151,4 +151,20 @@ public class MainLayoutTests : ComponentTestBase
         var button = cut.Find("div.mud-menu button");
         Assert.Contains("Demo", button.TextContent);
     }
+
+    [Fact]
+    public async Task Project_MenuItem_Uses_Project_Color()
+    {
+        var config = SetupServices();
+        await config.AddProjectAsync("Demo");
+        config.Projects[0].Color = "#123456";
+        await config.SelectProjectAsync("Demo");
+
+        var cut = RenderComponent<MainLayout>();
+
+        var button = cut.Find("div.mud-menu button");
+        button.Click();
+        var item = cut.Find("div.mud-popover-provider .mud-menu-item");
+        Assert.Contains("#123456", item.GetAttribute("style"));
+    }
 }

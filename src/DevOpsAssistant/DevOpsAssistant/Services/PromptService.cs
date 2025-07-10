@@ -367,4 +367,5 @@ public class PromptService
         }
 
         return sb.ToString();
-    }}
+    }
+}
