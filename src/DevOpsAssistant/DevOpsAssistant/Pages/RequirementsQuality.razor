@@ -1,4 +1,4 @@
-@page "/projects/{ProjectName}/requirements-quality"
+@page "/projects/{ProjectName}/requirements-coaching"
 @using DevOpsAssistant.Services.Models
 @inject DevOpsApiService ApiService
 @inject IJSRuntime JS
@@ -63,7 +63,7 @@ else if (_promptParts != null)
     private int _partIndex;
     private string? _error;
     private string _wikiId = string.Empty;
-    private const string StateKey = PageStateKeys.RequirementsQuality;
+    private const string StateKey = PageStateKeys.RequirementsCoaching;
     private const long MaxFileSize = 10 * 1024 * 1024;
 
     private bool GenerateDisabled => _loading || _source switch

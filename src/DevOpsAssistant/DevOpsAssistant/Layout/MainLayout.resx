@@ -28,7 +28,7 @@
     <value>Work Item Viewer</value>
   </data>
   <data name="WorkItemQuality" xml:space="preserve">
-    <value>Work Item Quality</value>
+    <value>Work Item Coaching</value>
   </data>
   <data name="Metrics" xml:space="preserve">
     <value>Metrics</value>
@@ -37,7 +37,7 @@
     <value>Requirement Planner</value>
   </data>
   <data name="RequirementQuality" xml:space="preserve">
-    <value>Requirement Quality</value>
+    <value>Requirement Coaching</value>
   </data>
   <data name="SignOut" xml:space="preserve">
     <value>Sign Out</value>
