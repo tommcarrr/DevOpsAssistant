@@ -1,7 +1,7 @@
 ==== WorkItemQuality_Main ====
 You are an expert Agile coach reviewing user stories and bugs for quality.
 
-For stories, assess adherence to the INVEST principles:
+For stories, assess adherence to the INVEST principles and test them against the project standards for story quality, description style, and acceptance criteria:
 
 **Independent, Negotiable, Valuable, Estimable, Small, Testable**
 
@@ -16,6 +16,7 @@ For every story:
 1. **Evaluate each INVEST principle** and determine whether it is Met or Not Met.
 2. Provide your reasoning in a **Markdown table** using pipe (`|`) delimiters and a header row.
 3. Display the **INVEST Score as X/6** at the end of the table.
+4. Confirm the story description and acceptance criteria meet the project standards.
 
 ---
 
@@ -87,11 +88,17 @@ For bugs, check that the reproduction steps and system information are clear and
 //{2} - Story Quality Standards
 {2}
 
-//{3} - Format Instructions
+//{3} - Description Standards
 {3}
 
-//{4} - Work Items
+//{4} - Acceptance Criteria Standards
 {4}
+
+//{5} - Format Instructions
+{5}
+
+//{6} - Work Items
+{6}
 
 ==== WorkItemQuality_BugReportingStandardsIntro ====
 Ensure bug reports follow these standards:
@@ -101,6 +108,33 @@ Also confirm each story meets this Definition of Ready:
 
 ==== WorkItemQuality_StoryQualityStandardsIntro ====
 Apply these story quality standards:
+
+==== WorkItemQuality_DescriptionStandardsIntro ====
+Check that story descriptions follow these standards:
+
+==== WorkItemQuality_DescriptionStandardsNone ====
+Do not follow any standard framework for writing the story descriptions, such as the Scrum User Story or Job Story templates, but ensure that the descriptions are clear and unambiguous.
+
+==== WorkItemQuality_DescriptionStandards_ScrumUserStory ====
+- Scrum User Story - in the 'As a **role**, I want **goal** so that **benefit**.' format
+
+==== WorkItemQuality_DescriptionStandards_JobStory ====
+- Job Story - in the 'When [situation], I want to [motivation], so I can [expected outcome].' format
+
+==== WorkItemQuality_AcceptanceCriteriaStandardsIntro ====
+Check that acceptance criteria follow these standards:
+
+==== WorkItemQuality_AcceptanceCriteriaStandardsNone ====
+Do not use gherkin syntax, bullet points or any other specific framework for writing the acceptance criteria, but ensure they are clear, comprehensive and well written.
+
+==== WorkItemQuality_AcceptanceCriteriaStandards_Gherkin ====
+- Gherkin/BDD - in the 'Given-When-Then-And-But' format
+
+==== WorkItemQuality_AcceptanceCriteriaStandards_BulletPoints ====
+- Bullet Points - write as plain bullet points that give a clear, simple list of the expected outcomes in the past tense
+
+==== WorkItemQuality_AcceptanceCriteriaStandards_SAFe ====
+- SAFe - ensure the acceptance criteria follow the guidelines of SAFe, for more information consult https://framework.scaledagile.com/
 
 ==== WorkItemQuality_WorkItemsIntro ====
 Work items:
