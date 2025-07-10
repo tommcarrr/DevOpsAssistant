@@ -73,7 +73,7 @@
     <value>esta guía</value>
   </data>
   <data name="Metrics" xml:space="preserve">
-    <value>&lt;ul&gt;&lt;li&gt;Muestre rendimiento, tiempo de entrega, tiempo de ciclo, velocidad y velocidad móvil junto con burn up y flujo acumulado.&lt;/li&gt;&lt;li&gt;El rendimiento cuenta los elementos completados mientras que los tiempos se calculan entre las fechas de creación, activación y cierre.&lt;/li&gt;&lt;li&gt;Ajuste la ventana móvil en el panel de opciones para detectar tendencias.&lt;/li&gt;&lt;/ul&gt;</value>
+    <value>&lt;ul&gt;&lt;li&gt;Muestre rendimiento, tiempo de entrega, tiempo de ciclo, velocidad y velocidad móvil junto con los gráficos de burn up y flujo acumulado.&lt;/li&gt;&lt;li&gt;El rendimiento es el número de elementos completados en el período seleccionado.&lt;/li&gt;&lt;li&gt;El tiempo de entrega mide los días desde la creación hasta el cierre.&lt;/li&gt;&lt;li&gt;El tiempo de ciclo mide los días desde la primera activación hasta el cierre.&lt;/li&gt;&lt;li&gt;La velocidad suma los puntos completados por sprint mientras que la velocidad móvil promedia los últimos N sprints.&lt;/li&gt;&lt;li&gt;Ajuste la ventana móvil en el panel de opciones para detectar tendencias.&lt;/li&gt;&lt;/ul&gt;</value>
   </data>
   <data name="BranchHealth" xml:space="preserve">
     <value>&lt;ul&gt;&lt;li&gt;Vea las ramas del repositorio y resalte las obsoletas o la diferencia con la rama base.&lt;/li&gt;&lt;li&gt;La limpieza regular mantiene el repositorio ordenado.&lt;/li&gt;&lt;/ul&gt;</value>
