@@ -23,7 +23,9 @@
         <MudMenu Label='@(_selectedProject.Length > 0 ? _selectedProject : L["Projects"])' EndIcon="@Icons.Material.Filled.ArrowDropDown">
             @foreach (var p in ConfigService.Projects.OrderBy(p => p.Name))
             {
-                <MudMenuItem OnClick="() => ChangeProject(p.Name)" Style="@GetProjectStyle(p.Color)">@p.Name</MudMenuItem>
+                <MudMenuItem OnClick="() => ChangeProject(p.Name)"
+                             Style="@GetProjectStyle(p.Color)"
+                             Class="@GetProjectClass(p.Color)">@p.Name</MudMenuItem>
             }
             <MudDivider />
             <MudMenuItem Href="/projects/new">@L["NewProject"]</MudMenuItem>
@@ -96,6 +98,9 @@
 
     private static string GetProjectStyle(string color)
         => string.IsNullOrWhiteSpace(color) ? string.Empty : $"background-color:{color};";
+
+    private static string GetProjectClass(string color)
+        => string.IsNullOrWhiteSpace(color) ? string.Empty : "project-color-item";
     
     private void HandleProjectChanged()
     {
