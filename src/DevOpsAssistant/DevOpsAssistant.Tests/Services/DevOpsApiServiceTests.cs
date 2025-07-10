@@ -642,6 +642,31 @@ public class DevOpsApiServiceTests
     }
 
     [Fact]
+    public async Task GetStoryMetricsAsync_Sends_Completed_State_In_Query()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"workItems\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        await service.GetStoryMetricsAsync("Area", DateTime.Today, "Resolved");
+
+        Assert.NotNull(captured);
+        var body = await captured!.Content!.ReadAsStringAsync();
+        Assert.Contains("Resolved", body);
+    }
+
+    [Fact]
     public void BuildStoriesWiql_Includes_States_When_Provided()
     {
         var query = InvokeBuildStoriesWiql("Area", ["New", "Active"], null);
