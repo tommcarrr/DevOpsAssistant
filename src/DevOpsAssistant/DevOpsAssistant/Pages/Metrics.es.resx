@@ -36,6 +36,9 @@
   <data name="EndDate" xml:space="preserve">
     <value>Fecha final</value>
   </data>
+  <data name="CompletedState" xml:space="preserve">
+    <value>Estado completado</value>
+  </data>
   <data name="AggregateBy" xml:space="preserve">
     <value>Agrupar por</value>
   </data>

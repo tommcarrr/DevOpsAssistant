@@ -65,11 +65,11 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [term])!;
     }
 
-    private static string InvokeBuildMetricsWiql(string area, DateTime start)
+    private static string InvokeBuildMetricsWiql(string area, DateTime start, string completedState = "Closed")
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildMetricsWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, [area, start])!;
+        return (string)method.Invoke(null, new object?[] { area, start, completedState })!;
     }
 
     private static string InvokeBuildStoriesWiql(string area, string[] states, string? iteration = null)
@@ -620,7 +620,7 @@ public class DevOpsApiServiceTests
     public void BuildMetricsWiql_Uses_Start_Date()
     {
         var query = InvokeBuildMetricsWiql("Area", new DateTime(2024, 1, 1));
-
+        
         Assert.Contains("2024-01-01", query);
     }
 
@@ -631,6 +631,39 @@ public class DevOpsApiServiceTests
 
         Assert.Contains("System.State", query);
         Assert.Contains("<> 'Closed'", query);
+    }
+
+    [Fact]
+    public void BuildMetricsWiql_Uses_Completed_State()
+    {
+        var query = InvokeBuildMetricsWiql("Area", DateTime.Today, "Done");
+
+        Assert.Contains("<> 'Done'", query);
+    }
+
+    [Fact]
+    public async Task GetStoryMetricsAsync_Sends_Completed_State_In_Query()
+    {
+        HttpRequestMessage? captured = null;
+        var handler = new FakeHttpMessageHandler(req =>
+        {
+            captured = req;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"workItems\":[]}")
+            };
+        });
+        var client = new HttpClient(handler);
+        var storage = new FakeLocalStorageService();
+        var configService = new DevOpsConfigService(storage);
+        await configService.SaveAsync(new DevOpsConfig { Organization = "Org", Project = "Proj", PatToken = "token" });
+        var service = CreateService(client, configService);
+
+        await service.GetStoryMetricsAsync("Area", DateTime.Today, "Resolved");
+
+        Assert.NotNull(captured);
+        var body = await captured!.Content!.ReadAsStringAsync();
+        Assert.Contains("Resolved", body);
     }
 
     [Fact]
