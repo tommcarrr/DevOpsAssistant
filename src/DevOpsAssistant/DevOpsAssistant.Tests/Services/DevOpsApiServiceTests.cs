@@ -65,11 +65,11 @@ public class DevOpsApiServiceTests
         return (string)method.Invoke(null, [term])!;
     }
 
-    private static string InvokeBuildMetricsWiql(string area, DateTime start)
+    private static string InvokeBuildMetricsWiql(string area, DateTime start, string completedState = "Closed")
     {
         var method =
             typeof(DevOpsApiService).GetMethod("BuildMetricsWiql", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, [area, start])!;
+        return (string)method.Invoke(null, new object?[] { area, start, completedState })!;
     }
 
     private static string InvokeBuildStoriesWiql(string area, string[] states, string? iteration = null)
@@ -620,7 +620,7 @@ public class DevOpsApiServiceTests
     public void BuildMetricsWiql_Uses_Start_Date()
     {
         var query = InvokeBuildMetricsWiql("Area", new DateTime(2024, 1, 1));
-
+        
         Assert.Contains("2024-01-01", query);
     }
 
@@ -631,6 +631,14 @@ public class DevOpsApiServiceTests
 
         Assert.Contains("System.State", query);
         Assert.Contains("<> 'Closed'", query);
+    }
+
+    [Fact]
+    public void BuildMetricsWiql_Uses_Completed_State()
+    {
+        var query = InvokeBuildMetricsWiql("Area", DateTime.Today, "Done");
+
+        Assert.Contains("<> 'Done'", query);
     }
 
     [Fact]

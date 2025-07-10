@@ -990,14 +990,14 @@ public class DevOpsApiService
         return list;
     }
 
-    public async Task<List<StoryMetric>> GetStoryMetricsAsync(string areaPath, DateTime? startDate = null)
+    public async Task<List<StoryMetric>> GetStoryMetricsAsync(string areaPath, DateTime? startDate = null, string completedState = "Closed")
     {
         var config = GetValidatedConfig();
         ApplyAuthentication(config);
 
         var baseUri = BuildBaseUri(config);
 
-        var wiql = BuildMetricsWiql(areaPath, startDate ?? DateTime.Today.AddDays(-84));
+        var wiql = BuildMetricsWiql(areaPath, startDate ?? DateTime.Today.AddDays(-84), completedState);
         var wiqlResult = await PostJsonAsync<WiqlResult>($"{baseUri}/wiql?api-version={ApiVersion}", new { query = wiql });
         if (wiqlResult == null || wiqlResult.WorkItems.Length == 0)
             return [];
@@ -1072,12 +1072,12 @@ public class DevOpsApiService
         return list;
     }
 
-    private static string BuildMetricsWiql(string areaPath, DateTime startDate)
+    private static string BuildMetricsWiql(string areaPath, DateTime startDate, string completedState)
     {
         areaPath = NormalizeAreaPath(areaPath);
         var start = startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         return
-            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND ([Microsoft.VSTS.Common.ClosedDate] >= '{start}' OR [System.State] <> 'Closed') ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
+            $"SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.AreaPath] UNDER '{areaPath}' AND [System.WorkItemType] = 'User Story' AND ([Microsoft.VSTS.Common.ClosedDate] >= '{start}' OR [System.State] <> '{completedState.Replace("'", "''")}') ORDER BY [Microsoft.VSTS.Common.ClosedDate]";
     }
 
     private static string BuildStorySearchWiql(string term)
