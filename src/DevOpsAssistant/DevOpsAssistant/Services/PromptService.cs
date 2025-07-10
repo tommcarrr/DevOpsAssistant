@@ -324,6 +324,45 @@ public class PromptService
         return sb.ToString();
     }
 
+    private static string BuildWorkItemQualityDescriptionStandards(DevOpsConfig config)
+    {
+        if (config.Standards.UserStoryDescription.Count <= 0) return WorkItemQuality_DescriptionStandardsNonePrompt.Value;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(WorkItemQuality_DescriptionStandardsIntroPrompt.Value);
+        foreach (var text in config.Standards.UserStoryDescription.Select(s => s switch
+                 {
+                     StandardIds.ScrumUserStory => WorkItemQuality_DescriptionStandards_ScrumUserStoryPrompt.Value,
+                     StandardIds.JobStory => WorkItemQuality_DescriptionStandards_JobStoryPrompt.Value,
+                     _ => string.Empty
+                 }))
+        {
+            sb.AppendLine(text);
+        }
+
+        return sb.ToString();
+    }
+
+    private static string BuildWorkItemQualityAcStandards(DevOpsConfig config)
+    {
+        if (config.Standards.UserStoryAcceptanceCriteria.Count <= 0) return WorkItemQuality_AcceptanceCriteriaStandardsNonePrompt.Value;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(WorkItemQuality_AcceptanceCriteriaStandardsIntroPrompt.Value);
+        foreach (var text in config.Standards.UserStoryAcceptanceCriteria.Select(s => s switch
+                 {
+                     StandardIds.Gherkin => WorkItemQuality_AcceptanceCriteriaStandards_GherkinPrompt.Value,
+                     StandardIds.BulletPoints => WorkItemQuality_AcceptanceCriteriaStandards_BulletPointsPrompt.Value,
+                     StandardIds.SAFeStyle => WorkItemQuality_AcceptanceCriteriaStandards_SAFePrompt.Value,
+                     _ => string.Empty
+                 }))
+        {
+            sb.AppendLine(text);
+        }
+
+        return sb.ToString();
+    }
+
     private static string BuildWorkItemQualityWorkItems(string json)
     {
         var sb = new StringBuilder();
@@ -349,6 +388,8 @@ public class PromptService
                 BuildBugReportingStandards(config),
                 BuildDefinitionOfReady(config),
                 BuildStoryQualityStandards(config),
+                BuildWorkItemQualityDescriptionStandards(config),
+                BuildWorkItemQualityAcStandards(config),
                 format,
                 workItems);
 
